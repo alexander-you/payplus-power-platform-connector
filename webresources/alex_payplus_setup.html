@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<!--
+  PayPlus Setup Wizard — Dynamics 365 model-driven web resource
+  Web resource name: alex_payplus_setup.html  (HTML)
+  Self-contained. Single-language (auto-detected from D365 user UI language: Hebrew 1037 → he/RTL, else en/LTR).
+  Uses parent Xrm.WebApi only (no MSAL / no Azure).
+
+  STAGED wizard, each stage persisted to the config row (alex_setupstage) so the admin can resume:
+    Stage 1 CONNECT  — pick environment + bind the solution connection reference to a PayPlus connection
+                       (keys are entered once in that connection dialog; the wizard only verifies the binding).
+    Stage 2 PAGES    — fetch terminals (MyTerminals) → pick terminal → fetch payment pages (ListPaymentPages)
+                       → pick payment page. Fetching runs through the Custom API alex_FetchPayPlusOptions
+                       (→ flow → connector) and the result is polled from the config row (alex_paymentpages).
+    Stage 3 VALIDATE — run alex_ValidatePayPlusConnection (→ flow → GeneratePaymentLink) and poll the result.
+    Stage 4 DONE     — dashboard; re-validate / restart.
+-->
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>PayPlus Setup</title>
+  <style>
+    :root{
+      --brand:#3b4aa0; --brand-dark:#2c3878; --brand-soft:#eef0fb;
+      --ok:#1f9d63; --ok-soft:#e6f6ee; --ok-border:#bfe6d1;
+      --pending:#8a94a6; --pending-soft:#eef1f5;
+      --warn:#c9820a; --warn-soft:#fdf3e0;
+      --err:#c8384b; --err-soft:#fbeaec;
+      --ink:#1b2333; --muted:#67718a; --line:#e6e9f0; --bg:#f5f6fa; --card:#ffffff;
+      --radius:16px; --shadow:0 2px 10px rgba(28,38,64,.06),0 8px 24px rgba(28,38,64,.05);
+      --font:"Segoe UI","Assistant","Rubik","Heebo","Arial Hebrew","Helvetica Neue",Arial,system-ui,sans-serif;
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);font-family:var(--font)}
+    body{padding:24px 16px 64px;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-rendering:optimizeLegibility}
+    html[dir="rtl"] body{letter-spacing:0}
+    html[dir="rtl"] .title{letter-spacing:-.2px}
+    .wrap{max-width:820px;margin:0 auto}
+    a{color:var(--brand);text-decoration:none}
+    .row{display:flex;align-items:center;gap:12px}
+    .topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+    .brand{display:flex;align-items:center;gap:10px;font-weight:700;font-size:15px;color:var(--brand-dark)}
+    .pp-logo{width:30px;height:30px;display:block}
+    .hero-logo{width:56px;height:56px;margin:0 auto 10px;display:block}
+    .caption{text-align:center;color:var(--brand);font-weight:600;font-size:13px;margin-bottom:6px}
+    h1.title{text-align:center;font-size:27px;line-height:1.2;margin:2px 0 8px;font-weight:800}
+    p.sub{text-align:center;color:var(--muted);max-width:600px;margin:0 auto 22px;font-size:14px;line-height:1.55}
+    .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:20px}
+    /* stepper */
+    .stepper{display:flex;align-items:center;justify-content:center;gap:0;margin:0 auto 22px;max-width:640px}
+    .stp{display:flex;flex-direction:column;align-items:center;gap:6px;flex:0 0 auto;width:96px}
+    .stp .bub{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;background:#fff;border:2px solid var(--line);color:var(--muted)}
+    .stp .lbl{font-size:11.5px;color:var(--muted);text-align:center;font-weight:600}
+    .stp.active .bub{background:var(--brand);border-color:var(--brand);color:#fff;box-shadow:0 0 0 4px var(--brand-soft)}
+    .stp.active .lbl{color:var(--brand-dark)}
+    .stp.done .bub{background:var(--ok);border-color:var(--ok);color:#fff}
+    .stp.done .lbl{color:var(--ok)}
+    .stp-line{height:2px;background:var(--line);flex:1;margin:0 -8px;position:relative;top:-11px;min-width:20px}
+    .stp-line.filled{background:var(--ok)}
+    .field{margin-bottom:16px}
+    .field label{display:block;font-size:13px;font-weight:600;margin-bottom:7px}
+    .field .hint{font-size:12px;color:var(--muted);margin-top:6px;line-height:1.5}
+    .field input,.field select{width:100%;padding:11px 12px;border:1px solid var(--line);border-radius:10px;font-size:14px;font-family:var(--font);background:#fff;color:var(--ink)}
+    .field input:focus,.field select:focus{outline:none;border-color:var(--brand);box-shadow:0 0 0 3px var(--brand-soft)}
+    .field select:disabled,.field input:disabled{background:#f4f5f8;color:var(--muted);cursor:not-allowed}
+    .items{display:flex;flex-direction:column;gap:9px;margin:6px 0 4px}
+    .item{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:13.5px}
+    .item .l{display:flex;align-items:center;gap:9px}
+    .tick{width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:var(--ok);color:#fff;font-size:12px;flex:0 0 auto}
+    .tick.off{background:var(--pending-soft);color:var(--pending);border:1px solid var(--line)}
+    .chip{display:inline-flex;align-items:center;gap:6px;padding:3px 10px;border-radius:999px;font-size:12px;font-weight:600;border:1px solid transparent;white-space:nowrap}
+    .chip .dot{width:7px;height:7px;border-radius:50%}
+    .chip.ok{background:var(--ok-soft);color:var(--ok);border-color:var(--ok-border)}
+    .chip.ok .dot{background:var(--ok)}
+    .chip.pending{background:var(--pending-soft);color:var(--pending)} .chip.pending .dot{background:var(--pending)}
+    .chip.warn{background:var(--warn-soft);color:var(--warn)} .chip.warn .dot{background:var(--warn)}
+    .chip.err{background:var(--err-soft);color:var(--err)} .chip.err .dot{background:var(--err)}
+    .btn{appearance:none;border:1px solid var(--line);background:#fff;color:var(--ink);padding:10px 18px;border-radius:10px;font-weight:600;font-size:13.5px;cursor:pointer;font-family:var(--font);transition:.15s}
+    .btn:hover{background:#f7f8fb}
+    .btn.primary{background:var(--brand);border-color:var(--brand);color:#fff}
+    .btn.primary:hover{background:var(--brand-dark)}
+    .btn.ghost{background:transparent}
+    .btn:disabled{opacity:.5;cursor:not-allowed}
+    .actions{display:flex;gap:10px;justify-content:space-between;margin-top:20px}
+    .actions .right{display:flex;gap:10px;margin-inline-start:auto}
+    .note{border-radius:12px;padding:12px 14px;font-size:13px;display:flex;gap:10px;align-items:flex-start;line-height:1.55;margin-top:6px}
+    .note.info{background:var(--brand-soft);color:var(--brand-dark)}
+    .note.warn{background:var(--warn-soft);color:#8a5a05}
+    .note.err{background:var(--err-soft);color:#8f2534}
+    .note.ok{background:var(--ok-soft);color:#0f6b41}
+    .center{text-align:center}
+    .spinner{width:16px;height:16px;border-radius:50%;border:2px solid rgba(255,255,255,.5);border-top-color:#fff;display:inline-block;animation:spin .7s linear infinite;vertical-align:middle}
+    .spinner.dark{border:2px solid var(--line);border-top-color:var(--brand)}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    .hero-badge{width:60px;height:60px;border-radius:50%;background:var(--ok-soft);border:1px solid var(--ok-border);color:var(--ok);display:flex;align-items:center;justify-content:center;margin:0 auto 12px;font-size:28px}
+    .kv{display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px dashed var(--line);font-size:13.5px}
+    .kv:last-child{border-bottom:0}
+    .kv .k{color:var(--muted)} .kv .v{font-weight:600;word-break:break-all;text-align:end}
+    .subhead{font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;margin:2px 0 10px}
+    .divider{height:1px;background:var(--line);margin:18px 0}
+    .muted{color:var(--muted)} .small{font-size:12px}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="topbar">
+      <div class="brand">
+        <svg class="pp-logo" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="PayPlus"><rect x="3" y="3" width="58" height="58" rx="15" fill="#16305c"/><text x="21" y="42" font-family="Segoe UI,Arial,sans-serif" font-size="34" font-weight="800" fill="#ffffff" text-anchor="middle">P</text><text x="44" y="30" font-family="Segoe UI,Arial,sans-serif" font-size="20" font-weight="800" fill="#39b54a" text-anchor="middle">+</text><path d="M19 47 Q32 56 45 47" fill="none" stroke="#39b54a" stroke-width="4.5" stroke-linecap="round"/></svg>
+        <span data-i18n="brandName"></span>
+      </div>
+      <button class="btn ghost" onclick="App.reload()" title="refresh"><span data-i18n="refresh"></span> ⟳</button>
+    </div>
+    <div id="app"></div>
+  </div>
+
+<script>
+"use strict";
+var App = (function(){
+
+  /* ------------------------------------------------------------------ config */
+  var C = {
+    table:"alex_payplusconfiguration", set:"alex_payplusconfigurations", idcol:"alex_payplusconfigurationid",
+    fixedName:"PayPlus",
+    env:{ prod:100000000, sandbox:100000001 },
+    stage:{ connect:100000000, pages:100000001, validate:100000002, done:100000003 },
+    valStatus:{ pending:100000000, success:100000001, failed:100000002 },
+    validateApi:"alex_ValidatePayPlusConnection",
+    fetchApi:"alex_FetchPayPlusOptions",
+    connRef:{ prod:"alex_payplusprod", sandbox:"alex_payplussandbox" }
+  };
+
+  /* ------------------------------------------------------------------ i18n (single language, auto-selected) */
+  var T = {
+    he:{
+      brandName:"PayPlus · אשף התקנה", refresh:"רענון",
+      loadingTitle:"טוען…", loadingSub:"בודק את מצב ההתקנה",
+      stepConnect:"חיבור", stepPages:"עמודי תשלום", stepValidate:"אימות", stepDone:"סיום",
+      /* stage 1 */
+      s1Caption:"שלב 1 · חיבור המחבר",
+      s1Title:"חיבור PayPlus",
+      s1Sub:"בחרו סביבה וודאו שמפנה החיבור בפתרון מקושר לחיבור PayPlus. מפתחות ה-API (api-key / secret-key) מוזנים פעם אחת בדיאלוג יצירת החיבור — לא כאן.",
+      fEnv:"סביבת PayPlus", envProd:"Production (ייצור)", envSandbox:"Sandbox (בדיקות)",
+      envHint:"הסביבה קובעת לאיזה חיבור (prod/sandbox) האשף פונה.",
+      connTitle:"סטטוס החיבור בפתרון",
+      connChecking:"בודק את קישור החיבור…", connLinked:"החיבור מקושר", connMissing:"החיבור אינו מקושר",
+      connMissingHelp:"לא נמצא חיבור מקושר עבור מפנה החיבור ‘{ref}’. פתחו Power Apps ← Connections ← New connection, בחרו את מחבר ה-PayPlus והזינו api-key ו-secret-key. לאחר מכן קשרו את מפנה החיבור ‘{ref}’ לחיבור, ורעננו כאן.",
+      connConfigured:"מפנה החיבור מוגדר (טרם נבדק)",
+      connConfiguredHint:"נמצא connectionid שמור על מפנה החיבור — אך זה לבדו לא מוכיח שקיים חיבור פעיל (הוא עלול להיות ‘יתום’ אחרי מחיקת החיבור). לחצו ‘בדיקת חיבור’ כדי לוודא בפועל מול PayPlus.",
+      connBroken:"החיבור אינו פעיל (בדיקה נכשלה)",
+      connVerified:"החיבור אומת — פעיל בפועל",
+      testConn:"בדיקת חיבור", testingConn:"בודק חיבור…",
+      verifiedChip:"אומת", notTestedChip:"לא נבדק",
+      connLiveNoTerminals:"החיבור פעיל, אך לא הוחזרו מסופים מהחשבון.",
+      connTestFailed:"בדיקת החיבור נכשלה — אין חיבור פעיל. ודאו שנוצר Connection למחבר PayPlus עם מפתחות תקינים, ושהוא מקושר למפנה ‘{ref}’.",
+      connTestTimeout:"בדיקת החיבור לא הסתיימה בזמן. ודאו שה-flow ‘PayPlus - Fetch Options’ מופעל (make.powerautomate.com).",
+      active:"פעיל", missing:"חסר",
+      next:"המשך", back:"חזרה",
+      /* stage 2 */
+      s2Caption:"שלב 2 · עמודי תשלום",
+      s2Title:"בחירת מסוף ועמוד תשלום",
+      s2Sub:"נשלוף מ-PayPlus את המסופים ואת עמודי התשלום שלכם דרך החיבור, כדי לבחור עמוד לאימות.",
+      termTitle:"מסוף (Terminal)",
+      fetchTerminals:"שליפת מסופים", fetching:"שולף…", refetch:"שליפה מחדש",
+      pickTerminal:"— בחרו מסוף —",
+      termHint:"בחרו את המסוף; לאחר מכן נשלוף את עמודי התשלום שלו.",
+      pageTitle:"עמוד תשלום (Payment Page)",
+      fetchPages:"שליפת עמודים",
+      pickPage:"— בחרו עמוד תשלום —",
+      pageHint:"עמוד זה ישמש לאימות (הפקת קישור תשלום לבדיקה).",
+      noTerminals:"לא הוחזרו מסופים. ודאו שהמפתחות בחיבור נכונים ושה-flow ‘PayPlus - Fetch Options’ מופעל.",
+      noPages:"לא הוחזרו עמודי תשלום עבור המסוף שנבחר.",
+      fetchTimeout:"השליפה לא הסתיימה בזמן. ודאו שה-flow ‘PayPlus - Fetch Options’ מופעל (make.powerautomate.com) ושהמפתחות בחיבור נכונים.",
+      fetchErr:"השליפה נכשלה. בדקו את החיבור וה-flow ונסו שוב.",
+      /* stage 3 */
+      s3Caption:"שלב 3 · אימות",
+      s3Title:"אימות החיבור",
+      s3Sub:"נריץ אימות מקצה לקצה: הפקת קישור תשלום לבדיקה מול העמוד שנבחר. התוצאה תתועד ברשומה.",
+      lblEnv:"סביבה", lblTerminal:"מסוף", lblPage:"עמוד תשלום",
+      validateBtn:"הפעלת אימות", validatingLbl:"מאמת…",
+      valFailed:"האימות נכשל (קוד {n}). בדקו שהמפתחות בחיבור נכונים ושעמוד התשלום שייך לאותה סביבה, ונסו שוב.",
+      valTimeout:"האימות לא הסתיים תוך שתי דקות. ודאו שה-flow ‘PayPlus - Validate Credentials’ מופעל ושהמפתחות נכונים.",
+      /* stage 4 */
+      doneCaption:"מחובר ופעיל", doneTitle:"ההתקנה הושלמה",
+      doneSub:"החיבור ל-PayPlus מקושר ואומת בהצלחה. אפשר להתחיל להפיק קישורי תשלום ולחייב לקוחות.",
+      statusValidated:"מאומת", statusNotValidated:"לא מאומת",
+      lblStatus:"סטטוס אימות", lblLastValidated:"אומת לאחרונה",
+      reValidate:"אימות מחדש", restart:"התחלה מחדש",
+      doneLocked:"ההתקנה הושלמה. ניתן לאמת מחדש או להתחיל מחדש בכל עת.",
+      /* generic */
+      errNoXrm:"לא ניתן להתחבר ל-Dynamics (Xrm). יש לפתוח את המשאב בתוך אפליקציית מודל.",
+      errGeneric:"אירעה שגיאה", retry:"נסו שוב"
+    },
+    en:{
+      brandName:"PayPlus · Setup Wizard", refresh:"Refresh",
+      loadingTitle:"Loading…", loadingSub:"Checking setup status",
+      stepConnect:"Connect", stepPages:"Payment pages", stepValidate:"Validate", stepDone:"Done",
+      s1Caption:"Step 1 · Connect",
+      s1Title:"PayPlus connection",
+      s1Sub:"Pick an environment and confirm the solution's connection reference is bound to a PayPlus connection. The API keys (api-key / secret-key) are entered once in the connection dialog — not here.",
+      fEnv:"PayPlus environment", envProd:"Production", envSandbox:"Sandbox",
+      envHint:"The environment decides which connection (prod/sandbox) the wizard uses.",
+      connTitle:"Connection status in the solution",
+      connChecking:"Checking connection binding…", connLinked:"Connection is linked", connMissing:"Connection is not linked",
+      connMissingHelp:"No connection is bound to the connection reference ‘{ref}’. Open Power Apps → Connections → New connection, pick the PayPlus connector and enter the api-key and secret-key. Then bind the connection reference ‘{ref}’ to it and refresh here.",
+      connConfigured:"Connection reference is configured (not yet tested)",
+      connConfiguredHint:"A connectionid is stored on the connection reference — but that alone does NOT prove a live connection exists (it can be 'orphaned' after the connection was deleted). Click 'Test connection' to verify against PayPlus.",
+      connBroken:"Connection is not live (test failed)",
+      connVerified:"Connection verified — live",
+      testConn:"Test connection", testingConn:"Testing connection…",
+      verifiedChip:"Verified", notTestedChip:"Not tested",
+      connLiveNoTerminals:"Connection is live, but no terminals were returned for the account.",
+      connTestFailed:"Connection test failed — no live connection. Make sure a PayPlus connector connection exists with valid keys and is bound to the reference ‘{ref}’.",
+      connTestTimeout:"Connection test didn't finish in time. Make sure the ‘PayPlus - Fetch Options’ flow is turned on (make.powerautomate.com).",
+      active:"Active", missing:"Missing",
+      next:"Next", back:"Back",
+      s2Caption:"Step 2 · Payment pages",
+      s2Title:"Pick terminal & payment page",
+      s2Sub:"We'll fetch your terminals and payment pages from PayPlus through the connection, so you can choose a page to validate.",
+      termTitle:"Terminal",
+      fetchTerminals:"Fetch terminals", fetching:"Fetching…", refetch:"Re-fetch",
+      pickTerminal:"— Select a terminal —",
+      termHint:"Pick the terminal; we'll then fetch its payment pages.",
+      pageTitle:"Payment page",
+      fetchPages:"Fetch pages",
+      pickPage:"— Select a payment page —",
+      pageHint:"This page is used for validation (generates a test payment link).",
+      noTerminals:"No terminals returned. Check the connection keys and that the ‘PayPlus - Fetch Options’ flow is turned on.",
+      noPages:"No payment pages returned for the selected terminal.",
+      fetchTimeout:"The fetch didn't finish in time. Make sure the ‘PayPlus - Fetch Options’ flow is turned on (make.powerautomate.com) and the connection keys are correct.",
+      fetchErr:"The fetch failed. Check the connection and flow, then try again.",
+      s3Caption:"Step 3 · Validate",
+      s3Title:"Validate the connection",
+      s3Sub:"We'll run an end-to-end validation: generate a test payment link against the selected page. The result is recorded.",
+      lblEnv:"Environment", lblTerminal:"Terminal", lblPage:"Payment page",
+      validateBtn:"Run validation", validatingLbl:"Validating…",
+      valFailed:"Validation failed (code {n}). Check that the connection keys are correct and the payment page belongs to the same environment, then try again.",
+      valTimeout:"Validation didn't finish within two minutes. Make sure the ‘PayPlus - Validate Credentials’ flow is on and the keys are correct.",
+      doneCaption:"Connected & active", doneTitle:"Setup complete",
+      doneSub:"Your PayPlus connection is linked and validated. You can start generating payment links and charging customers.",
+      statusValidated:"Validated", statusNotValidated:"Not validated",
+      lblStatus:"Validation status", lblLastValidated:"Last validated",
+      reValidate:"Re-validate", restart:"Start over",
+      doneLocked:"Setup is complete. You can re-validate or start over any time.",
+      errNoXrm:"Cannot reach Dynamics (Xrm). Open this resource inside a model-driven app.",
+      errGeneric:"An error occurred", retry:"Retry"
+    }
+  };
+
+  /* ------------------------------------------------------------------ state */
+  var S = {
+    lang:"he", xrm:null, record:null,
+    sel:{ env:"prod", terminalUid:"", terminalLabel:"", pageUid:"", pageLabel:"" },
+    conn:{ checked:false, configured:false, verified:false, tested:false, testing:false },
+    stage:C.stage.connect,
+    terminals:[], pages:[],
+    busy:{ terminals:false, pages:false, validating:false },
+    msg:null,
+    view:"loading"
+  };
+
+  /* ------------------------------------------------------------------ utils */
+  function t(k,vars){ var s=(T[S.lang]&&T[S.lang][k])||k; if(vars){for(var v in vars){s=s.split("{"+v+"}").join(vars[v]);}} return s; }
+  function esc(s){ return String(s==null?"":s).replace(/[&<>"']/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c];}); }
+  function applyStaticI18n(){ document.querySelectorAll("[data-i18n]").forEach(function(n){ n.textContent=t(n.getAttribute("data-i18n")); }); document.title=t("brandName"); }
+  function genGuid(){ return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g,function(c){var r=Math.random()*16|0,v=c==="x"?r:(r&0x3|0x8);return v.toString(16);}); }
+  function chip(kind,label){ return '<span class="chip '+kind+'"><span class="dot"></span>'+esc(label)+'</span>'; }
+  function tick(on){ return on?'<span class="tick">✓</span>':'<span class="tick off">•</span>'; }
+  function delay(ms){ return new Promise(function(r){ setTimeout(r,ms); }); }
+
+  /* ------------------------------------------------------------------ Xrm */
+  function getXrm(){ try{ if(window.parent&&window.parent.Xrm) return window.parent.Xrm; }catch(e){} return window.Xrm||null; }
+  function api(){ return S.xrm.WebApi; }
+
+  function loadRecord(){
+    return api().retrieveMultipleRecords(C.table,
+      "?$select="+C.idcol+",alex_name,alex_setupcompleted,alex_configvalidated,alex_environment,alex_setupstage,"+
+      "alex_paymentpageuidref,alex_paymentpages,alex_validationrequestid,alex_lastvalidatedon,alex_lastvalidationstatus,alex_lastvalidationcode,alex_lastvalidationmessage&$top=1"
+    ).then(function(res){ return res.entities&&res.entities.length?res.entities[0]:null; });
+  }
+  function checkConnRef(){
+    var ref=C.connRef[S.sel.env];
+    S.conn={ checked:false, configured:false, verified:false, tested:false, testing:false };
+    return api().retrieveMultipleRecords("connectionreference",
+      "?$select=connectionreferencelogicalname,connectionid&$filter=connectionreferencelogicalname eq '"+ref+"'&$top=1")
+      .then(function(res){ var e=res&&res.entities&&res.entities[0]; S.conn={ checked:true, configured:!!(e&&e.connectionid), verified:false, tested:false, testing:false }; return S.conn; })
+      .catch(function(){ S.conn={ checked:true, configured:false, verified:false, tested:false, testing:false }; return S.conn; });
+  }
+  // Live probe: the stored connectionid only proves the reference is *configured* (it can be orphaned).
+  // The only reliable proof of a working connection is an actual call through the flow → connector.
+  function testConnection(){
+    if(S.conn.testing) return;
+    S.conn.testing=true; S.msg=null; render();
+    fetchOptions("terminals","").then(function(res){
+      S.conn.testing=false; S.conn.tested=true;
+      if(res.items){ S.conn.verified=true; S.terminals=res.items; if(!res.items.length){ S.msg={kind:"warn",text:t("connLiveNoTerminals")}; } }
+      else if(res.error){ S.conn.verified=false; S.msg={kind:"err",text:t("connTestFailed",{ref:C.connRef[S.sel.env]})}; }
+      else { S.conn.verified=false; S.msg={kind:"err",text:t("connTestTimeout")}; }
+      render();
+    });
+  }
+
+  /* ------------------------------------------------------------------ boot */
+  function boot(){
+    S.xrm=getXrm(); S.view="loading"; render();
+    if(!S.xrm){ return renderRaw(errorView(t("errNoXrm"))); }
+    try{ var lcid=S.xrm.Utility.getGlobalContext().userSettings.languageId; S.lang=(lcid===1037)?"he":"en"; }catch(e){ S.lang="he"; }
+    setDir(); applyStaticI18n();
+    loadRecord().then(function(rec){
+      S.record=rec;
+      if(rec){
+        S.sel.env=(rec.alex_environment===C.env.sandbox)?"sandbox":"prod";
+        S.sel.pageUid=rec.alex_paymentpageuidref||"";
+        S.stage=(typeof rec.alex_setupstage==="number")?rec.alex_setupstage:C.stage.connect;
+      }
+      return checkConnRef();
+    }).then(function(){
+      // resume guard: cannot be past Connect without at least a configured connection reference
+      if(!S.conn.configured && S.stage!==C.stage.done){ S.stage=C.stage.connect; }
+      if(S.record&&S.record.alex_setupcompleted===true&&S.record.alex_configvalidated===true){ S.stage=C.stage.done; }
+      S.view="stage"; render();
+    }).catch(function(e){ renderRaw(errorView((e&&e.message)||t("errGeneric"))); });
+  }
+  function setDir(){ var he=S.lang==="he"; document.documentElement.lang=he?"he":"en"; document.documentElement.dir=he?"rtl":"ltr"; }
+  function reload(){ boot(); }
+
+  /* ------------------------------------------------------------------ persistence */
+  function ensureRecord(){
+    if(S.record&&S.record[C.idcol]){ return Promise.resolve(S.record[C.idcol]); }
+    return api().retrieveMultipleRecords(C.table,"?$select="+C.idcol+"&$filter=alex_name eq '"+C.fixedName+"'&$top=1")
+      .then(function(res){
+        if(res&&res.entities&&res.entities.length){ var id=res.entities[0][C.idcol]; S.record=S.record||{}; S.record[C.idcol]=id; return id; }
+        return api().createRecord(C.table,{ alex_name:C.fixedName, alex_environment:envVal(), alex_setupcompleted:false, alex_setupstage:C.stage.connect })
+          .then(function(r){ S.record=S.record||{}; S.record[C.idcol]=r.id; return r.id; });
+      });
+  }
+  function envVal(){ return S.sel.env==="sandbox"?C.env.sandbox:C.env.prod; }
+  function patchRecord(data){ return ensureRecord().then(function(id){ return api().updateRecord(C.table,id,data).then(function(){ if(S.record){for(var k in data){S.record[k]=data[k];}} return id; }); }); }
+
+  function saveStage(stageVal,extra){
+    var data=Object.assign({ alex_name:C.fixedName, alex_setupstage:stageVal, alex_environment:envVal() }, extra||{});
+    return patchRecord(data);
+  }
+
+  /* ------------------------------------------------------------------ Custom API exec (unbound actions) */
+  function execAction(name,params,paramTypes){
+    var req=Object.assign({}, params, { getMetadata:function(){ return { boundParameter:null, operationType:0, operationName:name, parameterTypes:paramTypes }; } });
+    return api().online.execute(req);
+  }
+  var strType={ typeName:"Edm.String", structuralProperty:1 };
+
+  /* ------------------------------------------------------------------ FETCH options (terminals / pages) */
+  function fetchOptions(kind,terminalUid){
+    var reqId=genGuid();
+    var envName=S.sel.env==="sandbox"?"Sandbox":"Production";
+    // write correlation id, clear previous payload
+    return patchRecord({ alex_validationrequestid:reqId, alex_paymentpages:"" }).then(function(){
+      var params={ environment:envName, request_id:reqId };
+      var types={ environment:strType, request_id:strType };
+      if(kind==="pages"){ params.terminal_uid=terminalUid||""; types.terminal_uid=strType; }
+      else { params.terminal_uid=""; types.terminal_uid=strType; }
+      return execAction(C.fetchApi, params, types);
+    }).then(function(){ return pollOptions(reqId,kind); });
+  }
+  function pollOptions(reqId,expectedKind){
+    var start=Date.now(), step=4000, id=S.record[C.idcol];
+    return new Promise(function(resolve){
+      function loop(){
+        if(Date.now()-start>=90000){ resolve({ timeout:true }); return; }
+        api().retrieveRecord(C.table,id,"?$select=alex_paymentpages").then(function(rec){
+          var raw=rec.alex_paymentpages;
+          if(raw){
+            var env=null; try{ env=JSON.parse(raw); }catch(e){}
+            if(env&&env.requestId===reqId){
+              if(env.kind==="error"){ resolve({ error:true, message:env.message }); return; }
+              if(env.kind===expectedKind){ resolve({ items:env.items||[] }); return; }
+            }
+          }
+          setTimeout(loop,step);
+        }).catch(function(){ setTimeout(loop,step); });
+      }
+      setTimeout(loop,step);
+    });
+  }
+
+  function fetchTerminals(){
+    if(S.busy.terminals) return;
+    S.busy.terminals=true; S.msg=null; render();
+    fetchOptions("terminals","").then(function(res){
+      S.busy.terminals=false;
+      if(res.items){ S.terminals=res.items; if(!res.items.length){ S.msg={kind:"warn",text:t("noTerminals")}; } }
+      else if(res.error){ S.msg={kind:"err",text:t("fetchErr")}; }
+      else { S.msg={kind:"err",text:t("fetchTimeout")}; }
+      render();
+    });
+  }
+  function fetchPages(){
+    if(S.busy.pages||!S.sel.terminalUid) return;
+    S.busy.pages=true; S.msg=null; S.pages=[]; S.sel.pageUid=""; render();
+    fetchOptions("pages",S.sel.terminalUid).then(function(res){
+      S.busy.pages=false;
+      if(res.items){ S.pages=res.items; if(!res.items.length){ S.msg={kind:"warn",text:t("noPages")}; } }
+      else if(res.error){ S.msg={kind:"err",text:t("fetchErr")}; }
+      else { S.msg={kind:"err",text:t("fetchTimeout")}; }
+      render();
+    });
+  }
+
+  /* ------------------------------------------------------------------ VALIDATE */
+  function validate(){
+    if(S.busy.validating||!S.sel.pageUid) return;
+    S.busy.validating=true; S.msg=null; render();
+    var reqId=genGuid(), envName=S.sel.env==="sandbox"?"Sandbox":"Production";
+    patchRecord({
+      alex_validationrequestid:reqId, alex_lastvalidationstatus:C.valStatus.pending, alex_configvalidated:false,
+      alex_lastvalidationcode:0, alex_lastvalidationmessage:"", alex_paymentpageuidref:S.sel.pageUid, alex_environment:envVal()
+    }).then(function(){
+      return execAction(C.validateApi,
+        { payment_page_uid:S.sel.pageUid, terminal_uid:S.sel.terminalUid, environment:envName, request_id:reqId },
+        { payment_page_uid:strType, terminal_uid:strType, environment:strType, request_id:strType });
+    }).then(function(){ return pollValidation(reqId); })
+      .then(function(res){ return finishValidate(res); })
+      .catch(function(e){ S.busy.validating=false; S.msg={kind:"err",text:(e&&e.message)||t("errGeneric")}; render(); });
+  }
+  function pollValidation(reqId){
+    var start=Date.now(), step=5000, id=S.record[C.idcol];
+    return new Promise(function(resolve){
+      function loop(){
+        if(Date.now()-start>=120000){ resolve({ ok:false, timeout:true }); return; }
+        api().retrieveRecord(C.table,id,"?$select=alex_lastvalidationstatus,alex_lastvalidationcode,alex_lastvalidationmessage").then(function(rec){
+          var st=rec.alex_lastvalidationstatus;
+          if(st===C.valStatus.success){ resolve({ ok:true, status:rec.alex_lastvalidationcode||200 }); return; }
+          if(st===C.valStatus.failed){ resolve({ ok:false, status:rec.alex_lastvalidationcode||0, message:rec.alex_lastvalidationmessage }); return; }
+          setTimeout(loop,step);
+        }).catch(function(){ setTimeout(loop,step); });
+      }
+      setTimeout(loop,step);
+    });
+  }
+  function finishValidate(res){
+    var ok=!!(res&&res.ok);
+    if(ok){
+      return saveStage(C.stage.done,{ alex_setupcompleted:true, alex_configvalidated:true, alex_paymentpageuidref:S.sel.pageUid })
+        .then(function(){ S.busy.validating=false; if(S.record){ S.record.alex_lastvalidatedon=new Date().toISOString(); } S.stage=C.stage.done; render(); });
+    }
+    return patchRecord({ alex_configvalidated:false }).then(function(){
+      S.busy.validating=false;
+      var msg=(res&&res.timeout)?t("valTimeout"):t("valFailed",{n:(res&&res.status)||"—"});
+      if(res&&res.message){ msg+=" — "+res.message; }
+      S.msg={kind:"err",text:msg}; render();
+    });
+  }
+
+  /* ------------------------------------------------------------------ navigation */
+  function toStage(stageVal){ S.msg=null; S.stage=stageVal; saveStage(stageVal); render(); }
+  function goPages(){ S.msg=null; S.stage=C.stage.pages; saveStage(C.stage.pages); render(); }
+  function goValidate(){ S.msg=null; S.stage=C.stage.validate; saveStage(C.stage.validate,{ alex_paymentpageuidref:S.sel.pageUid }); render(); }
+  function restart(){ S.msg=null; S.terminals=[]; S.pages=[]; S.sel.terminalUid=""; S.sel.pageUid=""; S.stage=C.stage.connect;
+    saveStage(C.stage.connect,{ alex_setupcompleted:false, alex_configvalidated:false }); render(); }
+
+  /* ------------------------------------------------------------------ event handlers */
+  function setEnv(v){ S.sel.env=(v==="sandbox")?"sandbox":"prod"; S.msg=null; S.terminals=[]; S.pages=[]; S.sel.terminalUid=""; S.sel.pageUid="";
+    S.conn.verified=false; S.conn.tested=false; checkConnRef().then(render); render(); }
+  function setTerminal(v){ S.sel.terminalUid=v; var tt=S.terminals.filter(function(x){return x.value===v;})[0]; S.sel.terminalLabel=tt?tt.label:""; S.pages=[]; S.sel.pageUid=""; render(); }
+  function setPage(v){ S.sel.pageUid=v; var pp=S.pages.filter(function(x){return x.value===v;})[0]; S.sel.pageLabel=pp?pp.label:""; render(); }
+
+  /* ------------------------------------------------------------------ views */
+  function stepper(){
+    var order=[C.stage.connect,C.stage.pages,C.stage.validate,C.stage.done];
+    var labels=[t("stepConnect"),t("stepPages"),t("stepValidate"),t("stepDone")];
+    var cur=order.indexOf(S.stage); if(cur<0) cur=0;
+    var allDone=(S.stage===C.stage.done);
+    var h='<div class="stepper">';
+    for(var i=0;i<order.length;i++){
+      var isDone=allDone||i<cur;
+      var cls=isDone?"done":(i===cur?"active":"");
+      h+='<div class="stp '+cls+'"><div class="bub">'+(isDone?"✓":(i+1))+'</div><div class="lbl">'+esc(labels[i])+'</div></div>';
+      if(i<order.length-1){ h+='<div class="stp-line '+(isDone?"filled":"")+'"></div>'; }
+    }
+    h+='</div>'; return h;
+  }
+  function header(caption,title,sub){
+    return '<div class="caption">'+esc(caption)+'</div><h1 class="title">'+esc(title)+'</h1><p class="sub">'+esc(sub)+'</p>';
+  }
+  function noteHtml(){ return S.msg?('<div class="note '+esc(S.msg.kind)+'">'+esc(S.msg.text)+'</div>'):""; }
+
+  function loadingView(){ return header("",t("loadingTitle"),t("loadingSub"))+'<div class="center"><span class="spinner dark"></span></div>'; }
+  function errorView(msg){ return header("",t("errGeneric"),"")+'<div class="card"><div class="note err">⚠ '+esc(msg)+'</div><div class="actions"><span></span><div class="right"><button class="btn" onclick="App.reload()">'+t("retry")+'</button></div></div></div>'; }
+
+  /* stage 1 — connect */
+  function stageConnect(){
+    var c=S.conn;
+    var h=stepper()+header(t("s1Caption"),t("s1Title"),t("s1Sub"))+'<div class="card">';
+    h+='<div class="field"><label>'+t("fEnv")+'</label><select onchange="App.setEnv(this.value)">'+
+       '<option value="prod"'+(S.sel.env==="prod"?" selected":"")+'>'+esc(t("envProd"))+'</option>'+
+       '<option value="sandbox"'+(S.sel.env==="sandbox"?" selected":"")+'>'+esc(t("envSandbox"))+'</option>'+
+       '</select><div class="hint">'+t("envHint")+'</div></div>';
+    h+='<div class="field"><label>'+t("connTitle")+'</label><div class="items">';
+    if(!c.checked){ h+='<div class="item"><div class="l"><span class="spinner dark"></span> '+esc(t("connChecking"))+'</div></div>'; }
+    else if(c.verified){ h+='<div class="item"><div class="l">'+tick(true)+esc(t("connVerified"))+'</div>'+chip("ok",t("verifiedChip"))+'</div>'; }
+    else if(!c.configured){ h+='<div class="item"><div class="l">'+tick(false)+esc(t("connMissing"))+'</div>'+chip("err",t("missing"))+'</div>'; }
+    else if(c.tested){ h+='<div class="item"><div class="l">'+tick(false)+esc(t("connBroken"))+'</div>'+chip("err",t("missing"))+'</div>'; }
+    else { h+='<div class="item"><div class="l">'+tick(false)+esc(t("connConfigured"))+'</div>'+chip("pending",t("notTestedChip"))+'</div>'; }
+    h+='</div></div>';
+    if(c.checked&&!c.configured){ h+='<div class="note warn">⚠ '+esc(t("connMissingHelp",{ref:C.connRef[S.sel.env]}))+'</div>'; }
+    else if(c.checked&&c.configured&&!c.verified&&!c.tested){ h+='<div class="note info">'+esc(t("connConfiguredHint"))+'</div>'; }
+    h+=noteHtml();
+    if(c.checked&&c.configured&&!c.verified){
+      h+='<div class="field" style="margin-top:14px;margin-bottom:0"><button class="btn" '+(c.testing?"disabled":"")+' onclick="App.testConnection()">'+
+         (c.testing?('<span class="spinner dark"></span> '+t("testingConn")):('⚡ '+t("testConn")))+'</button></div>';
+    }
+    h+='<div class="actions"><span></span><div class="right"><button class="btn primary" '+(c.verified?"":"disabled")+' onclick="App.goPages()">'+t("next")+' →</button></div></div>';
+    h+='</div>'; return h;
+  }
+
+  /* stage 2 — pages */
+  function stagePages(){
+    var h=stepper()+header(t("s2Caption"),t("s2Title"),t("s2Sub"))+'<div class="card">';
+    // terminals
+    h+='<div class="subhead">'+t("termTitle")+'</div>';
+    if(!S.terminals.length){
+      h+='<div class="field"><button class="btn primary" '+(S.busy.terminals?"disabled":"")+' onclick="App.fetchTerminals()">'+
+         (S.busy.terminals?('<span class="spinner"></span> '+t("fetching")):t("fetchTerminals"))+'</button><div class="hint">'+t("termHint")+'</div></div>';
+    } else {
+      h+='<div class="field"><select onchange="App.setTerminal(this.value)"><option value="">'+esc(t("pickTerminal"))+'</option>'+
+         S.terminals.map(function(x){ return '<option value="'+esc(x.value)+'"'+(S.sel.terminalUid===x.value?" selected":"")+'>'+esc(x.label||x.value)+'</option>'; }).join("")+
+         '</select><div class="hint">'+t("termHint")+' · <a href="#" onclick="App.fetchTerminals();return false;">'+t("refetch")+'</a></div></div>';
+    }
+    // pages (only after terminal chosen)
+    if(S.sel.terminalUid){
+      h+='<div class="divider"></div><div class="subhead">'+t("pageTitle")+'</div>';
+      if(!S.pages.length){
+        h+='<div class="field"><button class="btn primary" '+(S.busy.pages?"disabled":"")+' onclick="App.fetchPages()">'+
+           (S.busy.pages?('<span class="spinner"></span> '+t("fetching")):t("fetchPages"))+'</button><div class="hint">'+t("pageHint")+'</div></div>';
+      } else {
+        h+='<div class="field"><select onchange="App.setPage(this.value)"><option value="">'+esc(t("pickPage"))+'</option>'+
+           S.pages.map(function(x){ return '<option value="'+esc(x.value)+'"'+(S.sel.pageUid===x.value?" selected":"")+'>'+esc(x.label||x.value)+'</option>'; }).join("")+
+           '</select><div class="hint">'+t("pageHint")+' · <a href="#" onclick="App.fetchPages();return false;">'+t("refetch")+'</a></div></div>';
+      }
+    }
+    h+=noteHtml();
+    h+='<div class="actions"><button class="btn ghost" onclick="App.toStage('+C.stage.connect+')">← '+t("back")+'</button>'+
+       '<div class="right"><button class="btn primary" '+(S.sel.pageUid?"":"disabled")+' onclick="App.goValidate()">'+t("next")+' →</button></div></div>';
+    h+='</div>'; return h;
+  }
+
+  /* stage 3 — validate */
+  function stageValidate(){
+    var h=stepper()+header(t("s3Caption"),t("s3Title"),t("s3Sub"))+'<div class="card">';
+    h+='<div class="kv"><span class="k">'+t("lblEnv")+'</span><span class="v">'+esc(S.sel.env==="sandbox"?t("envSandbox"):t("envProd"))+'</span></div>';
+    if(S.sel.terminalLabel){ h+='<div class="kv"><span class="k">'+t("lblTerminal")+'</span><span class="v">'+esc(S.sel.terminalLabel)+'</span></div>'; }
+    h+='<div class="kv"><span class="k">'+t("lblPage")+'</span><span class="v">'+esc(S.sel.pageLabel||S.sel.pageUid||"—")+'</span></div>';
+    h+=noteHtml();
+    h+='<div class="actions"><button class="btn ghost" '+(S.busy.validating?"disabled":"")+' onclick="App.toStage('+C.stage.pages+')">← '+t("back")+'</button>'+
+       '<div class="right"><button class="btn primary" '+((S.sel.pageUid&&!S.busy.validating)?"":"disabled")+' onclick="App.validate()">'+
+       (S.busy.validating?('<span class="spinner"></span> '+t("validatingLbl")):t("validateBtn"))+'</button></div></div>';
+    h+='</div>'; return h;
+  }
+
+  /* stage 4 — done */
+  function stageDone(){
+    var r=S.record||{};
+    var lastVal=r.alex_lastvalidatedon?new Date(r.alex_lastvalidatedon).toLocaleString(S.lang==="he"?"he-IL":"en-GB"):"—";
+    var h=stepper()+'<svg class="hero-logo" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg"><rect x="3" y="3" width="58" height="58" rx="15" fill="#16305c"/><text x="21" y="42" font-family="Segoe UI,Arial,sans-serif" font-size="34" font-weight="800" fill="#ffffff" text-anchor="middle">P</text><text x="44" y="30" font-family="Segoe UI,Arial,sans-serif" font-size="20" font-weight="800" fill="#39b54a" text-anchor="middle">+</text><path d="M19 47 Q32 56 45 47" fill="none" stroke="#39b54a" stroke-width="4.5" stroke-linecap="round"/></svg>';
+    h+='<div class="caption">'+esc(t("doneCaption"))+'</div><h1 class="title">'+esc(t("doneTitle"))+'</h1><p class="sub">'+esc(t("doneSub"))+'</p>';
+    h+='<div class="hero-badge">✓</div><div class="card">';
+    h+='<div class="kv"><span class="k">'+t("lblEnv")+'</span><span class="v">'+esc(r.alex_environment===C.env.sandbox?t("envSandbox"):t("envProd"))+'</span></div>';
+    h+='<div class="kv"><span class="k">'+t("lblPage")+'</span><span class="v">'+esc(r.alex_paymentpageuidref||"—")+'</span></div>';
+    h+='<div class="kv"><span class="k">'+t("lblStatus")+'</span><span class="v">'+esc(r.alex_configvalidated?t("statusValidated"):t("statusNotValidated"))+'</span></div>';
+    h+='<div class="kv"><span class="k">'+t("lblLastValidated")+'</span><span class="v">'+esc(lastVal)+'</span></div>';
+    h+='<div class="note ok" style="margin-top:14px">🔒 '+t("doneLocked")+'</div>';
+    h+='<div class="actions"><button class="btn ghost" onclick="App.restart()">'+t("restart")+'</button>'+
+       '<div class="right"><button class="btn primary" onclick="App.toStage('+C.stage.validate+')">'+t("reValidate")+'</button></div></div>';
+    h+='</div>'; return h;
+  }
+
+  function renderRaw(html){ document.getElementById("app").innerHTML=html; applyStaticI18n(); }
+  function render(){
+    var html;
+    if(S.view==="loading"){ html=loadingView(); }
+    else if(S.stage===C.stage.done){ html=stageDone(); }
+    else if(S.stage===C.stage.pages){ html=stagePages(); }
+    else if(S.stage===C.stage.validate){ html=stageValidate(); }
+    else { html=stageConnect(); }
+    renderRaw(html);
+  }
+
+  document.addEventListener("DOMContentLoaded",boot);
+
+  return {
+    reload:reload, setEnv:setEnv, goPages:goPages, goValidate:goValidate, toStage:toStage,
+    testConnection:testConnection,
+    fetchTerminals:fetchTerminals, fetchPages:fetchPages, setTerminal:setTerminal, setPage:setPage,
+    validate:validate, restart:restart
+  };
+})();
+</script>
+</body>
+</html>

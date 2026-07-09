@@ -1,0 +1,22 @@
+sequenceDiagram
+    participant User as User
+    participant D365 as Dynamics 365 / Power Automate
+    participant Connector as Custom Connector
+    participant Policy as Policy Layer
+    participant PayPlus as PayPlus REST API
+    participant Page as Hosted Payment Page
+    participant Customer as Customer
+
+    User->>D365: Create payment request
+    D365->>Connector: Call Generate Payment Link
+    Connector->>Policy: Prepare request
+    Policy->>Policy: Inject api-key and secret-key headers
+    Policy->>PayPlus: POST /PaymentPages/generateLink
+    PayPlus-->>Connector: Return payment link and request UID
+    Connector-->>D365: Return metadata
+    D365-->>User: Store and show payment link
+    User-->>Customer: Send payment link
+    Customer->>Page: Open hosted payment page
+    Customer->>Page: Pay on PayPlus
+    Page-->>PayPlus: Payment result
+    PayPlus-->>D365: Webhook or status retrieval path

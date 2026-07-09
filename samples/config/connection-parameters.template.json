@@ -1,0 +1,11 @@
+{
+  "connectionParameters": {
+    "apiKey": "REPLACE_WITH_PAYPLUS_API_KEY_IN_CONNECTION_DIALOG_ONLY",
+    "secretKey": "REPLACE_WITH_PAYPLUS_SECRET_KEY_IN_CONNECTION_DIALOG_ONLY"
+  },
+  "notes": [
+    "This file is a template only.",
+    "Do not commit real values.",
+    "In production, enter these values in the Power Platform connection dialog, not in JSON files."
+  ]
+}

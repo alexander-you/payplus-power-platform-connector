@@ -1,0 +1,200 @@
+# Architecture
+
+## Solution Overview
+
+The solution integrates Microsoft Power Platform and Dynamics 365 with PayPlus by using a Power Platform Custom Connector. The connector exposes controlled PayPlus operations to Power Automate and Dynamics 365 processes.
+
+The primary pattern is hosted payment page generation. Power Platform creates a request, PayPlus returns a hosted payment link, and the customer enters card details only on the PayPlus hosted page.
+
+The solution does not process cards inside Power Platform. It redirects the customer to a PayPlus hosted payment page.
+
+## Components
+
+| Component | Responsibility |
+| --- | --- |
+| Dynamics 365 / Dataverse | Business record system, optional payment request and transaction storage, status write-back |
+| Power Automate | Orchestration, validation flows, payment link creation, reconciliation processes |
+| Power Platform Custom Connector | Typed PayPlus API wrapper, connection parameters, policies, action definitions |
+| Connection Parameters | Secure storage of PayPlus `api-key` and `secret-key` at connection level |
+| Policy Layer | Runtime injection of PayPlus authentication headers |
+| PayPlus REST API | Payment page generation, terminals, payment pages, customer, transaction, token, and product operations |
+| Hosted Payment Page | Cardholder-facing payment page owned by PayPlus |
+| Customer | Receives link and pays on PayPlus |
+
+## Power Platform Custom Connector
+
+The connector is defined as a no-auth connector from the Power Platform perspective. PayPlus still requires `api-key` and `secret-key` headers, but these are not modeled as per-action inputs and are not exposed to flow makers.
+
+Instead, the connector uses secure connection parameters and policies:
+
+- `apiKey`: `securestring` connection parameter.
+- `secretKey`: `securestring` connection parameter.
+- `setheader` policy for `api-key`.
+- `setheader` policy for `secret-key`.
+
+This keeps credentials at the connection boundary and avoids placing them in every action schema.
+
+## Power Automate
+
+Power Automate flows can call connector actions such as:
+
+- `GeneratePaymentLink`
+- `MyTerminals`
+- `ListPaymentPages`
+- `CreateCustomer`
+- `ViewCustomers`
+- `ViewTransactions`
+- `RefundByTransaction`
+- `ChargeSavedCard` when a saved PayPlus token is available and approved for use
+
+Flows should enable secure inputs and secure outputs for any action that might carry sensitive values such as tokens or customer identifiers.
+
+## Dynamics 365 / Dataverse
+
+Dataverse is optional but recommended for implementations that need status tracking, reconciliation, auditing, or support workflows.
+
+Recommended Dataverse usage:
+
+- Store payment request metadata.
+- Store PayPlus payment request UID and payment link.
+- Store PayPlus transaction UID and business status.
+- Store non-sensitive card metadata only, such as last four digits if returned and approved for storage.
+- Store failure reason, correlation ID, and retry status.
+
+Do not store PAN or CVV.
+
+## PayPlus REST API
+
+Known environments:
+
+| Environment | Host | Base path |
+| --- | --- | --- |
+| Sandbox | `restapidev.payplus.co.il` | `/api/v1.0` |
+| Production | `restapi.payplus.co.il` | `/api/v1.0` |
+
+Known PayPlus behavior from the POC:
+
+- `POST /PaymentPages/generateLink` returns a payment page link when a complete request is sent.
+- `GET /MyTerminals` returns terminal UUID values used as `terminal_uid`.
+- `GET /PaymentPages/list?terminal_uid={uuid}` returns payment page records for a terminal.
+- Unknown or incomplete endpoints may return 403 or connector-wrapped errors.
+
+## Connection Parameters
+
+Connection parameters are created in `apiProperties.json`:
+
+| Parameter | Type | Purpose |
+| --- | --- | --- |
+| `apiKey` | `securestring` | PayPlus API key |
+| `secretKey` | `securestring` | PayPlus secret key |
+
+They are entered once when creating the Power Platform connection. They are not supplied per flow action.
+
+## Policies
+
+The connector uses request policies:
+
+- `setheader` `api-key` = `@connectionParameters('apiKey')`
+- `setheader` `secret-key` = `@connectionParameters('secretKey')`
+
+The POC verified that `@connectionParameters('secretParam')` resolves at runtime when injected into headers by a `setheader` policy.
+
+## Hosted Payment Page
+
+The hosted payment page is the core security boundary. Customers enter card details only on PayPlus infrastructure. Dynamics 365 and Power Platform receive operational metadata such as link, request UID, transaction UID, and status.
+
+## Discovery Actions
+
+Discovery actions support setup and designer usability:
+
+- `MyTerminals`: retrieves terminals and returns UUIDs used as `terminal_uid`.
+- `ListPaymentPages`: retrieves payment pages for a selected terminal.
+
+Designer limitation found in POC:
+
+- Dependent dropdowns using `x-ms-dynamic-values` can cause a 409 manifest error when the list source requires a parameter.
+- A working approach was found by using `x-ms-dynamic-values` for the terminal dropdown and `x-ms-dynamic-list` for dependent payment page values.
+
+## Dev And Prod
+
+The solution keeps separate connector definitions and properties for sandbox and production. This prevents accidental calls to production during development and keeps credentials separated.
+
+Expected promotion path:
+
+1. Develop in a Power Platform development environment.
+2. Validate in PayPlus sandbox.
+3. Import managed solution to test.
+4. Create environment-specific connector connections.
+5. Run security and compliance approval.
+6. Promote to production and bind production connection references.
+
+## Responsibility Boundaries
+
+| Area | Power Platform Responsibility | PayPlus Responsibility |
+| --- | --- | --- |
+| Payment request creation | Build request, call connector, store metadata | Validate request, create hosted page |
+| Card data capture | Not handled | Hosted payment page captures card details |
+| Credential storage | Secure connection parameters | Merchant API credential issuance |
+| Payment processing | Not processed inside Power Platform | Authorization, charge, tokenization, refund |
+| Status tracking | Store and reconcile approved metadata | Return payment and transaction status |
+| PCI controls | Minimize scope, govern run history and logs | Own hosted card entry and payment processing controls |
+
+## Architecture Diagram
+
+```mermaid
+flowchart LR
+    user[Business User]
+    d365[Dynamics 365 / Dataverse]
+    flow[Power Automate]
+    connector[PayPlus Custom Connector]
+    connParams[(Secure Connection Parameters)]
+    policy[Policy Layer]
+    api[PayPlus REST API]
+    hosted[PayPlus Hosted Payment Page]
+    customer[Customer]
+
+    user --> d365
+    d365 --> flow
+    flow --> connector
+    connParams --> connector
+    connector --> policy
+    policy --> api
+    api --> hosted
+    hosted --> customer
+    customer --> hosted
+    api --> flow
+    flow --> d365
+```
+
+## Generate Payment Link Sequence
+
+```mermaid
+sequenceDiagram
+    participant User as Business User
+    participant D365 as Dynamics 365 / Power Automate
+    participant Connector as PayPlus Custom Connector
+    participant Policy as Policy Layer
+    participant PayPlus as PayPlus REST API
+    participant Page as Hosted Payment Page
+    participant Customer as Customer
+
+    User->>D365: Create payment request
+    D365->>Connector: GeneratePaymentLink request
+    Connector->>Policy: Prepare outbound request
+    Policy->>Policy: Inject api-key and secret-key headers
+    Policy->>PayPlus: POST /PaymentPages/generateLink
+    PayPlus-->>Connector: page_request_uid and payment_page_link
+    Connector-->>D365: Return payment metadata
+    D365-->>User: Show or send payment link
+    User-->>Customer: Send payment link
+    Customer->>Page: Open hosted PayPlus page
+    Customer->>Page: Enter card details and pay
+    Page-->>PayPlus: Payment result
+    PayPlus-->>D365: Webhook or status retrieval path
+```
+
+## Open Questions
+
+- Exact webhook/IPN implementation should be confirmed for each customer deployment.
+- Exact PayPlus schemas should be confirmed from official OpenAPI or sandbox responses before adding more actions.
+- Dataverse table names and relationships should be aligned to the customer's Dynamics 365 app.

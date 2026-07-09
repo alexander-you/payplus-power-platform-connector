@@ -1,0 +1,51 @@
+{
+  "properties": {
+    "connectionParameters": {
+      "apiKey": {
+        "type": "securestring",
+        "uiDefinition": {
+          "displayName": "מפתח API | API Key",
+          "description": "מפתח ה-API של PayPlus | PayPlus API key",
+          "tooltip": "api-key",
+          "constraints": { "required": "true", "clearText": false }
+        }
+      },
+      "secretKey": {
+        "type": "securestring",
+        "uiDefinition": {
+          "displayName": "מפתח סודי | Secret Key",
+          "description": "המפתח הסודי של PayPlus | PayPlus secret key",
+          "tooltip": "secret-key",
+          "constraints": { "required": "true", "clearText": false }
+        }
+      }
+    },
+    "iconBrandColor": "#007ee5",
+    "capabilities": [],
+    "scriptOperations": [],
+    "publisher": "Alexander Yurpolsky",
+    "stackOwner": "",
+    "policyTemplateInstances": [
+      {
+        "templateId": "setheader",
+        "title": "Inject api-key header",
+        "parameters": {
+          "x-ms-apimTemplateParameter.name": "api-key",
+          "x-ms-apimTemplateParameter.value": "@connectionParameters('apiKey')",
+          "x-ms-apimTemplateParameter.existsAction": "override",
+          "x-ms-apimTemplate-policySection": "Request"
+        }
+      },
+      {
+        "templateId": "setheader",
+        "title": "Inject secret-key header",
+        "parameters": {
+          "x-ms-apimTemplateParameter.name": "secret-key",
+          "x-ms-apimTemplateParameter.value": "@connectionParameters('secretKey')",
+          "x-ms-apimTemplateParameter.existsAction": "override",
+          "x-ms-apimTemplate-policySection": "Request"
+        }
+      }
+    ]
+  }
+}

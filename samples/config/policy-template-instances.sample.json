@@ -1,0 +1,24 @@
+{
+  "policyTemplateInstances": [
+    {
+      "templateId": "setheader",
+      "title": "Inject api-key header",
+      "parameters": {
+        "x-ms-apimTemplateParameter.name": "api-key",
+        "x-ms-apimTemplateParameter.value": "@connectionParameters('apiKey')",
+        "x-ms-apimTemplateParameter.existsAction": "override",
+        "x-ms-apimTemplate-policySection": "Request"
+      }
+    },
+    {
+      "templateId": "setheader",
+      "title": "Inject secret-key header",
+      "parameters": {
+        "x-ms-apimTemplateParameter.name": "secret-key",
+        "x-ms-apimTemplateParameter.value": "@connectionParameters('secretKey')",
+        "x-ms-apimTemplateParameter.existsAction": "override",
+        "x-ms-apimTemplate-policySection": "Request"
+      }
+    }
+  ]
+}

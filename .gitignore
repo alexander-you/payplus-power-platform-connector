@@ -1,0 +1,24 @@
+# Local environment files
+.env
+.env.*
+*.local
+
+# Secrets and exported runtime data
+*secret*
+*secrets*
+*_flowurl.txt
+*.har
+*.trace
+
+# Build and tooling output
+node_modules/
+dist/
+build/
+.tmp/
+tmp/
+
+# OS and editor
+.DS_Store
+Thumbs.db
+.vscode/
+!.vscode/extensions.json

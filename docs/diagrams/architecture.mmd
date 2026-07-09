@@ -1,0 +1,20 @@
+flowchart LR
+    user[User / Business User]
+    d365[Dynamics 365 / Power Automate]
+    connector[Custom Connector]
+    connParams[(Connection Parameters\napiKey + secretKey)]
+    policy[Policy Layer\nsetheader policies]
+    api[PayPlus REST API]
+    hosted[Hosted Payment Page]
+    customer[Customer]
+
+    user --> d365
+    d365 --> connector
+    connParams --> connector
+    connector --> policy
+    policy --> api
+    api --> hosted
+    hosted --> customer
+    customer --> hosted
+    api --> connector
+    connector --> d365

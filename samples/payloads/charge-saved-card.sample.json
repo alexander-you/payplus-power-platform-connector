@@ -1,0 +1,12 @@
+{
+  "terminal_uid": "00000000-0000-0000-0000-000000000000",
+  "cashier_uid": "CASHIER_UID_PLACEHOLDER",
+  "customer_uid": "PAYPLUS_CUSTOMER_UID_PLACEHOLDER",
+  "token": "PAYPLUS_TOKEN_PLACEHOLDER",
+  "use_token": true,
+  "amount": 100.0,
+  "currency_code": "ILS",
+  "credit_terms": 1,
+  "initial_invoice": true,
+  "more_info_1": "D365_PAYMENT_REQUEST_ID_PLACEHOLDER"
+}

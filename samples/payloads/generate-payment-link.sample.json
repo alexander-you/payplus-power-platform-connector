@@ -1,0 +1,21 @@
+{
+  "terminal_uid": "00000000-0000-0000-0000-000000000000",
+  "payment_page_uid": "PAYMENT_PAGE_UID_PLACEHOLDER",
+  "charge_method": 1,
+  "amount": 100.0,
+  "currency_code": "ILS",
+  "language_code": "he",
+  "customer": {
+    "customer_name": "Sample Customer",
+    "email": "customer@example.com",
+    "phone": "0500000000"
+  },
+  "items": [
+    {
+      "name": "Sample item",
+      "quantity": 1,
+      "price": 100.0
+    }
+  ],
+  "more_info_1": "D365_PAYMENT_REQUEST_ID_PLACEHOLDER"
+}
