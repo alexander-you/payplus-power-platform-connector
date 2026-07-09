@@ -134,12 +134,11 @@ Both connector definitions use the PayPlus API base path `/api/v1.0`.
 | Topic | English | Hebrew |
 | --- | --- | --- |
 | Architecture | [docs/en/architecture.md](docs/en/architecture.md) | [docs/he/architecture.md](docs/he/architecture.md) |
-| Architecture decisions | [docs/en/adr.md](docs/en/adr.md) | [docs/he/adr.md](docs/he/adr.md) |
 | Business user guide | [docs/en/business-user-guide.md](docs/en/business-user-guide.md) | [docs/he/business-user-guide.md](docs/he/business-user-guide.md) |
 | Security and compliance | [docs/en/security-governance-and-compliance.md](docs/en/security-governance-and-compliance.md) | [docs/he/security-governance-and-compliance.md](docs/he/security-governance-and-compliance.md) |
 | PCI considerations | [docs/en/pci-considerations.md](docs/en/pci-considerations.md) | [docs/he/pci-considerations.md](docs/he/pci-considerations.md) |
 | Custom connector design | [docs/en/custom-connector-design.md](docs/en/custom-connector-design.md) | [docs/he/custom-connector-design.md](docs/he/custom-connector-design.md) |
-| Data model | [docs/en/data-model.md](docs/en/data-model.md) | [docs/he/data-model.md](docs/he/data-model.md) |
+| Proposed data model, not implemented | [docs/en/data-model.md](docs/en/data-model.md) | [docs/he/data-model.md](docs/he/data-model.md) |
 | Test plan | [docs/en/test-plan.md](docs/en/test-plan.md) | [docs/he/test-plan.md](docs/he/test-plan.md) |
 | Troubleshooting | [docs/en/troubleshooting.md](docs/en/troubleshooting.md) | [docs/he/troubleshooting.md](docs/he/troubleshooting.md) |
 | Assumptions and open questions | [docs/en/assumptions-and-open-questions.md](docs/en/assumptions-and-open-questions.md) | [docs/he/assumptions-and-open-questions.md](docs/he/assumptions-and-open-questions.md) |
@@ -152,7 +151,7 @@ The connector does not process card payments inside Power Platform. It redirects
 
 - Exact PayPlus response schemas should be confirmed against the official OpenAPI or sandbox responses before expanding connector coverage.
 - Webhook/IPN handling is implementation-dependent and must be reviewed for signature validation, replay protection, logging, and failure handling.
-- Dataverse tables are proposed in this repository but should be aligned with the customer's Dynamics 365 data model.
+- Dataverse tables in this repository are a future proposal only. They are not currently created by the connector artifacts and must be aligned with the customer's Dynamics 365 data model before implementation.
 - Token-based charging may be considered later only under a dedicated security and PCI review.
 
 ## Confidentiality

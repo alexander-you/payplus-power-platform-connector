@@ -1,8 +1,10 @@
-# Dataverse Data Model
+# Proposed Dataverse Data Model (Not Implemented)
 
 ## Scope
 
-This data model is optional but recommended when the implementation needs payment tracking, reconciliation, support, auditing, or a business-facing payment request record.
+This document is a future data model proposal only. The tables described here do not currently exist in the delivered connector artifacts and are not created by this repository.
+
+Use this document only if a later implementation decides to add Dataverse payment tracking, reconciliation, support, auditing, or a business-facing payment request record.
 
 Logical names use a neutral `pp_` prefix. Replace it with the customer's publisher prefix during implementation.
 

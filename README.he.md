@@ -133,12 +133,11 @@
 | נושא | אנגלית | עברית |
 | --- | --- | --- |
 | ארכיטקטורה | [docs/en/architecture.md](docs/en/architecture.md) | [docs/he/architecture.md](docs/he/architecture.md) |
-| החלטות ארכיטקטורה | [docs/en/adr.md](docs/en/adr.md) | [docs/he/adr.md](docs/he/adr.md) |
 | מדריך משתמש עסקי | [docs/en/business-user-guide.md](docs/en/business-user-guide.md) | [docs/he/business-user-guide.md](docs/he/business-user-guide.md) |
 | אבטחה ותאימות | [docs/en/security-governance-and-compliance.md](docs/en/security-governance-and-compliance.md) | [docs/he/security-governance-and-compliance.md](docs/he/security-governance-and-compliance.md) |
 | שיקולי PCI | [docs/en/pci-considerations.md](docs/en/pci-considerations.md) | [docs/he/pci-considerations.md](docs/he/pci-considerations.md) |
 | תכנון המחבר | [docs/en/custom-connector-design.md](docs/en/custom-connector-design.md) | [docs/he/custom-connector-design.md](docs/he/custom-connector-design.md) |
-| מודל נתונים | [docs/en/data-model.md](docs/en/data-model.md) | [docs/he/data-model.md](docs/he/data-model.md) |
+| מודל נתונים מוצע, לא מיושם | [docs/en/data-model.md](docs/en/data-model.md) | [docs/he/data-model.md](docs/he/data-model.md) |
 | תוכנית בדיקות | [docs/en/test-plan.md](docs/en/test-plan.md) | [docs/he/test-plan.md](docs/he/test-plan.md) |
 | פתרון תקלות | [docs/en/troubleshooting.md](docs/en/troubleshooting.md) | [docs/he/troubleshooting.md](docs/he/troubleshooting.md) |
 | הנחות ושאלות פתוחות | [docs/en/assumptions-and-open-questions.md](docs/en/assumptions-and-open-questions.md) | [docs/he/assumptions-and-open-questions.md](docs/he/assumptions-and-open-questions.md) |
