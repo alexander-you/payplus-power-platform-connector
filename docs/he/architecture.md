@@ -8,6 +8,19 @@
 
 הפתרון אינו מעבד כרטיסים בתוך Power Platform. הוא מפנה את הלקוח לדף תשלום מתארח של PayPlus.
 
+## יכולות הפתרון
+
+הפתרון בנוי על ארבעה עמודי יכולת. ה-Custom Connector הוא הבסיס; שאר העמודים נבנים מעליו בתוך Dynamics 365 ו-Dataverse.
+
+| עמוד | מטרה |
+| --- | --- |
+| מחבר ותשלום מתארח | עטיפה טיפוסית ל-API של PayPlus, ניהול מאובטח של פרטי גישה, ויצירת קישור תשלום מתארח. |
+| מנוע סנכרון רציף | סנכרון מבוסס-הגדרות ו-Outbox של רשומות Dataverse (לקוחות, מוצרים, קטגוריות) ל-PayPlus, עם מיפוי שדות, טרנספורמציות, מסננים ומיפויי ערכים. |
+| פקדי PCF | שני פקדי Power Apps Component Framework: Mapping Studio (מיפוי שדות ויזואלי והפעלת סנכרון) ו-Credit Card Wallet (ניהול כרטיסים מטוקנים). |
+| טוקניזציה ושירות עצמי | טוקניזציה ב-Hosted Fields, איסוף כרטיס בשירות עצמי באימייל, SMS ו-WhatsApp, וזיהוי טוקניזציה יוצא מבוסס-Polling. |
+
+שכבת המחבר אינה תלוית-סביבה וניתן לעשות בה שימוש חוזר בפני עצמה. שאר העמודים ממומשים כטבלאות Dataverse, פלאגינים, Custom APIs, תהליכי Flow ופקדי PCF בתוך פתרון ה-Dynamics 365.
+
 ## רכיבי הפתרון
 
 | רכיב | אחריות |
@@ -20,6 +33,10 @@
 | PayPlus REST API | יצירת דפי תשלום, מסופים, דפי תשלום, לקוחות, עסקאות, טוקנים ומוצרים |
 | Hosted Payment Page | דף התשלום מול הלקוח, בבעלות PayPlus |
 | לקוח | מקבל קישור ומשלם ב-PayPlus |
+| מנוע סנכרון (Dataverse) | פרופילי סנכרון, מיפויי טבלאות ושדות, כללי טרנספורמציה ומסננים, outbox, מצב סנכרון ולוגים |
+| פלאגינים ו-Custom APIs לסנכרון | הכנסת פריט ל-outbox בשינוי מקור, רישום צעדי פלאגין (reconcile), זריעת כללי טרנספורמציה |
+| פקדי PCF | Mapping Studio (ממשק מיפוי שדות) ו-Credit Card Wallet (הצגת כרטיסים מטוקנים ופעולות) |
+| מאגר כרטיסים מטוקנים | רשומות `alex_creditcard` המחזיקות מטא-דאטה לא רגיש של כרטיס וטוקנים של PayPlus |
 
 ## Custom Connector ב-Power Platform
 
@@ -115,6 +132,60 @@ Dataverse הוא אופציונלי אך מומלץ כאשר נדרשים מעק
 - רשימות תלויות באמצעות `x-ms-dynamic-values` עלולות לגרום לשגיאת Manifest 409 כאשר מקור הרשימה דורש פרמטר.
 - נמצא דפוס שעובד: שימוש ב-`x-ms-dynamic-values` עבור בחירת מסוף, וב-`x-ms-dynamic-list` עבור רשימת דפי תשלום תלויה.
 
+## מנוע סנכרון רציף
+
+מנוע הסנכרון שומר על התאמה בין רשומות נבחרות ב-Dataverse לבין PayPlus ללא קוד ייעודי לכל טבלה. הוא מבוסס-הגדרות ומשתמש בדפוס outbox אמין.
+
+### טבלאות הגדרה
+
+| טבלה | מטרה |
+| --- | --- |
+| `alex_payplus_syncprofile` | חבילת סנכרון עליונה, פרופיל פעיל אחד לכל סביבה |
+| `alex_payplus_entitymapping` | ממפה טבלת מקור אחת ב-Dataverse ליעד PayPlus אחד (לקוח, מוצר, קטגוריית מוצר ועוד) |
+| `alex_payplus_fieldmapping` | מיפוי ברמת השדה כולל סוג מקור (ישיר, קבוע, נוסחה, lookup, קשור, מיפוי ערך) |
+| `alex_payplus_filterrule` | תנאי סנכרון אופציונליים לכל מיפוי, מוערכים בלוגיקת AND |
+| `alex_payplus_transformrule` | טרנספורמציות ערך לשימוש חוזר (למשל מצב Dataverse לבוליאני) |
+| `alex_payplus_valuemapping` | מיפויי ערך מפורשים ממקור ליעד |
+| `alex_payplus_syncoutbox` | פריטי עבודה יוצאים ממתינים לסנכרון |
+| `alex_payplus_syncstate` | ה-UID והסטטוס האחרונים של PayPlus לכל רשומת מקור |
+| `alex_payplus_synclog` | תיעוד ניסיונות סנכרון ותוצאות |
+
+### זמן ריצה
+
+- פלאגין (`QueueSyncOutboxOnSourceChange`) רץ ביצירה או עדכון של טבלת מקור ממופה, ואם כללי המסנן הפעילים עוברים, כותב שורת outbox עם המטען שנבנה.
+- Flow גנרי (`PayPlus - Process Sync Outbox`) אוסף שורות outbox, מסתעף לפי סביבה למחבר הנכון (sandbox או production), קורא לפעולת PayPlus המתאימה, מאמת את מעטפת העסק (`results.status == success`), וכותב חזרה את ה-UID והסטטוס למצב הסנכרון.
+- צעדי הפלאגין נרשמים בזמן ההגדרה על ידי ה-Custom API בשם `alex_ReconcilePayPlusSyncSteps`, כך שאין צעדים על טבלאות לקוח לא ידועות בתוך הפתרון.
+- כללי הטרנספורמציה נזרעים באופן אידמפוטנטי על ידי ה-Custom API בשם `alex_SeedPayPlusTransformRules` בעזרת קודי כלל יציבים, לא GUID.
+
+הערת סביבה: `alex_payplus_syncprofile.alex_environment` משתמש ב-Sandbox = `100000000` ו-Production = `100000001`. תהליך הסנכרון מסתעף לפי ערך זה למחבר המתאים.
+
+## פקדי PCF
+
+שני פקדי Power Apps Component Framework מספקים חוויה חלקה בתוך טפסים מבוססי-מודל. השפה נגזרת מהגדרת המשתמש ב-Dynamics (עברית RTL או אנגלית LTR); אין מתג שפה ידני.
+
+### Mapping Studio
+
+פקד מסוג שדה על טופס פרופיל הסנכרון. מנהל בוחר טבלת מקור ב-Dynamics, בוחר יעד PayPlus, ממפה שדות בעזרת בוחרים מבוססי-חיפוש, מגדיר סוג ערך לכל שדה (ישיר, קבוע, נוסחה, lookup, קשור, מיפוי ערך), מגדיר תנאי סנכרון, ומפעיל או עוצר סנכרון רציף. הפקד משתמש בשמירת הטופס מבוסס-המודל ומציג התקדמות לפעולות רקע.
+
+### Credit Card Wallet
+
+פקד dataset שמציג כרטיסים מטוקנים עבור הלקוח או איש הקשר הנוכחי בסגנון ארנק של Apple. הוא תומך ב-flip תלת-ממדי לפרטי כרטיס, פעולות הפעלה והשבתה, טיפול בכרטיס ברירת מחדל, וקיצורים להפעלת קליטת כרטיס ידנית או איסוף כרטיס בשירות עצמי. הוא קורא רשומות `alex_creditcard` הקשורות לרשומת האב.
+
+## טוקניזציה ושירות עצמי
+
+מעבר לקישורי תשלום חד-פעמיים, הפתרון יכול לקלוט ולשמור טוקנים של כרטיס PayPlus לשימוש חוזר בלי לגעת בפרטי כרטיס גולמיים.
+
+- Hosted Fields: חלונית צד בצד הסוכן משבצת session של hosted-fields של PayPlus (`hosted_fields_uuid`) כך שהלקוח מזין פרטי כרטיס אצל PayPlus ומוחזר טוקן.
+- איסוף בשירות עצמי: סוכנים יכולים לשלוח קישור לאיסוף כרטיס באימייל, SMS או WhatsApp. כל בקשה יוצרת שורת session; Flow ייעודי לכל ערוץ יוצר את קישור PayPlus ורושם אותו למשלוח.
+- זיהוי טוקניזציה ב-Polling: מכיוון ש-webhooks נכנסים אינם מותרים בסביבת היעד, Flow מתוזמן (`PayPlus - Poll Tokenization`) קורא ל-`ViewTransactions`, מבצע קורלציה לפי `more_info` (מזהה בקשת ה-session), ובהצלחה יוצר רשומת `alex_creditcard` ומסמן את ה-session כמטוקן.
+- תפוגה: Flow יומי מסמן sessions ממתינים כפגי-תוקף לאחר חלון התקפות שלהם.
+
+הטוקנים נחשבים רגישים. תהליכים שנושאים טוקנים צריכים להשתמש ב-Secure Inputs ו-Secure Outputs, ואין לשמור PAN או CVV בשום שלב.
+
+## הפקת מסמכים (Invoice+)
+
+המחבר חושף גם פעולות מסמכים של PayPlus Invoice+ / Books, כך שתהליכים יכולים ליצור ולשלוף מסמכי מס. סוגי המסמכים הנתמכים כוללים חשבונית מס קבלה, חשבונית מס, קבלה, הצעת מחיר, חשבון עסקה (פרופורמה), דרישת תשלום, מסמך זיכוי, תעודות משלוח והחזרה, קבלה על תרומה ותעודות רכש. פעולות קריאה כוללות שליפה לפי UID, לפי מזהה ייחודי, לפי מספר, רשימה, ושליפה לפי UID עסקה.
+
 ## Dev ו-Prod
 
 הפתרון מחזיק הגדרות מחבר נפרדות ל-Sandbox ול-Production. כך נמנעות קריאות ייצור במהלך פיתוח ונשמרת הפרדת פרטי גישה.
@@ -144,7 +215,9 @@ Dataverse הוא אופציונלי אך מומלץ כאשר נדרשים מעק
 ```mermaid
 flowchart LR
     user[משתמש עסקי]
+    pcf[פקדי PCF]
     d365[Dynamics 365 / Dataverse]
+    sync[מנוע סנכרון ופלאגינים]
     flow[Power Automate]
     connector[PayPlus Custom Connector]
     connParams[(Secure Connection Parameters)]
@@ -153,7 +226,10 @@ flowchart LR
     hosted[PayPlus Hosted Payment Page]
     customer[לקוח]
 
-    user --> d365
+    user --> pcf
+    pcf --> d365
+    d365 --> sync
+    sync --> flow
     d365 --> flow
     flow --> connector
     connParams --> connector
@@ -191,6 +267,51 @@ sequenceDiagram
     Customer->>Page: הזנת כרטיס ותשלום
     Page-->>PayPlus: תוצאת תשלום
     PayPlus-->>D365: Webhook או שליפת סטטוס
+```
+
+## תרשים Sequence לסנכרון רציף
+
+```mermaid
+sequenceDiagram
+    participant Source as רשומת מקור ב-Dataverse
+    participant Plugin as פלאגין Queue Outbox
+    participant Outbox as Sync Outbox
+    participant Flow as תהליך Process Sync Outbox
+    participant Connector as PayPlus Connector
+    participant PayPlus as PayPlus REST API
+    participant State as Sync State
+
+    Source->>Plugin: יצירה או עדכון (טבלה ממופה)
+    Plugin->>Plugin: הערכת כללי מסנן פעילים
+    Plugin->>Outbox: כתיבת מטען (אם הכללים עוברים)
+    Flow->>Outbox: איסוף פריט ממתין
+    Flow->>Connector: קריאה לפעולת יעד (לפי סביבה)
+    Connector->>PayPlus: יצירה או עדכון משאב
+    PayPlus-->>Flow: results.status ונתונים (UID)
+    Flow->>State: כתיבת UID וסטטוס של PayPlus
+```
+
+## תרשים Sequence לטוקניזציה (Polling)
+
+```mermaid
+sequenceDiagram
+    participant Agent as סוכן / Dynamics 365
+    participant Session as רשומת HF Session
+    participant SendFlow as Flow שליחת קישור
+    participant Customer as לקוח
+    participant PayPlus as PayPlus
+    participant Poll as Flow Poll Tokenization
+    participant Card as רשומת כרטיס אשראי
+
+    Agent->>Session: יצירת session (ערוץ, more_info)
+    SendFlow->>PayPlus: GeneratePaymentLink (create_token, more_info)
+    SendFlow->>Session: שמירת קישור תשלום, סטטוס מוכן
+    Session-->>Customer: שליחת קישור (אימייל / SMS / WhatsApp)
+    Customer->>PayPlus: הזנת כרטיס ותשלום בדף המתארח
+    Poll->>PayPlus: ViewTransactions (לפי more_info)
+    PayPlus-->>Poll: נמצאה עסקה (מטא-דאטה של טוקן)
+    Poll->>Card: יצירת רשומת alex_creditcard
+    Poll->>Session: סימון session כמטוקן
 ```
 
 ## שאלות פתוחות

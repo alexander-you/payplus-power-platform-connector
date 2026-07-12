@@ -36,6 +36,18 @@ This repository is intended for:
 - Supports separate sandbox and production connector definitions.
 - Provides guidance for optional Dataverse tables, validation flows, setup flows, and future extensions.
 
+## Capabilities
+
+The full Dynamics 365 solution is built on four capability pillars. This repository focuses on the connector and its documentation; the sync engine, plugins, and PCF controls are delivered as part of the broader Dynamics 365 solution.
+
+- **Connector and hosted payment**: typed PayPlus actions and hosted payment link generation.
+- **Continuous sync engine**: configuration-driven, outbox-based synchronization of Dataverse records (customers, products, categories) to PayPlus, with field mapping, transforms, filters, and value maps.
+- **PCF controls**: Mapping Studio (visual field mapping and sync activation) and Credit Card Wallet (tokenized card management).
+- **Card tokenization and self-service**: hosted-fields tokenization, self-service card collection over email, SMS, and WhatsApp, and polling-based tokenization detection.
+- **Document generation**: PayPlus Invoice+ / Books actions for tax documents such as invoices, receipts, and credit documents.
+
+See [docs/en/architecture.md](docs/en/architecture.md) for the full architecture, tables, and diagrams.
+
 ## What The Solution Does Not Do
 
 - It does not process raw credit card numbers inside Power Platform.
@@ -173,6 +185,18 @@ This repository intentionally contains no real secrets, no real API keys, no rea
 - משתמש ב-policies של המחבר כדי להזריק בזמן ריצה את הכותרות `api-key` ו-`secret-key`.
 - תומך בהגדרות נפרדות לסביבת בדיקות ולסביבת ייצור.
 - מספק הנחיות לטבלאות Dataverse אופציונליות, תהליכי אימות, תהליכי הגדרה והרחבות עתידיות.
+
+## יכולות
+
+הפתרון המלא ב-Dynamics 365 בנוי על ארבעה עמודי יכולת. ריפו זה מתמקד במחבר ובתיעוד שלו; מנוע הסנכרון, הפלאגינים ופקדי ה-PCF מסופקים כחלק מפתרון ה-Dynamics 365 הרחב.
+
+- **מחבר ותשלום מתארח**: פעולות PayPlus טיפוסיות ויצירת קישור תשלום מתארח.
+- **מנוע סנכרון רציף**: סנכרון מבוסס-הגדרות ו-Outbox של רשומות Dataverse (לקוחות, מוצרים, קטגוריות) ל-PayPlus, עם מיפוי שדות, טרנספורמציות, מסננים ומיפויי ערכים.
+- **פקדי PCF**: Mapping Studio (מיפוי שדות ויזואלי והפעלת סנכרון) ו-Credit Card Wallet (ניהול כרטיסים מטוקנים).
+- **טוקניזציה ושירות עצמי**: טוקניזציה ב-Hosted Fields, איסוף כרטיס בשירות עצמי באימייל, SMS ו-WhatsApp, וזיהוי טוקניזציה מבוסס-Polling.
+- **הפקת מסמכים**: פעולות PayPlus Invoice+ / Books למסמכי מס כגון חשבוניות, קבלות ומסמכי זיכוי.
+
+ראו [docs/he/architecture.md](docs/he/architecture.md) לארכיטקטורה המלאה, הטבלאות והדיאגרמות.
 
 ## מה הפתרון לא עושה
 
