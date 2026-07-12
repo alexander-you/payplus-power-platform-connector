@@ -313,9 +313,3 @@ sequenceDiagram
     Poll->>Card: יצירת רשומת alex_creditcard
     Poll->>Session: סימון session כמטוקן
 ```
-
-## שאלות פתוחות
-
-- יש לאשר יישום מדויק של Webhook או IPN בכל פריסת לקוח.
-- יש לאשר סכמות PayPlus מדויקות מול OpenAPI רשמי או תגובות Sandbox לפני הרחבת פעולות.
-- יש להתאים שמות טבלאות וקשרים ב-Dataverse לאפליקציית Dynamics 365 של הלקוח.

@@ -149,9 +149,3 @@ Test levels:
 - Designer test: create a fresh action node and verify dropdown behavior.
 - Run history test for sensitive values.
 - Negative tests for invalid key, terminal, payment page, amount, and currency.
-
-## Open Questions
-
-- Exact PayPlus OpenAPI schemas should be confirmed before expanding additional operations.
-- Some operations may require module enablement in PayPlus.
-- Token-based operations require security and PCI review before production use.

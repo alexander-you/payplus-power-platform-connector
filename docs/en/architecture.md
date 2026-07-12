@@ -313,9 +313,3 @@ sequenceDiagram
     Poll->>Card: Create alex_creditcard record
     Poll->>Session: Mark session Tokenized
 ```
-
-## Open Questions
-
-- Exact webhook/IPN implementation should be confirmed for each customer deployment.
-- Exact PayPlus schemas should be confirmed from official OpenAPI or sandbox responses before adding more actions.
-- Dataverse table names and relationships should be aligned to the customer's Dynamics 365 app.

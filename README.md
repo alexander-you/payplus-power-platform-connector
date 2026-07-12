@@ -135,7 +135,7 @@ Both connector definitions use the PayPlus API base path `/api/v1.0`.
 | Custom connector design | [docs/en/custom-connector-design.md](docs/en/custom-connector-design.md) | [docs/he/custom-connector-design.md](docs/he/custom-connector-design.md) |
 | Test plan | [docs/en/test-plan.md](docs/en/test-plan.md) | [docs/he/test-plan.md](docs/he/test-plan.md) |
 | Troubleshooting | [docs/en/troubleshooting.md](docs/en/troubleshooting.md) | [docs/he/troubleshooting.md](docs/he/troubleshooting.md) |
-| Assumptions and open questions | [docs/en/assumptions-and-open-questions.md](docs/en/assumptions-and-open-questions.md) | [docs/he/assumptions-and-open-questions.md](docs/he/assumptions-and-open-questions.md) |
+| Assumptions | [docs/en/assumptions.md](docs/en/assumptions.md) | [docs/he/assumptions.md](docs/he/assumptions.md) |
 
 ## Key Security Position
 
@@ -289,7 +289,7 @@ This repository intentionally contains no real secrets, no real API keys, no rea
 | תכנון המחבר | [docs/en/custom-connector-design.md](docs/en/custom-connector-design.md) | [docs/he/custom-connector-design.md](docs/he/custom-connector-design.md) |
 | תוכנית בדיקות | [docs/en/test-plan.md](docs/en/test-plan.md) | [docs/he/test-plan.md](docs/he/test-plan.md) |
 | פתרון תקלות | [docs/en/troubleshooting.md](docs/en/troubleshooting.md) | [docs/he/troubleshooting.md](docs/he/troubleshooting.md) |
-| הנחות ושאלות פתוחות | [docs/en/assumptions-and-open-questions.md](docs/en/assumptions-and-open-questions.md) | [docs/he/assumptions-and-open-questions.md](docs/he/assumptions-and-open-questions.md) |
+| הנחות | [docs/en/assumptions.md](docs/en/assumptions.md) | [docs/he/assumptions.md](docs/he/assumptions.md) |
 
 ## עמדת אבטחה מרכזית
 
