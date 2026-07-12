@@ -129,6 +129,7 @@ Both connector definitions use the PayPlus API base path `/api/v1.0`.
 | Topic | English | Hebrew |
 | --- | --- | --- |
 | Architecture | [docs/en/architecture.md](docs/en/architecture.md) | [docs/he/architecture.md](docs/he/architecture.md) |
+| Continuous sync solution | [docs/en/sync/README.md](docs/en/sync/README.md) | [docs/he/sync/README.md](docs/he/sync/README.md) |
 | Data model | [docs/en/data-model.md](docs/en/data-model.md) | [docs/he/data-model.md](docs/he/data-model.md) |
 | Business user guide | [docs/en/business-user-guide.md](docs/en/business-user-guide.md) | [docs/he/business-user-guide.md](docs/he/business-user-guide.md) |
 | Security and compliance | [docs/en/security-governance-and-compliance.md](docs/en/security-governance-and-compliance.md) | [docs/he/security-governance-and-compliance.md](docs/he/security-governance-and-compliance.md) |
@@ -284,6 +285,7 @@ This repository intentionally contains no real secrets, no real API keys, no rea
 | נושא | אנגלית | עברית |
 | --- | --- | --- |
 | ארכיטקטורה | [docs/en/architecture.md](docs/en/architecture.md) | [docs/he/architecture.md](docs/he/architecture.md) |
+| פתרון סנכרון רציף | [docs/en/sync/README.md](docs/en/sync/README.md) | [docs/he/sync/README.md](docs/he/sync/README.md) |
 | מודל נתונים | [docs/en/data-model.md](docs/en/data-model.md) | [docs/he/data-model.md](docs/he/data-model.md) |
 | מדריך משתמש עסקי | [docs/en/business-user-guide.md](docs/en/business-user-guide.md) | [docs/he/business-user-guide.md](docs/he/business-user-guide.md) |
 | אבטחה ותאימות | [docs/en/security-governance-and-compliance.md](docs/en/security-governance-and-compliance.md) | [docs/he/security-governance-and-compliance.md](docs/he/security-governance-and-compliance.md) |
