@@ -88,7 +88,6 @@ A typical process is:
 ```text
 .
 ├── README.md
-├── README.he.md
 ├── connector/
 │   ├── apiDefinition.prod.json
 │   ├── apiDefinition.sandbox.json
@@ -241,7 +240,6 @@ This repository intentionally contains no real secrets, no real API keys, no rea
 ```text
 .
 ├── README.md
-├── README.he.md
 ├── connector/
 │   ├── apiDefinition.prod.json
 │   ├── apiDefinition.sandbox.json
