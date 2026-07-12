@@ -71,16 +71,6 @@ A typical process is:
 - Validate a connection by generating a minimal PayPlus hosted payment link in sandbox or production.
 - Support Hebrew and English business data where the underlying PayPlus and Dynamics fields support it.
 
-## Not Supported In The First Phase
-
-- Raw PAN or CVV collection in Power Automate, Dynamics 365, Dataverse, or custom connector actions.
-- Direct card charge with manually entered card data.
-- Browser-side calls directly to the PayPlus REST API.
-- Key Vault backed environment variable secrets as the default design, due to known network access blockers in some enterprise tenants.
-- A custom middleware server or proxy.
-- Full invoice, receipt, settlement, or ERP posting automation unless explicitly added in a later phase.
-- Production use without security, governance, PCI, run-history, DLP, and approval reviews.
-
 ## Repository Structure
 
 ```text
@@ -103,16 +93,6 @@ A typical process is:
 │   └── flows/
 └── webresources/
 ```
-
-## Quick Start
-
-1. Review the architecture and security documents before importing anything into a tenant.
-2. Import or update the custom connector from `connector/apiDefinition.sandbox.json` and `connector/sandbox/apiProperties.json` in a development environment.
-3. Create a Power Platform connection for the connector and enter the PayPlus `api-key` and `secret-key` in the connection dialog.
-4. Test with sandbox credentials and a sandbox payment page.
-5. Build a flow that calls `GeneratePaymentLink` with amount, currency, terminal, payment page UID, customer, and item data.
-6. Store only non-card payment metadata in Dataverse.
-7. Repeat the deployment pattern for production after approval.
 
 ## Prerequisites
 
@@ -149,12 +129,6 @@ Both connector definitions use the PayPlus API base path `/api/v1.0`.
 ## Key Security Position
 
 The connector does not process card payments inside Power Platform. It redirects the customer to a PayPlus hosted payment page. The connector must not expose operations that accept raw PAN or CVV unless a dedicated PCI review and approval process is completed.
-
-## Assumptions And Open Questions
-
-- Exact PayPlus response schemas should be confirmed against the official OpenAPI or sandbox responses before expanding connector coverage.
-- Webhook/IPN handling is implementation-dependent and must be reviewed for signature validation, replay protection, logging, and failure handling.
-- Token-based charging may be considered later only under a dedicated security and PCI review.
 
 ## Confidentiality
 
@@ -236,16 +210,6 @@ This repository intentionally contains no real secrets, no real API keys, no rea
 - אימות חיבור באמצעות יצירת קישור תשלום מינימלי בסביבת בדיקות או ייצור.
 - תמיכה בנתונים עסקיים בעברית ובאנגלית כאשר השדות ב-PayPlus וב-Dynamics תומכים בכך.
 
-## תרחישים שאינם נתמכים בשלב הראשון
-
-- איסוף PAN או CVV ב-Power Automate, Dynamics 365, Dataverse או פעולות המחבר.
-- חיוב ישיר של כרטיס שהוזן ידנית.
-- קריאות מהדפדפן ישירות ל-REST API של PayPlus.
-- שימוש ב-Key Vault backed Environment Variables כברירת מחדל, עקב חסמי רשת ידועים בחלק מסביבות Enterprise.
-- שרת מתווך או Proxy.
-- אוטומציה מלאה של חשבוניות, קבלות, הפקדות או רישום ERP, אלא אם תתווסף בשלב עתידי.
-- שימוש בייצור ללא בדיקות אבטחה, Governance, PCI, Run history, DLP ואישורים נדרשים.
-
 ## מבנה הריפו
 
 <div dir="ltr">
@@ -272,16 +236,6 @@ This repository intentionally contains no real secrets, no real API keys, no rea
 ```
 
 </div>
-
-## התחלה מהירה
-
-1. קראו את מסמכי הארכיטקטורה והאבטחה לפני ייבוא רכיבים לסביבה.
-2. ייבאו או עדכנו את המחבר מתוך `connector/apiDefinition.sandbox.json` ו-`connector/sandbox/apiProperties.json` בסביבת פיתוח.
-3. צרו Connection למחבר והזינו בדיאלוג החיבור את `api-key` ואת `secret-key` של PayPlus.
-4. בדקו תחילה עם פרטי Sandbox ודף תשלום Sandbox.
-5. בנו Flow שקורא ל-`GeneratePaymentLink` עם סכום, מטבע, מסוף, מזהה דף תשלום, לקוח ופריטים.
-6. שמרו ב-Dataverse רק מטא-דאטה שאינו פרטי כרטיס.
-7. לאחר אישור, חזרו על תהליך הפריסה עבור ייצור.
 
 ## דרישות מקדימות
 
@@ -318,12 +272,6 @@ This repository intentionally contains no real secrets, no real API keys, no rea
 ## עמדת אבטחה מרכזית
 
 המחבר אינו מעבד כרטיסים בתוך Power Platform. הוא מפנה את הלקוח לדף תשלום מתארח של PayPlus. אין לחשוף במחבר פעולות שמקבלות PAN או CVV גולמיים, אלא אם הושלם תהליך סקירה ואישור PCI ייעודי.
-
-## הנחות ושאלות פתוחות
-
-- יש לאמת סכמות תגובה מדויקות מול OpenAPI רשמי או תגובות Sandbox לפני הרחבת כיסוי המחבר.
-- טיפול ב-webhook או IPN תלוי יישום ודורש בדיקת חתימה, מניעת Replay, לוגים וטיפול בכשל.
-- חיוב מבוסס טוקן עשוי להישקל בעתיד רק לאחר סקירת אבטחה ו-PCI ייעודית.
 
 ## סודיות
 
