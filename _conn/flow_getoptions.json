@@ -1,0 +1,262 @@
+{
+  "properties": {
+    "connectionReferences": {
+      "alex_payplussandbox": {
+        "runtimeSource": "embedded",
+        "connection": { "connectionReferenceLogicalName": "alex_payplussandbox" },
+        "api": { "name": "shared_alex-5fpayplus-20sandbox-5f5849d39a0feaf28d" }
+      },
+      "alex_payplusprod": {
+        "runtimeSource": "embedded",
+        "connection": { "connectionReferenceLogicalName": "alex_payplusprod" },
+        "api": { "name": "shared_alex-5fpayplus-5f5849d39a0feaf28d" }
+      },
+      "alex_payplus_dataverse": {
+        "runtimeSource": "embedded",
+        "connection": { "connectionReferenceLogicalName": "alex_payplus_dataverse" },
+        "api": { "name": "shared_commondataserviceforapps" }
+      }
+    },
+    "definition": {
+      "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+      "contentVersion": "1.0.0.0",
+      "parameters": {
+        "$connections": { "defaultValue": {}, "type": "Object" },
+        "$authentication": { "defaultValue": {}, "type": "SecureObject" }
+      },
+      "triggers": {
+        "When_an_action_is_performed": {
+          "metadata": { "operationMetadataId": "c1a11111-1111-4111-8111-111111111111" },
+          "type": "OpenApiConnectionWebhook",
+          "inputs": {
+            "host": {
+              "connectionName": "alex_payplus_dataverse",
+              "operationId": "BusinessEventsTrigger",
+              "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+            },
+            "parameters": {
+              "catalog": "fdfb83fb-067b-f111-ab0e-7ced8d726840",
+              "category": "9bdcbb94-b87b-f111-ab0e-7ced8d726840",
+              "subscriptionRequest/entityname": "none",
+              "subscriptionRequest/sdkmessagename": "alex_FetchPayPlusOptions",
+              "subscriptionRequest/scope": 4
+            },
+            "authentication": "@parameters('$authentication')"
+          }
+        }
+      },
+      "actions": {
+        "Init_Items": {
+          "runAfter": {},
+          "type": "InitializeVariable",
+          "inputs": { "variables": [ { "name": "varItems", "type": "array", "value": [] } ] }
+        },
+        "Init_Kind": {
+          "runAfter": { "Init_Items": [ "Succeeded" ] },
+          "type": "InitializeVariable",
+          "inputs": { "variables": [ { "name": "varKind", "type": "string", "value": "" } ] }
+        },
+        "Get_config_row": {
+          "runAfter": { "Init_Kind": [ "Succeeded" ] },
+          "metadata": { "operationMetadataId": "c2a22222-2222-4222-8222-222222222222" },
+          "type": "OpenApiConnection",
+          "inputs": {
+            "host": {
+              "connectionName": "alex_payplus_dataverse",
+              "operationId": "ListRecords",
+              "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+            },
+            "parameters": {
+              "entityName": "alex_payplusconfigurations",
+              "$filter": "alex_validationrequestid eq '@{triggerOutputs()?['body/InputParameters/request_id']}'",
+              "$top": 1
+            },
+            "authentication": "@parameters('$authentication')"
+          }
+        },
+        "Branch_Kind": {
+          "runAfter": { "Get_config_row": [ "Succeeded" ] },
+          "type": "If",
+          "expression": {
+            "equals": [ "@empty(triggerOutputs()?['body/InputParameters/terminal_uid'])", true ]
+          },
+          "actions": {
+            "Env_T": {
+              "runAfter": {},
+              "type": "If",
+              "expression": {
+                "equals": [ "@triggerOutputs()?['body/InputParameters/environment']", "Sandbox" ]
+              },
+              "actions": {
+                "MyTerminals_Sandbox": {
+                  "runAfter": {},
+                  "metadata": { "operationMetadataId": "c3a33333-3333-4333-8333-333333333333" },
+                  "type": "OpenApiConnection",
+                  "inputs": {
+                    "host": {
+                      "connectionName": "alex_payplussandbox",
+                      "operationId": "MyTerminals",
+                      "apiId": "/providers/Microsoft.PowerApps/apis/shared_alex-5fpayplus-20sandbox-5f5849d39a0feaf28d"
+                    },
+                    "parameters": {},
+                    "authentication": "@parameters('$authentication')",
+                    "retryPolicy": { "type": "none" }
+                  }
+                }
+              },
+              "else": {
+                "actions": {
+                  "MyTerminals_Prod": {
+                    "runAfter": {},
+                    "metadata": { "operationMetadataId": "c4a44444-4444-4444-8444-444444444444" },
+                    "type": "OpenApiConnection",
+                    "inputs": {
+                      "host": {
+                        "connectionName": "alex_payplusprod",
+                        "operationId": "MyTerminals",
+                        "apiId": "/providers/Microsoft.PowerApps/apis/shared_alex-5fpayplus-5f5849d39a0feaf28d"
+                      },
+                      "parameters": {},
+                      "authentication": "@parameters('$authentication')",
+                      "retryPolicy": { "type": "none" }
+                    }
+                  }
+                }
+              }
+            },
+            "Select_Terminals": {
+              "runAfter": { "Env_T": [ "Succeeded" ] },
+              "type": "Select",
+              "inputs": {
+                "from": "@coalesce(body('MyTerminals_Sandbox'), body('MyTerminals_Prod'), json('[]'))",
+                "select": {
+                  "value": "@item()?['uuid']",
+                  "label": "@item()?['name_terminal']"
+                }
+              }
+            },
+            "Set_KindT": {
+              "runAfter": { "Select_Terminals": [ "Succeeded" ] },
+              "type": "SetVariable",
+              "inputs": { "name": "varKind", "value": "terminals" }
+            },
+            "Set_ItemsT": {
+              "runAfter": { "Set_KindT": [ "Succeeded" ] },
+              "type": "SetVariable",
+              "inputs": { "name": "varItems", "value": "@body('Select_Terminals')" }
+            }
+          },
+          "else": {
+            "actions": {
+              "Env_P": {
+                "runAfter": {},
+                "type": "If",
+                "expression": {
+                  "equals": [ "@triggerOutputs()?['body/InputParameters/environment']", "Sandbox" ]
+                },
+                "actions": {
+                  "ListPages_Sandbox": {
+                    "runAfter": {},
+                    "metadata": { "operationMetadataId": "c5a55555-5555-4555-8555-555555555555" },
+                    "type": "OpenApiConnection",
+                    "inputs": {
+                      "host": {
+                        "connectionName": "alex_payplussandbox",
+                        "operationId": "ListPaymentPages",
+                        "apiId": "/providers/Microsoft.PowerApps/apis/shared_alex-5fpayplus-20sandbox-5f5849d39a0feaf28d"
+                      },
+                      "parameters": {
+                        "terminal_uid": "@triggerOutputs()?['body/InputParameters/terminal_uid']"
+                      },
+                      "authentication": "@parameters('$authentication')",
+                      "retryPolicy": { "type": "none" }
+                    }
+                  }
+                },
+                "else": {
+                  "actions": {
+                    "ListPages_Prod": {
+                      "runAfter": {},
+                      "metadata": { "operationMetadataId": "c6a66666-6666-4666-8666-666666666666" },
+                      "type": "OpenApiConnection",
+                      "inputs": {
+                        "host": {
+                          "connectionName": "alex_payplusprod",
+                          "operationId": "ListPaymentPages",
+                          "apiId": "/providers/Microsoft.PowerApps/apis/shared_alex-5fpayplus-5f5849d39a0feaf28d"
+                        },
+                        "parameters": {
+                          "terminal_uid": "@triggerOutputs()?['body/InputParameters/terminal_uid']"
+                        },
+                        "authentication": "@parameters('$authentication')",
+                        "retryPolicy": { "type": "none" }
+                      }
+                    }
+                  }
+                }
+              },
+              "Select_Pages": {
+                "runAfter": { "Env_P": [ "Succeeded" ] },
+                "type": "Select",
+                "inputs": {
+                  "from": "@coalesce(body('ListPages_Sandbox')?['data'], body('ListPages_Prod')?['data'], json('[]'))",
+                  "select": {
+                    "value": "@item()?['uid']",
+                    "label": "@item()?['name']"
+                  }
+                }
+              },
+              "Set_KindP": {
+                "runAfter": { "Select_Pages": [ "Succeeded" ] },
+                "type": "SetVariable",
+                "inputs": { "name": "varKind", "value": "pages" }
+              },
+              "Set_ItemsP": {
+                "runAfter": { "Set_KindP": [ "Succeeded" ] },
+                "type": "SetVariable",
+                "inputs": { "name": "varItems", "value": "@body('Select_Pages')" }
+              }
+            }
+          }
+        },
+        "Update_Config": {
+          "runAfter": { "Branch_Kind": [ "Succeeded" ] },
+          "metadata": { "operationMetadataId": "c7a77777-7777-4777-8777-777777777777" },
+          "type": "OpenApiConnection",
+          "inputs": {
+            "host": {
+              "connectionName": "alex_payplus_dataverse",
+              "operationId": "UpdateRecord",
+              "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+            },
+            "parameters": {
+              "entityName": "alex_payplusconfigurations",
+              "recordId": "@first(outputs('Get_config_row')?['body/value'])?['alex_payplusconfigurationid']",
+              "item/alex_paymentpages": "@{concat('{\"requestId\":\"', triggerOutputs()?['body/InputParameters/request_id'], '\",\"kind\":\"', variables('varKind'), '\",\"items\":', string(variables('varItems')), '}')}"
+            },
+            "authentication": "@parameters('$authentication')"
+          }
+        },
+        "Update_Error": {
+          "runAfter": { "Branch_Kind": [ "Failed", "Skipped", "TimedOut" ] },
+          "metadata": { "operationMetadataId": "c8a88888-8888-4888-8888-888888888888" },
+          "type": "OpenApiConnection",
+          "inputs": {
+            "host": {
+              "connectionName": "alex_payplus_dataverse",
+              "operationId": "UpdateRecord",
+              "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+            },
+            "parameters": {
+              "entityName": "alex_payplusconfigurations",
+              "recordId": "@first(outputs('Get_config_row')?['body/value'])?['alex_payplusconfigurationid']",
+              "item/alex_paymentpages": "@{concat('{\"requestId\":\"', triggerOutputs()?['body/InputParameters/request_id'], '\",\"kind\":\"error\",\"items\":[],\"message\":\"Fetch failed\"}')}"
+            },
+            "authentication": "@parameters('$authentication')"
+          }
+        }
+      }
+    }
+  },
+  "schemaVersion": "1.0.0.0"
+}

@@ -1,0 +1,378 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PayPlus Invoice+ Connector Actions</title>
+  <style>
+    :root {
+      --bg: #f7f8fa;
+      --paper: #ffffff;
+      --text: #1f2933;
+      --muted: #5f6b7a;
+      --line: #d8dee6;
+      --head: #eef3f8;
+      --accent: #0f6cbd;
+      --code: #f1f5f9;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: "Segoe UI", Tahoma, Arial, sans-serif;
+      line-height: 1.55;
+    }
+
+    main {
+      width: min(1180px, calc(100% - 32px));
+      margin: 24px auto 56px;
+      padding: 32px;
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
+    }
+
+    h1,
+    h2,
+    h3 {
+      line-height: 1.25;
+      margin: 0 0 12px;
+    }
+
+    h1 {
+      font-size: 30px;
+      margin-bottom: 6px;
+    }
+
+    h2 {
+      font-size: 22px;
+      margin-top: 34px;
+      padding-top: 18px;
+      border-top: 1px solid var(--line);
+    }
+
+    h3 {
+      font-size: 18px;
+      margin-top: 24px;
+    }
+
+    p {
+      margin: 0 0 14px;
+    }
+
+    a {
+      color: var(--accent);
+    }
+
+    code {
+      padding: 2px 5px;
+      background: var(--code);
+      border-radius: 4px;
+      font-family: Consolas, "Courier New", monospace;
+      font-size: 0.94em;
+    }
+
+    pre {
+      margin: 12px 0 18px;
+      padding: 14px 16px;
+      overflow-x: auto;
+      background: #0f172a;
+      color: #e2e8f0;
+      border-radius: 6px;
+      font-family: Consolas, "Courier New", monospace;
+      font-size: 14px;
+    }
+
+    table {
+      width: 100%;
+      margin: 14px 0 24px;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+
+    th,
+    td {
+      padding: 10px 12px;
+      border: 1px solid var(--line);
+      vertical-align: top;
+      text-align: left;
+    }
+
+    th {
+      background: var(--head);
+      font-weight: 650;
+    }
+
+    tbody tr:nth-child(even) td {
+      background: #fbfcfe;
+    }
+
+    ul,
+    ol {
+      margin-top: 8px;
+      margin-bottom: 18px;
+    }
+
+    .meta {
+      color: var(--muted);
+      margin-bottom: 22px;
+    }
+
+    .note {
+      padding: 12px 14px;
+      background: #eef6ff;
+      border: 1px solid #b7d7f5;
+      border-radius: 6px;
+      margin: 14px 0 20px;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+    }
+
+    @media print {
+      body {
+        background: #fff;
+      }
+
+      main {
+        width: 100%;
+        margin: 0;
+        padding: 0;
+        border: 0;
+        box-shadow: none;
+      }
+
+      table {
+        font-size: 11px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>PayPlus Invoice+ Connector Actions</h1>
+    <p class="meta">Date: 2026-07-11<br>Scope: actions that should exist in the PayPlus custom connector for invoices, receipts, quotes, proforma documents, credit documents, delivery documents, and invoice-only customers.</p>
+
+    <p>Primary API reviewed: <code>POST /api/v1.0/books/docs/new/{docType}</code> - Create new document.</p>
+
+    <h2>Summary</h2>
+    <p>PayPlus Invoice+ uses one central creation endpoint for many accounting document types:</p>
+    <pre><code>POST /api/v1.0/books/docs/new/{docType}</code></pre>
+    <p>The <code>docType</code> path parameter decides whether the document is a tax invoice, receipt, tax invoice/receipt, quote, proforma invoice, credit/refund document, delivery certificate, payment request, and so on.</p>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Option</th>
+            <th>Recommendation</th>
+            <th>Reason</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>One generic <code>CreateDocument</code> action with <code>docType</code> input</td>
+            <td>Required</td>
+            <td>Covers the full PayPlus API and future document types.</td>
+          </tr>
+          <tr>
+            <td>Separate friendly actions per common document type</td>
+            <td>Recommended</td>
+            <td>Easier for Power Automate makers: <code>CreateQuote</code>, <code>CreateTaxInvoiceReceipt</code>, etc. Each action can call the same API route with a fixed <code>docType</code>.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p class="note">Recommendation: implement both. Add one generic <code>CreateDocument</code> action for complete API coverage, and add friendly wrapper actions for the common business documents.</p>
+
+    <h2>Shared Create Document Input Model</h2>
+    <p>These fields are relevant to all create-document actions that call <code>POST /books/docs/new/{docType}</code>.</p>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Input field</th>
+            <th>Required</th>
+            <th>Meaning</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td><code>docType</code></td><td>Yes for generic action</td><td>PayPlus document type, such as <code>inv_tax_receipt</code>, <code>inv_tax</code>, <code>dc_quote</code>. In friendly actions this should be fixed by the action.</td></tr>
+          <tr><td><code>doc_date</code></td><td>Optional</td><td>Document issue date in <code>YYYY-MM-DD</code>. If omitted, PayPlus uses current date.</td></tr>
+          <tr><td><code>brand_uuid</code></td><td>Optional</td><td>Brand/business identity in PayPlus, if the account has multiple brands.</td></tr>
+          <tr><td><code>preview</code></td><td>Optional</td><td>If <code>true</code>, PayPlus returns a preview and does not issue a real document.</td></tr>
+          <tr><td><code>draft</code></td><td>Optional</td><td>If <code>true</code>, creates a draft rather than a final issued document.</td></tr>
+          <tr><td><code>hide_base_currency</code></td><td>Optional</td><td>Hide base currency on foreign-currency documents. Usually relevant when document currency is not ILS.</td></tr>
+          <tr><td><code>more_info</code></td><td>Optional</td><td>Free reference that appears on the document. Use for Dynamics record number/reference.</td></tr>
+          <tr><td><code>unique_identifier</code></td><td>Strongly recommended</td><td>Idempotency/correlation key. Use Dynamics invoice/quote/order id to prevent duplicate documents.</td></tr>
+          <tr><td><code>close_doc</code></td><td>Optional</td><td>UUID of an existing document to close with the new document. Useful when converting payment request/proforma to final document.</td></tr>
+          <tr><td><code>cancel_doc</code></td><td>Optional</td><td>UUID of an existing document to cancel with the new document.</td></tr>
+          <tr><td><code>transaction_uuid</code></td><td>Optional</td><td>PayPlus transaction UUID to link the document to a payment.</td></tr>
+          <tr><td><code>send_document_email</code></td><td>Optional</td><td>Send document email after creation.</td></tr>
+          <tr><td><code>send_document_sms</code></td><td>Optional</td><td>Send document SMS after creation.</td></tr>
+          <tr><td><code>callback_url</code></td><td>Optional</td><td>URL PayPlus calls after successful document creation.</td></tr>
+          <tr><td><code>vatType</code></td><td>Optional</td><td><code>vat-type-included</code>, <code>vat-type-not-included</code>, or <code>vat-type-exempt</code>.</td></tr>
+          <tr><td><code>vat_percentage</code></td><td>Optional</td><td>VAT percentage override. If omitted, PayPlus account settings are used.</td></tr>
+          <tr><td><code>language</code></td><td>Optional</td><td><code>he</code> or <code>en</code>.</td></tr>
+          <tr><td><code>currency_code</code></td><td>Optional</td><td>Document currency, usually <code>ILS</code>.</td></tr>
+          <tr><td><code>conversion_rate</code></td><td>Conditional</td><td>Conversion rate for non-ILS documents if not using automatic calculation.</td></tr>
+          <tr><td><code>autocalculate_rate</code></td><td>Optional</td><td>Ask PayPlus to determine conversion rate automatically.</td></tr>
+          <tr><td><code>prevent_email</code></td><td>Optional</td><td>Prevent email sending even if account defaults normally send.</td></tr>
+          <tr><td><code>customer</code></td><td>Usually required</td><td>Customer object: name, VAT number/id, email, phone, address fields.</td></tr>
+          <tr><td><code>tags</code></td><td>Optional</td><td>List of tags for search/reporting. Useful for Dynamics source labels.</td></tr>
+          <tr><td><code>payments</code></td><td>Conditional</td><td>Payment rows for receipt/payment documents. Required when the document represents payment received.</td></tr>
+          <tr><td><code>totalAmount</code></td><td>Conditional</td><td>Total document amount. Useful as a validation/control field.</td></tr>
+          <tr><td><code>items</code></td><td>Usually required</td><td>Document line items: description/product, quantity, price, VAT behavior.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h2>Shared Create Document Output Model</h2>
+    <p>PayPlus docs show a <code>200</code> response for successful document creation. The exact response object should be treated as PayPlus-owned and should be stored as raw JSON in addition to mapped columns.</p>
+    <p>For Dynamics, every create-document action should expose/map at least these output concepts when present:</p>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Output field / concept</th>
+            <th>Meaning</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td><code>success</code> / <code>status</code> / <code>code</code></td><td>Whether PayPlus accepted and created/previewed the document.</td></tr>
+          <tr><td><code>description</code> / <code>message</code></td><td>Human-readable PayPlus response text.</td></tr>
+          <tr><td><code>document_uuid</code> / <code>uuid</code></td><td>PayPlus document UUID. Store this on the Dataverse document log.</td></tr>
+          <tr><td><code>document_number</code> / <code>number</code></td><td>Formal document number. Needed for finance users and reconciliation.</td></tr>
+          <tr><td><code>series</code></td><td>Document series/prefix, used by get-by-number API.</td></tr>
+          <tr><td><code>docType</code> / <code>type</code></td><td>Type of created document.</td></tr>
+          <tr><td><code>status</code></td><td>Document lifecycle status, such as open/closed/cancelled, when returned.</td></tr>
+          <tr><td><code>pdf_url</code> / document link</td><td>Link/file reference if PayPlus returns one.</td></tr>
+          <tr><td><code>raw_response</code></td><td>Full PayPlus JSON response, stored for support and future mapping.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h2>Recommended Connector Actions</h2>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Priority</th>
+            <th>Action name in connector</th>
+            <th>PayPlus API name / route</th>
+            <th>Essence</th>
+            <th>Input - what user/flow sends</th>
+            <th>Output - what flow receives</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>P0</td><td><code>CreateDocument</code></td><td><code>POST /books/docs/new/{docType}</code></td><td>Generic Invoice+ document creation for every supported <code>docType</code>. This is the core API action.</td><td>Headers <code>api-key</code>, <code>secret-key</code>; path <code>docType</code>; body with <code>doc_date</code>, <code>brand_uuid</code>, <code>preview</code>, <code>draft</code>, <code>more_info</code>, <code>unique_identifier</code>, <code>customer</code>, <code>items</code>, <code>payments</code>, <code>totalAmount</code>, VAT/currency/email/callback fields.</td><td>PayPlus result/status, document UUID, document number/series/type/status when returned, document link/PDF when returned, raw response.</td></tr>
+          <tr><td>P0</td><td><code>CreateTaxInvoiceReceipt</code></td><td><code>POST /books/docs/new/inv_tax_receipt</code></td><td>Creates a tax invoice/receipt. Common for immediate payment where invoice and receipt are one document.</td><td>Same body as <code>CreateDocument</code>, but <code>docType</code> is fixed to <code>inv_tax_receipt</code>. Usually requires <code>customer</code>, <code>items</code>, and <code>payments</code>. Use <code>unique_identifier</code> from Dynamics invoice/payment id.</td><td>Created tax invoice/receipt identifiers: UUID, number, series, status/link when returned, raw response.</td></tr>
+          <tr><td>P0</td><td><code>CreateTaxInvoice</code></td><td><code>POST /books/docs/new/inv_tax</code></td><td>Creates a tax invoice without necessarily recording receipt/payment. Useful for invoice-before-payment scenarios.</td><td>Same body model, fixed <code>docType=inv_tax</code>. Usually requires <code>customer</code> and <code>items</code>; <code>payments</code> may be omitted depending on business process.</td><td>Created invoice UUID, invoice number, series, status/link when returned, raw response.</td></tr>
+          <tr><td>P0</td><td><code>CreateReceipt</code></td><td><code>POST /books/docs/new/inv_receipt</code></td><td>Creates a receipt for payment received. Useful when invoice exists separately or payment is recorded independently.</td><td>Same body model, fixed <code>docType=inv_receipt</code>. Usually requires <code>customer</code> and <code>payments</code>; <code>items</code> may depend on PayPlus/account rules.</td><td>Created receipt UUID, receipt number, series, status/link when returned, raw response.</td></tr>
+          <tr><td>P0</td><td><code>CreateQuote</code></td><td><code>POST /books/docs/new/dc_quote</code></td><td>Creates a quote/proposal document. Relevant to CRM quote flow before sale/payment.</td><td>Same body model, fixed <code>docType=dc_quote</code>. Usually requires <code>customer</code>, <code>items</code>, currency/VAT, optional validity fields if PayPlus supports them in the body/account model, and <code>unique_identifier</code> from Dynamics Quote id.</td><td>Created quote UUID, quote number, series/status/link when returned, raw response.</td></tr>
+          <tr><td>P0</td><td><code>CreateProformaInvoice</code></td><td><code>POST /books/docs/new/inv_proforma</code></td><td>Creates a proforma invoice. Useful for demand/proforma before final tax invoice.</td><td>Same body model, fixed <code>docType=inv_proforma</code>. Usually requires <code>customer</code>, <code>items</code>, <code>totalAmount</code>, VAT/currency fields, <code>unique_identifier</code>.</td><td>Created proforma UUID, number, series/status/link when returned, raw response.</td></tr>
+          <tr><td>P0</td><td><code>CreatePaymentRequest</code></td><td><code>POST /books/docs/new/inv_pay_request</code></td><td>Creates a payment request document. Useful for invoice-only or pay-later process without hosted payment page.</td><td>Same body model, fixed <code>docType=inv_pay_request</code>. Usually requires <code>customer</code>, <code>items</code>, amount/currency/VAT, optional email/SMS flags.</td><td>Created payment request UUID, number, series/status/link when returned, raw response.</td></tr>
+          <tr><td>P1</td><td><code>CreateCreditDocument</code></td><td><code>POST /books/docs/new/inv_refund</code></td><td>Creates refund/credit document. Used for accounting credit, cancellation, or refund documentation.</td><td>Same body model, fixed <code>docType=inv_refund</code>. Usually includes <code>customer</code>, credited <code>items</code>, amount, optional <code>cancel_doc</code> or <code>transaction_uuid</code>, <code>unique_identifier</code>.</td><td>Created credit document UUID, number, series/status/link when returned, raw response.</td></tr>
+          <tr><td>P1</td><td><code>CreateDeliveryCertificate</code></td><td><code>POST /books/docs/new/crt_delivery</code></td><td>Creates delivery/shipping certificate. Useful for goods shipment before invoice.</td><td>Same body model, fixed <code>docType=crt_delivery</code>. Usually requires <code>customer</code>, delivery items, optional tags/more_info.</td><td>Created delivery certificate UUID, number, series/status/link when returned, raw response.</td></tr>
+          <tr><td>P1</td><td><code>CreateReturnCertificate</code></td><td><code>POST /books/docs/new/crt_return</code></td><td>Creates return certificate for returned goods.</td><td>Same body model, fixed <code>docType=crt_return</code>. Usually requires <code>customer</code>, returned items, optional <code>cancel_doc</code>/<code>more_info</code>.</td><td>Created return certificate UUID, number, series/status/link when returned, raw response.</td></tr>
+          <tr><td>P2</td><td><code>CreateDonationReceipt</code></td><td><code>POST /books/docs/new/inv_don_receipt</code></td><td>Creates donation receipt, only if nonprofit/donation process is in scope.</td><td>Same body model, fixed <code>docType=inv_don_receipt</code>. Requires customer/donor and donation amount/items according to PayPlus account rules.</td><td>Created donation receipt UUID, number, series/status/link when returned, raw response.</td></tr>
+          <tr><td>P2</td><td><code>CreatePurchaseOrderCertificate</code></td><td><code>POST /books/docs/new/order_purchase</code></td><td>Creates purchase order certificate. More relevant if purchasing/procurement is managed via PayPlus.</td><td>Same body model, fixed <code>docType=order_purchase</code>; supplier/customer and items as PayPlus expects.</td><td>Created purchase order certificate UUID, number, series/status/link when returned, raw response.</td></tr>
+          <tr><td>P2</td><td><code>CreatePurchaseCertificate</code></td><td><code>POST /books/docs/new/purchase</code></td><td>Creates purchase certificate. Future scope unless supplier-side accounting is needed.</td><td>Same body model, fixed <code>docType=purchase</code>; supplier/customer and items as PayPlus expects.</td><td>Created purchase certificate UUID, number, series/status/link when returned, raw response.</td></tr>
+          <tr><td>P0</td><td><code>GetDocumentTypes</code></td><td><code>GET /books/doc_types</code></td><td>Returns available PayPlus document types. Also the best lightweight validation action for invoice-only customers.</td><td>Query <code>language_code</code> optional, e.g. <code>he</code>; headers <code>api-key</code>, <code>secret-key</code>.</td><td>List of document types and labels/metadata returned by PayPlus.</td></tr>
+          <tr><td>P0</td><td><code>GetDocument</code></td><td><code>GET /books/docs/get/{uuid}</code></td><td>Retrieves a document by PayPlus document UUID.</td><td>Path <code>uuid</code>; headers.</td><td>Full document data for that UUID, including status/number/customer/items/payments/link if returned.</td></tr>
+          <tr><td>P0</td><td><code>GetDocumentByUniqueIdentifier</code></td><td><code>GET /books/docs/getBy/unique_identifier/{unique_identifier}</code></td><td>Retrieves document by the idempotency key used at creation. Critical for retry-safe Dynamics flows.</td><td>Path <code>unique_identifier</code>; optional query <code>brand_uuid</code>; headers.</td><td>Matching document data if found. Use to detect duplicates after timeout/ambiguous failure.</td></tr>
+          <tr><td>P1</td><td><code>SearchDocuments</code></td><td><code>GET /books/docs/list</code></td><td>Searches documents for reconciliation, support, and sync jobs.</td><td>Query fields: <code>skip</code>, <code>take</code>, <code>search</code>, <code>more_info</code>, <code>number</code>, <code>transaction_uuid</code>, <code>currency_code</code>, <code>paypal_transaction_id</code>, <code>customer</code>, <code>fromDate</code>, <code>toDate</code>, <code>dateType</code>, <code>brand_uuid</code>, <code>types</code>, <code>statuses</code>, <code>minAmount</code>, <code>maxAmount</code>, <code>tags</code>, <code>paymentTypes</code>, <code>external_id</code>; headers.</td><td>List/page of documents matching filters, including document metadata and totals/status when returned.</td></tr>
+          <tr><td>P1</td><td><code>GetDocumentByNumber</code></td><td><code>GET /books/docs/getBy/number/{number}/{series}</code></td><td>Retrieves formal document by number and series/prefix. Useful for finance users who search by printed document number.</td><td>Path <code>number</code>, path <code>series</code>; headers.</td><td>Matching document data.</td></tr>
+          <tr><td>P1</td><td><code>CreateDocumentPreview</code></td><td><code>POST /books/docs/new/{docType}</code> with <code>preview=true</code></td><td>Produces a preview without issuing a real document. Useful before final posting.</td><td>Same as <code>CreateDocument</code>, but <code>preview=true</code>. Can be generic or per doc type.</td><td>Preview response/document preview data; no final document should be generated.</td></tr>
+          <tr><td>P1</td><td><code>CreateDraftDocument</code></td><td><code>POST /books/docs/new/{docType}</code> with <code>draft=true</code></td><td>Creates draft document for approval flow before final issuing.</td><td>Same as <code>CreateDocument</code>, but <code>draft=true</code>.</td><td>Draft document response, draft UUID/status if returned.</td></tr>
+          <tr><td>P1</td><td><code>CancelDocumentWithNewDocument</code></td><td><code>POST /books/docs/new/{docType}</code> with <code>cancel_doc</code></td><td>Creates a document that cancels a previous document. Best represented as a guided action to avoid misuse.</td><td><code>docType</code> for the cancelling/credit document, <code>cancel_doc</code> previous PayPlus document UUID, customer/items/amount as needed, <code>unique_identifier</code>.</td><td>New cancellation/credit document data and raw PayPlus response.</td></tr>
+          <tr><td>P1</td><td><code>CloseDocumentWithNewDocument</code></td><td><code>POST /books/docs/new/{docType}</code> with <code>close_doc</code></td><td>Creates a document that closes another document, e.g. close proforma/payment request with final invoice/receipt.</td><td><code>docType</code>, <code>close_doc</code> previous document UUID, customer/items/payments as needed, <code>unique_identifier</code>.</td><td>New closing document data and raw PayPlus response.</td></tr>
+          <tr><td>P1</td><td><code>GetDocumentsByTransactionUid</code></td><td><code>POST /Invoice/GetDocuments</code></td><td>Retrieves documents linked to a PayPlus payment transaction. This bridges clearing and accounting.</td><td>Body <code>transaction_uid</code>, <code>filter</code>; headers.</td><td>Documents associated with the transaction. Useful after payment/refund to sync tax documents back to Dynamics.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h2>Recommended Minimal Set for First Invoice+ Connector Release</h2>
+    <p>If the first version should stay focused and still support real invoice/quote work, include these first:</p>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Order</th>
+            <th>Action</th>
+            <th>Why</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>1</td><td><code>GetDocumentTypes</code></td><td>Validates invoice-only credentials and confirms available document types.</td></tr>
+          <tr><td>2</td><td><code>CreateDocument</code></td><td>Full generic coverage for all PayPlus document types.</td></tr>
+          <tr><td>3</td><td><code>CreateTaxInvoiceReceipt</code></td><td>Most common paid invoice document.</td></tr>
+          <tr><td>4</td><td><code>CreateTaxInvoice</code></td><td>Common invoice-before-payment flow.</td></tr>
+          <tr><td>5</td><td><code>CreateReceipt</code></td><td>Payment received without combined tax invoice/receipt.</td></tr>
+          <tr><td>6</td><td><code>CreateQuote</code></td><td>CRM quote/proposal flow.</td></tr>
+          <tr><td>7</td><td><code>CreateProformaInvoice</code></td><td>Proforma-before-final-document flow.</td></tr>
+          <tr><td>8</td><td><code>CreateCreditDocument</code></td><td>Credit/refund/cancellation accounting flow.</td></tr>
+          <tr><td>9</td><td><code>GetDocument</code></td><td>Retrieve by stored UUID.</td></tr>
+          <tr><td>10</td><td><code>GetDocumentByUniqueIdentifier</code></td><td>Retry/idempotency protection.</td></tr>
+          <tr><td>11</td><td><code>SearchDocuments</code></td><td>Reconciliation and support.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h2>Suggested Dataverse Mapping</h2>
+    <p>Every create action should write a row to a PayPlus document log table.</p>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Dataverse field</th>
+            <th>Source / meaning</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td><code>alex_sourceentitylogicalname</code></td><td>Source table, e.g. quote, invoice, salesorder.</td></tr>
+          <tr><td><code>alex_sourceentityid</code></td><td>Source row id.</td></tr>
+          <tr><td><code>alex_uniqueidentifier</code></td><td>Value sent to PayPlus <code>unique_identifier</code>.</td></tr>
+          <tr><td><code>alex_payplusdocumentuuid</code></td><td>PayPlus returned document UUID.</td></tr>
+          <tr><td><code>alex_documenttype</code></td><td>PayPlus <code>docType</code>.</td></tr>
+          <tr><td><code>alex_documentnumber</code></td><td>Returned formal document number.</td></tr>
+          <tr><td><code>alex_series</code></td><td>Returned series/prefix.</td></tr>
+          <tr><td><code>alex_status</code></td><td>PayPlus document status.</td></tr>
+          <tr><td><code>alex_totalamount</code></td><td>Total amount sent/returned.</td></tr>
+          <tr><td><code>alex_currencycode</code></td><td>Currency.</td></tr>
+          <tr><td><code>alex_customeruid</code></td><td>PayPlus customer UUID if used/returned.</td></tr>
+          <tr><td><code>alex_transactionuuid</code></td><td>Linked PayPlus transaction UUID, if any.</td></tr>
+          <tr><td><code>alex_documenturl</code></td><td>PDF/document link if returned.</td></tr>
+          <tr><td><code>alex_rawrequest</code></td><td>Request JSON, excluding secrets.</td></tr>
+          <tr><td><code>alex_rawresponse</code></td><td>Full PayPlus response JSON.</td></tr>
+          <tr><td><code>alex_lastsyncstatus</code></td><td>Success/failed/pending.</td></tr>
+          <tr><td><code>alex_lastsyncmessage</code></td><td>Error/support message.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h2>Notes for Connector Design</h2>
+    <ol>
+      <li>The headers remain the same as the current connector model: <code>api-key</code> and <code>secret-key</code> as explicit operation parameters.</li>
+      <li>For invoice-only setup validation, use <code>GetDocumentTypes</code>, not <code>PaymentPages/ChargeMethods</code>.</li>
+      <li><code>unique_identifier</code> should be mandatory in our connector actions even if PayPlus marks it optional. It protects Dynamics from duplicate documents.</li>
+      <li>The connector should expose <code>raw_response</code> because PayPlus response fields may vary by <code>docType</code>, preview, draft, and account settings.</li>
+      <li>For Power Automate maker UX, friendly actions are better than requiring every maker to know <code>dc_quote</code>, <code>inv_tax_receipt</code>, etc.</li>
+    </ol>
+  </main>
+</body>
+</html>

@@ -1,0 +1,797 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>PayPlus Mapping Workbench Mockup</title>
+  <script>
+    (() => {
+      const param = new URLSearchParams(window.location.search).get("scoutTheme");
+      const theme =
+        param || (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+      document.documentElement.setAttribute("data-theme", theme);
+    })();
+  </script>
+  <style>
+    :root {
+      color-scheme: light;
+      --cp-bg: #f7f4ef;
+      --cp-bg-elevated: #fcfbf8;
+      --cp-surface: #ffffff;
+      --cp-surface-soft: #f5f5f5;
+      --cp-border: #dedede;
+      --cp-border-strong: #919191;
+      --cp-text: #242424;
+      --cp-text-muted: #5c5c5c;
+      --cp-text-soft: #6f6f6f;
+      --cp-accent: #b11f4b;
+      --cp-accent-hover: #9a1a41;
+      --cp-accent-soft: rgba(177, 31, 75, 0.08);
+      --cp-accent-fg: #ffffff;
+      --cp-success: #16a34a;
+      --cp-danger: #dc2626;
+      --cp-warning: #f59e0b;
+      --cp-link: #0078d4;
+      --cp-shadow: 0 18px 48px rgba(0, 0, 0, 0.12);
+      --cp-overlay: rgba(255, 255, 255, 0.8);
+      --cp-panel: rgba(255, 255, 255, 0.86);
+      --cp-panel-strong: rgba(255, 255, 255, 0.96);
+      --cp-sheen: rgba(255, 255, 255, 0.55);
+      --cp-highlight: rgba(177, 31, 75, 0.12);
+    }
+    html[data-theme="dark"] {
+      color-scheme: dark;
+      --cp-bg: #3d3b3a;
+      --cp-bg-elevated: #343231;
+      --cp-surface: #292929;
+      --cp-surface-soft: #2e2e2e;
+      --cp-border: #474747;
+      --cp-border-strong: #5f5f5f;
+      --cp-text: #dedede;
+      --cp-text-muted: #919191;
+      --cp-text-soft: #b0b0b0;
+      --cp-accent: #fd8ea1;
+      --cp-accent-hover: #fb7b91;
+      --cp-accent-soft: rgba(253, 142, 161, 0.14);
+      --cp-accent-fg: #1a1a1a;
+      --cp-success: #4ade80;
+      --cp-danger: #f87171;
+      --cp-warning: #fbbf24;
+      --cp-link: #4da6ff;
+      --cp-shadow: 0 18px 48px rgba(0, 0, 0, 0.32);
+      --cp-overlay: rgba(41, 41, 41, 0.88);
+      --cp-panel: rgba(41, 41, 41, 0.72);
+      --cp-panel-strong: rgba(41, 41, 41, 0.96);
+      --cp-sheen: rgba(255, 255, 255, 0.04);
+      --cp-highlight: rgba(253, 142, 161, 0.12);
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; min-height: 100%; }
+    body {
+      background:
+        linear-gradient(135deg, var(--cp-bg), var(--cp-bg-elevated));
+      color: var(--cp-text);
+      font-family: "Segoe UI", Aptos, Calibri, -apple-system, BlinkMacSystemFont, sans-serif;
+      padding: 24px;
+    }
+    button, input, select, textarea { font: inherit; }
+    button { cursor: pointer; }
+    .shell { max-width: 1420px; margin: 0 auto; }
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 14px;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+    }
+    .brand-mark {
+      width: 42px;
+      height: 42px;
+      border-radius: 0.625rem;
+      background: var(--cp-accent);
+      color: var(--cp-accent-fg);
+      display: grid;
+      place-items: center;
+      font-weight: 800;
+      letter-spacing: 0;
+      flex: none;
+    }
+    .eyebrow { color: var(--cp-text-muted); font-size: 12px; font-weight: 700; }
+    h1 { margin: 2px 0 0; font-size: 26px; line-height: 1.2; letter-spacing: 0; }
+    .top-actions { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .btn {
+      border: 1px solid var(--cp-border);
+      background: var(--cp-surface);
+      color: var(--cp-text);
+      border-radius: 0.625rem;
+      padding: 9px 13px;
+      min-height: 38px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+    .btn:hover { border-color: var(--cp-border-strong); }
+    .btn.primary { background: var(--cp-accent); border-color: var(--cp-accent); color: var(--cp-accent-fg); }
+    .btn.primary:hover { background: var(--cp-accent-hover); }
+    .btn.small { min-height: 32px; padding: 6px 10px; font-size: 12px; }
+    .btn.icon { width: 38px; padding-inline: 0; }
+    .segmented {
+      display: inline-flex;
+      padding: 3px;
+      gap: 3px;
+      background: var(--cp-surface-soft);
+      border: 1px solid var(--cp-border);
+      border-radius: 0.625rem;
+    }
+    .segmented button {
+      border: 0;
+      background: transparent;
+      color: var(--cp-text-muted);
+      border-radius: 0.625rem;
+      padding: 6px 10px;
+      font-weight: 800;
+    }
+    .segmented button.active { background: var(--cp-surface); color: var(--cp-accent); box-shadow: inset 0 0 0 1px var(--cp-border); }
+    .hero {
+      background:
+        linear-gradient(135deg, var(--cp-accent-soft), var(--cp-surface));
+      border: 1px solid var(--cp-border);
+      border-radius: 16px;
+      box-shadow: var(--cp-shadow);
+      padding: 18px;
+      margin-bottom: 14px;
+      display: grid;
+      grid-template-columns: 1.4fr 1fr;
+      gap: 18px;
+      align-items: stretch;
+    }
+    .profile-name { font-size: 20px; font-weight: 800; margin-bottom: 4px; }
+    .profile-line { color: var(--cp-text-muted); font-size: 13px; line-height: 1.45; max-width: 720px; }
+    .chips { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 14px; }
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border: 1px solid var(--cp-border);
+      border-radius: 999px;
+      padding: 5px 9px;
+      background: var(--cp-panel-strong);
+      color: var(--cp-text-muted);
+      font-size: 12px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+    .dot { width: 8px; height: 8px; border-radius: 999px; background: var(--cp-text-soft); display: inline-block; }
+    .dot.ok { background: var(--cp-success); }
+    .dot.warn { background: var(--cp-warning); }
+    .dot.err { background: var(--cp-danger); }
+    .metrics { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
+    .metric { background: var(--cp-panel-strong); border: 1px solid var(--cp-border); border-radius: 0.625rem; padding: 12px; }
+    .metric .num { font-size: 24px; line-height: 1; font-weight: 900; color: var(--cp-accent); }
+    .metric .lbl { color: var(--cp-text-muted); font-size: 12px; margin-top: 5px; font-weight: 700; }
+    .workbench { display: grid; grid-template-columns: 280px minmax(0, 1fr) 310px; gap: 14px; align-items: start; }
+    .panel {
+      background: var(--cp-surface);
+      border: 1px solid var(--cp-border);
+      border-radius: 16px;
+      box-shadow: var(--cp-shadow);
+      overflow: hidden;
+    }
+    .panel-head {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--cp-border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+    .panel-title { font-size: 15px; font-weight: 850; }
+    .panel-sub { color: var(--cp-text-muted); font-size: 12px; margin-top: 2px; }
+    .panel-body { padding: 14px; }
+    .field { display: grid; gap: 6px; margin-bottom: 12px; }
+    .field label { color: var(--cp-text-muted); font-size: 12px; font-weight: 800; }
+    .input, select, textarea {
+      width: 100%;
+      border: 1px solid var(--cp-border);
+      background: var(--cp-surface);
+      color: var(--cp-text);
+      border-radius: 0.625rem;
+      padding: 9px 10px;
+      min-height: 38px;
+      outline: none;
+    }
+    textarea { min-height: 106px; resize: vertical; font-family: Consolas, "Courier New", Courier, monospace; direction: ltr; text-align: left; }
+    .input:focus, select:focus, textarea:focus { border-color: var(--cp-accent); box-shadow: 0 0 0 3px var(--cp-accent-soft); }
+    .entity-list { display: grid; gap: 8px; }
+    .entity-card {
+      width: 100%;
+      border: 1px solid var(--cp-border);
+      background: var(--cp-surface);
+      color: var(--cp-text);
+      border-radius: 0.625rem;
+      padding: 10px;
+      text-align: inherit;
+      display: grid;
+      gap: 7px;
+    }
+    .entity-card:hover { border-color: var(--cp-border-strong); }
+    .entity-card.active { border-color: var(--cp-accent); background: var(--cp-accent-soft); }
+    .entity-main { display: flex; justify-content: space-between; gap: 10px; align-items: start; }
+    .entity-title { font-weight: 850; line-height: 1.2; }
+    .entity-schema { color: var(--cp-text-muted); font-size: 11px; font-family: Consolas, "Courier New", Courier, monospace; direction: ltr; text-align: left; }
+    .progress { height: 8px; border-radius: 999px; background: var(--cp-surface-soft); overflow: hidden; border: 1px solid var(--cp-border); }
+    .progress span { display: block; height: 100%; width: var(--value); background: var(--cp-accent); }
+    .entity-meta { display: flex; gap: 6px; flex-wrap: wrap; color: var(--cp-text-muted); font-size: 11px; }
+    .toolbar { padding: 12px 14px; border-bottom: 1px solid var(--cp-border); display: flex; gap: 8px; flex-wrap: wrap; align-items: center; justify-content: space-between; }
+    .toolbar-group { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+    .search { max-width: 260px; }
+    .toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--cp-text-muted);
+      font-size: 12px;
+      font-weight: 800;
+      user-select: none;
+    }
+    .toggle input { inline-size: 18px; block-size: 18px; accent-color: var(--cp-accent); }
+    .table-wrap { overflow: auto; }
+    table { width: 100%; border-collapse: collapse; min-width: 980px; }
+    th, td { border-bottom: 1px solid var(--cp-border); padding: 10px 12px; vertical-align: middle; }
+    th { color: var(--cp-text-muted); font-size: 11px; text-align: inherit; font-weight: 850; background: var(--cp-surface-soft); position: sticky; top: 0; z-index: 1; }
+    td { font-size: 13px; }
+    .row-title { font-weight: 850; }
+    .row-code { display: block; color: var(--cp-text-muted); font-family: Consolas, "Courier New", Courier, monospace; direction: ltr; text-align: left; font-size: 11px; margin-top: 3px; }
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 999px;
+      border: 1px solid var(--cp-border);
+      background: var(--cp-surface-soft);
+      color: var(--cp-text-muted);
+      padding: 3px 8px;
+      font-size: 11px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+    .pill.ok { color: var(--cp-success); background: var(--cp-surface); border-color: var(--cp-border); }
+    .pill.warn { color: var(--cp-warning); background: var(--cp-surface); border-color: var(--cp-border); }
+    .pill.err { color: var(--cp-danger); background: var(--cp-surface); border-color: var(--cp-border); }
+    .status-cell { display: inline-flex; align-items: center; gap: 7px; white-space: nowrap; font-weight: 800; }
+    .map-select { min-width: 190px; }
+    .transform-select { min-width: 150px; }
+    .side-stack { display: grid; gap: 14px; }
+    .summary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .mini { background: var(--cp-surface-soft); border: 1px solid var(--cp-border); border-radius: 0.625rem; padding: 10px; }
+    .mini b { display: block; font-size: 20px; color: var(--cp-accent); }
+    .mini span { color: var(--cp-text-muted); font-size: 12px; font-weight: 700; }
+    .checks { display: grid; gap: 8px; }
+    .check { display: flex; gap: 8px; align-items: start; color: var(--cp-text-muted); font-size: 13px; line-height: 1.35; }
+    .check .dot { margin-top: 4px; flex: none; }
+    .payload { font-size: 12px; line-height: 1.5; }
+    .notice {
+      display: none;
+      border-top: 1px solid var(--cp-border);
+      padding: 10px 14px;
+      color: var(--cp-success);
+      background: var(--cp-surface-soft);
+      font-weight: 800;
+      font-size: 13px;
+    }
+    .notice.show { display: block; }
+    .empty { padding: 28px; text-align: center; color: var(--cp-text-muted); }
+    .footer-note { color: var(--cp-text-muted); font-size: 12px; margin-top: 14px; text-align: center; }
+    @media (max-width: 1180px) {
+      .hero { grid-template-columns: 1fr; }
+      .workbench { grid-template-columns: 250px minmax(0, 1fr); }
+      .side-stack { grid-column: 1 / -1; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    }
+    @media (max-width: 820px) {
+      body { padding: 14px; }
+      .topbar { align-items: stretch; flex-direction: column; }
+      .workbench { grid-template-columns: 1fr; }
+      .side-stack { grid-template-columns: 1fr; }
+      .metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .toolbar { align-items: stretch; }
+      .toolbar-group, .search { width: 100%; max-width: none; }
+      h1 { font-size: 22px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-mark">P+</div>
+        <div>
+          <div class="eyebrow" data-i18n="eyebrow"></div>
+          <h1 data-i18n="title"></h1>
+        </div>
+      </div>
+      <div class="top-actions">
+        <div class="segmented" aria-label="Language">
+          <button type="button" id="lang-he" class="active" onclick="App.setLang('he')">HE</button>
+          <button type="button" id="lang-en" onclick="App.setLang('en')">EN</button>
+        </div>
+        <button class="btn" type="button" onclick="App.resetDemo()" data-i18n="reset"></button>
+        <button class="btn primary" type="button" onclick="App.saveDemo()" data-i18n="save"></button>
+      </div>
+    </header>
+
+    <section class="hero" aria-label="Profile summary">
+      <div>
+        <div class="profile-name" data-i18n="profileName"></div>
+        <div class="profile-line" data-i18n="profileLine"></div>
+        <div class="chips">
+          <span class="chip"><span class="dot ok"></span><span data-i18n="active"></span></span>
+          <span class="chip"><span data-i18n="environment"></span>: Sandbox</span>
+          <span class="chip"><span data-i18n="direction"></span>: D365 -> PayPlus</span>
+          <span class="chip"><span data-i18n="runtime"></span>: Power Automate</span>
+        </div>
+      </div>
+      <div class="metrics" id="metrics"></div>
+    </section>
+
+    <section class="workbench">
+      <aside class="panel">
+        <div class="panel-head">
+          <div>
+            <div class="panel-title" data-i18n="entitiesTitle"></div>
+            <div class="panel-sub" data-i18n="entitiesSub"></div>
+          </div>
+          <button class="btn icon" type="button" title="Add">+</button>
+        </div>
+        <div class="panel-body">
+          <div class="field">
+            <label for="entitySearch" data-i18n="searchEntity"></label>
+            <input class="input" id="entitySearch" oninput="App.renderEntities()" />
+          </div>
+          <div class="entity-list" id="entityList"></div>
+        </div>
+      </aside>
+
+      <section class="panel">
+        <div class="panel-head">
+          <div>
+            <div class="panel-title" id="selectedTitle"></div>
+            <div class="panel-sub" id="selectedSub"></div>
+          </div>
+          <span class="pill" id="ootbBadge"></span>
+        </div>
+        <div class="toolbar">
+          <div class="toolbar-group">
+            <button class="btn primary" type="button" onclick="App.autoMap()" data-i18n="autoMap"></button>
+            <button class="btn" type="button" onclick="App.validateSelected()" data-i18n="validate"></button>
+            <label class="toggle"><input id="missingOnly" type="checkbox" onchange="App.renderMappings()" /><span data-i18n="missingOnly"></span></label>
+          </div>
+          <div class="toolbar-group search">
+            <input class="input" id="fieldSearch" oninput="App.renderMappings()" />
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th data-i18n="thPayplus"></th>
+                <th data-i18n="thRequired"></th>
+                <th data-i18n="thDynamics"></th>
+                <th data-i18n="thType"></th>
+                <th data-i18n="thTransform"></th>
+                <th data-i18n="thStatus"></th>
+              </tr>
+            </thead>
+            <tbody id="mappingRows"></tbody>
+          </table>
+        </div>
+        <div class="notice" id="notice"></div>
+      </section>
+
+      <aside class="side-stack">
+        <section class="panel">
+          <div class="panel-head">
+            <div>
+              <div class="panel-title" data-i18n="scoreTitle"></div>
+              <div class="panel-sub" data-i18n="scoreSub"></div>
+            </div>
+          </div>
+          <div class="panel-body">
+            <div class="summary-grid" id="selectedSummary"></div>
+          </div>
+        </section>
+        <section class="panel">
+          <div class="panel-head">
+            <div>
+              <div class="panel-title" data-i18n="checksTitle"></div>
+              <div class="panel-sub" data-i18n="checksSub"></div>
+            </div>
+          </div>
+          <div class="panel-body">
+            <div class="checks" id="checks"></div>
+          </div>
+        </section>
+        <section class="panel">
+          <div class="panel-head">
+            <div>
+              <div class="panel-title" data-i18n="payloadTitle"></div>
+              <div class="panel-sub" data-i18n="payloadSub"></div>
+            </div>
+          </div>
+          <div class="panel-body">
+            <textarea class="payload" id="payload" readonly></textarea>
+          </div>
+        </section>
+      </aside>
+    </section>
+    <div class="footer-note" data-i18n="footer"></div>
+  </main>
+
+  <script>
+    const copy = {
+      he: {
+        eyebrow: "DYNAMICS 365 · PAYPLUS",
+        title: "מוקאפ PCF לניהול מיפויי סנכרון",
+        reset: "איפוס דמו",
+        save: "שמירת טיוטה",
+        profileName: "PayPlus Sync Profile · Sandbox",
+        profileLine: "מסך עבודה אחד על גבי פרופיל הסנכרון: בחירת טבלאות, התאמת שדות, בדיקות חובה והצעות מיפוי אוטומטיות לטבלאות OOTB.",
+        active: "פעיל",
+        environment: "סביבה",
+        direction: "כיוון",
+        runtime: "הרצה",
+        entitiesTitle: "טבלאות בפרופיל",
+        entitiesSub: "כמה טבלאות ארוזות יחד",
+        searchEntity: "חיפוש טבלה",
+        autoMap: "הצע מיפוי אוטומטי",
+        validate: "בדיקה",
+        missingOnly: "רק חסרים",
+        thPayplus: "שדה PayPlus",
+        thRequired: "חובה",
+        thDynamics: "שדה Dynamics",
+        thType: "סוג",
+        thTransform: "כלל",
+        thStatus: "סטטוס",
+        scoreTitle: "סיכום לטבלה",
+        scoreSub: "מוכנות המיפוי הנבחר",
+        checksTitle: "בדיקות",
+        checksSub: "חובה, כפילות ו-OOTB",
+        payloadTitle: "Preview Payload",
+        payloadSub: "דוגמת מבנה לשליחה",
+        footer: "מוקאפ עצמאי בלבד. המימוש בפועל יהיה PCF שמעדכן Entity Mapping, Field Mapping, Transform Rule ו-Value Mapping מאחורי הקלעים.",
+        ootb: "OOTB",
+        custom: "Custom",
+        mapped: "ממופים",
+        missing: "חסרים",
+        requiredMissing: "חובה חסרים",
+        fields: "שדות",
+        tables: "טבלאות",
+        ready: "מוכנות",
+        unmapped: "לא ממופה",
+        required: "חובה",
+        optional: "רשות",
+        fixed: "קבוע",
+        direct: "ישיר",
+        normalizePhone: "ניקוי טלפון",
+        trim: "Trim",
+        vat: "מספר עוסק",
+        statusOk: "ממופה",
+        statusMissing: "לא ממופה",
+        noticeAuto: "מיפוי אוטומטי הוחל על הטבלה הנבחרת.",
+        noticeSave: "טיוטת המוקאפ נשמרה לדמו.",
+        noticeValidateOk: "הבדיקה עברה: אין שדות חובה חסרים בטבלה הנבחרת.",
+        noticeValidateWarn: "הבדיקה מצאה שדות חובה חסרים.",
+        checkRequiredOk: "כל שדות החובה ממופים.",
+        checkRequiredWarn: "יש שדות חובה ללא מיפוי.",
+        checkOotbOk: "קיימות הצעות OOTB לטבלה זו.",
+        checkOotbWarn: "אין חבילת הצעות מוכנה לטבלה זו.",
+        checkDupOk: "לא זוהו כפילויות במיפוי.",
+        fieldSearch: "חיפוש שדה",
+        noRows: "אין שדות להצגה"
+      },
+      en: {
+        eyebrow: "DYNAMICS 365 · PAYPLUS",
+        title: "PCF Mockup for Sync Mapping",
+        reset: "Reset Demo",
+        save: "Save Draft",
+        profileName: "PayPlus Sync Profile · Sandbox",
+        profileLine: "One workbench on the sync profile: choose tables, map fields, validate required values, and apply OOTB auto-mapping suggestions.",
+        active: "Active",
+        environment: "Environment",
+        direction: "Direction",
+        runtime: "Runtime",
+        entitiesTitle: "Profile Tables",
+        entitiesSub: "Multiple tables in one workspace",
+        searchEntity: "Search table",
+        autoMap: "Suggest Auto Mapping",
+        validate: "Validate",
+        missingOnly: "Missing only",
+        thPayplus: "PayPlus Field",
+        thRequired: "Required",
+        thDynamics: "Dynamics Field",
+        thType: "Type",
+        thTransform: "Rule",
+        thStatus: "Status",
+        scoreTitle: "Table Summary",
+        scoreSub: "Readiness for the selected map",
+        checksTitle: "Checks",
+        checksSub: "Required, duplicates and OOTB",
+        payloadTitle: "Preview Payload",
+        payloadSub: "Example outbound shape",
+        footer: "Standalone mockup only. The real PCF will update Entity Mapping, Field Mapping, Transform Rule and Value Mapping records behind the scenes.",
+        ootb: "OOTB",
+        custom: "Custom",
+        mapped: "Mapped",
+        missing: "Missing",
+        requiredMissing: "Required Missing",
+        fields: "Fields",
+        tables: "Tables",
+        ready: "Ready",
+        unmapped: "Unmapped",
+        required: "Required",
+        optional: "Optional",
+        fixed: "Fixed",
+        direct: "Direct",
+        normalizePhone: "Normalize Phone",
+        trim: "Trim",
+        vat: "VAT Number",
+        statusOk: "Mapped",
+        statusMissing: "Missing",
+        noticeAuto: "Automatic suggestions were applied to the selected table.",
+        noticeSave: "Mockup draft saved for the demo.",
+        noticeValidateOk: "Validation passed: no required fields are missing for the selected table.",
+        noticeValidateWarn: "Validation found missing required fields.",
+        checkRequiredOk: "All required fields are mapped.",
+        checkRequiredWarn: "Some required fields are not mapped.",
+        checkOotbOk: "OOTB suggestions are available for this table.",
+        checkOotbWarn: "No prepared suggestion pack exists for this table.",
+        checkDupOk: "No duplicate Dynamics mappings detected.",
+        fieldSearch: "Search field",
+        noRows: "No fields to show"
+      }
+    };
+
+    const baseEntities = [
+      {
+        id: "account",
+        schema: "account",
+        he: "לקוח / חשבון",
+        en: "Account",
+        ootb: true,
+        dynamicsFields: ["name", "emailaddress1", "telephone1", "address1_city", "address1_line1", "address1_postalcode", "accountnumber", "alex_vatnumber"],
+        rows: [
+          { payplus: "customer_name", he: "שם לקוח", en: "Customer Name", type: "string", required: true, dynamics: "name", suggestion: "name", transform: "trim" },
+          { payplus: "email", he: "דואר אלקטרוני", en: "Email", type: "email", required: true, dynamics: "emailaddress1", suggestion: "emailaddress1", transform: "direct" },
+          { payplus: "phone", he: "טלפון", en: "Phone", type: "phone", required: false, dynamics: "telephone1", suggestion: "telephone1", transform: "normalizePhone" },
+          { payplus: "vat_number", he: "מספר עוסק", en: "VAT Number", type: "number", required: false, dynamics: "", suggestion: "alex_vatnumber", transform: "vat" },
+          { payplus: "city", he: "עיר", en: "City", type: "string", required: false, dynamics: "address1_city", suggestion: "address1_city", transform: "trim" },
+          { payplus: "subject_code", he: "מזהה חיצוני", en: "External Subject Code", type: "string", required: false, dynamics: "accountnumber", suggestion: "accountnumber", transform: "direct" }
+        ]
+      },
+      {
+        id: "contact",
+        schema: "contact",
+        he: "איש קשר",
+        en: "Contact",
+        ootb: true,
+        dynamicsFields: ["fullname", "emailaddress1", "mobilephone", "telephone1", "jobtitle", "address1_city", "parentcustomerid"],
+        rows: [
+          { payplus: "full_name", he: "שם מלא", en: "Full Name", type: "string", required: true, dynamics: "fullname", suggestion: "fullname", transform: "trim" },
+          { payplus: "contact_email", he: "אימייל איש קשר", en: "Contact Email", type: "email", required: true, dynamics: "", suggestion: "emailaddress1", transform: "direct" },
+          { payplus: "cell_phone", he: "טלפון נייד", en: "Mobile Phone", type: "phone", required: false, dynamics: "mobilephone", suggestion: "mobilephone", transform: "normalizePhone" },
+          { payplus: "job_position", he: "תפקיד", en: "Job Position", type: "choice", required: false, dynamics: "jobtitle", suggestion: "jobtitle", transform: "direct" }
+        ]
+      },
+      {
+        id: "product",
+        schema: "product",
+        he: "מוצר",
+        en: "Product",
+        ootb: true,
+        dynamicsFields: ["name", "productnumber", "price", "standardcost", "description", "defaultuomid", "quantitydecimal"],
+        rows: [
+          { payplus: "name", he: "שם מוצר", en: "Product Name", type: "string", required: true, dynamics: "name", suggestion: "name", transform: "trim" },
+          { payplus: "barcode", he: "ברקוד", en: "Barcode", type: "string", required: false, dynamics: "productnumber", suggestion: "productnumber", transform: "direct" },
+          { payplus: "price", he: "מחיר", en: "Price", type: "money", required: true, dynamics: "", suggestion: "price", transform: "direct" },
+          { payplus: "description", he: "תיאור", en: "Description", type: "string", required: false, dynamics: "description", suggestion: "description", transform: "trim" }
+        ]
+      },
+      {
+        id: "invoice",
+        schema: "invoice",
+        he: "חשבונית",
+        en: "Invoice",
+        ootb: true,
+        dynamicsFields: ["invoicenumber", "customerid", "totalamount", "transactioncurrencyid", "datedelivered", "description"],
+        rows: [
+          { payplus: "invoice_number", he: "מספר חשבונית", en: "Invoice Number", type: "string", required: true, dynamics: "invoicenumber", suggestion: "invoicenumber", transform: "direct" },
+          { payplus: "customer_uid", he: "לקוח PayPlus", en: "PayPlus Customer", type: "lookup", required: true, dynamics: "", suggestion: "customerid", transform: "direct" },
+          { payplus: "amount", he: "סכום", en: "Amount", type: "money", required: true, dynamics: "totalamount", suggestion: "totalamount", transform: "direct" },
+          { payplus: "currency_code", he: "מטבע", en: "Currency", type: "choice", required: true, dynamics: "transactioncurrencyid", suggestion: "transactioncurrencyid", transform: "direct" }
+        ]
+      },
+      {
+        id: "membership",
+        schema: "alex_membership",
+        he: "מנוי מותאם",
+        en: "Custom Membership",
+        ootb: false,
+        dynamicsFields: ["alex_name", "alex_customer", "alex_amount", "alex_startdate", "alex_plan", "alex_status"],
+        rows: [
+          { payplus: "customer_uid", he: "לקוח PayPlus", en: "PayPlus Customer", type: "lookup", required: true, dynamics: "alex_customer", suggestion: "", transform: "direct" },
+          { payplus: "amount", he: "סכום", en: "Amount", type: "money", required: true, dynamics: "", suggestion: "", transform: "direct" },
+          { payplus: "description", he: "תיאור חיוב", en: "Charge Description", type: "string", required: false, dynamics: "alex_plan", suggestion: "", transform: "trim" }
+        ]
+      }
+    ];
+
+    const state = {
+      lang: "he",
+      selected: "account",
+      entities: JSON.parse(JSON.stringify(baseEntities))
+    };
+
+    function t(key) { return copy[state.lang][key] || key; }
+    function selectedEntity() { return state.entities.find(entity => entity.id === state.selected); }
+    function mappedRows(entity) { return entity.rows.filter(row => row.dynamics); }
+    function requiredMissing(entity) { return entity.rows.filter(row => row.required && !row.dynamics); }
+    function pct(entity) { return Math.round((mappedRows(entity).length / entity.rows.length) * 100); }
+    function escapeHtml(value) {
+      return String(value).replace(/[&<>"]/g, char => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "\"": "&quot;" }[char]));
+    }
+    function notice(key) {
+      const node = document.getElementById("notice");
+      node.textContent = t(key);
+      node.classList.add("show");
+      window.clearTimeout(notice.timer);
+      notice.timer = window.setTimeout(() => node.classList.remove("show"), 2600);
+    }
+
+    function renderText() {
+      document.documentElement.lang = state.lang;
+      document.documentElement.dir = state.lang === "he" ? "rtl" : "ltr";
+      document.querySelectorAll("[data-i18n]").forEach(node => node.textContent = t(node.dataset.i18n));
+      document.getElementById("lang-he").classList.toggle("active", state.lang === "he");
+      document.getElementById("lang-en").classList.toggle("active", state.lang === "en");
+      document.getElementById("entitySearch").placeholder = t("searchEntity");
+      document.getElementById("fieldSearch").placeholder = t("fieldSearch");
+    }
+
+    function renderMetrics() {
+      const rows = state.entities.flatMap(entity => entity.rows);
+      const mapped = rows.filter(row => row.dynamics).length;
+      const missingRequired = state.entities.reduce((sum, entity) => sum + requiredMissing(entity).length, 0);
+      const ready = Math.round((mapped / rows.length) * 100);
+      const metrics = [
+        [state.entities.length, t("tables")],
+        [rows.length, t("fields")],
+        [mapped, t("mapped")],
+        [ready + "%", t("ready")]
+      ];
+      document.getElementById("metrics").innerHTML = metrics.map(item => `
+        <div class="metric"><div class="num">${item[0]}</div><div class="lbl">${item[1]}</div></div>
+      `).join("");
+      return missingRequired;
+    }
+
+    function renderEntities() {
+      const q = document.getElementById("entitySearch")?.value?.trim().toLowerCase() || "";
+      const list = document.getElementById("entityList");
+      list.innerHTML = state.entities
+        .filter(entity => [entity.he, entity.en, entity.schema].join(" ").toLowerCase().includes(q))
+        .map(entity => {
+          const complete = pct(entity);
+          const missing = requiredMissing(entity).length;
+          return `
+            <button type="button" class="entity-card ${entity.id === state.selected ? "active" : ""}" onclick="App.selectEntity('${entity.id}')">
+              <div class="entity-main">
+                <div>
+                  <div class="entity-title">${escapeHtml(entity[state.lang])}</div>
+                  <div class="entity-schema">${escapeHtml(entity.schema)}</div>
+                </div>
+                <span class="pill ${missing ? "warn" : "ok"}">${complete}%</span>
+              </div>
+              <div class="progress" aria-hidden="true"><span style="--value:${complete}%"></span></div>
+              <div class="entity-meta">
+                <span>${entity.rows.length} ${t("fields")}</span>
+                <span>${mappedRows(entity).length} ${t("mapped")}</span>
+                <span>${entity.ootb ? t("ootb") : t("custom")}</span>
+              </div>
+            </button>
+          `;
+        }).join("");
+    }
+
+    function renderMappings() {
+      const entity = selectedEntity();
+      document.getElementById("selectedTitle").textContent = entity[state.lang];
+      document.getElementById("selectedSub").textContent = entity.schema;
+      document.getElementById("ootbBadge").textContent = entity.ootb ? t("ootb") : t("custom");
+      const q = document.getElementById("fieldSearch")?.value?.trim().toLowerCase() || "";
+      const onlyMissing = document.getElementById("missingOnly")?.checked;
+      const rows = entity.rows.filter(row => {
+        const hit = [row.payplus, row.he, row.en, row.dynamics].join(" ").toLowerCase().includes(q);
+        return hit && (!onlyMissing || !row.dynamics);
+      });
+      const body = document.getElementById("mappingRows");
+      body.innerHTML = rows.length ? rows.map((row, index) => rowTemplate(entity, row, index)).join("") : `<tr><td colspan="6" class="empty">${t("noRows")}</td></tr>`;
+      renderSide(entity);
+    }
+
+    function rowTemplate(entity, row, index) {
+      const actualIndex = entity.rows.indexOf(row);
+      const options = ["", ...entity.dynamicsFields].map(field => `
+        <option value="${escapeHtml(field)}" ${field === row.dynamics ? "selected" : ""}>${field ? escapeHtml(field) : t("unmapped")}</option>
+      `).join("");
+      const transforms = ["direct", "trim", "normalizePhone", "vat", "fixed"].map(rule => `
+        <option value="${rule}" ${rule === row.transform ? "selected" : ""}>${t(rule)}</option>
+      `).join("");
+      return `
+        <tr>
+          <td><span class="row-title">${escapeHtml(row[state.lang])}</span><span class="row-code">${escapeHtml(row.payplus)}</span></td>
+          <td><span class="pill ${row.required ? "err" : ""}">${row.required ? t("required") : t("optional")}</span></td>
+          <td><select class="map-select" onchange="App.setField(${actualIndex}, this.value)">${options}</select></td>
+          <td><span class="pill">${escapeHtml(row.type)}</span></td>
+          <td><select class="transform-select" onchange="App.setTransform(${actualIndex}, this.value)">${transforms}</select></td>
+          <td><span class="status-cell"><span class="dot ${row.dynamics ? "ok" : "warn"}"></span>${row.dynamics ? t("statusOk") : t("statusMissing")}</span></td>
+        </tr>
+      `;
+    }
+
+    function renderSide(entity) {
+      const mapped = mappedRows(entity).length;
+      const missingReq = requiredMissing(entity).length;
+      document.getElementById("selectedSummary").innerHTML = `
+        <div class="mini"><b>${mapped}/${entity.rows.length}</b><span>${t("mapped")}</span></div>
+        <div class="mini"><b>${missingReq}</b><span>${t("requiredMissing")}</span></div>
+      `;
+      const checks = [
+        [missingReq === 0 ? "ok" : "warn", missingReq === 0 ? t("checkRequiredOk") : t("checkRequiredWarn")],
+        [entity.ootb ? "ok" : "warn", entity.ootb ? t("checkOotbOk") : t("checkOotbWarn")],
+        ["ok", t("checkDupOk")]
+      ];
+      document.getElementById("checks").innerHTML = checks.map(item => `
+        <div class="check"><span class="dot ${item[0]}"></span><span>${item[1]}</span></div>
+      `).join("");
+      const payload = {};
+      entity.rows.filter(row => row.dynamics).forEach(row => payload[row.payplus] = `@{${row.dynamics}}`);
+      document.getElementById("payload").value = JSON.stringify({ entity: entity.schema, operation: "upsert", fields: payload }, null, 2);
+    }
+
+    function render() {
+      renderText();
+      renderMetrics();
+      renderEntities();
+      renderMappings();
+    }
+
+    window.App = {
+      setLang(lang) { state.lang = lang; render(); },
+      selectEntity(id) { state.selected = id; document.getElementById("missingOnly").checked = false; document.getElementById("fieldSearch").value = ""; render(); },
+      renderEntities,
+      renderMappings,
+      setField(index, value) { selectedEntity().rows[index].dynamics = value; renderMetrics(); renderEntities(); renderMappings(); },
+      setTransform(index, value) { selectedEntity().rows[index].transform = value; renderMappings(); },
+      autoMap() {
+        const entity = selectedEntity();
+        entity.rows.forEach(row => { if (row.suggestion) row.dynamics = row.suggestion; });
+        render();
+        notice("noticeAuto");
+      },
+      validateSelected() { notice(requiredMissing(selectedEntity()).length ? "noticeValidateWarn" : "noticeValidateOk"); },
+      saveDemo() { notice("noticeSave"); },
+      resetDemo() { state.entities = JSON.parse(JSON.stringify(baseEntities)); render(); }
+    };
+
+    render();
+  </script>
+</body>
+</html>

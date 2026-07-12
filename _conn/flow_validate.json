@@ -1,0 +1,178 @@
+{
+  "properties": {
+    "connectionReferences": {
+      "alex_payplussandbox": {
+        "runtimeSource": "embedded",
+        "connection": { "connectionReferenceLogicalName": "alex_payplussandbox" },
+        "api": { "name": "shared_alex-5fpayplus-20sandbox-5f5849d39a0feaf28d" }
+      },
+      "alex_payplusprod": {
+        "runtimeSource": "embedded",
+        "connection": { "connectionReferenceLogicalName": "alex_payplusprod" },
+        "api": { "name": "shared_alex-5fpayplus-5f5849d39a0feaf28d" }
+      },
+      "alex_payplus_dataverse": {
+        "runtimeSource": "embedded",
+        "connection": { "connectionReferenceLogicalName": "alex_payplus_dataverse" },
+        "api": { "name": "shared_commondataserviceforapps" }
+      }
+    },
+    "definition": {
+      "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+      "contentVersion": "1.0.0.0",
+      "parameters": {
+        "$connections": { "defaultValue": {}, "type": "Object" },
+        "$authentication": { "defaultValue": {}, "type": "SecureObject" }
+      },
+      "triggers": {
+        "When_an_action_is_performed": {
+          "metadata": { "operationMetadataId": "b1a11111-1111-4111-8111-111111111111" },
+          "type": "OpenApiConnectionWebhook",
+          "inputs": {
+            "host": {
+              "connectionName": "alex_payplus_dataverse",
+              "operationId": "BusinessEventsTrigger",
+              "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+            },
+            "parameters": {
+              "catalog": "fdfb83fb-067b-f111-ab0e-7ced8d726840",
+              "category": "05fc83fb-067b-f111-ab0e-7ced8d726840",
+              "subscriptionRequest/entityname": "none",
+              "subscriptionRequest/sdkmessagename": "alex_ValidatePayPlusConnection",
+              "subscriptionRequest/scope": 4
+            },
+            "authentication": "@parameters('$authentication')"
+          }
+        }
+      },
+      "actions": {
+        "Get_config_row": {
+          "runAfter": {},
+          "metadata": { "operationMetadataId": "b2a22222-2222-4222-8222-222222222222" },
+          "type": "OpenApiConnection",
+          "inputs": {
+            "host": {
+              "connectionName": "alex_payplus_dataverse",
+              "operationId": "ListRecords",
+              "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+            },
+            "parameters": {
+              "entityName": "alex_payplusconfigurations",
+              "$filter": "alex_validationrequestid eq '@{triggerOutputs()?['body/InputParameters/request_id']}'",
+              "$top": 1
+            },
+            "authentication": "@parameters('$authentication')"
+          }
+        },
+        "Check_Environment": {
+          "runAfter": { "Get_config_row": ["Succeeded"] },
+          "type": "If",
+          "expression": {
+            "equals": ["@triggerOutputs()?['body/InputParameters/environment']", "Sandbox"]
+          },
+          "actions": {
+            "TestConnection_Sandbox": {
+              "runAfter": {},
+              "metadata": { "operationMetadataId": "b3a33333-3333-4333-8333-333333333333" },
+              "type": "OpenApiConnection",
+              "inputs": {
+                "host": {
+                  "connectionName": "alex_payplussandbox",
+                  "operationId": "GeneratePaymentLink",
+                  "apiId": "/providers/Microsoft.PowerApps/apis/shared_alex-5fpayplus-20sandbox-5f5849d39a0feaf28d"
+                },
+                "parameters": {
+                  "body/payment_page_uid": "@triggerOutputs()?['body/InputParameters/payment_page_uid']",
+                  "body/terminal_uid": "@triggerOutputs()?['body/InputParameters/terminal_uid']",
+                  "body/charge_method": 1,
+                  "body/amount": 10,
+                  "body/currency_code": "ILS",
+                  "body/customer/customer_name": "D365 Validation",
+                  "body/customer/email": "validation@example.com",
+                  "body/customer/phone": "0500000000",
+                  "body/items": [ { "name": "Validation", "quantity": 1, "price": 10 } ]
+                },
+                "authentication": "@parameters('$authentication')",
+                "retryPolicy": { "type": "none" }
+              }
+            }
+          },
+          "else": {
+            "actions": {
+              "TestConnection_Prod": {
+                "runAfter": {},
+                "metadata": { "operationMetadataId": "b4a44444-4444-4444-8444-444444444444" },
+                "type": "OpenApiConnection",
+                "inputs": {
+                  "host": {
+                    "connectionName": "alex_payplusprod",
+                    "operationId": "GeneratePaymentLink",
+                    "apiId": "/providers/Microsoft.PowerApps/apis/shared_alex-5fpayplus-5f5849d39a0feaf28d"
+                  },
+                  "parameters": {
+                    "body/payment_page_uid": "@triggerOutputs()?['body/InputParameters/payment_page_uid']",
+                    "body/terminal_uid": "@triggerOutputs()?['body/InputParameters/terminal_uid']",
+                    "body/charge_method": 1,
+                    "body/amount": 10,
+                    "body/currency_code": "ILS",
+                    "body/customer/customer_name": "D365 Validation",
+                    "body/customer/email": "validation@example.com",
+                    "body/customer/phone": "0500000000",
+                    "body/items": [ { "name": "Validation", "quantity": 1, "price": 10 } ]
+                  },
+                  "authentication": "@parameters('$authentication')",
+                  "retryPolicy": { "type": "none" }
+                }
+              }
+            }
+          }
+        },
+        "Update_Success": {
+          "runAfter": { "Check_Environment": ["Succeeded"] },
+          "metadata": { "operationMetadataId": "b5a55555-5555-4555-8555-555555555555" },
+          "type": "OpenApiConnection",
+          "inputs": {
+            "host": {
+              "connectionName": "alex_payplus_dataverse",
+              "operationId": "UpdateRecord",
+              "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+            },
+            "parameters": {
+              "entityName": "alex_payplusconfigurations",
+              "recordId": "@first(outputs('Get_config_row')?['body/value'])?['alex_payplusconfigurationid']",
+              "item/alex_lastvalidationstatus": 100000001,
+              "item/alex_configvalidated": true,
+              "item/alex_lastvalidationcode": 200,
+              "item/alex_lastvalidatedon": "@utcNow()",
+              "item/alex_lastvalidationmessage": "OK"
+            },
+            "authentication": "@parameters('$authentication')"
+          }
+        },
+        "Update_Fail": {
+          "runAfter": { "Check_Environment": ["Failed", "Skipped", "TimedOut"] },
+          "metadata": { "operationMetadataId": "b6a66666-6666-4666-8666-666666666666" },
+          "type": "OpenApiConnection",
+          "inputs": {
+            "host": {
+              "connectionName": "alex_payplus_dataverse",
+              "operationId": "UpdateRecord",
+              "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+            },
+            "parameters": {
+              "entityName": "alex_payplusconfigurations",
+              "recordId": "@first(outputs('Get_config_row')?['body/value'])?['alex_payplusconfigurationid']",
+              "item/alex_lastvalidationstatus": 100000002,
+              "item/alex_configvalidated": false,
+              "item/alex_lastvalidationcode": "@coalesce(outputs('TestConnection_Prod')?['statusCode'], outputs('TestConnection_Sandbox')?['statusCode'], 0)",
+              "item/alex_lastvalidatedon": "@utcNow()",
+              "item/alex_lastvalidationmessage": "@{string(coalesce(body('TestConnection_Prod'), body('TestConnection_Sandbox'), 'Connection failed'))}"
+            },
+            "authentication": "@parameters('$authentication')"
+          }
+        }
+      }
+    }
+  },
+  "schemaVersion": "1.0.0.0"
+}

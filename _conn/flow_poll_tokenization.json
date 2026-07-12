@@ -1,0 +1,249 @@
+{
+  "schemaVersion": "1.0.0.0",
+  "properties": {
+    "connectionReferences": {
+      "alex_payplus_dataverse": {
+        "runtimeSource": "embedded",
+        "connection": { "connectionReferenceLogicalName": "alex_payplus_dataverse" },
+        "api": { "name": "shared_commondataserviceforapps" }
+      },
+      "shared_alex-5fpayplus-5f5849d39a0feaf28d-1": {
+        "runtimeSource": "embedded",
+        "connection": { "connectionReferenceLogicalName": "alex_payplusprod" },
+        "api": { "name": "shared_alex-5fpayplus-5f5849d39a0feaf28d", "logicalName": "alex_5Fpayplus" }
+      },
+      "shared_alex-5fpayplus-20sandbox-5f5849d39a0feaf28d-1": {
+        "runtimeSource": "embedded",
+        "connection": { "connectionReferenceLogicalName": "alex_payplussandbox" },
+        "api": { "name": "shared_alex-5fpayplus-20sandbox-5f5849d39a0feaf28d", "logicalName": "alex_5Fpayplus-20sandbox" }
+      }
+    },
+    "definition": {
+      "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+      "contentVersion": "1.0.0.0",
+      "parameters": {
+        "$connections": { "defaultValue": {}, "type": "Object" },
+        "$authentication": { "defaultValue": {}, "type": "SecureObject" }
+      },
+      "triggers": {
+        "Every_5_minutes": {
+          "metadata": { "operationMetadataId": "fa000000-0000-4000-8000-000000000000" },
+          "type": "Recurrence",
+          "recurrence": { "frequency": "Minute", "interval": 5 }
+        }
+      },
+      "actions": {
+        "Get_config_row": {
+          "runAfter": {},
+          "metadata": { "operationMetadataId": "fa111111-1111-4111-8111-111111111111" },
+          "type": "OpenApiConnection",
+          "inputs": {
+            "host": {
+              "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps",
+              "operationId": "ListRecords",
+              "connectionName": "alex_payplus_dataverse"
+            },
+            "parameters": {
+              "entityName": "alex_payplusconfigurations",
+              "$select": "alex_environment",
+              "$top": 1
+            },
+            "authentication": "@parameters('$authentication')"
+          }
+        },
+        "List_waiting_sessions": {
+          "runAfter": { "Get_config_row": ["Succeeded"] },
+          "metadata": { "operationMetadataId": "fa222222-2222-4222-8222-222222222222" },
+          "type": "OpenApiConnection",
+          "inputs": {
+            "host": {
+              "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps",
+              "operationId": "ListRecords",
+              "connectionName": "alex_payplus_dataverse"
+            },
+            "parameters": {
+              "entityName": "alex_pp_hfsessions",
+              "$select": "alex_pp_hfsessionid,alex_requestid,alex_channel,alex_status,alex_name,_alex_contact_value,_alex_account_value",
+              "$filter": "alex_channel ne null and alex_channel ne 100000000 and (alex_status eq 'Ready' or alex_status eq 'Pending')"
+            },
+            "authentication": "@parameters('$authentication')"
+          }
+        },
+        "For_each_session": {
+          "runAfter": { "List_waiting_sessions": ["Succeeded"] },
+          "type": "Foreach",
+          "foreach": "@outputs('List_waiting_sessions')?['body/value']",
+          "actions": {
+            "Switch_on_environment": {
+              "runAfter": {},
+              "type": "Switch",
+              "expression": "@first(outputs('Get_config_row')?['body/value'])?['alex_environment']",
+              "cases": {
+                "Production": {
+                  "case": 100000000,
+                  "actions": {
+                    "View_transactions_Production": {
+                      "runAfter": {},
+                      "metadata": { "operationMetadataId": "fa333333-3333-4333-8333-333333333333" },
+                      "type": "OpenApiConnection",
+                      "inputs": {
+                        "host": {
+                          "apiId": "/providers/Microsoft.PowerApps/apis/shared_alex-5fpayplus-5f5849d39a0feaf28d",
+                          "operationId": "ViewTransactions",
+                          "connectionName": "shared_alex-5fpayplus-5f5849d39a0feaf28d-1"
+                        },
+                        "parameters": {
+                          "body/more_info": "@items('For_each_session')?['alex_requestid']"
+                        },
+                        "authentication": "@parameters('$authentication')"
+                      }
+                    }
+                  }
+                },
+                "Sandbox": {
+                  "case": 100000001,
+                  "actions": {
+                    "View_transactions_Sandbox": {
+                      "runAfter": {},
+                      "metadata": { "operationMetadataId": "fa444444-4444-4444-8444-444444444444" },
+                      "type": "OpenApiConnection",
+                      "inputs": {
+                        "host": {
+                          "apiId": "/providers/Microsoft.PowerApps/apis/shared_alex-5fpayplus-20sandbox-5f5849d39a0feaf28d",
+                          "operationId": "ViewTransactions",
+                          "connectionName": "shared_alex-5fpayplus-20sandbox-5f5849d39a0feaf28d-1"
+                        },
+                        "parameters": {
+                          "body/more_info": "@items('For_each_session')?['alex_requestid']"
+                        },
+                        "authentication": "@parameters('$authentication')"
+                      }
+                    }
+                  }
+                }
+              },
+              "default": {
+                "actions": {
+                  "Compose_unknown_environment": {
+                    "runAfter": {},
+                    "type": "Compose",
+                    "inputs": "alex_environment is not Production or Sandbox - skipping this session."
+                  }
+                }
+              }
+            },
+            "Compose_result": {
+              "runAfter": { "Switch_on_environment": ["Succeeded"] },
+              "type": "Compose",
+              "inputs": "@coalesce(body('View_transactions_Production'), body('View_transactions_Sandbox'))"
+            },
+            "Condition_transaction_approved": {
+              "runAfter": { "Compose_result": ["Succeeded"] },
+              "type": "If",
+              "expression": {
+                "and": [
+                  { "equals": [ "@toLower(coalesce(outputs('Compose_result')?['results']?['status'], ''))", "success" ] },
+                  { "not": { "equals": [ "@empty(outputs('Compose_result')?['data'])", true ] } }
+                ]
+              },
+              "actions": {
+                "Compose_first_transaction": {
+                  "runAfter": {},
+                  "type": "Compose",
+                  "inputs": "@first(outputs('Compose_result')?['data'])"
+                },
+                "Condition_has_contact": {
+                  "runAfter": { "Compose_first_transaction": ["Succeeded"] },
+                  "type": "If",
+                  "expression": {
+                    "and": [
+                      { "not": { "equals": [ "@empty(items('For_each_session')?['_alex_contact_value'])", true ] } }
+                    ]
+                  },
+                  "actions": {
+                    "Create_card_for_contact": {
+                      "runAfter": {},
+                      "metadata": { "operationMetadataId": "fa555555-5555-4555-8555-555555555555" },
+                      "type": "OpenApiConnection",
+                      "inputs": {
+                        "host": {
+                          "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps",
+                          "operationId": "CreateRecord",
+                          "connectionName": "alex_payplus_dataverse"
+                        },
+                        "parameters": {
+                          "entityName": "alex_creditcards",
+                          "item/alex_name": "@concat('\u05db\u05e8\u05d8\u05d9\u05e1 \u05d0\u05e9\u05e8\u05d0\u05d9 \u2022\u2022\u2022\u2022 ', coalesce(outputs('Compose_first_transaction')?['card_information']?['four_digits'], outputs('Compose_first_transaction')?['data']?['card_information']?['four_digits'], '????'))",
+                          "item/alex_token": "@coalesce(outputs('Compose_first_transaction')?['token'], outputs('Compose_first_transaction')?['token_uid'], outputs('Compose_first_transaction')?['card_information']?['token'], outputs('Compose_first_transaction')?['data']?['token'], '')",
+                          "item/alex_last4": "@coalesce(outputs('Compose_first_transaction')?['card_information']?['four_digits'], outputs('Compose_first_transaction')?['data']?['card_information']?['four_digits'], '')",
+                          "item/alex_expirymonth": "@coalesce(outputs('Compose_first_transaction')?['card_information']?['expiry_month'], outputs('Compose_first_transaction')?['data']?['card_information']?['expiry_month'], '')",
+                          "item/alex_expiryyear": "@coalesce(outputs('Compose_first_transaction')?['card_information']?['expiry_year'], outputs('Compose_first_transaction')?['data']?['card_information']?['expiry_year'], '')",
+                          "item/alex_paypluscustomeruid": "@coalesce(outputs('Compose_first_transaction')?['customer_uid'], outputs('Compose_first_transaction')?['data']?['customer_uid'], '')",
+                          "item/alex_isactive": true,
+                          "item/alex_isdefault": false,
+                          "item/alex_channel": "@items('For_each_session')?['alex_channel']",
+                          "item/alex_Contact@odata.bind": "@concat('/contacts(', items('For_each_session')?['_alex_contact_value'], ')')"
+                        },
+                        "authentication": "@parameters('$authentication')"
+                      }
+                    }
+                  },
+                  "else": {
+                    "actions": {
+                      "Create_card_for_account": {
+                        "runAfter": {},
+                        "metadata": { "operationMetadataId": "fa666666-6666-4666-8666-666666666666" },
+                        "type": "OpenApiConnection",
+                        "inputs": {
+                          "host": {
+                            "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps",
+                            "operationId": "CreateRecord",
+                            "connectionName": "alex_payplus_dataverse"
+                          },
+                          "parameters": {
+                            "entityName": "alex_creditcards",
+                            "item/alex_name": "@concat('\u05db\u05e8\u05d8\u05d9\u05e1 \u05d0\u05e9\u05e8\u05d0\u05d9 \u2022\u2022\u2022\u2022 ', coalesce(outputs('Compose_first_transaction')?['card_information']?['four_digits'], outputs('Compose_first_transaction')?['data']?['card_information']?['four_digits'], '????'))",
+                            "item/alex_token": "@coalesce(outputs('Compose_first_transaction')?['token'], outputs('Compose_first_transaction')?['token_uid'], outputs('Compose_first_transaction')?['card_information']?['token'], outputs('Compose_first_transaction')?['data']?['token'], '')",
+                            "item/alex_last4": "@coalesce(outputs('Compose_first_transaction')?['card_information']?['four_digits'], outputs('Compose_first_transaction')?['data']?['card_information']?['four_digits'], '')",
+                            "item/alex_expirymonth": "@coalesce(outputs('Compose_first_transaction')?['card_information']?['expiry_month'], outputs('Compose_first_transaction')?['data']?['card_information']?['expiry_month'], '')",
+                            "item/alex_expiryyear": "@coalesce(outputs('Compose_first_transaction')?['card_information']?['expiry_year'], outputs('Compose_first_transaction')?['data']?['card_information']?['expiry_year'], '')",
+                            "item/alex_paypluscustomeruid": "@coalesce(outputs('Compose_first_transaction')?['customer_uid'], outputs('Compose_first_transaction')?['data']?['customer_uid'], '')",
+                            "item/alex_isactive": true,
+                            "item/alex_isdefault": false,
+                            "item/alex_channel": "@items('For_each_session')?['alex_channel']",
+                            "item/alex_Account@odata.bind": "@concat('/accounts(', items('For_each_session')?['_alex_account_value'], ')')"
+                          },
+                          "authentication": "@parameters('$authentication')"
+                        }
+                      }
+                    }
+                  }
+                },
+                "Update_session_tokenized": {
+                  "runAfter": { "Condition_has_contact": ["Succeeded"] },
+                  "metadata": { "operationMetadataId": "fa777777-7777-4777-8777-777777777777" },
+                  "type": "OpenApiConnection",
+                  "inputs": {
+                    "host": {
+                      "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps",
+                      "operationId": "UpdateRecord",
+                      "connectionName": "alex_payplus_dataverse"
+                    },
+                    "parameters": {
+                      "entityName": "alex_pp_hfsessions",
+                      "recordId": "@items('For_each_session')?['alex_pp_hfsessionid']",
+                      "item/alex_status": "Tokenized",
+                      "item/alex_message": "Credit card record created from polled transaction."
+                    },
+                    "authentication": "@parameters('$authentication')"
+                  }
+                }
+              },
+              "else": { "actions": {} }
+            }
+          }
+        }
+      }
+    }
+  }
+}

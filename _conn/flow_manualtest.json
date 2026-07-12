@@ -1,0 +1,73 @@
+{
+  "properties": {
+    "connectionReferences": {
+      "shared_alex-5fpayplus-20sandbox-5f5849d39a0feaf28d_1": {
+        "runtimeSource": "invoker",
+        "connection": { "connectionReferenceLogicalName": "alex_payplussandbox" },
+        "api": { "name": "shared_alex-5fpayplus-20sandbox-5f5849d39a0feaf28d", "logicalName": "alex_5Fpayplus-20sandbox" }
+      }
+    },
+    "definition": {
+      "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+      "contentVersion": "1.0.0.0",
+      "parameters": {
+        "$connections": { "defaultValue": {}, "type": "Object" },
+        "$authentication": { "defaultValue": {}, "type": "SecureObject" }
+      },
+      "triggers": {
+        "manual": {
+          "metadata": { "operationMetadataId": "c1a11111-1111-4111-8111-111111111111" },
+          "type": "Request",
+          "kind": "Button",
+          "inputs": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "payment_page_uid": { "type": "string", "title": "payment_page_uid", "description": "Payment Page UID", "x-ms-content-hint": "TEXT" }
+              },
+              "required": [ "payment_page_uid" ]
+            }
+          }
+        }
+      },
+      "actions": {
+        "Generate_Link": {
+          "runAfter": {},
+          "metadata": { "operationMetadataId": "16f09a52-0c6e-4c61-8806-7aa82ecb79a0" },
+          "type": "OpenApiConnection",
+          "inputs": {
+            "host": {
+              "connectionName": "shared_alex-5fpayplus-20sandbox-5f5849d39a0feaf28d_1",
+              "operationId": "GeneratePaymentLink",
+              "apiId": "/providers/Microsoft.PowerApps/apis/shared_alex-5fpayplus-20sandbox-5f5849d39a0feaf28d"
+            },
+            "parameters": {
+              "body/payment_page_uid": "@triggerBody()?['payment_page_uid']",
+              "body/charge_method": 1,
+              "body/amount": 10,
+              "body/currency_code": "ILS",
+              "body/customer/customer_name": "D365 Test",
+              "body/customer/email": "test@example.com",
+              "body/customer/phone": "0500000000",
+              "body/items": [ { "name": "Test item", "quantity": 1, "price": 10 } ]
+            },
+            "authentication": { "type": "Raw", "value": "@json(decodeBase64(triggerOutputs().headers['X-MS-APIM-Tokens']))['$ConnectionKey']" },
+            "retryPolicy": { "type": "none" }
+          }
+        },
+        "Result": {
+          "runAfter": { "Generate_Link": [ "Succeeded", "Failed", "TimedOut" ] },
+          "metadata": { "operationMetadataId": "c4a44444-4444-4444-8444-444444444444" },
+          "type": "Compose",
+          "inputs": {
+            "note": "SANDBOX GeneratePaymentLink via connection (keys injected by policy)",
+            "statusCode": "@outputs('Generate_Link')?['statusCode']",
+            "body": "@outputs('Generate_Link')?['body']"
+          }
+        }
+      }
+    },
+    "templateName": ""
+  },
+  "schemaVersion": "1.0.0.0"
+}

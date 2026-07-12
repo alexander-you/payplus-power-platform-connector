@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>PayPlus Mapping Studio Clean Mockup</title>
+  <script>
+    (() => {
+      const param = new URLSearchParams(window.location.search).get("scoutTheme");
+      const theme =
+        param || (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+      document.documentElement.setAttribute("data-theme", theme);
+    })();
+  </script>
+  <style>
+    :root {
+      color-scheme: light;
+      --cp-bg: #f7f4ef;
+      --cp-bg-elevated: #fcfbf8;
+      --cp-surface: #ffffff;
+      --cp-surface-soft: #f5f5f5;
+      --cp-border: #dedede;
+      --cp-border-strong: #919191;
+      --cp-text: #242424;
+      --cp-text-muted: #5c5c5c;
+      --cp-text-soft: #6f6f6f;
+      --cp-accent: #b11f4b;
+      --cp-accent-hover: #9a1a41;
+      --cp-accent-soft: rgba(177, 31, 75, 0.08);
+      --cp-accent-fg: #ffffff;
+      --cp-success: #16a34a;
+      --cp-danger: #dc2626;
+      --cp-warning: #f59e0b;
+      --cp-link: #0078d4;
+      --cp-shadow: 0 18px 48px rgba(0, 0, 0, 0.12);
+      --cp-overlay: rgba(255, 255, 255, 0.8);
+      --cp-panel: rgba(255, 255, 255, 0.86);
+      --cp-panel-strong: rgba(255, 255, 255, 0.96);
+      --cp-sheen: rgba(255, 255, 255, 0.55);
+      --cp-highlight: rgba(177, 31, 75, 0.12);
+    }
+    html[data-theme="dark"] {
+      color-scheme: dark;
+      --cp-bg: #3d3b3a;
+      --cp-bg-elevated: #343231;
+      --cp-surface: #292929;
+      --cp-surface-soft: #2e2e2e;
+      --cp-border: #474747;
+      --cp-border-strong: #5f5f5f;
+      --cp-text: #dedede;
+      --cp-text-muted: #919191;
+      --cp-text-soft: #b0b0b0;
+      --cp-accent: #fd8ea1;
+      --cp-accent-hover: #fb7b91;
+      --cp-accent-soft: rgba(253, 142, 161, 0.14);
+      --cp-accent-fg: #1a1a1a;
+      --cp-success: #4ade80;
+      --cp-danger: #f87171;
+      --cp-warning: #fbbf24;
+      --cp-link: #4da6ff;
+      --cp-shadow: 0 18px 48px rgba(0, 0, 0, 0.32);
+      --cp-overlay: rgba(41, 41, 41, 0.88);
+      --cp-panel: rgba(41, 41, 41, 0.72);
+      --cp-panel-strong: rgba(41, 41, 41, 0.96);
+      --cp-sheen: rgba(255, 255, 255, 0.04);
+      --cp-highlight: rgba(253, 142, 161, 0.12);
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; min-height: 100%; }
+    body {
+      background: var(--cp-bg);
+      color: var(--cp-text);
+      font-family: "Segoe UI", Aptos, Calibri, -apple-system, BlinkMacSystemFont, sans-serif;
+      padding: 20px;
+    }
+    button, input, select, textarea { font: inherit; }
+    button { cursor: pointer; }
+    .app { max-width: 1360px; margin: 0 auto; }
+    .chrome {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 12px;
+    }
+    .identity { display: flex; align-items: center; gap: 12px; min-width: 0; }
+    .mark {
+      width: 34px;
+      height: 34px;
+      border-radius: 0.625rem;
+      background: var(--cp-text);
+      color: var(--cp-surface);
+      display: grid;
+      place-items: center;
+      font-weight: 800;
+      letter-spacing: 0;
+      flex: none;
+    }
+    .kicker { color: var(--cp-text-muted); font-size: 12px; font-weight: 700; }
+    h1 { margin: 1px 0 0; font-size: 22px; line-height: 1.2; letter-spacing: 0; }
+    .chrome-actions { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .button {
+      min-height: 34px;
+      border: 1px solid var(--cp-border);
+      border-radius: 0.625rem;
+      background: var(--cp-surface);
+      color: var(--cp-text);
+      padding: 7px 12px;
+      font-size: 13px;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      white-space: nowrap;
+    }
+    .button:hover { border-color: var(--cp-border-strong); }
+    .button.primary { background: var(--cp-text); color: var(--cp-surface); border-color: var(--cp-text); }
+    .button.primary:hover { background: var(--cp-accent); border-color: var(--cp-accent); color: var(--cp-accent-fg); }
+    .button.ghost { background: transparent; }
+    .button.slim { min-height: 30px; padding: 5px 9px; font-size: 12px; }
+    .language {
+      display: inline-flex;
+      border: 1px solid var(--cp-border);
+      border-radius: 0.625rem;
+      padding: 2px;
+      background: var(--cp-surface-soft);
+      gap: 2px;
+    }
+    .language button {
+      border: 0;
+      background: transparent;
+      color: var(--cp-text-muted);
+      border-radius: 0.625rem;
+      min-width: 36px;
+      padding: 5px 8px;
+      font-weight: 800;
+      font-size: 12px;
+    }
+    .language button.active { background: var(--cp-surface); color: var(--cp-text); }
+    .summary {
+      background: var(--cp-surface);
+      border: 1px solid var(--cp-border);
+      border-radius: 16px;
+      padding: 14px 16px;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 16px;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+    .profile-title { font-weight: 850; font-size: 16px; margin-bottom: 3px; }
+    .profile-sub { color: var(--cp-text-muted); font-size: 13px; line-height: 1.45; max-width: 760px; }
+    .stats { display: flex; gap: 18px; align-items: center; justify-content: end; }
+    .stat { min-width: 72px; text-align: center; }
+    .stat b { display: block; font-size: 20px; line-height: 1; color: var(--cp-text); }
+    .stat span { display: block; color: var(--cp-text-muted); font-size: 11px; font-weight: 700; margin-top: 5px; }
+    .workspace {
+      background: var(--cp-surface);
+      border: 1px solid var(--cp-border);
+      border-radius: 16px;
+      min-height: 640px;
+      display: grid;
+      grid-template-columns: 250px minmax(0, 1fr) 300px;
+      overflow: hidden;
+    }
+    .sidebar, .inspector { background: var(--cp-surface); }
+    .sidebar { border-inline-end: 1px solid var(--cp-border); }
+    .inspector { border-inline-start: 1px solid var(--cp-border); }
+    .section-head {
+      min-height: 60px;
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--cp-border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+    .section-title { font-weight: 850; font-size: 14px; }
+    .section-note { color: var(--cp-text-muted); font-size: 12px; margin-top: 2px; }
+    .sidebar-body, .inspector-body { padding: 12px; }
+    .search { margin-bottom: 10px; }
+    .input, select, textarea {
+      width: 100%;
+      min-height: 34px;
+      border: 1px solid var(--cp-border);
+      border-radius: 0.625rem;
+      background: var(--cp-surface);
+      color: var(--cp-text);
+      padding: 7px 10px;
+      outline: none;
+      font-size: 13px;
+    }
+    textarea {
+      min-height: 132px;
+      resize: vertical;
+      direction: ltr;
+      text-align: left;
+      font-family: Consolas, "Courier New", Courier, monospace;
+      line-height: 1.55;
+    }
+    .input:focus, select:focus, textarea:focus { border-color: var(--cp-border-strong); box-shadow: 0 0 0 3px var(--cp-highlight); }
+    .table-list { display: grid; gap: 4px; }
+    .table-item {
+      border: 1px solid transparent;
+      background: transparent;
+      color: var(--cp-text);
+      border-radius: 0.625rem;
+      padding: 10px;
+      text-align: inherit;
+      display: grid;
+      gap: 7px;
+      width: 100%;
+    }
+    .table-item:hover { background: var(--cp-surface-soft); }
+    .table-item.active { background: var(--cp-accent-soft); border-color: var(--cp-border); }
+    .table-line { display: flex; align-items: start; justify-content: space-between; gap: 10px; }
+    .table-name { font-weight: 850; font-size: 13px; }
+    .table-schema { color: var(--cp-text-muted); font-family: Consolas, "Courier New", Courier, monospace; font-size: 11px; direction: ltr; text-align: left; margin-top: 2px; }
+    .status-dot { width: 7px; height: 7px; border-radius: 999px; background: var(--cp-text-soft); flex: none; margin-top: 5px; }
+    .status-dot.ok { background: var(--cp-success); }
+    .status-dot.warn { background: var(--cp-warning); }
+    .status-dot.err { background: var(--cp-danger); }
+    .rail { height: 4px; border-radius: 999px; background: var(--cp-surface-soft); overflow: hidden; }
+    .rail span { display: block; height: 100%; width: var(--p); background: var(--cp-text); border-radius: inherit; }
+    .muted-row { display: flex; justify-content: space-between; gap: 8px; color: var(--cp-text-muted); font-size: 11px; font-weight: 700; }
+    .canvas { min-width: 0; }
+    .canvas-head {
+      min-height: 60px;
+      padding: 14px 18px;
+      border-bottom: 1px solid var(--cp-border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .canvas-title { font-size: 17px; font-weight: 900; }
+    .canvas-sub { color: var(--cp-text-muted); font-size: 12px; margin-top: 2px; font-family: Consolas, "Courier New", Courier, monospace; direction: ltr; text-align: left; }
+    .canvas-actions { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; justify-content: end; }
+    .filters {
+      padding: 10px 18px;
+      border-bottom: 1px solid var(--cp-border);
+      display: grid;
+      grid-template-columns: minmax(180px, 280px) auto 1fr;
+      gap: 10px;
+      align-items: center;
+    }
+    .check-toggle { display: inline-flex; align-items: center; gap: 8px; color: var(--cp-text-muted); font-size: 12px; font-weight: 800; white-space: nowrap; }
+    .check-toggle input { width: 17px; height: 17px; accent-color: var(--cp-accent); }
+    .readiness { display: flex; align-items: center; justify-content: end; gap: 8px; color: var(--cp-text-muted); font-size: 12px; font-weight: 800; }
+    .readiness strong { color: var(--cp-text); }
+    .rows { padding: 6px 0; }
+    .map-row {
+      display: grid;
+      grid-template-columns: minmax(220px, 1.15fr) 118px minmax(180px, 1fr) 136px 108px;
+      gap: 12px;
+      align-items: center;
+      padding: 12px 18px;
+      border-bottom: 1px solid var(--cp-border);
+    }
+    .map-row:last-child { border-bottom: 0; }
+    .map-row.head { color: var(--cp-text-muted); font-size: 11px; font-weight: 850; padding-top: 11px; padding-bottom: 9px; background: var(--cp-surface-soft); }
+    .field-title { font-weight: 850; font-size: 13px; }
+    .code { display: block; color: var(--cp-text-muted); font-size: 11px; margin-top: 3px; font-family: Consolas, "Courier New", Courier, monospace; direction: ltr; text-align: left; }
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 24px;
+      padding: 3px 8px;
+      border-radius: 999px;
+      border: 1px solid var(--cp-border);
+      color: var(--cp-text-muted);
+      background: var(--cp-surface);
+      font-size: 11px;
+      font-weight: 850;
+      white-space: nowrap;
+    }
+    .tag.strong { color: var(--cp-text); }
+    .tag.warn { color: var(--cp-warning); }
+    .tag.ok { color: var(--cp-success); }
+    .tag.err { color: var(--cp-danger); }
+    .tiny-status { display: inline-flex; align-items: center; gap: 7px; color: var(--cp-text-muted); font-size: 12px; font-weight: 850; white-space: nowrap; }
+    .empty { padding: 34px; color: var(--cp-text-muted); text-align: center; }
+    .inspector-card { padding: 12px 0; border-bottom: 1px solid var(--cp-border); }
+    .inspector-card:first-child { padding-top: 0; }
+    .inspector-card:last-child { border-bottom: 0; padding-bottom: 0; }
+    .label { color: var(--cp-text-muted); font-size: 11px; font-weight: 850; margin-bottom: 8px; }
+    .score { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+    .score div { background: var(--cp-surface-soft); border: 1px solid var(--cp-border); border-radius: 0.625rem; padding: 10px 8px; text-align: center; }
+    .score b { display: block; font-size: 17px; line-height: 1; }
+    .score span { display: block; margin-top: 5px; color: var(--cp-text-muted); font-size: 10px; font-weight: 800; }
+    .check-list { display: grid; gap: 8px; }
+    .check-item { display: flex; align-items: start; gap: 8px; color: var(--cp-text-muted); font-size: 12px; line-height: 1.4; }
+    .check-item .status-dot { margin-top: 5px; }
+    .notice {
+      position: fixed;
+      left: 20px;
+      bottom: 20px;
+      max-width: 360px;
+      background: var(--cp-surface);
+      border: 1px solid var(--cp-border);
+      border-radius: 0.625rem;
+      padding: 12px 14px;
+      color: var(--cp-text);
+      box-shadow: var(--cp-shadow);
+      display: none;
+      font-size: 13px;
+      font-weight: 750;
+      z-index: 5;
+    }
+    .notice.show { display: block; }
+    @media (max-width: 1160px) {
+      .workspace { grid-template-columns: 240px minmax(0, 1fr); }
+      .inspector { grid-column: 1 / -1; border-inline-start: 0; border-top: 1px solid var(--cp-border); }
+      .inspector-body { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; }
+      .inspector-card { padding: 0; border-bottom: 0; }
+    }
+    @media (max-width: 820px) {
+      body { padding: 12px; }
+      .chrome, .summary { grid-template-columns: 1fr; flex-direction: column; align-items: stretch; }
+      .stats { justify-content: space-between; }
+      .workspace { grid-template-columns: 1fr; }
+      .sidebar, .inspector { border: 0; border-top: 1px solid var(--cp-border); }
+      .sidebar { order: 1; }
+      .canvas { order: 2; }
+      .inspector { order: 3; }
+      .filters { grid-template-columns: 1fr; }
+      .readiness { justify-content: start; }
+      .map-row, .map-row.head { grid-template-columns: 1fr; gap: 8px; }
+      .map-row.head { display: none; }
+      .inspector-body { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <header class="chrome">
+      <div class="identity">
+        <div class="mark">P+</div>
+        <div>
+          <div class="kicker" data-i18n="kicker"></div>
+          <h1 data-i18n="title"></h1>
+        </div>
+      </div>
+      <div class="chrome-actions">
+        <div class="language" aria-label="Language">
+          <button type="button" id="lang-he" class="active" onclick="App.setLang('he')">HE</button>
+          <button type="button" id="lang-en" onclick="App.setLang('en')">EN</button>
+        </div>
+        <button type="button" class="button ghost" onclick="App.resetDemo()" data-i18n="reset"></button>
+        <button type="button" class="button primary" onclick="App.saveDemo()" data-i18n="save"></button>
+      </div>
+    </header>
+
+    <section class="summary">
+      <div>
+        <div class="profile-title" data-i18n="profile"></div>
+        <div class="profile-sub" data-i18n="profileSub"></div>
+      </div>
+      <div class="stats" id="stats"></div>
+    </section>
+
+    <section class="workspace">
+      <aside class="sidebar">
+        <div class="section-head">
+          <div>
+            <div class="section-title" data-i18n="tables"></div>
+            <div class="section-note" data-i18n="tablesSub"></div>
+          </div>
+        </div>
+        <div class="sidebar-body">
+          <input class="input search" id="entitySearch" oninput="App.renderEntities()" />
+          <div class="table-list" id="entityList"></div>
+        </div>
+      </aside>
+
+      <section class="canvas">
+        <div class="canvas-head">
+          <div>
+            <div class="canvas-title" id="selectedTitle"></div>
+            <div class="canvas-sub" id="selectedSub"></div>
+          </div>
+          <div class="canvas-actions">
+            <button class="button" type="button" onclick="App.autoMap()" data-i18n="autoMap"></button>
+            <button class="button primary" type="button" onclick="App.validateSelected()" data-i18n="validate"></button>
+          </div>
+        </div>
+        <div class="filters">
+          <input class="input" id="fieldSearch" oninput="App.renderMappings()" />
+          <label class="check-toggle"><input id="missingOnly" type="checkbox" onchange="App.renderMappings()" /><span data-i18n="missingOnly"></span></label>
+          <div class="readiness" id="readiness"></div>
+        </div>
+        <div class="rows">
+          <div class="map-row head">
+            <div data-i18n="payplusField"></div>
+            <div data-i18n="required"></div>
+            <div data-i18n="dynamicsField"></div>
+            <div data-i18n="rule"></div>
+            <div data-i18n="status"></div>
+          </div>
+          <div id="mappingRows"></div>
+        </div>
+      </section>
+
+      <aside class="inspector">
+        <div class="section-head">
+          <div>
+            <div class="section-title" data-i18n="inspector"></div>
+            <div class="section-note" data-i18n="inspectorSub"></div>
+          </div>
+        </div>
+        <div class="inspector-body">
+          <div class="inspector-card">
+            <div class="label" data-i18n="summary"></div>
+            <div class="score" id="score"></div>
+          </div>
+          <div class="inspector-card">
+            <div class="label" data-i18n="checks"></div>
+            <div class="check-list" id="checks"></div>
+          </div>
+          <div class="inspector-card">
+            <div class="label" data-i18n="payload"></div>
+            <textarea id="payload" readonly></textarea>
+          </div>
+        </div>
+      </aside>
+    </section>
+  </main>
+  <div class="notice" id="notice"></div>
+
+  <script>
+    const i18n = {
+      he: {
+        kicker: "PAYPLUS · DYNAMICS 365",
+        title: "Mapping Studio",
+        reset: "איפוס",
+        save: "שמירה",
+        profile: "Sync Profile · Sandbox",
+        profileSub: "פקד אחד נקי על גבי הפרופיל: בוחרים טבלה, רואים שדות, מאשרים מיפוי אוטומטי ומתקנים רק מה שחסר.",
+        tables: "טבלאות",
+        tablesSub: "בתוך הפרופיל",
+        autoMap: "מיפוי אוטומטי",
+        validate: "בדיקה",
+        missingOnly: "רק חסרים",
+        inspector: "מוכנות",
+        inspectorSub: "בדיקה שקטה לפני שמירה",
+        summary: "סיכום",
+        checks: "בדיקות",
+        payload: "Payload",
+        payplusField: "PayPlus",
+        required: "חובה",
+        dynamicsField: "Dynamics",
+        rule: "כלל",
+        status: "סטטוס",
+        searchTable: "חיפוש טבלה",
+        searchField: "חיפוש שדה",
+        tablesCount: "טבלאות",
+        fieldsCount: "שדות",
+        ready: "מוכנות",
+        missing: "חסרים",
+        mapped: "ממופה",
+        notMapped: "חסר",
+        requiredYes: "חובה",
+        requiredNo: "רשות",
+        ootb: "OOTB",
+        custom: "Custom",
+        direct: "ישיר",
+        trim: "ניקוי רווחים",
+        phone: "טלפון",
+        vat: "עוסק",
+        fixed: "קבוע",
+        noRows: "אין שדות להצגה",
+        reqOk: "כל שדות החובה ממופים.",
+        reqWarn: "יש שדות חובה ללא מיפוי.",
+        ootbOk: "קיימת חבילת מיפוי מוכנה לטבלה זו.",
+        ootbWarn: "לטבלה מותאמת אין הצעות מלאות מראש.",
+        dupOk: "לא נמצאו כפילויות בשדות Dynamics.",
+        noticeAuto: "הצעות המיפוי הוחלו על הטבלה הנבחרת.",
+        noticeSave: "טיוטת המיפוי נשמרה בדמו.",
+        noticeOk: "הבדיקה עברה.",
+        noticeWarn: "הבדיקה מצאה שדות חובה חסרים."
+      },
+      en: {
+        kicker: "PAYPLUS · DYNAMICS 365",
+        title: "Mapping Studio",
+        reset: "Reset",
+        save: "Save",
+        profile: "Sync Profile · Sandbox",
+        profileSub: "One clean control on the profile: pick a table, review fields, accept automatic suggestions, and fix only what is missing.",
+        tables: "Tables",
+        tablesSub: "Inside the profile",
+        autoMap: "Auto Map",
+        validate: "Validate",
+        missingOnly: "Missing only",
+        inspector: "Readiness",
+        inspectorSub: "Quiet checks before saving",
+        summary: "Summary",
+        checks: "Checks",
+        payload: "Payload",
+        payplusField: "PayPlus",
+        required: "Required",
+        dynamicsField: "Dynamics",
+        rule: "Rule",
+        status: "Status",
+        searchTable: "Search table",
+        searchField: "Search field",
+        tablesCount: "Tables",
+        fieldsCount: "Fields",
+        ready: "Ready",
+        missing: "Missing",
+        mapped: "Mapped",
+        notMapped: "Missing",
+        requiredYes: "Required",
+        requiredNo: "Optional",
+        ootb: "OOTB",
+        custom: "Custom",
+        direct: "Direct",
+        trim: "Trim",
+        phone: "Phone",
+        vat: "VAT",
+        fixed: "Fixed",
+        noRows: "No fields to show",
+        reqOk: "All required fields are mapped.",
+        reqWarn: "Some required fields are not mapped.",
+        ootbOk: "A prepared mapping pack exists for this table.",
+        ootbWarn: "Custom tables do not have complete prepared suggestions.",
+        dupOk: "No duplicate Dynamics fields found.",
+        noticeAuto: "Mapping suggestions were applied to the selected table.",
+        noticeSave: "Demo mapping draft saved.",
+        noticeOk: "Validation passed.",
+        noticeWarn: "Validation found required fields missing."
+      }
+    };
+
+    const seed = [
+      {
+        id: "account",
+        schema: "account",
+        he: "לקוח",
+        en: "Account",
+        ootb: true,
+        fields: ["name", "emailaddress1", "telephone1", "address1_city", "address1_line1", "accountnumber", "alex_vatnumber"],
+        rows: [
+          { key: "customer_name", he: "שם לקוח", en: "Customer name", type: "string", req: true, map: "name", suggest: "name", rule: "trim" },
+          { key: "email", he: "אימייל", en: "Email", type: "email", req: true, map: "emailaddress1", suggest: "emailaddress1", rule: "direct" },
+          { key: "phone", he: "טלפון", en: "Phone", type: "phone", req: false, map: "telephone1", suggest: "telephone1", rule: "phone" },
+          { key: "vat_number", he: "מספר עוסק", en: "VAT number", type: "number", req: false, map: "", suggest: "alex_vatnumber", rule: "vat" },
+          { key: "city", he: "עיר", en: "City", type: "string", req: false, map: "address1_city", suggest: "address1_city", rule: "trim" },
+          { key: "subject_code", he: "מזהה חיצוני", en: "External code", type: "string", req: false, map: "accountnumber", suggest: "accountnumber", rule: "direct" }
+        ]
+      },
+      {
+        id: "contact",
+        schema: "contact",
+        he: "איש קשר",
+        en: "Contact",
+        ootb: true,
+        fields: ["fullname", "emailaddress1", "mobilephone", "telephone1", "jobtitle", "parentcustomerid"],
+        rows: [
+          { key: "full_name", he: "שם מלא", en: "Full name", type: "string", req: true, map: "fullname", suggest: "fullname", rule: "trim" },
+          { key: "contact_email", he: "אימייל", en: "Contact email", type: "email", req: true, map: "", suggest: "emailaddress1", rule: "direct" },
+          { key: "cell_phone", he: "נייד", en: "Mobile", type: "phone", req: false, map: "mobilephone", suggest: "mobilephone", rule: "phone" },
+          { key: "job_position", he: "תפקיד", en: "Job position", type: "choice", req: false, map: "jobtitle", suggest: "jobtitle", rule: "direct" }
+        ]
+      },
+      {
+        id: "product",
+        schema: "product",
+        he: "מוצר",
+        en: "Product",
+        ootb: true,
+        fields: ["name", "productnumber", "price", "standardcost", "description"],
+        rows: [
+          { key: "name", he: "שם מוצר", en: "Product name", type: "string", req: true, map: "name", suggest: "name", rule: "trim" },
+          { key: "barcode", he: "ברקוד", en: "Barcode", type: "string", req: false, map: "productnumber", suggest: "productnumber", rule: "direct" },
+          { key: "price", he: "מחיר", en: "Price", type: "money", req: true, map: "", suggest: "price", rule: "direct" },
+          { key: "description", he: "תיאור", en: "Description", type: "string", req: false, map: "description", suggest: "description", rule: "trim" }
+        ]
+      },
+      {
+        id: "invoice",
+        schema: "invoice",
+        he: "חשבונית",
+        en: "Invoice",
+        ootb: true,
+        fields: ["invoicenumber", "customerid", "totalamount", "transactioncurrencyid", "description"],
+        rows: [
+          { key: "invoice_number", he: "מספר", en: "Invoice number", type: "string", req: true, map: "invoicenumber", suggest: "invoicenumber", rule: "direct" },
+          { key: "customer_uid", he: "לקוח PayPlus", en: "PayPlus customer", type: "lookup", req: true, map: "", suggest: "customerid", rule: "direct" },
+          { key: "amount", he: "סכום", en: "Amount", type: "money", req: true, map: "totalamount", suggest: "totalamount", rule: "direct" },
+          { key: "currency_code", he: "מטבע", en: "Currency", type: "choice", req: true, map: "transactioncurrencyid", suggest: "transactioncurrencyid", rule: "direct" }
+        ]
+      },
+      {
+        id: "custom",
+        schema: "alex_membership",
+        he: "מנוי מותאם",
+        en: "Custom membership",
+        ootb: false,
+        fields: ["alex_name", "alex_customer", "alex_amount", "alex_plan", "alex_startdate"],
+        rows: [
+          { key: "customer_uid", he: "לקוח PayPlus", en: "PayPlus customer", type: "lookup", req: true, map: "alex_customer", suggest: "", rule: "direct" },
+          { key: "amount", he: "סכום", en: "Amount", type: "money", req: true, map: "", suggest: "", rule: "direct" },
+          { key: "description", he: "תיאור", en: "Description", type: "string", req: false, map: "alex_plan", suggest: "", rule: "trim" }
+        ]
+      }
+    ];
+
+    const state = { lang: "he", selected: "account", entities: JSON.parse(JSON.stringify(seed)) };
+    const text = key => i18n[state.lang][key] || key;
+    const entity = () => state.entities.find(item => item.id === state.selected);
+    const html = value => String(value).replace(/[&<>"]/g, char => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "\"": "&quot;" }[char]));
+    const mapped = item => item.rows.filter(row => row.map).length;
+    const missingRequired = item => item.rows.filter(row => row.req && !row.map).length;
+    const readiness = item => Math.round((mapped(item) / item.rows.length) * 100);
+
+    function renderText() {
+      document.documentElement.lang = state.lang;
+      document.documentElement.dir = state.lang === "he" ? "rtl" : "ltr";
+      document.querySelectorAll("[data-i18n]").forEach(node => node.textContent = text(node.dataset.i18n));
+      document.getElementById("lang-he").classList.toggle("active", state.lang === "he");
+      document.getElementById("lang-en").classList.toggle("active", state.lang === "en");
+      document.getElementById("entitySearch").placeholder = text("searchTable");
+      document.getElementById("fieldSearch").placeholder = text("searchField");
+    }
+
+    function renderStats() {
+      const rows = state.entities.flatMap(item => item.rows);
+      const done = rows.filter(row => row.map).length;
+      const ready = Math.round((done / rows.length) * 100);
+      document.getElementById("stats").innerHTML = [
+        [state.entities.length, text("tablesCount")],
+        [rows.length, text("fieldsCount")],
+        [done, text("mapped")],
+        [ready + "%", text("ready")]
+      ].map(pair => `<div class="stat"><b>${pair[0]}</b><span>${pair[1]}</span></div>`).join("");
+    }
+
+    function renderEntities() {
+      const query = (document.getElementById("entitySearch")?.value || "").trim().toLowerCase();
+      document.getElementById("entityList").innerHTML = state.entities
+        .filter(item => [item.he, item.en, item.schema].join(" ").toLowerCase().includes(query))
+        .map(item => {
+          const miss = missingRequired(item);
+          return `
+            <button type="button" class="table-item ${item.id === state.selected ? "active" : ""}" onclick="App.selectEntity('${item.id}')">
+              <div class="table-line">
+                <div>
+                  <div class="table-name">${html(item[state.lang])}</div>
+                  <div class="table-schema">${html(item.schema)}</div>
+                </div>
+                <span class="status-dot ${miss ? "warn" : "ok"}"></span>
+              </div>
+              <div class="rail"><span style="--p:${readiness(item)}%"></span></div>
+              <div class="muted-row"><span>${mapped(item)}/${item.rows.length}</span><span>${item.ootb ? text("ootb") : text("custom")}</span></div>
+            </button>
+          `;
+        }).join("");
+    }
+
+    function renderMappings() {
+      const item = entity();
+      document.getElementById("selectedTitle").textContent = item[state.lang];
+      document.getElementById("selectedSub").textContent = item.schema;
+      const search = (document.getElementById("fieldSearch")?.value || "").trim().toLowerCase();
+      const onlyMissing = document.getElementById("missingOnly")?.checked;
+      const rows = item.rows.filter(row => {
+        const haystack = [row.key, row.he, row.en, row.map, row.type].join(" ").toLowerCase();
+        return haystack.includes(search) && (!onlyMissing || !row.map);
+      });
+      document.getElementById("readiness").innerHTML = `<span>${text("ready")}</span><strong>${readiness(item)}%</strong><span>${missingRequired(item)} ${text("missing")}</span>`;
+      document.getElementById("mappingRows").innerHTML = rows.length ? rows.map(row => rowMarkup(item, row)).join("") : `<div class="empty">${text("noRows")}</div>`;
+      renderInspector(item);
+    }
+
+    function rowMarkup(item, row) {
+      const index = item.rows.indexOf(row);
+      const options = ["", ...item.fields].map(name => `<option value="${html(name)}" ${name === row.map ? "selected" : ""}>${name ? html(name) : text("notMapped")}</option>`).join("");
+      const rules = ["direct", "trim", "phone", "vat", "fixed"].map(rule => `<option value="${rule}" ${rule === row.rule ? "selected" : ""}>${text(rule)}</option>`).join("");
+      return `
+        <div class="map-row">
+          <div><span class="field-title">${html(row[state.lang])}</span><span class="code">${html(row.key)}</span></div>
+          <div><span class="tag ${row.req ? "err" : ""}">${row.req ? text("requiredYes") : text("requiredNo")}</span></div>
+          <div><select onchange="App.setField(${index}, this.value)">${options}</select></div>
+          <div><select onchange="App.setRule(${index}, this.value)">${rules}</select></div>
+          <div><span class="tiny-status"><span class="status-dot ${row.map ? "ok" : "warn"}"></span>${row.map ? text("mapped") : text("notMapped")}</span></div>
+        </div>
+      `;
+    }
+
+    function renderInspector(item) {
+      const miss = missingRequired(item).length;
+      document.getElementById("score").innerHTML = `
+        <div><b>${readiness(item)}%</b><span>${text("ready")}</span></div>
+        <div><b>${mapped(item)}</b><span>${text("mapped")}</span></div>
+        <div><b>${miss}</b><span>${text("missing")}</span></div>
+      `;
+      document.getElementById("checks").innerHTML = [
+        [miss ? "warn" : "ok", miss ? text("reqWarn") : text("reqOk")],
+        [item.ootb ? "ok" : "warn", item.ootb ? text("ootbOk") : text("ootbWarn")],
+        ["ok", text("dupOk")]
+      ].map(check => `<div class="check-item"><span class="status-dot ${check[0]}"></span><span>${check[1]}</span></div>`).join("");
+      const payload = {};
+      item.rows.filter(row => row.map).forEach(row => { payload[row.key] = `@{${row.map}}`; });
+      document.getElementById("payload").value = JSON.stringify({ table: item.schema, operation: "upsert", fields: payload }, null, 2);
+    }
+
+    function toast(key) {
+      const node = document.getElementById("notice");
+      node.textContent = text(key);
+      node.classList.add("show");
+      clearTimeout(toast.timer);
+      toast.timer = setTimeout(() => node.classList.remove("show"), 2400);
+    }
+
+    function render() {
+      renderText();
+      renderStats();
+      renderEntities();
+      renderMappings();
+    }
+
+    window.App = {
+      setLang(lang) { state.lang = lang; render(); },
+      selectEntity(id) { state.selected = id; document.getElementById("missingOnly").checked = false; document.getElementById("fieldSearch").value = ""; render(); },
+      renderEntities,
+      renderMappings,
+      setField(index, value) { entity().rows[index].map = value; renderStats(); renderEntities(); renderMappings(); },
+      setRule(index, value) { entity().rows[index].rule = value; renderMappings(); },
+      autoMap() { entity().rows.forEach(row => { if (row.suggest) row.map = row.suggest; }); render(); toast("noticeAuto"); },
+      validateSelected() { toast(missingRequired(entity()).length ? "noticeWarn" : "noticeOk"); },
+      saveDemo() { toast("noticeSave"); },
+      resetDemo() { state.entities = JSON.parse(JSON.stringify(seed)); render(); }
+    };
+
+    render();
+  </script>
+</body>
+</html>

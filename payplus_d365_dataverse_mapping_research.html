@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>מחקר מיפוי Dynamics 365 Sales / Dataverse מול PayPlus</title>
+  <script>
+    (() => {
+      const param = new URLSearchParams(window.location.search).get("scoutTheme");
+      const theme =
+        param || (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+      document.documentElement.setAttribute("data-theme", theme);
+    })();
+  </script>
+  <style>
+    :root {
+      color-scheme: light;
+      --cp-bg: #f7f4ef;
+      --cp-bg-elevated: #fcfbf8;
+      --cp-surface: #ffffff;
+      --cp-surface-soft: #f5f5f5;
+      --cp-border: #dedede;
+      --cp-border-strong: #919191;
+      --cp-text: #242424;
+      --cp-text-muted: #5c5c5c;
+      --cp-text-soft: #6f6f6f;
+      --cp-accent: #b11f4b;
+      --cp-accent-hover: #9a1a41;
+      --cp-accent-soft: rgba(177, 31, 75, 0.08);
+      --cp-accent-fg: #ffffff;
+      --cp-success: #16a34a;
+      --cp-danger: #dc2626;
+      --cp-warning: #f59e0b;
+      --cp-link: #0078d4;
+      --cp-shadow: 0 18px 48px rgba(0, 0, 0, 0.12);
+      --cp-overlay: rgba(255, 255, 255, 0.8);
+      --cp-panel: rgba(255, 255, 255, 0.86);
+      --cp-panel-strong: rgba(255, 255, 255, 0.96);
+      --cp-sheen: rgba(255, 255, 255, 0.55);
+      --cp-highlight: rgba(177, 31, 75, 0.12);
+    }
+    html[data-theme="dark"] {
+      color-scheme: dark;
+      --cp-bg: #3d3b3a;
+      --cp-bg-elevated: #343231;
+      --cp-surface: #292929;
+      --cp-surface-soft: #2e2e2e;
+      --cp-border: #474747;
+      --cp-border-strong: #5f5f5f;
+      --cp-text: #dedede;
+      --cp-text-muted: #919191;
+      --cp-text-soft: #b0b0b0;
+      --cp-accent: #fd8ea1;
+      --cp-accent-hover: #fb7b91;
+      --cp-accent-soft: rgba(253, 142, 161, 0.14);
+      --cp-accent-fg: #1a1a1a;
+      --cp-success: #4ade80;
+      --cp-danger: #f87171;
+      --cp-warning: #fbbf24;
+      --cp-link: #4da6ff;
+      --cp-shadow: 0 18px 48px rgba(0, 0, 0, 0.32);
+      --cp-overlay: rgba(41, 41, 41, 0.88);
+      --cp-panel: rgba(41, 41, 41, 0.72);
+      --cp-panel-strong: rgba(41, 41, 41, 0.96);
+      --cp-sheen: rgba(255, 255, 255, 0.04);
+      --cp-highlight: rgba(253, 142, 161, 0.12);
+    }
+
+    * { box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      background: var(--cp-bg);
+      color: var(--cp-text);
+      font-family: "Segoe UI", Aptos, Calibri, -apple-system, BlinkMacSystemFont, sans-serif;
+      line-height: 1.7;
+    }
+
+    a { color: var(--cp-link); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    .page {
+      max-width: 1320px;
+      margin: 0 auto;
+      padding: 32px 24px 64px;
+    }
+
+    .cover {
+      min-height: 78vh;
+      display: grid;
+      align-content: center;
+      gap: 24px;
+      padding: 48px;
+      border: 1px solid var(--cp-border);
+      border-radius: 16px;
+      background: linear-gradient(135deg, var(--cp-panel-strong), var(--cp-bg-elevated));
+      box-shadow: var(--cp-shadow);
+    }
+
+    .eyebrow {
+      color: var(--cp-accent);
+      font-weight: 700;
+      letter-spacing: 0;
+      margin: 0;
+    }
+
+    h1, h2, h3, h4 { line-height: 1.25; margin: 0; }
+
+    h1 {
+      font-size: clamp(2.2rem, 5vw, 4.7rem);
+      max-width: 980px;
+    }
+
+    h2 {
+      font-size: clamp(1.65rem, 3vw, 2.4rem);
+      margin-bottom: 16px;
+    }
+
+    h3 {
+      font-size: 1.2rem;
+      margin: 22px 0 10px;
+    }
+
+    h4 { font-size: 1rem; margin: 16px 0 8px; }
+
+    .subtitle {
+      color: var(--cp-text-muted);
+      font-size: 1.12rem;
+      max-width: 920px;
+      margin: 0;
+    }
+
+    .meta-grid, .kpi-grid, .cards-grid {
+      display: grid;
+      gap: 16px;
+    }
+
+    .meta-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    .kpi-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); margin: 22px 0; }
+    .cards-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+
+    .meta, .card, .kpi, .callout {
+      background: var(--cp-surface);
+      border: 1px solid var(--cp-border);
+      border-radius: 16px;
+      padding: 18px;
+    }
+
+    .meta span, .kpi span {
+      display: block;
+      color: var(--cp-text-muted);
+      font-size: 0.86rem;
+    }
+
+    .meta strong, .kpi strong {
+      display: block;
+      color: var(--cp-text);
+      font-size: 1.04rem;
+      margin-top: 4px;
+    }
+
+    nav.toc {
+      position: sticky;
+      top: 0;
+      z-index: 3;
+      margin: 22px 0 28px;
+      padding: 12px;
+      background: var(--cp-panel-strong);
+      border: 1px solid var(--cp-border);
+      border-radius: 16px;
+      box-shadow: var(--cp-shadow);
+    }
+
+    nav.toc ul {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    nav.toc a {
+      display: inline-block;
+      padding: 6px 10px;
+      border-radius: 0.625rem;
+      color: var(--cp-text);
+      background: var(--cp-surface-soft);
+      border: 1px solid var(--cp-border);
+      font-size: 0.9rem;
+    }
+
+    section {
+      margin: 28px 0;
+      padding: 28px;
+      background: var(--cp-panel);
+      border: 1px solid var(--cp-border);
+      border-radius: 16px;
+    }
+
+    p { margin: 0 0 14px; }
+
+    ul { margin: 0 0 14px; }
+
+    li { margin: 4px 0; }
+
+    .callout {
+      border-inline-start: 6px solid var(--cp-accent);
+      background: var(--cp-accent-soft);
+      margin: 16px 0;
+    }
+
+    .small { font-size: 0.88rem; color: var(--cp-text-muted); }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 2px 8px;
+      border-radius: 0.625rem;
+      border: 1px solid var(--cp-border);
+      background: var(--cp-surface-soft);
+      color: var(--cp-text-muted);
+      font-size: 0.82rem;
+      white-space: nowrap;
+    }
+
+    .tag.good { color: var(--cp-success); border-color: var(--cp-success); }
+    .tag.warn { color: var(--cp-warning); border-color: var(--cp-warning); }
+    .tag.danger { color: var(--cp-danger); border-color: var(--cp-danger); }
+
+    .table-wrap {
+      overflow-x: auto;
+      border: 1px solid var(--cp-border);
+      border-radius: 16px;
+      margin: 14px 0 24px;
+      background: var(--cp-surface);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 920px;
+      direction: rtl;
+    }
+
+    th, td {
+      padding: 11px 12px;
+      border-bottom: 1px solid var(--cp-border);
+      text-align: right;
+      vertical-align: top;
+      font-size: 0.92rem;
+    }
+
+    th {
+      background: var(--cp-surface-soft);
+      color: var(--cp-text);
+      font-weight: 700;
+      position: sticky;
+      top: 0;
+    }
+
+    tr:last-child td { border-bottom: 0; }
+
+    code, .mono {
+      font-family: Consolas, "Courier New", Courier, monospace;
+      direction: ltr;
+      unicode-bidi: isolate;
+      color: var(--cp-text);
+      background: var(--cp-surface-soft);
+      border: 1px solid var(--cp-border);
+      border-radius: 0.625rem;
+      padding: 1px 6px;
+      font-size: 0.86em;
+    }
+
+    pre {
+      direction: ltr;
+      text-align: left;
+      white-space: pre-wrap;
+      background: var(--cp-surface);
+      border: 1px solid var(--cp-border);
+      border-radius: 16px;
+      padding: 18px;
+      overflow-x: auto;
+      color: var(--cp-text);
+      font-family: Consolas, "Courier New", Courier, monospace;
+    }
+
+    .flow-grid {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 12px;
+      margin: 18px 0;
+    }
+
+    .flow-node {
+      padding: 16px;
+      border: 1px solid var(--cp-border);
+      border-radius: 16px;
+      background: var(--cp-surface);
+      text-align: center;
+      min-height: 98px;
+      display: grid;
+      align-content: center;
+    }
+
+    .flow-node strong { display: block; }
+    .flow-node span { color: var(--cp-text-muted); font-size: 0.84rem; }
+
+    .decision-list {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .footer {
+      margin-top: 32px;
+      color: var(--cp-text-muted);
+      font-size: 0.88rem;
+      text-align: center;
+    }
+
+    @media (max-width: 900px) {
+      .cover { padding: 28px; }
+      .meta-grid, .kpi-grid, .cards-grid, .decision-list { grid-template-columns: 1fr; }
+      .flow-grid { grid-template-columns: 1fr; }
+      section { padding: 20px; }
+      nav.toc { position: static; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header class="cover" id="cover">
+      <p class="eyebrow">מחקר טכני ועסקי · Dynamics 365 Sales · Microsoft Dataverse · PayPlus API v1.0</p>
+      <h1>מיפוי מודל נתונים וארכיטקטורת אינטגרציה מלאה מול PayPlus</h1>
+      <p class="subtitle">מסמך Field Mapping מקצועי בעברית לתכנון אינטגרציה בין ישויות Standard/OOTB של Dynamics 365 Sales ו-Dataverse לבין מודל PayPlus, תוך צמצום Customizations למינימום ושמירה על הפרדת אחריות בין Sales, Clearing, Documents ו-Tokenization.</p>
+      <div class="meta-grid">
+        <div class="meta"><span>תאריך מחקר</span><strong>2026-07-09</strong></div>
+        <div class="meta"><span>גרסת PayPlus</span><strong>REST API v1.0</strong></div>
+        <div class="meta"><span>מקור Dynamics</span><strong>Microsoft Learn Entity Reference</strong></div>
+        <div class="meta"><span>תוצר</span><strong>HTML למסירה ללקוח ולפיתוח</strong></div>
+      </div>
+    </header>
+
+    <nav class="toc" aria-label="תוכן עניינים">
+      <ul>
+        <li><a href="#executive">תקציר מנהלים</a></li>
+        <li><a href="#sources">מקורות</a></li>
+        <li><a href="#architecture">ארכיטקטורה</a></li>
+        <li><a href="#dynamics-model">מודל Dynamics</a></li>
+        <li><a href="#payplus-model">מודל PayPlus</a></li>
+        <li><a href="#mapping">Field Mapping</a></li>
+        <li><a href="#currency">Currency</a></li>
+        <li><a href="#gap">Gap Analysis</a></li>
+        <li><a href="#power-platform">Power Platform</a></li>
+        <li><a href="#conclusion">מסקנות</a></li>
+      </ul>
+    </nav>
+
+    <section id="executive">
+      <h2>תקציר מנהלים</h2>
+      <p>ההמלצה המרכזית היא להשתמש ב-Dynamics 365 Sales וב-Dataverse כמקור האמת ללקוחות, מוצרים, מחירונים, הצעות מחיר, הזמנות וחשבוניות מכירה, ולהשתמש ב-PayPlus כמקור האמת לתשלומים, טוקנים, Payment Pages, סטטוסי סליקה ומסמכי Invoice+ שנוצרים בפועל במערכת PayPlus. כך מנצלים את המודל הסטנדרטי של Dynamics, מצמצמים Custom Fields, ומוסיפים רק שכבת זיהוי, לוגים וקורלציה.</p>
+      <div class="kpi-grid">
+        <div class="kpi"><span>התאמה גבוהה OOTB</span><strong>Customer, Product, Items, Amounts, Currency</strong></div>
+        <div class="kpi"><span>פערים עיקריים</span><strong>PayPlus UIDs, Tokens, Payment Link, Document UUID</strong></div>
+        <div class="kpi"><span>מודל אינטגרציה מומלץ</span><strong>Dataverse + Power Automate + Custom Connector + Webhooks</strong></div>
+      </div>
+      <div class="callout">
+        <strong>החלטת SoR מומלצת:</strong> Dynamics מנהל את תהליך המכירה והמסמך העסקי; PayPlus מנהל את התשלום והמסמך הפיסקלי אם Invoice+ פעיל. ב-Dataverse נשמרים מזהי PayPlus, סטטוס מסונכרן, קישורים למסמכים ולוג אירועים, אך לא נשמרים מספרי כרטיס מלאים או CVV.
+      </div>
+    </section>
+
+    <section id="sources">
+      <h2>מקורות רשמיים ותחולת המחקר</h2>
+      <p>המחקר מבוסס על Microsoft Learn ועל PayPlus API Documentation. במקומות שבהם דפי PayPlus היו חסומים זמנית או חלקיים, נעשה שימוש גם ב-OpenAPI של ה-Connector המקומי, שנבנה מול התיעוד הרשמי והורץ בסביבת Power Platform, אך קישורי PayPlus הרשמי נשארים Reference URL לכל ממצא.</p>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>תחום</th><th>מקור</th><th>Reference URL</th><th>שימוש במחקר</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Dynamics 365 Sales</td><td>Dynamics 365 Sales documentation + Sales entity reference</td><td><a href="https://learn.microsoft.com/en-us/dynamics365/sales/">Dynamics 365 Sales documentation</a>, <a href="https://learn.microsoft.com/en-us/dynamics365/developer/reference/entities/quote">Quote</a>, <a href="https://learn.microsoft.com/en-us/dynamics365/developer/reference/entities/salesorder">Order</a>, <a href="https://learn.microsoft.com/en-us/dynamics365/developer/reference/entities/invoice">Invoice</a></td><td>Sales model, Quote/Order/Invoice/Product/Price List tables, relationships and required fields.</td></tr>
+            <tr><td>Dataverse Table Reference</td><td>Microsoft Dataverse table/entity reference</td><td><a href="https://learn.microsoft.com/en-us/power-apps/developer/data-platform/reference/entities/account">Account</a>, <a href="https://learn.microsoft.com/en-us/power-apps/developer/data-platform/reference/entities/contact">Contact</a>, <a href="https://learn.microsoft.com/en-us/power-apps/developer/data-platform/reference/entities/customeraddress">CustomerAddress</a>, <a href="https://learn.microsoft.com/en-us/power-apps/developer/data-platform/reference/entities/transactioncurrency">TransactionCurrency</a></td><td>Customer management, addresses, currency model, required and relationship metadata.</td></tr>
+            <tr><td>Dataverse Currency</td><td>Transaction Currency conceptual docs</td><td><a href="https://learn.microsoft.com/en-us/power-apps/developer/data-platform/transaction-currency-currency-entity">Transaction Currency table</a></td><td>Base currency, exchange rate formula, base amount fields, precision.</td></tr>
+            <tr><td>PayPlus</td><td>PayPlus API Documentation</td><td><a href="https://docs.payplus.co.il/reference/introduction">Introduction</a>, <a href="https://docs.payplus.co.il/reference/post_paymentpages-generatelink">Generate Payment Link</a>, <a href="https://docs.payplus.co.il/reference/post_transactions-charge">Charge Transaction</a>, <a href="https://docs.payplus.co.il/reference/post_recurringpayments-add">Recurring Payments Add</a>, <a href="https://docs.payplus.co.il/reference/post_books-docs-new-doctype">Create new document</a></td><td>PayPlus objects, request fields, endpoints, document types and integration options.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="architecture">
+      <h2>ארכיטקטורה מוצעת</h2>
+      <div class="cards-grid">
+        <div class="card">
+          <h3>עקרון פעולה</h3>
+          <p>Dynamics/Dataverse יוזם אירועים עסקיים: יצירת לקוח, יצירת קישור תשלום, חיוב Token, זיכוי, סנכרון מסמך. Power Automate אחראי לאורקסטרציה, וה-Custom Connector קורא ל-PayPlus עם מפתחות שמוגדרים ברמת החיבור.</p>
+        </div>
+        <div class="card">
+          <h3>מינימום Customization</h3>
+          <p>שדות OOTB משמשים לכל מידע עסקי מוכר: לקוח, כתובות, מוצרים, שורות, מחירים, הנחות, מס, מטבע, סטטוס. Custom נדרש רק לזיהויי PayPlus, לוגים, סטטוסי Callback וטוקנים שמורים.</p>
+        </div>
+      </div>
+
+      <div class="flow-grid" aria-label="זרימת אינטגרציה מוצעת">
+        <div class="flow-node"><strong>Dynamics 365 Sales</strong><span>Quote / Order / Invoice / Customer</span></div>
+        <div class="flow-node"><strong>Dataverse</strong><span>OOTB + PayPlus tracking tables</span></div>
+        <div class="flow-node"><strong>Power Automate</strong><span>Business orchestration</span></div>
+        <div class="flow-node"><strong>Custom Connector</strong><span>PayPlus API v1.0</span></div>
+        <div class="flow-node"><strong>PayPlus</strong><span>Payment, Token, Invoice+</span></div>
+      </div>
+
+      <h3>דיאגרמת זרימה (Mermaid)</h3>
+      <pre class="mermaid">flowchart LR
+    A[Dynamics 365 Sales\nAccount / Contact / Product / Quote / Order / Invoice]
+    B[Dataverse\nOOTB tables + PayPlus mapping/log tables]
+    C[Power Automate\nValidation, payment, refund, reconciliation flows]
+    D[Custom Connector\nPayPlus REST API v1.0]
+    E[PayPlus\nPayment Pages, Transactions, Tokens, Recurring]
+    F[Invoice+ Documents\nTax invoice, receipt, refund document]
+    G[Webhooks / IPN callbacks]
+    H[Transaction & Document Log\nDataverse custom tables]
+
+    A --> B --> C --> D --> E
+    E --> F
+    E -. callback .-> G --> C --> H --> B
+    C --> A</pre>
+    </section>
+
+    <section id="dynamics-model">
+      <h2>ניתוח מודל הנתונים של Dynamics 365 Sales ו-Dataverse</h2>
+      <p>הטבלאות הבאות הן Standard/OOTB. הן מכסות את מרבית מודל PayPlus ללא צורך בשדות מותאמים, במיוחד כאשר PayPlus משמש כשכבת תשלום ולא כתחליף למודל המכירות של Dynamics.</p>
+
+      <h3>טבלת ישויות Dynamics</h3>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>טבלה</th><th>Logical Name</th><th>Display Name</th><th>Primary Key / Name</th><th>Business Required / System Required</th><th>Relationships / Lookups / Currency</th><th>Reference URL</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Quote</td><td><code>quote</code></td><td>Quote</td><td><code>quoteid</code> / <code>name</code></td><td><code>name</code>, <code>customerid</code>, <code>pricelevelid</code>, <code>transactioncurrencyid</code>, <code>statecode</code>, <code>ownerid</code></td><td>Customer lookup to Account/Contact; Price List lookup; 1:N <code>quote_details</code>; status Draft/Active/Won/Closed; money fields have base equivalents.</td><td><a href="https://learn.microsoft.com/en-us/dynamics365/developer/reference/entities/quote">Microsoft Learn Quote</a></td></tr>
+            <tr><td>Quote Product</td><td><code>quotedetail</code></td><td>Quote Product</td><td><code>quotedetailid</code> / <code>quotedetailname</code></td><td><code>quoteid</code>, <code>quantity</code>, <code>quotedetailname</code>, <code>producttypecode</code>, <code>propertyconfigurationstatus</code></td><td>Lookup to Quote, Product, UoM, TransactionCurrency; supports write-in product via <code>isproductoverridden</code>; maps naturally to PayPlus items.</td><td><a href="https://learn.microsoft.com/en-us/dynamics365/developer/reference/entities/quotedetail">Microsoft Learn QuoteDetail</a></td></tr>
+            <tr><td>Sales Order</td><td><code>salesorder</code></td><td>Order</td><td><code>salesorderid</code> / <code>name</code></td><td><code>name</code>, <code>customerid</code>, <code>pricelevelid</code>, <code>transactioncurrencyid</code>, <code>statecode</code>, <code>ownerid</code></td><td>Lookup to Quote, Opportunity, Price List, Customer; 1:N order details and invoices; states Active/Submitted/Canceled/Fulfilled/Invoiced.</td><td><a href="https://learn.microsoft.com/en-us/dynamics365/developer/reference/entities/salesorder">Microsoft Learn SalesOrder</a></td></tr>
+            <tr><td>Sales Order Product</td><td><code>salesorderdetail</code></td><td>Order Product</td><td><code>salesorderdetailid</code> / <code>salesorderdetailname</code></td><td><code>salesorderid</code>, <code>quantity</code>, <code>salesorderdetailname</code>, <code>producttypecode</code>, <code>propertyconfigurationstatus</code></td><td>Lookup to Sales Order, Quote Detail, Product, UoM, TransactionCurrency; source for invoice detail.</td><td><a href="https://learn.microsoft.com/en-us/dynamics365/developer/reference/entities/salesorderdetail">Microsoft Learn SalesOrderDetail</a></td></tr>
+            <tr><td>Invoice</td><td><code>invoice</code></td><td>Invoice</td><td><code>invoiceid</code> / <code>name</code></td><td><code>name</code>, <code>customerid</code>, <code>pricelevelid</code>, <code>transactioncurrencyid</code>, <code>statecode</code>, <code>ownerid</code></td><td>Lookup to Sales Order, Price List, Customer; 1:N invoice details; states Active/Paid/Canceled; strong candidate for PayPlus document/payment correlation.</td><td><a href="https://learn.microsoft.com/en-us/dynamics365/developer/reference/entities/invoice">Microsoft Learn Invoice</a></td></tr>
+            <tr><td>Invoice Product</td><td><code>invoicedetail</code></td><td>Invoice Product</td><td><code>invoicedetailid</code> / <code>invoicedetailname</code></td><td><code>invoiceid</code>, <code>quantity</code>, <code>invoicedetailname</code>, <code>producttypecode</code>, <code>propertyconfigurationstatus</code></td><td>Lookup to Invoice, Sales Order Detail, Product, UoM, TransactionCurrency; maps to PayPlus document/payment items.</td><td><a href="https://learn.microsoft.com/en-us/dynamics365/developer/reference/entities/invoicedetail">Microsoft Learn InvoiceDetail</a></td></tr>
+            <tr><td>Product</td><td><code>product</code></td><td>Product</td><td><code>productid</code> / <code>name</code></td><td><code>name</code>, <code>productnumber</code>, <code>defaultuomid</code>, <code>defaultuomscheduleid</code>, <code>quantitydecimal</code>, <code>productstructure</code>, <code>statecode</code></td><td>Lookup to Price List, UoM, UoM Schedule, Parent Product, TransactionCurrency; 1:N quote/order/invoice/product price levels.</td><td><a href="https://learn.microsoft.com/en-us/dynamics365/developer/reference/entities/product">Microsoft Learn Product</a></td></tr>
+            <tr><td>Product Price List / Price List Item</td><td><code>productpricelevel</code></td><td>Price List Item</td><td><code>productpricelevelid</code> / <code>productidname</code></td><td><code>productid</code>, <code>pricelevelid</code>, <code>amount</code>, <code>percentage</code>, <code>pricingmethodcode</code>, <code>uomid</code>, <code>quantitysellingcode</code></td><td>Joins Product to Price List; lookup to Discount List and TransactionCurrency; best OOTB source for PayPlus product price.</td><td><a href="https://learn.microsoft.com/en-us/dynamics365/developer/reference/entities/productpricelevel">Microsoft Learn ProductPriceLevel</a></td></tr>
+            <tr><td>Discount Type</td><td><code>discounttype</code></td><td>Discount List</td><td><code>discounttypeid</code> / <code>name</code></td><td><code>name</code>, <code>statecode</code></td><td>Defines amount vs percentage discount list via <code>isamounttype</code>; 1:N discounts and product price levels.</td><td><a href="https://learn.microsoft.com/en-us/dynamics365/developer/reference/entities/discounttype">Microsoft Learn DiscountType</a></td></tr>
+            <tr><td>Price List</td><td><code>pricelevel</code></td><td>Price List</td><td><code>pricelevelid</code> / <code>name</code></td><td><code>name</code>, <code>transactioncurrencyid</code>, <code>statecode</code></td><td>Lookup from Quotes, Orders, Invoices, Products and ProductPriceLevel; currency-scoped pricing.</td><td><a href="https://learn.microsoft.com/en-us/dynamics365/developer/reference/entities/pricelevel">Microsoft Learn PriceLevel</a></td></tr>
+            <tr><td>Account</td><td><code>account</code></td><td>Account</td><td><code>accountid</code> / <code>name</code></td><td><code>name</code>, <code>ownerid</code>, <code>statecode</code></td><td>Primary customer company; Parent Account, Primary Contact, TransactionCurrency, CustomerAddress, Contacts; stores billing identity OOTB.</td><td><a href="https://learn.microsoft.com/en-us/power-apps/developer/data-platform/reference/entities/account">Microsoft Learn Account</a></td></tr>
+            <tr><td>Contact</td><td><code>contact</code></td><td>Contact</td><td><code>contactid</code> / <code>fullname</code></td><td><code>lastname</code>, <code>ownerid</code>, <code>statecode</code></td><td>Person/customer contact; Parent Customer lookup to Account/Contact; CustomerAddress; email/phone/address OOTB.</td><td><a href="https://learn.microsoft.com/en-us/power-apps/developer/data-platform/reference/entities/contact">Microsoft Learn Contact</a></td></tr>
+            <tr><td>Transaction Currency</td><td><code>transactioncurrency</code></td><td>Currency</td><td><code>transactioncurrencyid</code> / <code>currencyname</code></td><td><code>currencyname</code>, <code>isocurrencycode</code>, <code>currencyprecision</code>, <code>currencysymbol</code>, <code>exchangerate</code>, <code>statecode</code></td><td>Referenced by all money-enabled Sales tables; stores exchange rate relative to base currency.</td><td><a href="https://learn.microsoft.com/en-us/power-apps/developer/data-platform/reference/entities/transactioncurrency">Microsoft Learn TransactionCurrency</a></td></tr>
+            <tr><td>Address entities</td><td><code>customeraddress</code></td><td>Address</td><td><code>customeraddressid</code> / <code>name</code></td><td><code>name</code>, <code>line1</code>, <code>parentid</code>, <code>objecttypecode</code></td><td>Additional addresses for Account/Contact; AddressType Bill To/Ship To/Primary/Other; parent lookup targets Account or Contact.</td><td><a href="https://learn.microsoft.com/en-us/power-apps/developer/data-platform/reference/entities/customeraddress">Microsoft Learn CustomerAddress</a></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>טבלת שדות OOTB משמעותיים</h3>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Entity</th><th>Field</th><th>Data Type</th><th>Required</th><th>OOTB</th><th>Comments</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Account</td><td><code>name</code>, <code>accountnumber</code>, <code>emailaddress1</code>, <code>telephone1</code>, <code>address1_line1/city/postalcode/country</code></td><td>String / Email / Phone</td><td><code>name</code> ApplicationRequired</td><td>Yes</td><td>מיפוי חזק ל-PayPlus Customer: name, number, email, phone, business address. Source: <a href="https://learn.microsoft.com/en-us/power-apps/developer/data-platform/reference/entities/account">Account</a>.</td></tr>
+            <tr><td>Account</td><td><code>creditlimit</code>, <code>creditlimit_base</code>, <code>transactioncurrencyid</code>, <code>exchangerate</code></td><td>Money / Lookup / Decimal</td><td>No</td><td>Yes</td><td>Useful for credit/payment policy; base field is calculated by Dataverse. Source: <a href="https://learn.microsoft.com/en-us/power-apps/developer/data-platform/transaction-currency-currency-entity">Currency concept</a>.</td></tr>
+            <tr><td>Contact</td><td><code>firstname</code>, <code>lastname</code>, <code>fullname</code>, <code>emailaddress1</code>, <code>mobilephone</code>, <code>jobtitle</code></td><td>String / Email / Phone</td><td><code>lastname</code> ApplicationRequired</td><td>Yes</td><td>Maps to PayPlus contact object: full_name, contact_email, cell_phone, job_position. Source: <a href="https://learn.microsoft.com/en-us/power-apps/developer/data-platform/reference/entities/contact">Contact</a>.</td></tr>
+            <tr><td>Quote / Order / Invoice</td><td><code>customerid</code>, <code>pricelevelid</code>, <code>transactioncurrencyid</code>, <code>totalamount</code>, <code>totaltax</code>, <code>totaldiscountamount</code>, <code>freightamount</code></td><td>Customer / Lookup / Money</td><td>Customer, Price List, Currency are ApplicationRequired</td><td>Yes</td><td>Best source for PayPlus amount, currency, customer and payment document context. Sources: <a href="https://learn.microsoft.com/en-us/dynamics365/developer/reference/entities/quote">Quote</a>, <a href="https://learn.microsoft.com/en-us/dynamics365/developer/reference/entities/salesorder">Order</a>, <a href="https://learn.microsoft.com/en-us/dynamics365/developer/reference/entities/invoice">Invoice</a>.</td></tr>
+            <tr><td>QuoteDetail / SalesOrderDetail / InvoiceDetail</td><td><code>productid</code>, <code>productdescription</code>, <code>quantity</code>, <code>priceperunit</code>, <code>manualdiscountamount</code>, <code>tax</code>, <code>extendedamount</code>, <code>uomid</code></td><td>Lookup / Decimal / Money</td><td>Quantity and parent lookup required</td><td>Yes</td><td>Natural source for PayPlus items/products. Sources: <a href="https://learn.microsoft.com/en-us/dynamics365/developer/reference/entities/quotedetail">QuoteDetail</a>, <a href="https://learn.microsoft.com/en-us/dynamics365/developer/reference/entities/salesorderdetail">SalesOrderDetail</a>, <a href="https://learn.microsoft.com/en-us/dynamics365/developer/reference/entities/invoicedetail">InvoiceDetail</a>.</td></tr>
+            <tr><td>Product</td><td><code>name</code>, <code>productnumber</code>, <code>description</code>, <code>price</code>, <code>defaultuomid</code>, <code>quantitydecimal</code>, <code>statecode</code></td><td>String / Money / Lookup / Integer / State</td><td>Name, Product Number, UoM, Quantity Decimal, Product Structure</td><td>Yes</td><td>Maps to PayPlus Product name, barcode/external number, price, valid status. Source: <a href="https://learn.microsoft.com/en-us/dynamics365/developer/reference/entities/product">Product</a>.</td></tr>
+            <tr><td>PriceLevel</td><td><code>name</code>, <code>transactioncurrencyid</code>, <code>begindate</code>, <code>enddate</code>, <code>statecode</code></td><td>String / Lookup / DateTime / State</td><td>Name, Currency, Status</td><td>Yes</td><td>Currency-specific price list. Source: <a href="https://learn.microsoft.com/en-us/dynamics365/developer/reference/entities/pricelevel">PriceLevel</a>.</td></tr>
+            <tr><td>ProductPriceLevel</td><td><code>productid</code>, <code>pricelevelid</code>, <code>amount</code>, <code>pricingmethodcode</code>, <code>uomid</code>, <code>discounttypeid</code></td><td>Lookup / Money / Picklist</td><td>Product, Price List, Amount/Percentage, Pricing Method, UoM</td><td>Yes</td><td>Best OOTB table for PayPlus Product price per currency/price list. Source: <a href="https://learn.microsoft.com/en-us/dynamics365/developer/reference/entities/productpricelevel">ProductPriceLevel</a>.</td></tr>
+            <tr><td>CustomerAddress</td><td><code>parentid</code>, <code>addresstypecode</code>, <code>line1</code>, <code>city</code>, <code>postalcode</code>, <code>country</code>, <code>telephone1</code></td><td>Lookup / Picklist / String</td><td>Parent, Name, Line1</td><td>Yes</td><td>Use for PayPlus billing/shipping/customer business address when more than one address is required. Source: <a href="https://learn.microsoft.com/en-us/power-apps/developer/data-platform/reference/entities/customeraddress">CustomerAddress</a>.</td></tr>
+            <tr><td>TransactionCurrency</td><td><code>isocurrencycode</code>, <code>currencyname</code>, <code>currencyprecision</code>, <code>currencysymbol</code>, <code>exchangerate</code></td><td>String / Integer / Decimal</td><td>All core currency fields SystemRequired</td><td>Yes</td><td>Maps to PayPlus <code>currency_code</code>; exchange-rate governance remains in Dynamics. Source: <a href="https://learn.microsoft.com/en-us/power-apps/developer/data-platform/reference/entities/transactioncurrency">TransactionCurrency</a>.</td></tr>
+            <tr><td>Quote</td><td><code>quoteid</code>, <code>name</code>, <code>quotenumber</code>, <code>customerid</code>, <code>pricelevelid</code>, <code>transactioncurrencyid</code>, <code>totalamount</code>, <code>totaltax</code>, <code>statecode</code>, <code>statuscode</code>, <code>billto_*</code>, <code>shipto_*</code></td><td>Guid / String / Customer / Lookup / Money / State</td><td>Name, Customer, Price List, Currency, Owner, State</td><td>Yes</td><td>Primary source for pre-order payment request or PayPlus quote/document mapping.</td></tr>
+            <tr><td>Quote Product</td><td><code>quotedetailid</code>, <code>quoteid</code>, <code>productid</code>, <code>productdescription</code>, <code>quantity</code>, <code>priceperunit</code>, <code>baseamount</code>, <code>extendedamount</code>, <code>manualdiscountamount</code>, <code>tax</code>, <code>uomid</code></td><td>Guid / Lookup / Decimal / Money</td><td>Quote, Quantity, Name, Product Type, Property Configuration</td><td>Yes</td><td>Line-level item model for PayPlus payment page and Invoice+ items.</td></tr>
+            <tr><td>Sales Order</td><td><code>salesorderid</code>, <code>name</code>, <code>ordernumber</code>, <code>customerid</code>, <code>quoteid</code>, <code>pricelevelid</code>, <code>transactioncurrencyid</code>, <code>totalamount</code>, <code>totaltax</code>, <code>statecode</code>, <code>statuscode</code></td><td>Guid / String / Customer / Lookup / Money / State</td><td>Name, Customer, Price List, Currency, Owner, State</td><td>Yes</td><td>Best source for order-based payment links and later invoice creation.</td></tr>
+            <tr><td>Sales Order Product</td><td><code>salesorderdetailid</code>, <code>salesorderid</code>, <code>quotedetailid</code>, <code>productid</code>, <code>productdescription</code>, <code>quantity</code>, <code>priceperunit</code>, <code>extendedamount</code>, <code>tax</code>, <code>uomid</code></td><td>Guid / Lookup / Decimal / Money</td><td>Order, Quantity, Name, Product Type, Property Configuration</td><td>Yes</td><td>Maps to PayPlus item lines; can be copied into InvoiceDetail.</td></tr>
+            <tr><td>Invoice</td><td><code>invoiceid</code>, <code>name</code>, <code>invoicenumber</code>, <code>customerid</code>, <code>salesorderid</code>, <code>pricelevelid</code>, <code>duedate</code>, <code>transactioncurrencyid</code>, <code>totalamount</code>, <code>totaltax</code>, <code>statecode</code>, <code>statuscode</code></td><td>Guid / String / Customer / Lookup / Date / Money / State</td><td>Name, Customer, Price List, Currency, Owner, State</td><td>Yes</td><td>Primary commercial document for PayPlus payment, receipt and Invoice+ document correlation.</td></tr>
+            <tr><td>Invoice Product</td><td><code>invoicedetailid</code>, <code>invoiceid</code>, <code>salesorderdetailid</code>, <code>productid</code>, <code>productdescription</code>, <code>quantity</code>, <code>priceperunit</code>, <code>baseamount</code>, <code>extendedamount</code>, <code>manualdiscountamount</code>, <code>tax</code>, <code>shippingtrackingnumber</code></td><td>Guid / Lookup / Decimal / Money / String</td><td>Invoice, Quantity, Name, Product Type, Property Configuration</td><td>Yes</td><td>Most precise source for fiscal document line mapping to PayPlus Invoice+.</td></tr>
+            <tr><td>Discount Type</td><td><code>discounttypeid</code>, <code>name</code>, <code>description</code>, <code>isamounttype</code>, <code>transactioncurrencyid</code>, <code>statecode</code>, <code>statuscode</code></td><td>Guid / String / Boolean / Lookup / State</td><td>Name, State</td><td>Yes</td><td>Supports conversion to PayPlus discount_type amount/percentage, but usually needs business mapping.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="payplus-model">
+      <h2>ניתוח מודל הנתונים של PayPlus</h2>
+      <p>PayPlus אינו משקף את מודל Sales המלא של Dynamics. הוא מרכז סביב Payment, Payment Page, Transaction, Token, Recurring Payment, Customer, Product/Category ו-Invoice+ Documents. לכן המודל הנכון הוא קורלציה ולא שכפול מלא.</p>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>PayPlus Object</th><th>Fields / Data Model</th><th>Required / Key Fields</th><th>Business Notes</th><th>Reference URL</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Customer</td><td><code>customer_uid/uid</code>, <code>customer_name</code>, <code>email</code>, <code>phone</code>, <code>vat_number</code>, <code>customer_number</code>, <code>paying_vat</code>, <code>notes</code>, <code>business_address</code>, <code>business_city</code>, <code>business_postal_code</code>, <code>business_country_iso</code>, <code>contacts[]</code>, <code>subject_code</code>, <code>communication_email</code></td><td>Create customer requires email and customer_name in the current connector model.</td><td>Can mirror Account/Contact. Use <code>subject_code</code> or <code>customer_number</code> for Dynamics correlation.</td><td><a href="https://docs.payplus.co.il/reference/create-a-resource">Customers Add</a>, <a href="https://docs.payplus.co.il/reference/view-customers">View Customers</a></td></tr>
+            <tr><td>Invoice / Document</td><td><code>docType</code>, <code>doc_date</code>, <code>brand_uuid</code>, <code>preview</code>, <code>draft</code>, <code>more_info</code>, <code>close_doc</code>, <code>cancel_doc</code>, <code>transaction_uuid</code>, <code>send_document_email</code>, <code>callback_url</code>, <code>vatType</code>, <code>vat_percentage</code>, <code>currency_code</code>, <code>conversion_rate</code>, <code>unique_identifier</code>, <code>customer</code>, <code>payments[]</code>, <code>items[]</code>, <code>totalAmount</code></td><td><code>docType</code> path param is required; document creation should use <code>unique_identifier</code> for idempotency.</td><td>Invoice+ document types include tax invoice, receipt, tax invoice/receipt, proforma, refund, quote and payment request.</td><td><a href="https://docs.payplus.co.il/reference/post_books-docs-new-doctype">Create new document</a>, <a href="https://docs.payplus.co.il/reference/get_books-doc-types">Get document types</a></td></tr>
+            <tr><td>Receipt</td><td>Receipt is represented as an Invoice+ document type such as <code>inv_receipt</code> or combined <code>inv_tax_receipt</code>, with customer, payments, total amount, currency and optional transaction UUID.</td><td>Document type, customer/payment data and amount context.</td><td>Do not model receipt as Dynamics Invoice Product. Store PayPlus document UUID/number/link in a custom document log or on Invoice.</td><td><a href="https://docs.payplus.co.il/reference/get_books-docs-list">Search documents</a></td></tr>
+            <tr><td>Product / Items</td><td><code>product_uid</code>, <code>category_uid/category_uids</code>, <code>name</code>, <code>barcode</code>, <code>quantity</code>, <code>price</code>, <code>value</code>, <code>currency_code</code>, <code>discount_type</code>, <code>discount_value</code>, <code>shipping</code>, <code>vat_type</code>, <code>description</code>, <code>valid</code>, <code>guide_document_url</code></td><td>Product master add requires category_uids, name, price, currency_code, vat_type in the connector model.</td><td>Dynamics Product + ProductPriceLevel are stronger SoR; PayPlus Product is optional unless Invoice+ product catalog must be synchronized.</td><td><a href="https://docs.payplus.co.il/reference/post_products-add">Products Add</a>, <a href="https://docs.payplus.co.il/reference/post_categories-add">Categories Add</a></td></tr>
+            <tr><td>Payment</td><td><code>terminal_uid</code>, <code>cashier_uid</code>, <code>amount</code>, <code>currency_code</code>, <code>credit_terms</code>, <code>use_token</code>, <code>token</code>, <code>customer_uid</code>, <code>customer</code>, <code>products[]</code>, <code>payments</code>, <code>initial_invoice</code>, <code>more_info_1..5</code></td><td>Charge transaction requires terminal_uid, cashier_uid, amount, currency_code, credit_terms and use_token; token is required when use_token is true.</td><td>Direct charge should be token-only in Power Platform unless PCI scope is formally approved.</td><td><a href="https://docs.payplus.co.il/reference/post_transactions-charge">Charge Transaction</a></td></tr>
+            <tr><td>Payment Page</td><td><code>payment_page_uid</code>, <code>page_request_uid</code>, <code>payment_page_link</code>, <code>qr_code_image</code>, <code>charge_method</code>, <code>amount</code>, <code>currency_code</code>, <code>expiry_datetime</code>, callback URLs, email/SMS flags, <code>create_token</code>, <code>initial_invoice</code>, customer and items.</td><td>Generate Payment Link requires payment_page_uid, amount and currency_code; connector also requires terminal_uid for picker/runtime UX.</td><td>Best low-code pattern for customer-facing payments: avoids raw card capture in Dynamics.</td><td><a href="https://docs.payplus.co.il/reference/post_paymentpages-generatelink">Generate Payment Link</a>, <a href="https://docs.payplus.co.il/reference/get_paymentpages-list">Payment Pages List</a></td></tr>
+            <tr><td>Token</td><td><code>terminal_uid</code>, <code>customer_uid</code>, <code>card_date_mmyy</code>, <code>credit_card_number</code>, <code>identification_number</code>, <code>previous_uid</code>, saved token UID, masked view option.</td><td>Token Add requires terminal_uid, customer_uid, card date and full credit card number.</td><td>Do not store raw card number in Dataverse. Store token UID only with masked metadata and strict access.</td><td><a href="https://docs.payplus.co.il/reference/post_token-add">Token Add</a>, <a href="https://docs.payplus.co.il/reference/get_token-view-uid">Token View</a></td></tr>
+            <tr><td>Recurring Payment</td><td><code>terminal_uid</code>, <code>customer_uid</code>, <code>card_token</code>, <code>cashier_uid</code>, <code>currency_code</code>, <code>instant_first_payment</code>, <code>recurring_type</code>, <code>recurring_range</code>, <code>number_of_charges</code>, <code>start_date</code>, <code>end_date</code>, <code>items[]</code>, <code>successful_invoice</code>, notification flags, <code>extra_info</code>.</td><td>Multiple required fields including terminal, customer, token, cashier, currency, schedule and start date.</td><td>Should map to a Dataverse recurring-payment custom table or contract/subscription process, not to Invoice alone.</td><td><a href="https://docs.payplus.co.il/reference/post_recurringpayments-add">Recurring Payments Add</a></td></tr>
+            <tr><td>Refund</td><td><code>transaction_uid</code>, <code>amount</code>, <code>more_info</code>, <code>cvv</code>, <code>initial_invoice</code>, <code>items</code>.</td><td>Refund by transaction UID requires transaction_uid and amount.</td><td>Use for settled or partially refunded transactions; cancellation is a separate operation for unsettled transactions.</td><td><a href="https://docs.payplus.co.il/reference/post_transactions-refundbytransactionuid">Refund By Transaction UID</a>, <a href="https://docs.payplus.co.il/reference/post_transactions-cancel">Cancel Transaction</a></td></tr>
+            <tr><td>Transaction</td><td><code>transaction_uid</code>, customer, terminal/cashier, amount, currency, payment method, approval/voucher, card metadata, items, <code>more_info</code>, callback data.</td><td>Search/view requires transaction UID, customer UID, date range or correlation field.</td><td>PayPlus transaction UID should be an alternate key in a Dataverse transaction log table.</td><td><a href="https://docs.payplus.co.il/reference/post_transactions-view">Transactions View</a>, <a href="https://docs.payplus.co.il/reference/post_transactionreports-transactionshistory">Transactions History</a></td></tr>
+            <tr><td>Currency</td><td><code>currency_code</code>, supported currency list, optional document <code>conversion_rate</code> and automatic rate flag.</td><td>Payment and document requests require or accept ISO currency code.</td><td>PayPlus validates supported currencies and acquirer support; Dynamics remains SoR for exchange-rate governance.</td><td><a href="https://docs.payplus.co.il/reference/myterminals-copy">Currencies</a>, <a href="https://docs.payplus.co.il/reference/post_books-docs-new-doctype">Document conversion rate</a></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="mapping">
+      <h2>מיפוי שדות מפורט</h2>
+      <p>הטבלה משתמשת בפורמט הנדרש. הערות כוללות Reference URL כאשר השדה נשען על תיעוד רשמי ספציפי.</p>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>PayPlus Entity</th><th>PayPlus Field</th><th>Dynamics Table</th><th>Dynamics Field</th><th>Match Type</th><th>Notes</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Customer</td><td><code>customer_name</code></td><td>Account / Contact</td><td><code>account.name</code> / <code>contact.fullname</code></td><td><span class="tag good">התאמה מלאה (OOTB)</span></td><td>Account is preferred for business customer. Sources: <a href="https://learn.microsoft.com/en-us/power-apps/developer/data-platform/reference/entities/account">Account</a>, <a href="https://docs.payplus.co.il/reference/create-a-resource">PayPlus Customers Add</a>.</td></tr>
+            <tr><td>Customer</td><td><code>email</code></td><td>Account / Contact</td><td><code>emailaddress1</code></td><td><span class="tag good">התאמה מלאה (OOTB)</span></td><td>Use primary email; contact email can override account email for person payments.</td></tr>
+            <tr><td>Customer</td><td><code>phone</code></td><td>Account / Contact</td><td><code>telephone1</code> / <code>mobilephone</code></td><td><span class="tag good">התאמה מלאה (OOTB)</span></td><td>Normalize phone format before sending to PayPlus.</td></tr>
+            <tr><td>Customer</td><td><code>vat_number</code></td><td>Account</td><td>Recommended custom field <code>alex_vatnumber</code> or existing localized tax field if present</td><td><span class="tag danger">מחייב שדה Custom</span></td><td>Standard Account has no universal Israeli VAT/business registration field. Use custom unless an existing localization/package provides one.</td></tr>
+            <tr><td>Customer</td><td><code>customer_number</code></td><td>Account</td><td><code>accountnumber</code></td><td><span class="tag good">התאמה מלאה (OOTB)</span></td><td>Good external customer number; keep PayPlus UID separately.</td></tr>
+            <tr><td>Customer</td><td><code>subject_code</code></td><td>Account / Contact</td><td><code>accountid</code> / <code>contactid</code></td><td><span class="tag warn">התאמה חלקית</span></td><td>Can carry Dynamics GUID as external ERP/subject code, but should not replace a dedicated PayPlus UID field.</td></tr>
+            <tr><td>Customer</td><td><code>customer_uid</code> / <code>uid</code></td><td>Account / Contact</td><td><code>alex_paypluscustomeruid</code></td><td><span class="tag danger">מחייב שדה Custom</span></td><td>PayPlus-generated identifier. Add alternate key/index for idempotent updates.</td></tr>
+            <tr><td>Customer Contact</td><td><code>full_name</code></td><td>Contact</td><td><code>fullname</code></td><td><span class="tag good">התאמה מלאה (OOTB)</span></td><td>Use related primary contact or child contact. Source: <a href="https://learn.microsoft.com/en-us/power-apps/developer/data-platform/reference/entities/contact">Contact</a>.</td></tr>
+            <tr><td>Customer Contact</td><td><code>cell_phone</code></td><td>Contact</td><td><code>mobilephone</code></td><td><span class="tag good">התאמה מלאה (OOTB)</span></td><td>Use normalized mobile number.</td></tr>
+            <tr><td>Customer Contact</td><td><code>contact_email</code></td><td>Contact</td><td><code>emailaddress1</code></td><td><span class="tag good">התאמה מלאה (OOTB)</span></td><td>Primary contact email.</td></tr>
+            <tr><td>Customer Contact</td><td><code>job_position</code></td><td>Contact</td><td><code>jobtitle</code></td><td><span class="tag warn">התאמה חלקית</span></td><td>PayPlus uses enum values; Dynamics is free text. Use mapping choice if strict values required.</td></tr>
+            <tr><td>Address</td><td><code>business_address</code>, <code>business_city</code>, <code>business_postal_code</code>, <code>business_country_iso</code></td><td>Account / CustomerAddress</td><td><code>address1_line1</code>, <code>address1_city</code>, <code>address1_postalcode</code>, <code>address1_country</code> or CustomerAddress fields</td><td><span class="tag good">התאמה מלאה (OOTB)</span></td><td>Use CustomerAddress when multiple Bill To / Ship To addresses are required. Source: <a href="https://learn.microsoft.com/en-us/power-apps/developer/data-platform/reference/entities/customeraddress">CustomerAddress</a>.</td></tr>
+            <tr><td>Product</td><td><code>name</code></td><td>Product</td><td><code>name</code></td><td><span class="tag good">התאמה מלאה (OOTB)</span></td><td>Dynamics product catalog should remain SoR. Source: <a href="https://learn.microsoft.com/en-us/dynamics365/developer/reference/entities/product">Product</a>.</td></tr>
+            <tr><td>Product</td><td><code>product_uid</code></td><td>Product</td><td><code>alex_payplusproductuid</code></td><td><span class="tag danger">מחייב שדה Custom</span></td><td>Only needed if syncing PayPlus product catalog; otherwise send write-in items from invoice/order details.</td></tr>
+            <tr><td>Product</td><td><code>barcode</code></td><td>Product</td><td><code>productnumber</code> or custom barcode field</td><td><span class="tag warn">התאמה חלקית</span></td><td>Product Number can work if used as SKU/barcode. Add custom if actual barcode differs.</td></tr>
+            <tr><td>Product</td><td><code>description</code></td><td>Product</td><td><code>description</code></td><td><span class="tag good">התאמה מלאה (OOTB)</span></td><td>Long description is OOTB memo.</td></tr>
+            <tr><td>Product</td><td><code>price</code></td><td>ProductPriceLevel / Product</td><td><code>productpricelevel.amount</code> / <code>product.price</code></td><td><span class="tag good">התאמה מלאה (OOTB)</span></td><td>Prefer ProductPriceLevel for correct price list and currency. Source: <a href="https://learn.microsoft.com/en-us/dynamics365/developer/reference/entities/productpricelevel">ProductPriceLevel</a>.</td></tr>
+            <tr><td>Product Category</td><td><code>category_uid</code> / <code>category_uids</code></td><td>Product</td><td><code>subjectid</code> or custom mapping table</td><td><span class="tag warn">התאמה חלקית</span></td><td>Dynamics Subject can represent category, but PayPlus category UID requires mapping table if catalog sync is used.</td></tr>
+            <tr><td>Line Item</td><td><code>quantity</code></td><td>QuoteDetail / SalesOrderDetail / InvoiceDetail</td><td><code>quantity</code></td><td><span class="tag good">התאמה מלאה (OOTB)</span></td><td>Decimal in Dynamics, integer/number in PayPlus. Check unit and decimal handling.</td></tr>
+            <tr><td>Line Item</td><td><code>price</code></td><td>QuoteDetail / SalesOrderDetail / InvoiceDetail</td><td><code>priceperunit</code></td><td><span class="tag good">התאמה מלאה (OOTB)</span></td><td>Use line price after pricing lock/override rules.</td></tr>
+            <tr><td>Line Item</td><td><code>discount_type</code>, <code>discount_value</code></td><td>Detail line / DiscountType</td><td><code>manualdiscountamount</code>, <code>discounttype.isamounttype</code></td><td><span class="tag warn">התאמה חלקית</span></td><td>Dynamics supports manual amount and discount lists; PayPlus supports amount/percentage on item. Need transformation logic.</td></tr>
+            <tr><td>Line Item</td><td><code>vat_type</code></td><td>Detail line / Invoice</td><td><code>tax</code>, <code>totaltax</code></td><td><span class="tag warn">התאמה חלקית</span></td><td>Dynamics stores tax amounts but not universal VAT type enum. Add mapping for included/excluded/exempt if needed.</td></tr>
+            <tr><td>Payment Page</td><td><code>payment_page_uid</code></td><td>Configuration / Invoice / Order</td><td><code>alex_paymentpageuid</code> or environment variable</td><td><span class="tag danger">מחייב שדה Custom</span></td><td>Can be global configuration, per business unit, or per flow input. Source: <a href="https://docs.payplus.co.il/reference/post_paymentpages-generatelink">Generate Payment Link</a>.</td></tr>
+            <tr><td>Payment Page</td><td><code>page_request_uid</code></td><td>Invoice / Order / Payment Request custom table</td><td><code>alex_paypluspagerequestuid</code></td><td><span class="tag danger">מחייב שדה Custom</span></td><td>Returned by PayPlus, required for callbacks and disable link operations.</td></tr>
+            <tr><td>Payment Page</td><td><code>payment_page_link</code></td><td>Invoice / Order</td><td><code>alex_paypluspaymentlink</code></td><td><span class="tag danger">מחייב שדה Custom</span></td><td>Store URL or use annotation/activity email. Avoid overwriting business description fields.</td></tr>
+            <tr><td>Payment Page</td><td><code>amount</code></td><td>Quote / SalesOrder / Invoice</td><td><code>totalamount</code></td><td><span class="tag good">התאמה מלאה (OOTB)</span></td><td>For partial payment, use custom payment request amount instead of totalamount.</td></tr>
+            <tr><td>Payment Page</td><td><code>currency_code</code></td><td>TransactionCurrency</td><td><code>isocurrencycode</code></td><td><span class="tag good">התאמה מלאה (OOTB)</span></td><td>Dynamics ISO code maps directly to PayPlus currency_code. Sources: <a href="https://learn.microsoft.com/en-us/power-apps/developer/data-platform/reference/entities/transactioncurrency">TransactionCurrency</a>, <a href="https://docs.payplus.co.il/reference/myterminals-copy">PayPlus Currencies</a>.</td></tr>
+            <tr><td>Payment Page</td><td><code>refURL_success</code>, <code>refURL_failure</code>, <code>refURL_callback</code></td><td>Configuration</td><td>Environment variables / config table</td><td><span class="tag danger">מחייב שדה Custom</span></td><td>Environment-specific endpoints; do not store in Sales rows unless per-document behavior is required.</td></tr>
+            <tr><td>Payment Page</td><td><code>more_info</code>, <code>more_info_2..5</code></td><td>Quote / Order / Invoice</td><td><code>quoteid</code>, <code>salesorderid</code>, <code>invoiceid</code>, document number</td><td><span class="tag warn">התאמה חלקית</span></td><td>Use for correlation. Store structured relationship in Dataverse too; free text is not enough for reporting.</td></tr>
+            <tr><td>Payment</td><td><code>terminal_uid</code>, <code>cashier_uid</code></td><td>Configuration</td><td><code>alex_payplusterminaluid</code>, <code>alex_paypluscashieruid</code></td><td><span class="tag danger">מחייב שדה Custom</span></td><td>Operational configuration, not Sales master data. Source: <a href="https://docs.payplus.co.il/reference/post_transactions-charge">Charge Transaction</a>.</td></tr>
+            <tr><td>Payment</td><td><code>credit_terms</code></td><td>Account / Invoice / Order</td><td><code>paymenttermscode</code></td><td><span class="tag warn">התאמה חלקית</span></td><td>Dynamics terms Net 30 etc.; PayPlus values 1/6/8 regular/credit/payments. Requires mapping table.</td></tr>
+            <tr><td>Payment</td><td><code>initial_invoice</code></td><td>Invoice / Configuration</td><td><code>invoicenumber</code>, <code>statecode</code>, custom policy flag</td><td><span class="tag warn">התאמה חלקית</span></td><td>Controls PayPlus Invoice+ behavior; Dynamics Invoice status alone is insufficient.</td></tr>
+            <tr><td>Transaction</td><td><code>transaction_uid</code></td><td>Custom Transaction Log / Invoice</td><td><code>alex_payplustransactionuid</code></td><td><span class="tag danger">מחייב שדה Custom</span></td><td>Use alternate key. Source: <a href="https://docs.payplus.co.il/reference/post_transactions-view">Transactions View</a>.</td></tr>
+            <tr><td>Transaction</td><td><code>amount</code>, <code>currency_code</code></td><td>Invoice / TransactionCurrency</td><td><code>totalamount</code>, <code>isocurrencycode</code></td><td><span class="tag good">התאמה מלאה (OOTB)</span></td><td>Store approved/captured PayPlus amount separately when partial payments/refunds exist.</td></tr>
+            <tr><td>Transaction</td><td>card metadata last4/brand/issuer</td><td>Custom Transaction Log</td><td><code>alex_cardlast4</code>, <code>alex_cardbrand</code></td><td><span class="tag danger">מחייב שדה Custom</span></td><td>Do not store PAN/CVV. Masked metadata only.</td></tr>
+            <tr><td>Token</td><td><code>token</code> / saved card UID</td><td>Custom Token table</td><td><code>alex_payplustokenuid</code></td><td><span class="tag danger">מחייב שדה Custom</span></td><td>Token is PayPlus-specific and sensitive. Source: <a href="https://docs.payplus.co.il/reference/post_token-add">Token Add</a>.</td></tr>
+            <tr><td>Recurring Payment</td><td><code>card_token</code></td><td>Custom Recurring Payment / Token</td><td><code>alex_payplustokenuid</code></td><td><span class="tag danger">מחייב שדה Custom</span></td><td>Recurring payment requires saved card token. Source: <a href="https://docs.payplus.co.il/reference/post_recurringpayments-add">Recurring Add</a>.</td></tr>
+            <tr><td>Recurring Payment</td><td><code>recurring_type</code>, <code>recurring_range</code>, <code>number_of_charges</code>, <code>start_date</code>, <code>end_date</code></td><td>Custom Recurring Payment / Contract</td><td>Custom schedule fields or Contract fields if used</td><td><span class="tag danger">מחייב שדה Custom</span></td><td>No direct Sales OOTB equivalent for PayPlus schedule semantics.</td></tr>
+            <tr><td>Refund</td><td><code>transaction_uid</code>, <code>amount</code>, <code>items</code></td><td>Custom Transaction Log / InvoiceDetail</td><td>Transaction UID custom; item source from <code>invoicedetail</code></td><td><span class="tag warn">התאמה חלקית</span></td><td>Refund amount and line selection need explicit business flow. Source: <a href="https://docs.payplus.co.il/reference/post_transactions-refundbytransactionuid">Refund by Transaction UID</a>.</td></tr>
+            <tr><td>Document</td><td><code>docType</code></td><td>Invoice / Quote</td><td><code>invoicenumber</code>, <code>quotenumber</code>, custom document type map</td><td><span class="tag warn">התאמה חלקית</span></td><td>PayPlus document types are Invoice+ enums; map from Dynamics process: invoice, receipt, refund, quote.</td></tr>
+            <tr><td>Document</td><td><code>unique_identifier</code></td><td>Invoice / Order / Quote</td><td><code>invoiceid</code>, <code>salesorderid</code>, <code>quoteid</code></td><td><span class="tag good">התאמה מלאה (OOTB)</span></td><td>Use Dynamics GUID for idempotency. Source: <a href="https://docs.payplus.co.il/reference/post_books-docs-new-doctype">Create new document</a>.</td></tr>
+            <tr><td>Document</td><td><code>uuid</code>, number, status</td><td>Invoice / Custom Document Log</td><td><code>alex_payplusdocumentuuid</code>, <code>alex_payplusdocumentnumber</code>, <code>alex_payplusdocumentstatus</code></td><td><span class="tag danger">מחייב שדה Custom</span></td><td>Returned/generated by PayPlus; needed for support and reconciliation.</td></tr>
+            <tr><td>Document</td><td><code>transaction_uuid</code></td><td>Custom Transaction Log</td><td><code>alex_payplustransactionuid</code></td><td><span class="tag danger">מחייב שדה Custom</span></td><td>PayPlus document can link back to payment transaction. Source: <a href="https://docs.payplus.co.il/reference/post_invoice-getdocuments">Get Documents By Transaction UID</a>.</td></tr>
+            <tr><td>Document</td><td><code>currency_code</code>, <code>conversion_rate</code>, <code>autocalculate_rate</code></td><td>TransactionCurrency / Invoice</td><td><code>transactioncurrencyid</code>, <code>exchangerate</code></td><td><span class="tag warn">התאמה חלקית</span></td><td>Dynamics exchange rate and PayPlus document conversion rate must be reconciled, not assumed identical.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="currency">
+      <h2>Currency Management</h2>
+      <div class="cards-grid">
+        <div class="card">
+          <h3>כיצד Dynamics שומר מטבע ושער</h3>
+          <p>Dataverse הוא Multi-currency. כל רשומה פיננסית יכולה לשאת <code>transactioncurrencyid</code>. שער המטבע נשמר ב-<code>TransactionCurrency.exchangerate</code>, וברשומות Sales נחשף גם <code>exchangerate</code> read-only. לכל Money field נוצר אוטומטית שדה Base read-only כמו <code>totalamount_base</code>. לפי Microsoft, ערך הבסיס מחושב בנוסחה <code>money_base = money / exchangerate</code>. מקור: <a href="https://learn.microsoft.com/en-us/power-apps/developer/data-platform/transaction-currency-currency-entity">Transaction Currency table</a>.</p>
+        </div>
+        <div class="card">
+          <h3>כיצד PayPlus מטפל במטבעות</h3>
+          <p>PayPlus מקבל <code>currency_code</code> בבקשות Payment, Payment Page, Products, Recurring ו-Documents, ומספק endpoint של רשימת מטבעות נתמכים. ב-Invoice+ קיימים <code>conversion_rate</code> ו-<code>autocalculate_rate</code> למסמך במטבע שאינו בסיס. מקור: <a href="https://docs.payplus.co.il/reference/myterminals-copy">Currencies</a>, <a href="https://docs.payplus.co.il/reference/post_books-docs-new-doctype">Create new document</a>.</p>
+        </div>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>נושא</th><th>Dynamics / Dataverse</th><th>PayPlus</th><th>המלצה</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Currency identity</td><td><code>transactioncurrencyid</code> + <code>isocurrencycode</code></td><td><code>currency_code</code></td><td>Map by ISO code. Do not map by symbol/name.</td></tr>
+            <tr><td>Exchange rate</td><td><code>TransactionCurrency.exchangerate</code>; copied/read on financial records</td><td><code>conversion_rate</code> in Invoice+ document; not a full multicurrency ledger model</td><td>Dynamics is exchange-rate SoR for Sales. Store PayPlus conversion rate on document log if returned/used.</td></tr>
+            <tr><td>Base amount fields</td><td>Dataverse creates <code>*_base</code> read-only fields for Money columns</td><td>No direct base-amount field in core Payment API</td><td>Use Dynamics base fields for reporting; use PayPlus actual approved amount for payment reconciliation.</td></tr>
+            <tr><td>Precision</td><td>Money precision source can be TransactionCurrency.CurrencyPrecision or Organization.PricingDecimalPrecision</td><td>Amount fields are number/integer depending endpoint</td><td>Normalize amount scale per endpoint; validate whether PayPlus field expects major units or integer totals in each Invoice+ endpoint.</td></tr>
+            <tr><td>Price lists</td><td>PriceLevel is currency-specific; ProductPriceLevel stores amount/percentage and UoM</td><td>Product price has <code>price</code> and <code>currency_code</code></td><td>Use Dynamics price list as master. Sync PayPlus product catalog only if Invoice+ product catalog is required.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="gap">
+      <h2>Gap Analysis</h2>
+      <h3>שדות קיימים ב-PayPlus ללא מקבילה OOTB מספקת ב-Dynamics</h3>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>PayPlus Field / Object</th><th>Gap</th><th>Recommendation</th><th>Match Type</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>customer_uid</code>, <code>product_uid</code>, <code>transaction_uid</code>, <code>page_request_uid</code>, <code>document_uuid</code></td><td>Generated identifiers from PayPlus do not exist OOTB.</td><td>Add custom fields or dedicated mapping/log tables with alternate keys.</td><td><span class="tag danger">מחייב שדה Custom</span></td></tr>
+            <tr><td>Card token, masked card metadata, terminal/cashier</td><td>Payment infrastructure, not Sales data.</td><td>Use custom Token and Configuration tables; secure field access; never store raw PAN/CVV.</td><td><span class="tag danger">מחייב שדה Custom</span></td></tr>
+            <tr><td>Payment Page link and QR image</td><td>No OOTB Sales field for hosted payment artifacts.</td><td>Store on custom Payment Request table and optionally surface latest link on Invoice/Order.</td><td><span class="tag danger">מחייב שדה Custom</span></td></tr>
+            <tr><td>Invoice+ document type, UUID, status, PDF/link/callback result</td><td>Dynamics Invoice is a sales document, not a PayPlus fiscal document store.</td><td>Add <code>alex_payplusdocument</code> table linked to Invoice/Order/Transaction.</td><td><span class="tag danger">מחייב שדה Custom</span></td></tr>
+            <tr><td>PayPlus <code>credit_terms</code> values 1/6/8</td><td>Dynamics payment terms are business terms like Net 30.</td><td>Create choice/mapping table from Dynamics payment terms to PayPlus credit_terms.</td><td><span class="tag warn">התאמה חלקית</span></td></tr>
+            <tr><td><code>vat_type</code> included/excluded/exempt</td><td>Dynamics stores tax amounts but not universal VAT type enum.</td><td>Add tax/VAT mapping field or compute from tax engine/business unit rules.</td><td><span class="tag warn">התאמה חלקית</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>שדות קיימים ב-Dynamics ללא מקבילה ישירה ב-PayPlus</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Dynamics Area</th><th>Fields / Concepts</th><th>PayPlus Gap</th><th>Recommendation</th></tr></thead>
+          <tbody>
+            <tr><td>Sales process</td><td>Opportunity, owner, SLA, campaign, priority, quote revision, order fulfillment states</td><td>PayPlus does not manage Sales lifecycle.</td><td>Keep in Dynamics only; send only correlation IDs and customer/payment data.</td></tr>
+            <tr><td>Product catalog richness</td><td>Product family, bundle, UoM schedule, price list rules, rounding, discount lists</td><td>PayPlus product/items are simpler.</td><td>Flatten lines at payment/document time; sync catalog only if needed for Invoice+.</td></tr>
+            <tr><td>Currency base fields</td><td><code>*_base</code> money fields and organization base currency</td><td>PayPlus does not mirror Dataverse base-currency reporting fields.</td><td>Report financial pipeline in Dynamics; reconcile actual payments from PayPlus.</td></tr>
+            <tr><td>Customer hierarchy</td><td>Parent Account, managing partner, contact hierarchy, activities, notes</td><td>PayPlus customer is operational billing/payment object.</td><td>Synchronize minimal identity only.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Custom Tables מומלצות</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Custom Table</th><th>Purpose</th><th>Key Fields</th><th>Why not OOTB only?</th></tr></thead>
+          <tbody>
+            <tr><td><code>alex_payplustransaction</code></td><td>Payment reconciliation and callback audit</td><td><code>transaction_uid</code> alt key, account/contact/invoice/order lookup, amount, currency, status, approval/voucher, card last4, raw event id</td><td>Payment lifecycle is not identical to Dynamics invoice/order state.</td></tr>
+            <tr><td><code>alex_paypluspaymentrequest</code></td><td>Hosted payment link lifecycle</td><td><code>page_request_uid</code> alt key, link, qr, expiry, related document, status</td><td>Multiple payment links may exist per invoice/order.</td></tr>
+            <tr><td><code>alex_payplusdocument</code></td><td>Invoice+ document tracking</td><td><code>document_uuid</code>, number, docType, unique_identifier, PayPlus URL/PDF, status, transaction lookup</td><td>Dynamics Invoice is not the same as PayPlus fiscal document.</td></tr>
+            <tr><td><code>alex_payplustoken</code></td><td>Saved card token reference</td><td>token UID, customer lookup, last4, expiry, brand, active flag</td><td>Security and PCI boundaries require dedicated handling.</td></tr>
+            <tr><td><code>alex_payplusmapping</code></td><td>Reusable mapping dictionary</td><td>map type, Dynamics value, PayPlus value, environment, active</td><td>Needed for payment terms, VAT type, document type, categories and statuses.</td></tr>
+            <tr><td><code>alex_payplusconfiguration</code></td><td>Environment and operational settings</td><td>environment, terminal UID, cashier UID, payment page defaults, callback URLs, feature flags</td><td>Keeps connector/flow behavior out of sales records.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="power-platform">
+      <h2>Integration Design ו-Power Platform Best Practices</h2>
+      <div class="decision-list">
+        <div class="card">
+          <h3>Dataverse</h3>
+          <p>Use OOTB tables for business records. Add narrow custom tables for PayPlus transaction, document, payment request, token and mapping. Define alternate keys on PayPlus UIDs and use lookup relationships to Account, Contact, Product, Quote, Order and Invoice.</p>
+        </div>
+        <div class="card">
+          <h3>Power Automate</h3>
+          <p>Use solution-aware cloud flows with connection references. Trigger from command bar buttons or Dataverse row changes: generate payment link, create/update PayPlus customer, charge token, refund, reconcile transaction, fetch PayPlus documents.</p>
+        </div>
+        <div class="card">
+          <h3>Custom Connector</h3>
+          <p>Use one connector per PayPlus environment or a connector with environment-specific host. Store <code>api-key</code> and <code>secret-key</code> as secure connection parameters and inject headers with connector policies. This avoids passing keys per action.</p>
+        </div>
+        <div class="card">
+          <h3>Webhooks / Callbacks</h3>
+          <p>Expose a Power Automate HTTP trigger, Azure Function or custom API endpoint for IPN/callbacks. Validate PayPlus callback signatures according to <a href="https://docs.payplus.co.il/reference/validate-requests-received-from-payplus">Validate Requests Received from PayPlus</a>, then upsert transaction/document logs idempotently.</p>
+        </div>
+        <div class="card">
+          <h3>Environment Variables</h3>
+          <p>Use environment variables for non-secret configuration: PayPlus environment, default payment page UID, callback URLs, feature flags, default terminal/cashier. Use connection parameters for the two PayPlus API secrets.</p>
+        </div>
+        <div class="card">
+          <h3>Azure Key Vault</h3>
+          <p>Not required if Power Platform connector connection parameters are approved as the secret store. Use Azure Key Vault only if enterprise policy mandates centralized secret lifecycle, or if a server-side proxy/Azure Function is introduced.</p>
+        </div>
+      </div>
+
+      <h3>Recommended Sync Boundaries</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Data Area</th><th>System of Record</th><th>Synced to Other Side</th><th>Notes</th></tr></thead>
+          <tbody>
+            <tr><td>Accounts / Contacts</td><td>Dynamics 365 / Dataverse</td><td>Minimal PayPlus customer identity and contacts</td><td>Sync name/email/phone/VAT/address/customer_number; store PayPlus customer UID back in Dataverse.</td></tr>
+            <tr><td>Products / Price Lists</td><td>Dynamics 365 Sales</td><td>Line items at payment/document time; optional PayPlus product catalog sync</td><td>Prefer OOTB Product + PriceLevel + ProductPriceLevel.</td></tr>
+            <tr><td>Quotes / Orders / Invoices</td><td>Dynamics 365 Sales</td><td>Amount, currency, customer, items and correlation IDs to PayPlus</td><td>PayPlus should not drive sales pipeline states except paid/refunded status updates.</td></tr>
+            <tr><td>Transactions / Payments</td><td>PayPlus</td><td>Transaction log and payment status to Dataverse</td><td>Dataverse stores approved/failed/refunded status for visibility and reconciliation.</td></tr>
+            <tr><td>Tokens</td><td>PayPlus</td><td>Token UID and masked metadata only</td><td>Never store raw card number or CVV in Dataverse or flow history.</td></tr>
+            <tr><td>Invoice+ Documents</td><td>PayPlus when Invoice+ is enabled</td><td>Document UUID/number/status/link to Dataverse</td><td>Dynamics Invoice remains commercial Sales document; PayPlus document is fiscal artifact.</td></tr>
+            <tr><td>Currency rates</td><td>Dynamics for Sales; PayPlus for payment/document execution</td><td>ISO code and captured conversion rate where needed</td><td>Do not retroactively recalculate PayPlus payments from changing Dynamics rates.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="recommendations">
+      <h2>המלצות ארכיטקטורה ויישום</h2>
+      <ol>
+        <li><strong>Use OOTB first:</strong> Account, Contact, CustomerAddress, Product, PriceLevel, ProductPriceLevel, Quote/Order/Invoice and line tables cover the majority of PayPlus fields.</li>
+        <li><strong>Use custom only for PayPlus identity and lifecycle:</strong> PayPlus UIDs, payment links, tokens, transaction logs, document logs and callback audit require custom storage.</li>
+        <li><strong>Hosted payment first:</strong> Prefer PaymentPages/generateLink for low-code scenarios. Direct charge should be token-only unless PCI scope is approved.</li>
+        <li><strong>Idempotency:</strong> Use Dynamics GUIDs as PayPlus <code>unique_identifier</code> for Invoice+ documents and store PayPlus response IDs as alternate keys.</li>
+        <li><strong>Callbacks are authoritative:</strong> Do not mark invoice/order paid only because a link was generated. Update payment status only after PayPlus transaction success callback or transaction lookup.</li>
+        <li><strong>Separate commercial and fiscal documents:</strong> Dynamics Invoice represents Sales billing context; PayPlus Invoice+ document represents fiscal/tax document. Link them, do not conflate them.</li>
+        <li><strong>ALM:</strong> Package connector, flows, connection references, custom tables and environment variables in a Dataverse solution. Use separate connection references for prod/sandbox.</li>
+      </ol>
+    </section>
+
+    <section id="conclusion">
+      <h2>מסקנות</h2>
+      <p>האינטגרציה המומלצת היא Connector-centric על גבי Dataverse ו-Power Automate: Dynamics 365 Sales נשאר מקור האמת ל-Sales ולקטלוג, PayPlus נשאר מקור האמת לתשלום, טוקנים ומסמכי Invoice+, ושכבת Dataverse custom קטנה מספקת קורלציה, audit ו-reconciliation. זהו המודל שממזער Customizations: רוב השדות העסקיים ממופים ל-OOTB, וכל שדה Custom משרת צורך אינטגרטיבי ברור.</p>
+      <p>הפערים המשמעותיים אינם במודל המכירה אלא בזהויות התפעוליות של PayPlus: customer_uid, transaction_uid, page_request_uid, document_uuid, token_uid, terminal_uid/cashier_uid וסוגי מסמך/תשלום. לכן אין הצדקה לשכפל את כל מודל PayPlus ב-Dynamics; יש לבנות שכבת mapping/log צרה, עם alternate keys ותהליכי idempotent upsert.</p>
+      <div class="callout"><strong>המלצה סופית:</strong> להתחיל ב-slice מלא אחד: Account/Contact sync → GeneratePaymentLink מתוך Invoice/Order → Callback/IPN → Transaction Log → עדכון Invoice כ-Paid/Partially Paid → שליפת/שמירת PayPlus Document UUID. לאחר מכן להוסיף Token charge, Refund, Recurring ו-Product catalog sync לפי צורך עסקי.</div>
+    </section>
+
+    <footer class="footer">
+      מסמך מחקר ומיפוי לשימוש לקוח וצוות פיתוח · Dynamics 365 Sales / Dataverse / PayPlus · 2026-07-09
+    </footer>
+  </main>
+</body>
+</html>

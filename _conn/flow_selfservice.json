@@ -1,0 +1,136 @@
+{
+  "schemaVersion": "1.0.0.0",
+  "properties": {
+    "connectionReferences": {
+      "alex_payplus_dataverse": {
+        "runtimeSource": "embedded",
+        "connection": { "connectionReferenceLogicalName": "alex_payplus_dataverse" },
+        "api": { "name": "shared_commondataserviceforapps" }
+      }
+    },
+    "definition": {
+      "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+      "contentVersion": "1.0.0.0",
+      "parameters": {
+        "$connections": { "defaultValue": {}, "type": "Object" },
+        "$authentication": { "defaultValue": {}, "type": "SecureObject" }
+      },
+      "triggers": {
+        "When_a_session_is_created": {
+          "metadata": { "operationMetadataId": "d1a11111-1111-4111-8111-111111111111" },
+          "type": "OpenApiConnectionWebhook",
+          "inputs": {
+            "host": {
+              "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps",
+              "operationId": "SubscribeWebhookTrigger",
+              "connectionName": "alex_payplus_dataverse"
+            },
+            "parameters": {
+              "subscriptionRequest/message": 1,
+              "subscriptionRequest/entityname": "alex_pp_hfsession",
+              "subscriptionRequest/scope": 4,
+              "subscriptionRequest/filteringattributes": "alex_channel"
+            },
+            "authentication": "@parameters('$authentication')"
+          },
+          "conditions": [
+            { "expression": "@not(equals(triggerOutputs()?['body/alex_channel'], 100000000))" }
+          ]
+        }
+      },
+      "actions": {
+        "Get_config_row": {
+          "runAfter": {},
+          "metadata": { "operationMetadataId": "d2a22222-2222-4222-8222-222222222222" },
+          "type": "OpenApiConnection",
+          "inputs": {
+            "host": {
+              "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps",
+              "operationId": "ListRecords",
+              "connectionName": "alex_payplus_dataverse"
+            },
+            "parameters": {
+              "entityName": "alex_payplusconfigurations",
+              "$select": "alex_environment,alex_paymentpageuidref,alex_terminaluidref",
+              "$top": 1
+            },
+            "authentication": "@parameters('$authentication')"
+          }
+        },
+        "Compose_session_details": {
+          "runAfter": { "Get_config_row": ["Succeeded"] },
+          "metadata": { "operationMetadataId": "d3a33333-3333-4333-8333-333333333333" },
+          "type": "Compose",
+          "inputs": {
+            "sessionId": "@triggerOutputs()?['body/alex_pp_hfsessionid']",
+            "requestId": "@triggerOutputs()?['body/alex_requestid']",
+            "channel": "@triggerOutputs()?['body/alex_channel']",
+            "channelName": "@triggerOutputs()?['body/alex_channel@OData.Community.Display.V1.FormattedValue']",
+            "expiresOn": "@triggerOutputs()?['body/alex_expireson']",
+            "contactId": "@triggerOutputs()?['body/_alex_contact_value']",
+            "contactName": "@triggerOutputs()?['body/_alex_contact_value@OData.Community.Display.V1.FormattedValue']",
+            "accountId": "@triggerOutputs()?['body/_alex_account_value']",
+            "accountName": "@triggerOutputs()?['body/_alex_account_value@OData.Community.Display.V1.FormattedValue']",
+            "environment": "@first(outputs('Get_config_row')?['body/value'])?['alex_environment']",
+            "environmentName": "@first(outputs('Get_config_row')?['body/value'])?['alex_environment@OData.Community.Display.V1.FormattedValue']"
+          }
+        },
+        "Switch_on_environment": {
+          "runAfter": { "Compose_session_details": ["Succeeded"] },
+          "type": "Switch",
+          "expression": "@first(outputs('Get_config_row')?['body/value'])?['alex_environment']",
+          "cases": {
+            "Production": {
+              "case": 100000000,
+              "actions": {
+                "Compose_Production_delivery": {
+                  "runAfter": {},
+                  "metadata": { "operationMetadataId": "d4a44444-4444-4444-8444-444444444444" },
+                  "type": "Compose",
+                  "inputs": {
+                    "environment": "Production",
+                    "paymentPageUid": "@first(outputs('Get_config_row')?['body/value'])?['alex_paymentpageuidref']",
+                    "terminalUid": "@first(outputs('Get_config_row')?['body/value'])?['alex_terminaluidref']",
+                    "note": "TODO: build the PROD self-service link and deliver it via the selected channel."
+                  }
+                }
+              }
+            },
+            "Sandbox": {
+              "case": 100000001,
+              "actions": {
+                "Compose_Sandbox_delivery": {
+                  "runAfter": {},
+                  "metadata": { "operationMetadataId": "d5a55555-5555-4555-8555-555555555555" },
+                  "type": "Compose",
+                  "inputs": {
+                    "environment": "Sandbox",
+                    "paymentPageUid": "@first(outputs('Get_config_row')?['body/value'])?['alex_paymentpageuidref']",
+                    "terminalUid": "@first(outputs('Get_config_row')?['body/value'])?['alex_terminaluidref']",
+                    "note": "TODO: build the SANDBOX self-service link and deliver it via the selected channel."
+                  }
+                }
+              }
+            }
+          },
+          "default": {
+            "actions": {
+              "Terminate_unknown_environment": {
+                "runAfter": {},
+                "metadata": { "operationMetadataId": "d6a66666-6666-4666-8666-666666666666" },
+                "type": "Terminate",
+                "inputs": {
+                  "runStatus": "Failed",
+                  "runError": {
+                    "code": "UnknownEnvironment",
+                    "message": "alex_environment is not set to Production (100000000) or Sandbox (100000001)."
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,1623 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "PayPlus",
+    "description": "אינטגרציית PayPlus עבור Dynamics 365 — יצירת קישורי תשלום, חיוב, טוקניזציה, זיכויים והפקת מסמכי מס. סביבת ייצור (Production).\n\nPayPlus integration for Dynamics 365 — payment links, charging, tokenization, refunds and tax documents. Production environment.",
+    "version": "1.1"
+  },
+  "host": "restapi.payplus.co.il",
+  "basePath": "/api/v1.0",
+  "schemes": [ "https" ],
+  "consumes": [ "application/json" ],
+  "produces": [ "application/json" ],
+  "paths": {
+    "/PaymentPages/generateLink": {
+      "post": {
+        "operationId": "GeneratePaymentLink",
+        "summary": "יצירת קישור תשלום | Generate Payment Link",
+        "description": "יצירת קישור לדף תשלום מתארח של PayPlus עבור גבייה חד-פעמית או מחזורית. מחזיר קישור לתשלום ומזהה בקשת דף.\n\nGenerates a hosted PayPlus payment page link for one-time or recurring collection. Returns the payment link and a page request UID.",
+        "x-ms-visibility": "important",
+        "consumes": [ "application/json" ],
+        "produces": [ "application/json" ],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": { "$ref": "#/definitions/GenerateLinkRequest" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "הצלחה | Success",
+            "schema": { "$ref": "#/definitions/GenerateLinkResponse" }
+          }
+        }
+      }
+    },
+    "/PaymentPages/list": {
+      "get": {
+        "operationId": "ListPaymentPages",
+        "summary": "רשימת דפי תשלום | List Payment Pages",
+        "description": "שליפת דפי התשלום של המסוף המוגדר בחיבור. משמש למילוי אוטומטי (רשימה נפתחת) של שדה 'מזהה דף תשלום'.\n\nRetrieves the payment pages of the terminal configured in the connection. Used to populate the 'Payment Page UID' picker.",
+        "x-ms-visibility": "internal",
+        "produces": [ "application/json" ],
+        "parameters": [
+          {
+            "name": "terminal_uid",
+            "in": "query",
+            "required": true,
+            "type": "string",
+            "x-ms-summary": "מזהה מסוף | Terminal UID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "הצלחה | Success",
+            "schema": { "$ref": "#/definitions/PaymentPagesListResponse" }
+          }
+        }
+      }
+    },
+    "/MyTerminals": {
+      "get": {
+        "operationId": "MyTerminals",
+        "summary": "רשימת מסופים | My Terminals",
+        "description": "שליפת כל המסופים המשויכים לחשבון. משמש למילוי אוטומטי של שדה 'מסוף'.\n\nRetrieves all terminals associated with the account. Used to populate the 'Terminal' picker.",
+        "x-ms-visibility": "important",
+        "produces": [ "application/json" ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "הצלחה | Success",
+            "schema": { "$ref": "#/definitions/MyTerminalsResponse" }
+          }
+        }
+      }
+    },
+    "/Customers/Add": {
+      "post": {
+        "operationId": "CreateCustomer",
+        "summary": "יצירת לקוח | Create Customer",
+        "description": "יצירת לקוח ב-PayPlus כשיקוף של חשבון Dynamics 365.\n\nCreates a PayPlus customer as a mirror of a Dynamics 365 account.",
+        "x-ms-visibility": "important",
+        "consumes": [ "application/json" ],
+        "produces": [ "application/json" ],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": { "$ref": "#/definitions/CustomerRequest" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "הצלחה | Success",
+            "schema": { "$ref": "#/definitions/CustomerAddResponse" }
+          }
+        }
+      }
+    },
+    "/Transactions/RefundByTransactionUID": {
+      "post": {
+        "operationId": "RefundByTransaction",
+        "summary": "זיכוי לפי מזהה עסקה | Refund by Transaction",
+        "description": "ביצוע זיכוי (מלא או חלקי) לפי מזהה העסקה המקורי.\n\nIssues a refund (full or partial) by the original transaction UID.",
+        "x-ms-visibility": "important",
+        "consumes": [ "application/json" ],
+        "produces": [ "application/json" ],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": { "$ref": "#/definitions/RefundRequest" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "הצלחה | Success",
+            "schema": { "$ref": "#/definitions/ApiResult" }
+          }
+        }
+      }
+    },
+    "/RecurringPayments/add": {
+      "post": {
+        "operationId": "CreateRecurringPayment",
+        "summary": "יצירת הוראת קבע | Create Recurring Payment",
+        "description": "יצירת הוראת קבע לחיוב מחזורי אוטומטי (דורש מודול הוראות קבע).\n\nCreates a recurring payment instruction for automatic scheduled billing (requires the recurring module).",
+        "x-ms-visibility": "advanced",
+        "consumes": [ "application/json" ],
+        "produces": [ "application/json" ],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": { "$ref": "#/definitions/RecurringRequest" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "הצלחה | Success",
+            "schema": { "$ref": "#/definitions/ApiResult" }
+          }
+        }
+      }
+    },
+    "/Customers/Update/{uid}": {
+      "post": {
+        "operationId": "UpdateCustomer",
+        "summary": "עדכון לקוח | Update Customer",
+        "description": "עדכון פרטי לקוח קיים ב-PayPlus לפי מזהה לקוח.\n\nUpdates an existing PayPlus customer by UID.",
+        "x-ms-visibility": "important",
+        "consumes": [ "application/json" ],
+        "produces": [ "application/json" ],
+        "parameters": [
+          {
+            "name": "uid",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "x-ms-summary": "מזהה לקוח | Customer UID"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": { "$ref": "#/definitions/UpdateCustomerRequest" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "הצלחה | Success",
+            "schema": { "$ref": "#/definitions/ApiResult" }
+          }
+        }
+      }
+    },
+    "/Customers/View": {
+      "get": {
+        "operationId": "ViewCustomers",
+        "summary": "חיפוש לקוחות | View Customers",
+        "description": "חיפוש לקוחות ב-PayPlus לפי מזהה, ח.פ או דוא\"ל.\n\nSearches PayPlus customers by UUID, VAT number or email.",
+        "x-ms-visibility": "important",
+        "produces": [ "application/json" ],
+        "parameters": [
+          { "name": "uuid", "in": "query", "required": false, "type": "string", "x-ms-summary": "מזהה לקוח | Customer UUID" },
+          { "name": "vat_number", "in": "query", "required": false, "type": "string", "x-ms-summary": "ח.פ / עוסק | VAT number" },
+          { "name": "email", "in": "query", "required": false, "type": "string", "x-ms-summary": "דוא\"ל | Email" },
+          { "name": "skip", "in": "query", "required": false, "type": "string", "x-ms-summary": "דילוג | Skip" },
+          { "name": "take", "in": "query", "required": false, "type": "string", "x-ms-summary": "כמות (מקס' 500) | Take (max 500)" }
+        ],
+        "responses": {
+          "200": {
+            "description": "הצלחה | Success",
+            "schema": { "$ref": "#/definitions/ViewCustomersResponse" }
+          }
+        }
+      }
+    },
+    "/Customers/Remove/{customer_uid}": {
+      "post": {
+        "operationId": "RemoveCustomer",
+        "summary": "מחיקת לקוח | Remove Customer",
+        "description": "הסרת לקוח מ-PayPlus לפי מזהה לקוח.\n\nRemoves a PayPlus customer by customer UID.",
+        "x-ms-visibility": "advanced",
+        "consumes": [ "application/json" ],
+        "produces": [ "application/json" ],
+        "parameters": [
+          {
+            "name": "customer_uid",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "x-ms-summary": "מזהה לקוח | Customer UID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "הצלחה | Success",
+            "schema": { "$ref": "#/definitions/ApiResult" }
+          }
+        }
+      }
+    },
+    "/Transactions/Cancel": {
+      "post": {
+        "operationId": "CancelTransaction",
+        "summary": "ביטול עסקה | Cancel Transaction",
+        "description": "ביטול עסקה שטרם סולקה (בדרך כלל באותו יום לפני מועד ההפקדה). אינו זהה לזיכוי.\n\nCancels an unsettled transaction (usually same-day before deposit cutoff). Not the same as a refund.",
+        "x-ms-visibility": "important",
+        "consumes": [ "application/json" ],
+        "produces": [ "application/json" ],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": { "$ref": "#/definitions/CancelRequest" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "הצלחה | Success",
+            "schema": { "$ref": "#/definitions/ApiResult" }
+          }
+        }
+      }
+    },
+    "/Transactions/View": {
+      "post": {
+        "operationId": "ViewTransactions",
+        "summary": "חיפוש עסקאות | View Transactions",
+        "description": "שליפת עסקאות מ-PayPlus לצורך התאמה, בקרה ותמיכה. יש לספק לפחות מפתח חיפוש אחד.\n\nRetrieves transactions from PayPlus for reconciliation and support. At least one search key must be provided.",
+        "x-ms-visibility": "important",
+        "consumes": [ "application/json" ],
+        "produces": [ "application/json" ],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": { "$ref": "#/definitions/ViewTransactionsRequest" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "הצלחה | Success",
+            "schema": { "$ref": "#/definitions/ViewTransactionsResponse" }
+          }
+        }
+      }
+    },
+    "/Transactions/ChargeByTransactionUID": {
+      "post": {
+        "operationId": "ChargeByTransactionUid",
+        "summary": "חיוב לפי עסקה קיימת | Charge by Transaction UID",
+        "description": "חיוב/תפיסה כנגד עסקת אישור (J5) קודמת, עד גובה הסכום שאושר.\n\nCharges/captures against a previous approval (J5) transaction, up to the approved amount.",
+        "x-ms-visibility": "advanced",
+        "consumes": [ "application/json" ],
+        "produces": [ "application/json" ],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": { "$ref": "#/definitions/ChargeByTransactionUidRequest" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "הצלחה | Success",
+            "schema": { "$ref": "#/definitions/ApiResult" }
+          }
+        }
+      }
+    },
+    "/Transactions/Charge": {
+      "post": {
+        "operationId": "ChargeSavedCard",
+        "summary": "חיוב כרטיס שמור (טוקן) | Charge Saved Card (Token)",
+        "description": "חיוב ישיר (J4) של כרטיס שמור באמצעות טוקן בלבד — ללא הזנת מספר כרטיס/CVV. מומלץ ש-terminal_uid ו-cashier_uid יגיעו מהקונפיגורציה. הפעל את Secure Inputs ב-flow כדי שהטוקן לא יישמר בהיסטוריית הריצה.\n\nDirect (J4) charge of a saved card using a token only — no PAN/CVV input. terminal_uid and cashier_uid should come from configuration. Enable Secure Inputs on the flow so the token is not stored in run history.",
+        "x-ms-visibility": "advanced",
+        "consumes": [ "application/json" ],
+        "produces": [ "application/json" ],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": { "$ref": "#/definitions/ChargeSavedCardRequest" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "הצלחה | Success",
+            "schema": { "$ref": "#/definitions/ChargeResponse" }
+          }
+        }
+      }
+    },
+    "/Products/Add": {
+      "post": {
+        "operationId": "CreateProduct",
+        "summary": "הוספת מוצר | Add Product",
+        "description": "יצירת מוצר חדש בקטלוג PayPlus (לשימוש בעסקאות, תשלומים חוזרים, Invoice+).\n\nCreate a new product in the PayPlus catalog (for use in transactions, recurring payments, Invoice+).",
+        "x-ms-visibility": "advanced",
+        "consumes": [ "application/json" ],
+        "produces": [ "application/json" ],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": { "$ref": "#/definitions/ProductRequest" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "הצלחה | Success",
+            "schema": { "$ref": "#/definitions/ApiResult" }
+          }
+        }
+      }
+    },
+    "/Products/Update/{uid}": {
+      "post": {
+        "operationId": "UpdateProduct",
+        "summary": "עדכון מוצר | Update Product",
+        "description": "עדכון מוצר קיים לפי מזהה.\n\nUpdate an existing product by its UID.",
+        "x-ms-visibility": "advanced",
+        "consumes": [ "application/json" ],
+        "produces": [ "application/json" ],
+        "parameters": [
+          {
+            "name": "uid",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "x-ms-summary": "מזהה מוצר | Product UID",
+            "description": "מזהה ייחודי של המוצר\n\nProduct unique identifier"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": { "$ref": "#/definitions/ProductRequest" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "הצלחה | Success",
+            "schema": { "$ref": "#/definitions/ApiResult" }
+          }
+        }
+      }
+    },
+    "/Products/View": {
+      "get": {
+        "operationId": "ViewProducts",
+        "summary": "צפייה במוצרים | View Products",
+        "description": "שליפת רשימת מוצרים עם סינון אופציונלי לפי מזהה, מטבע או ברקוד.\n\nRetrieve a list of products with optional filters by UID, currency code, or barcode.",
+        "x-ms-visibility": "advanced",
+        "produces": [ "application/json" ],
+        "parameters": [
+          {
+            "name": "barcode",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "x-ms-summary": "ברקוד | Barcode",
+            "description": "סינון לפי ברקוד של מוצר\n\nFilter by product barcode"
+          },
+          {
+            "name": "currency_code",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "enum": [ "ILS", "USD", "EUR", "GBP" ],
+            "x-ms-enum-values": [ { "value": "ILS", "displayName": "₪ שקל | ILS" }, { "value": "USD", "displayName": "$ דולר | USD" }, { "value": "EUR", "displayName": "€ יורו | EUR" }, { "value": "GBP", "displayName": "£ ליש\"ט | GBP" } ],
+            "x-ms-summary": "מטבע | Currency",
+            "description": "סינון לפי מטבע\n\nFilter by currency code"
+          },
+          {
+            "name": "uid",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "x-ms-summary": "מזהה מוצר | Product UID",
+            "description": "סינון לפי מזהה מוצר\n\nFilter by product UID"
+          },
+          {
+            "name": "skip",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "x-ms-summary": "דילוג | Skip",
+            "description": "מהיכן להתחיל לשלוף רשומות\n\nWhere to start taking records"
+          },
+          {
+            "name": "take",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "x-ms-summary": "כמות | Take",
+            "description": "כמה רשומות לשלוף (מקסימום 500). נדרש אם skip הוזן.\n\nHow many records to take (max 500). Required if skip is set."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "הצלחה | Success",
+            "schema": { "$ref": "#/definitions/ApiResult" }
+          }
+        }
+      }
+    },
+    "/Categories/Add": {
+      "post": {
+        "operationId": "CreateProductCategory",
+        "summary": "הוספת קטגוריה | Add Category",
+        "description": "יצירת קטגוריית מוצרים חדשה.\n\nCreate a new product category.",
+        "x-ms-visibility": "advanced",
+        "consumes": [ "application/json" ],
+        "produces": [ "application/json" ],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": { "$ref": "#/definitions/CategoryRequest" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "הצלחה | Success",
+            "schema": { "$ref": "#/definitions/ApiResult" }
+          }
+        }
+      }
+    },
+    "/Categories/Update/{uid}": {
+      "post": {
+        "operationId": "UpdateProductCategory",
+        "summary": "עדכון קטגוריה | Update Category",
+        "description": "עדכון קטגוריית מוצרים קיימת לפי מזהה.\n\nUpdate an existing product category by its UID.",
+        "x-ms-visibility": "advanced",
+        "consumes": [ "application/json" ],
+        "produces": [ "application/json" ],
+        "parameters": [
+          {
+            "name": "uid",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "x-ms-summary": "מזהה קטגוריה | Category UID",
+            "description": "מזהה ייחודי של הקטגוריה\n\nCategory unique identifier"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": { "$ref": "#/definitions/CategoryRequest" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "הצלחה | Success",
+            "schema": { "$ref": "#/definitions/ApiResult" }
+          }
+        }
+      }
+    },
+    "/Categories/View": {
+      "get": {
+        "operationId": "ViewProductCategories",
+        "summary": "צפייה בקטגוריות | View Categories",
+        "description": "שליפת רשימת קטגוריות מוצרים. ניתן לסנן לפי מזהה עם הפרמטר uid.\n\nRetrieve a list of product categories. Use the uid parameter to view a specific category.",
+        "x-ms-visibility": "advanced",
+        "produces": [ "application/json" ],
+        "parameters": [
+          {
+            "name": "uid",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "x-ms-summary": "מזהה קטגוריה | Category UID",
+            "description": "סינון לפי מזהה קטגוריה\n\nFilter by category UID"
+          },
+          {
+            "name": "skip",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "x-ms-summary": "דילוג | Skip",
+            "description": "מהיכן להתחיל לשלוף רשומות\n\nWhere to start taking records"
+          },
+          {
+            "name": "take",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "x-ms-summary": "כמות | Take",
+            "description": "כמה רשומות לשלוף (מקסימום 500). נדרש אם skip הוזן.\n\nHow many records to take (max 500). Required if skip is set."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "הצלחה | Success",
+            "schema": { "$ref": "#/definitions/ApiResult" }
+          }
+        }
+      }
+    },
+    "/books/docs/new/{docType}": {
+      "post": {
+        "operationId": "CreateDocument",
+        "summary": "יצירת מסמך | Create Document",
+        "description": "יצירת מסמך חשבונאי כללי מכל סוג נתמך (חשבונית מס, קבלה, הצעת מחיר, זיכוי ועוד) לפי הפרמטר docType. פעולה גנרית המכסה את כל סוגי המסמכים של PayPlus Invoice+.\n\nCreates any supported accounting document (tax invoice, receipt, quote, credit, etc.) selected by the docType parameter. Generic action covering all PayPlus Invoice+ document types.",
+        "x-ms-visibility": "important",
+        "consumes": [ "application/json" ],
+        "produces": [ "application/json" ],
+        "parameters": [
+          {
+            "name": "docType",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "x-ms-summary": "סוג מסמך | Document type",
+            "description": "סוג המסמך להפקה\n\nType of document to create",
+            "enum": [ "inv_tax_receipt", "inv_tax", "inv_receipt", "dc_quote", "inv_proforma", "inv_pay_request", "inv_refund", "crt_delivery", "crt_return", "inv_don_receipt", "order_purchase", "purchase" ],
+            "x-ms-enum-values": [
+              { "value": "inv_tax_receipt", "displayName": "חשבונית מס/קבלה | Tax invoice/receipt" },
+              { "value": "inv_tax", "displayName": "חשבונית מס | Tax invoice" },
+              { "value": "inv_receipt", "displayName": "קבלה | Receipt" },
+              { "value": "dc_quote", "displayName": "הצעת מחיר | Quote" },
+              { "value": "inv_proforma", "displayName": "חשבונית עסקה (פרופורמה) | Proforma invoice" },
+              { "value": "inv_pay_request", "displayName": "בקשת תשלום | Payment request" },
+              { "value": "inv_refund", "displayName": "חשבונית זיכוי | Credit/refund document" },
+              { "value": "crt_delivery", "displayName": "תעודת משלוח | Delivery certificate" },
+              { "value": "crt_return", "displayName": "תעודת החזרה | Return certificate" },
+              { "value": "inv_don_receipt", "displayName": "קבלה על תרומה | Donation receipt" },
+              { "value": "order_purchase", "displayName": "תעודת הזמנת רכש | Purchase order certificate" },
+              { "value": "purchase", "displayName": "תעודת רכש | Purchase certificate" }
+            ]
+          },
+          { "name": "body", "in": "body", "required": true, "schema": { "$ref": "#/definitions/CreateDocumentRequest" } }
+        ],
+        "responses": {
+          "200": { "description": "הצלחה | Success", "schema": { "$ref": "#/definitions/DocumentResult" } }
+        }
+      }
+    },
+    "/books/docs/new/inv_tax_receipt": {
+      "post": {
+        "operationId": "CreateTaxInvoiceReceipt",
+        "summary": "חשבונית מס/קבלה | Create Tax Invoice/Receipt",
+        "description": "יצירת חשבונית מס/קבלה — מסמך משולב לתשלום מיידי שבו החשבונית והקבלה הן מסמך אחד.\n\nCreates a tax invoice/receipt — a combined document for immediate payment where invoice and receipt are one.",
+        "x-ms-visibility": "important",
+        "consumes": [ "application/json" ],
+        "produces": [ "application/json" ],
+        "parameters": [
+          { "name": "body", "in": "body", "required": true, "schema": { "$ref": "#/definitions/CreateDocumentRequest" } }
+        ],
+        "responses": {
+          "200": { "description": "הצלחה | Success", "schema": { "$ref": "#/definitions/DocumentResult" } }
+        }
+      }
+    },
+    "/books/docs/new/inv_tax": {
+      "post": {
+        "operationId": "CreateTaxInvoice",
+        "summary": "חשבונית מס | Create Tax Invoice",
+        "description": "יצירת חשבונית מס ללא רישום קבלה/תשלום. מתאים לתהליך של חשבונית לפני תשלום.\n\nCreates a tax invoice without recording receipt/payment. Suitable for invoice-before-payment.",
+        "x-ms-visibility": "important",
+        "consumes": [ "application/json" ],
+        "produces": [ "application/json" ],
+        "parameters": [
+          { "name": "body", "in": "body", "required": true, "schema": { "$ref": "#/definitions/CreateDocumentRequest" } }
+        ],
+        "responses": {
+          "200": { "description": "הצלחה | Success", "schema": { "$ref": "#/definitions/DocumentResult" } }
+        }
+      }
+    },
+    "/books/docs/new/inv_receipt": {
+      "post": {
+        "operationId": "CreateReceipt",
+        "summary": "קבלה | Create Receipt",
+        "description": "יצירת קבלה עבור תשלום שהתקבל. שימושי כאשר החשבונית קיימת בנפרד או שהתשלום מתועד עצמאית.\n\nCreates a receipt for a payment received. Useful when the invoice exists separately or payment is recorded independently.",
+        "x-ms-visibility": "important",
+        "consumes": [ "application/json" ],
+        "produces": [ "application/json" ],
+        "parameters": [
+          { "name": "body", "in": "body", "required": true, "schema": { "$ref": "#/definitions/CreateDocumentRequest" } }
+        ],
+        "responses": {
+          "200": { "description": "הצלחה | Success", "schema": { "$ref": "#/definitions/DocumentResult" } }
+        }
+      }
+    },
+    "/books/docs/new/dc_quote": {
+      "post": {
+        "operationId": "CreateQuote",
+        "summary": "הצעת מחיר | Create Quote",
+        "description": "יצירת הצעת מחיר. רלוונטי לתהליך הצעות המחיר ב-CRM לפני מכירה/תשלום.\n\nCreates a quote/proposal document. Relevant to the CRM quote flow before sale/payment.",
+        "x-ms-visibility": "important",
+        "consumes": [ "application/json" ],
+        "produces": [ "application/json" ],
+        "parameters": [
+          { "name": "body", "in": "body", "required": true, "schema": { "$ref": "#/definitions/CreateDocumentRequest" } }
+        ],
+        "responses": {
+          "200": { "description": "הצלחה | Success", "schema": { "$ref": "#/definitions/DocumentResult" } }
+        }
+      }
+    },
+    "/books/docs/new/inv_proforma": {
+      "post": {
+        "operationId": "CreateProformaInvoice",
+        "summary": "חשבונית עסקה (פרופורמה) | Create Proforma Invoice",
+        "description": "יצירת חשבונית עסקה (פרופורמה). שימושי לדרישת תשלום לפני חשבונית המס הסופית.\n\nCreates a proforma invoice. Useful for demand/proforma before the final tax invoice.",
+        "x-ms-visibility": "important",
+        "consumes": [ "application/json" ],
+        "produces": [ "application/json" ],
+        "parameters": [
+          { "name": "body", "in": "body", "required": true, "schema": { "$ref": "#/definitions/CreateDocumentRequest" } }
+        ],
+        "responses": {
+          "200": { "description": "הצלחה | Success", "schema": { "$ref": "#/definitions/DocumentResult" } }
+        }
+      }
+    },
+    "/books/docs/new/inv_pay_request": {
+      "post": {
+        "operationId": "CreatePaymentRequest",
+        "summary": "בקשת תשלום | Create Payment Request",
+        "description": "יצירת מסמך בקשת תשלום. שימושי ללקוחות חשבונית-בלבד או לתהליך תשלום-מאוחר ללא דף תשלום מתארח.\n\nCreates a payment request document. Useful for invoice-only customers or a pay-later process without a hosted payment page.",
+        "x-ms-visibility": "important",
+        "consumes": [ "application/json" ],
+        "produces": [ "application/json" ],
+        "parameters": [
+          { "name": "body", "in": "body", "required": true, "schema": { "$ref": "#/definitions/CreateDocumentRequest" } }
+        ],
+        "responses": {
+          "200": { "description": "הצלחה | Success", "schema": { "$ref": "#/definitions/DocumentResult" } }
+        }
+      }
+    },
+    "/books/docs/new/inv_refund": {
+      "post": {
+        "operationId": "CreateCreditDocument",
+        "summary": "חשבונית זיכוי | Create Credit Document",
+        "description": "יצירת מסמך זיכוי/החזר. משמש לתיעוד זיכוי חשבונאי, ביטול או החזר כספי.\n\nCreates a refund/credit document. Used for accounting credit, cancellation, or refund documentation.",
+        "x-ms-visibility": "advanced",
+        "consumes": [ "application/json" ],
+        "produces": [ "application/json" ],
+        "parameters": [
+          { "name": "body", "in": "body", "required": true, "schema": { "$ref": "#/definitions/CreateDocumentRequest" } }
+        ],
+        "responses": {
+          "200": { "description": "הצלחה | Success", "schema": { "$ref": "#/definitions/DocumentResult" } }
+        }
+      }
+    },
+    "/books/docs/new/crt_delivery": {
+      "post": {
+        "operationId": "CreateDeliveryCertificate",
+        "summary": "תעודת משלוח | Create Delivery Certificate",
+        "description": "יצירת תעודת משלוח/הובלה. שימושי למשלוח סחורה לפני הפקת חשבונית.\n\nCreates a delivery/shipping certificate. Useful for goods shipment before invoicing.",
+        "x-ms-visibility": "advanced",
+        "consumes": [ "application/json" ],
+        "produces": [ "application/json" ],
+        "parameters": [
+          { "name": "body", "in": "body", "required": true, "schema": { "$ref": "#/definitions/CreateDocumentRequest" } }
+        ],
+        "responses": {
+          "200": { "description": "הצלחה | Success", "schema": { "$ref": "#/definitions/DocumentResult" } }
+        }
+      }
+    },
+    "/books/docs/new/crt_return": {
+      "post": {
+        "operationId": "CreateReturnCertificate",
+        "summary": "תעודת החזרה | Create Return Certificate",
+        "description": "יצירת תעודת החזרה עבור סחורה שהוחזרה.\n\nCreates a return certificate for returned goods.",
+        "x-ms-visibility": "advanced",
+        "consumes": [ "application/json" ],
+        "produces": [ "application/json" ],
+        "parameters": [
+          { "name": "body", "in": "body", "required": true, "schema": { "$ref": "#/definitions/CreateDocumentRequest" } }
+        ],
+        "responses": {
+          "200": { "description": "הצלחה | Success", "schema": { "$ref": "#/definitions/DocumentResult" } }
+        }
+      }
+    },
+    "/books/docs/new/inv_don_receipt": {
+      "post": {
+        "operationId": "CreateDonationReceipt",
+        "summary": "קבלה על תרומה | Create Donation Receipt",
+        "description": "יצירת קבלה על תרומה (רלוונטי לעמותות/תרומות בלבד).\n\nCreates a donation receipt (relevant to nonprofit/donation processes only).",
+        "x-ms-visibility": "advanced",
+        "consumes": [ "application/json" ],
+        "produces": [ "application/json" ],
+        "parameters": [
+          { "name": "body", "in": "body", "required": true, "schema": { "$ref": "#/definitions/CreateDocumentRequest" } }
+        ],
+        "responses": {
+          "200": { "description": "הצלחה | Success", "schema": { "$ref": "#/definitions/DocumentResult" } }
+        }
+      }
+    },
+    "/books/docs/new/order_purchase": {
+      "post": {
+        "operationId": "CreatePurchaseOrderCertificate",
+        "summary": "תעודת הזמנת רכש | Create Purchase Order Certificate",
+        "description": "יצירת תעודת הזמנת רכש. רלוונטי כאשר תהליכי רכש מנוהלים דרך PayPlus.\n\nCreates a purchase order certificate. Relevant when purchasing/procurement is managed via PayPlus.",
+        "x-ms-visibility": "advanced",
+        "consumes": [ "application/json" ],
+        "produces": [ "application/json" ],
+        "parameters": [
+          { "name": "body", "in": "body", "required": true, "schema": { "$ref": "#/definitions/CreateDocumentRequest" } }
+        ],
+        "responses": {
+          "200": { "description": "הצלחה | Success", "schema": { "$ref": "#/definitions/DocumentResult" } }
+        }
+      }
+    },
+    "/books/docs/new/purchase": {
+      "post": {
+        "operationId": "CreatePurchaseCertificate",
+        "summary": "תעודת רכש | Create Purchase Certificate",
+        "description": "יצירת תעודת רכש. שימושי כאשר נדרשת חשבונאות בצד הספק.\n\nCreates a purchase certificate. Useful when supplier-side accounting is needed.",
+        "x-ms-visibility": "advanced",
+        "consumes": [ "application/json" ],
+        "produces": [ "application/json" ],
+        "parameters": [
+          { "name": "body", "in": "body", "required": true, "schema": { "$ref": "#/definitions/CreateDocumentRequest" } }
+        ],
+        "responses": {
+          "200": { "description": "הצלחה | Success", "schema": { "$ref": "#/definitions/DocumentResult" } }
+        }
+      }
+    },
+    "/books/doc_types": {
+      "get": {
+        "operationId": "GetDocumentTypes",
+        "summary": "סוגי מסמכים | Get Document Types",
+        "description": "שליפת סוגי המסמכים הזמינים בחשבון. גם פעולת האימות הקלה ביותר עבור לקוחות חשבונית-בלבד.\n\nReturns the available PayPlus document types. Also the lightest validation action for invoice-only customers.",
+        "x-ms-visibility": "important",
+        "produces": [ "application/json" ],
+        "parameters": [
+          { "name": "language_code", "in": "query", "required": false, "type": "string", "x-ms-summary": "שפת תגובה | Language code", "description": "שפת התגובה המועדפת, למשל he\n\nPreferred response language, e.g. he" }
+        ],
+        "responses": {
+          "200": { "description": "הצלחה | Success", "schema": { "$ref": "#/definitions/DocumentResult" } }
+        }
+      }
+    },
+    "/books/docs/get/{uuid}": {
+      "get": {
+        "operationId": "GetDocument",
+        "summary": "שליפת מסמך | Get Document",
+        "description": "שליפת מסמך לפי מזהה המסמך ב-PayPlus.\n\nRetrieves a document by its PayPlus document UUID.",
+        "x-ms-visibility": "important",
+        "produces": [ "application/json" ],
+        "parameters": [
+          { "name": "uuid", "in": "path", "required": true, "type": "string", "x-ms-summary": "מזהה מסמך | Document UUID" }
+        ],
+        "responses": {
+          "200": { "description": "הצלחה | Success", "schema": { "$ref": "#/definitions/DocumentResult" } }
+        }
+      }
+    },
+    "/books/docs/getBy/unique_identifier/{unique_identifier}": {
+      "get": {
+        "operationId": "GetDocumentByUniqueIdentifier",
+        "summary": "שליפת מסמך לפי מזהה ייחודי | Get Document by Unique Identifier",
+        "description": "שליפת מסמך לפי מפתח האידמפוטנטיות ששימש ביצירה. קריטי לתהליכים בטוחי-ניסיון-חוזר ב-Dynamics.\n\nRetrieves a document by the idempotency key used at creation. Critical for retry-safe Dynamics flows.",
+        "x-ms-visibility": "important",
+        "produces": [ "application/json" ],
+        "parameters": [
+          { "name": "unique_identifier", "in": "path", "required": true, "type": "string", "x-ms-summary": "מזהה ייחודי | Unique identifier" },
+          { "name": "brand_uuid", "in": "query", "required": false, "type": "string", "x-ms-visibility": "advanced", "x-ms-summary": "מזהה מותג | Brand UUID" }
+        ],
+        "responses": {
+          "200": { "description": "הצלחה | Success", "schema": { "$ref": "#/definitions/DocumentResult" } }
+        }
+      }
+    },
+    "/books/docs/getBy/number/{number}/{series}": {
+      "get": {
+        "operationId": "GetDocumentByNumber",
+        "summary": "שליפת מסמך לפי מספר | Get Document by Number",
+        "description": "שליפת מסמך רשמי לפי מספר וסדרה/קידומת. שימושי למשתמשי כספים שמחפשים לפי מספר המסמך המודפס.\n\nRetrieves a formal document by number and series/prefix. Useful for finance users searching by printed document number.",
+        "x-ms-visibility": "advanced",
+        "produces": [ "application/json" ],
+        "parameters": [
+          { "name": "number", "in": "path", "required": true, "type": "string", "x-ms-summary": "מספר מסמך | Document number" },
+          { "name": "series", "in": "path", "required": true, "type": "string", "x-ms-summary": "סדרה/קידומת | Series" }
+        ],
+        "responses": {
+          "200": { "description": "הצלחה | Success", "schema": { "$ref": "#/definitions/DocumentResult" } }
+        }
+      }
+    },
+    "/books/docs/list": {
+      "get": {
+        "operationId": "SearchDocuments",
+        "summary": "חיפוש מסמכים | Search Documents",
+        "description": "חיפוש מסמכים לצורך התאמה, תמיכה ומשימות סנכרון.\n\nSearches documents for reconciliation, support and sync jobs.",
+        "x-ms-visibility": "advanced",
+        "produces": [ "application/json" ],
+        "parameters": [
+          { "name": "skip", "in": "query", "required": false, "type": "string", "x-ms-summary": "דילוג | Skip" },
+          { "name": "take", "in": "query", "required": false, "type": "string", "x-ms-summary": "כמות | Take" },
+          { "name": "search", "in": "query", "required": false, "type": "string", "x-ms-summary": "חיפוש חופשי | Search" },
+          { "name": "more_info", "in": "query", "required": false, "type": "string", "x-ms-summary": "מידע נוסף | More info" },
+          { "name": "number", "in": "query", "required": false, "type": "string", "x-ms-summary": "מספר מסמך | Document number" },
+          { "name": "transaction_uuid", "in": "query", "required": false, "type": "string", "x-ms-summary": "מזהה עסקה | Transaction UUID" },
+          { "name": "currency_code", "in": "query", "required": false, "type": "string", "x-ms-summary": "מטבע | Currency code" },
+          { "name": "paypal_transaction_id", "in": "query", "required": false, "type": "string", "x-ms-visibility": "advanced", "x-ms-summary": "מזהה עסקת PayPal | PayPal transaction id" },
+          { "name": "customer", "in": "query", "required": false, "type": "string", "x-ms-summary": "לקוח | Customer" },
+          { "name": "fromDate", "in": "query", "required": false, "type": "string", "x-ms-summary": "מתאריך | From date" },
+          { "name": "toDate", "in": "query", "required": false, "type": "string", "x-ms-summary": "עד תאריך | To date" },
+          { "name": "dateType", "in": "query", "required": false, "type": "string", "x-ms-visibility": "advanced", "x-ms-summary": "סוג תאריך | Date type" },
+          { "name": "brand_uuid", "in": "query", "required": false, "type": "string", "x-ms-visibility": "advanced", "x-ms-summary": "מזהה מותג | Brand UUID" },
+          { "name": "types", "in": "query", "required": false, "type": "string", "x-ms-summary": "סוגי מסמכים | Document types" },
+          { "name": "statuses", "in": "query", "required": false, "type": "string", "x-ms-summary": "סטטוסים | Statuses" },
+          { "name": "minAmount", "in": "query", "required": false, "type": "string", "x-ms-visibility": "advanced", "x-ms-summary": "סכום מינימלי | Min amount" },
+          { "name": "maxAmount", "in": "query", "required": false, "type": "string", "x-ms-visibility": "advanced", "x-ms-summary": "סכום מקסימלי | Max amount" },
+          { "name": "tags", "in": "query", "required": false, "type": "string", "x-ms-visibility": "advanced", "x-ms-summary": "תגיות | Tags" },
+          { "name": "paymentTypes", "in": "query", "required": false, "type": "string", "x-ms-visibility": "advanced", "x-ms-summary": "סוגי תשלום | Payment types" },
+          { "name": "external_id", "in": "query", "required": false, "type": "string", "x-ms-visibility": "advanced", "x-ms-summary": "מזהה חיצוני | External id" }
+        ],
+        "responses": {
+          "200": { "description": "הצלחה | Success", "schema": { "$ref": "#/definitions/DocumentResult" } }
+        }
+      }
+    },
+    "/Invoice/GetDocuments": {
+      "post": {
+        "operationId": "GetDocumentsByTransactionUid",
+        "summary": "שליפת מסמכים לפי עסקה | Get Documents by Transaction UID",
+        "description": "שליפת המסמכים המשויכים לעסקת תשלום ב-PayPlus. מגשר בין הסליקה לחשבונאות.\n\nRetrieves documents linked to a PayPlus payment transaction. Bridges clearing and accounting.",
+        "x-ms-visibility": "advanced",
+        "consumes": [ "application/json" ],
+        "produces": [ "application/json" ],
+        "parameters": [
+          { "name": "body", "in": "body", "required": true, "schema": { "$ref": "#/definitions/GetDocumentsByTransactionUidRequest" } }
+        ],
+        "responses": {
+          "200": { "description": "הצלחה | Success", "schema": { "$ref": "#/definitions/DocumentResult" } }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "GenerateLinkRequest": {
+      "type": "object",
+      "required": [ "payment_page_uid", "amount", "currency_code" ],
+      "properties": {
+        "terminal_uid": {
+          "type": "string",
+          "x-ms-summary": "מסוף | Terminal",
+          "x-ms-dynamic-values": {
+            "operationId": "MyTerminals",
+            "value-path": "uuid",
+            "value-title": "name_terminal"
+          }
+        },
+        "payment_page_uid": {
+          "type": "string",
+          "x-ms-summary": "מזהה דף תשלום | Payment Page UID",
+          "x-ms-dynamic-list": {
+            "operationId": "ListPaymentPages",
+            "itemsPath": "data",
+            "itemValuePath": "uid",
+            "itemTitlePath": "name",
+            "parameters": {
+              "terminal_uid": {
+                "parameterReference": "body/terminal_uid"
+              }
+            }
+          }
+        },
+        "charge_method": {
+          "type": "integer",
+          "x-ms-summary": "סוג חיוב | Charge Method",
+          "description": "בחר סוג חיוב | Select charge method",
+          "enum": [ 0, 1, 2, 3, 4, 5 ],
+          "x-ms-enum-values": [
+            { "value": 0, "displayName": "בדיקה | Check" },
+            { "value": 1, "displayName": "חיוב | Charge" },
+            { "value": 2, "displayName": "אישור | Approval" },
+            { "value": 3, "displayName": "הוראת קבע | Recurring" },
+            { "value": 4, "displayName": "זיכוי | Refund" },
+            { "value": 5, "displayName": "טוקן | Token" }
+          ]
+        },
+        "amount": { "type": "number", "x-ms-summary": "סכום | Amount" },
+        "currency_code": {
+          "type": "string",
+          "x-ms-summary": "מטבע | Currency",
+          "default": "ILS",
+          "enum": [ "ILS", "USD", "EUR", "GBP" ],
+          "x-ms-enum-values": [
+            { "value": "ILS", "displayName": "₪ שקל | ILS" },
+            { "value": "USD", "displayName": "$ דולר | USD" },
+            { "value": "EUR", "displayName": "€ יורו | EUR" },
+            { "value": "GBP", "displayName": "£ ליש\"ט | GBP" }
+          ]
+        },
+        "more_info": { "type": "string", "x-ms-summary": "מידע נוסף (מפתח D365) | More info (D365 key)" },
+        "initial_invoice": { "type": "boolean", "x-ms-summary": "הפקת מסמך מס | Issue tax document" },
+        "customer": { "$ref": "#/definitions/Customer" },
+        "items": {
+          "type": "array",
+          "x-ms-summary": "פריטים | Items",
+          "items": { "$ref": "#/definitions/Item" }
+        },
+        "cashier_uid": { "type": "string", "x-ms-visibility": "advanced", "x-ms-summary": "מזהה קופה | Cashier UID" },
+        "charge_default": { "type": "string", "x-ms-visibility": "advanced", "x-ms-summary": "אמצעי תשלום ברירת מחדל | Default method", "enum": [ "credit-card", "bit", "multipass", "paypal", "praxell", "valuecard", "verifone" ] },
+        "hide_other_charge_methods": { "type": "boolean", "x-ms-visibility": "advanced", "x-ms-summary": "הסתר אמצעי תשלום אחרים | Hide other methods" },
+        "language_code": { "type": "string", "default": "he", "x-ms-visibility": "advanced", "x-ms-summary": "שפת הדף | Language code" },
+        "sendEmailApproval": { "type": "boolean", "default": true, "x-ms-visibility": "advanced", "x-ms-summary": "מייל בהצלחה | Email on approval" },
+        "sendEmailFailure": { "type": "boolean", "default": false, "x-ms-visibility": "advanced", "x-ms-summary": "מייל בכשל | Email on failure" },
+        "send_failure_callback": { "type": "boolean", "x-ms-visibility": "advanced", "x-ms-summary": "קולבק גם בכשל | Callback on failure too" },
+        "expiry_datetime": { "type": "string", "x-ms-visibility": "advanced", "x-ms-summary": "תוקף בדקות | Expiry (minutes)" },
+        "refURL_success": { "type": "string", "x-ms-visibility": "advanced", "x-ms-summary": "כתובת הצלחה | Success URL" },
+        "refURL_failure": { "type": "string", "x-ms-visibility": "advanced", "x-ms-summary": "כתובת כשל | Failure URL" },
+        "refURL_cancel": { "type": "string", "x-ms-visibility": "advanced", "x-ms-summary": "כתובת ביטול | Cancel URL" },
+        "refURL_origin": { "type": "string", "x-ms-visibility": "advanced", "x-ms-summary": "מקור לשדות מתארחים | Hosted Fields origin", "description": "כתובת המקור (origin) שבה יוטמעו השדות המתארחים, לצורך allowlist.\n\nParent origin URL where hosted fields are embedded, for allowlisting." },
+        "refURL_callback": { "type": "string", "x-ms-visibility": "advanced", "x-ms-summary": "כתובת קולבק (IPN) | Callback URL (IPN)" },
+        "custom_invoice_name": { "type": "string", "x-ms-visibility": "advanced", "x-ms-summary": "שם לחשבונית | Custom invoice name" },
+        "create_token": { "type": "boolean", "default": false, "x-ms-visibility": "advanced", "x-ms-summary": "צור טוקן | Create token" },
+        "hosted_fields": { "type": "boolean", "default": false, "x-ms-visibility": "advanced", "x-ms-summary": "שדות מתארחים | Hosted Fields", "description": "החזר מזהה שדות מתארחים (hosted_fields_uuid) לאיסוף כרטיס מאובטח מוטמע.\n\nReturn a hosted fields UID (hosted_fields_uuid) for embedded secure card collection." },
+        "invoice_language": { "type": "boolean", "x-ms-visibility": "advanced", "x-ms-summary": "שפת מסמך | Invoice language" },
+        "paying_vat": { "type": "boolean", "default": true, "x-ms-visibility": "advanced", "x-ms-summary": "כולל מע\"מ | Paying VAT" },
+        "payments": { "type": "integer", "x-ms-visibility": "advanced", "x-ms-summary": "מספר תשלומים | Installments" },
+        "payments_credit": { "type": "boolean", "default": false, "x-ms-visibility": "advanced", "x-ms-summary": "עסקת קרדיט | Credit installments" },
+        "payments_selected": { "type": "integer", "x-ms-visibility": "advanced", "x-ms-summary": "תשלומים נבחרים | Selected installments" },
+        "close_doc": { "type": "string", "x-ms-visibility": "advanced", "x-ms-summary": "סגירת מסמך (Invoice+) | Close document" },
+        "invoice_integration_uid": { "type": "string", "x-ms-visibility": "advanced", "x-ms-summary": "מזהה אינטגרציית חשבונית | Invoice integration UID" },
+        "more_info_2": { "type": "string", "x-ms-visibility": "advanced", "x-ms-summary": "מידע נוסף 2 | More info 2" },
+        "more_info_3": { "type": "string", "x-ms-visibility": "advanced", "x-ms-summary": "מידע נוסף 3 | More info 3" },
+        "more_info_4": { "type": "string", "x-ms-visibility": "advanced", "x-ms-summary": "מידע נוסף 4 | More info 4" },
+        "more_info_5": { "type": "string", "x-ms-visibility": "advanced", "x-ms-summary": "מידע נוסף 5 | More info 5" }
+      }
+    },
+    "Customer": {
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "x-ms-summary": "מזהה לקוח | Customer UID" },
+        "customer_name": { "type": "string", "x-ms-summary": "שם לקוח | Customer name" },
+        "email": { "type": "string", "x-ms-summary": "דוא\"ל | Email" },
+        "customer_external_number": { "type": "string", "x-ms-summary": "מזהה חיצוני (ERP) | External id (ERP)" },
+        "vat_number": { "type": "string", "x-ms-summary": "ח.פ / עוסק | VAT number" },
+        "phone": { "type": "string", "x-ms-summary": "טלפון | Phone" },
+        "address": { "type": "string", "x-ms-summary": "כתובת | Address" },
+        "postal_code": { "type": "string", "x-ms-summary": "מיקוד | Postal code" },
+        "city": { "type": "string", "x-ms-summary": "עיר | City" },
+        "country_iso": { "type": "string", "x-ms-summary": "מדינה (ISO) | Country ISO" }
+      }
+    },
+    "Item": {
+      "type": "object",
+      "properties": {
+        "name": { "type": "string", "x-ms-summary": "תיאור | Name" },
+        "product_uid": { "type": "string", "x-ms-summary": "מזהה מוצר | Product UID" },
+        "product_invoice_extra_details": { "type": "string", "x-ms-summary": "פרטי מוצר לחשבונית | Invoice extra details" },
+        "image_url": { "type": "string", "x-ms-summary": "תמונה | Image URL" },
+        "category_uid": { "type": "string", "x-ms-summary": "מזהה קטגוריה | Category UID" },
+        "quantity": { "type": "integer", "x-ms-summary": "כמות | Quantity" },
+        "barcode": { "type": "string", "x-ms-summary": "ברקוד | Barcode" },
+        "value": { "type": "integer", "x-ms-summary": "ערך | Value" },
+        "price": { "type": "number", "x-ms-summary": "מחיר | Price" },
+        "discount_type": { "type": "string", "x-ms-summary": "סוג הנחה | Discount type", "enum": [ "percentage", "amount" ] },
+        "discount_value": { "type": "number", "x-ms-summary": "ערך הנחה | Discount value" },
+        "shipping": { "type": "boolean", "x-ms-summary": "משלוח | Shipping" },
+        "vat_type": { "type": "integer", "x-ms-summary": "סוג מע\"מ | VAT type", "enum": [ 0, 1, 2 ], "x-ms-enum-values": [ { "value": 0, "displayName": "כולל מע\"מ | VAT included" }, { "value": 1, "displayName": "ללא מע\"מ | VAT excluded" }, { "value": 2, "displayName": "פטור ממע\"מ | VAT exempt" } ] },
+        "guide_document_url": { "type": "string", "x-ms-summary": "מסמך מוצר | Guide document URL" }
+      }
+    },
+    "GenerateLinkResponse": {
+      "type": "object",
+      "properties": {
+        "results": {
+          "type": "object",
+          "x-ms-summary": "תוצאה | Results",
+          "properties": {
+            "status": { "type": "string", "x-ms-summary": "סטטוס | Status" },
+            "code": { "type": "integer", "x-ms-summary": "קוד | Code" },
+            "description": { "type": "string", "x-ms-summary": "תיאור | Description" }
+          }
+        },
+        "data": {
+          "type": "object",
+          "x-ms-summary": "נתונים | Data",
+          "properties": {
+            "page_request_uid": { "type": "string", "x-ms-summary": "מזהה בקשת דף | Page request UID" },
+            "payment_page_link": { "type": "string", "x-ms-summary": "קישור לתשלום | Payment page link" },
+            "qr_code_image": { "type": "string", "x-ms-summary": "תמונת QR | QR code image" },
+            "hosted_fields_uuid": { "type": "string", "x-ms-summary": "מזהה שדות מתארחים | Hosted Fields UID" }
+          }
+        }
+      }
+    },
+    "CustomerRequest": {
+      "type": "object",
+      "required": [ "email", "customer_name" ],
+      "properties": {
+        "email": { "type": "string", "x-ms-summary": "דוא\"ל | Email" },
+        "customer_name": { "type": "string", "x-ms-summary": "שם לקוח | Customer name" },
+        "paying_vat": { "type": "boolean", "default": true, "x-ms-summary": "חייב במע\"מ | Paying VAT" },
+        "vat_number": { "type": "integer", "x-ms-summary": "ח.פ / עוסק | VAT number" },
+        "customer_number": { "type": "string", "x-ms-summary": "מספר לקוח פנימי | Customer number" },
+        "notes": { "type": "string", "x-ms-summary": "הערות | Notes" },
+        "phone": { "type": "string", "x-ms-summary": "טלפון | Phone" },
+        "contacts": {
+          "type": "array",
+          "x-ms-summary": "אנשי קשר | Contacts",
+          "items": { "$ref": "#/definitions/Contact" }
+        },
+        "business_address": { "type": "string", "x-ms-summary": "כתובת | Address" },
+        "business_city": { "type": "string", "x-ms-summary": "עיר | City" },
+        "business_postal_code": { "type": "string", "x-ms-summary": "מיקוד | Postal code" },
+        "business_country_iso": { "type": "string", "default": "IL", "x-ms-summary": "מדינה (ISO) | Country ISO" },
+        "subject_code": { "type": "string", "x-ms-summary": "קוד נושא מספרי קצר | Short numeric subject code" },
+        "communication_email": { "type": "string", "x-ms-summary": "דוא\"ל לתקשורת | Communication email" }
+      }
+    },
+    "UpdateCustomerRequest": {
+      "type": "object",
+      "properties": {
+        "email": { "type": "string", "x-ms-summary": "דוא\"ל | Email" },
+        "customer_name": { "type": "string", "x-ms-summary": "שם לקוח | Customer name" },
+        "paying_vat": { "type": "boolean", "default": true, "x-ms-summary": "חייב במע\"מ | Paying VAT" },
+        "vat_number": { "type": "string", "x-ms-summary": "ח.פ / עוסק | VAT number" },
+        "customer_number": { "type": "string", "x-ms-summary": "מספר לקוח פנימי | Customer number" },
+        "notes": { "type": "string", "x-ms-summary": "הערות | Notes" },
+        "phone": { "type": "string", "x-ms-summary": "טלפון | Phone" },
+        "contacts": {
+          "type": "array",
+          "x-ms-summary": "אנשי קשר | Contacts",
+          "items": { "$ref": "#/definitions/Contact" }
+        },
+        "business_address": { "type": "string", "x-ms-summary": "כתובת | Address" },
+        "business_city": { "type": "string", "x-ms-summary": "עיר | City" },
+        "business_postal_code": { "type": "string", "x-ms-summary": "מיקוד | Postal code" },
+        "business_country_iso": { "type": "string", "default": "IL", "x-ms-summary": "מדינה (ISO) | Country ISO" },
+        "subject_code": { "type": "string", "x-ms-summary": "קוד נושא מספרי קצר | Short numeric subject code" },
+        "communication_email": { "type": "string", "x-ms-summary": "דוא\"ל לתקשורת | Communication email" }
+      }
+    },
+    "Contact": {
+      "type": "object",
+      "properties": {
+        "full_name": { "type": "string", "x-ms-summary": "שם מלא | Full name" },
+        "cell_phone": { "type": "string", "x-ms-summary": "טלפון נייד | Cell phone" },
+        "contact_email": { "type": "string", "x-ms-summary": "דוא\"ל | Email" },
+        "contact_address": { "type": "string", "x-ms-summary": "כתובת | Address" },
+        "contact_city": { "type": "string", "x-ms-summary": "עיר | City" },
+        "contact_postal_code": { "type": "string", "x-ms-summary": "מיקוד | Postal code" },
+        "contact_country_iso": { "type": "string", "default": "IL", "x-ms-summary": "מדינה (ISO) | Country ISO" },
+        "job_position": {
+          "type": "string",
+          "x-ms-summary": "תפקיד | Job position",
+          "enum": [ "main-contact-person", "management", "technical-department", "accounting-and-finance", "legal-department", "personnel-department", "marketing-and-advertising-department", "other" ],
+          "x-ms-enum-values": [
+            { "value": "main-contact-person", "displayName": "איש קשר ראשי | Main contact" },
+            { "value": "management", "displayName": "הנהלה | Management" },
+            { "value": "technical-department", "displayName": "מחלקה טכנית | Technical" },
+            { "value": "accounting-and-finance", "displayName": "הנה\"ח וכספים | Accounting & finance" },
+            { "value": "legal-department", "displayName": "מחלקה משפטית | Legal" },
+            { "value": "personnel-department", "displayName": "משאבי אנוש | Personnel" },
+            { "value": "marketing-and-advertising-department", "displayName": "שיווק ופרסום | Marketing" },
+            { "value": "other", "displayName": "אחר | Other" }
+          ]
+        }
+      }
+    },
+    "CustomerAddResponse": {
+      "type": "object",
+      "properties": {
+        "results": {
+          "type": "object",
+          "x-ms-summary": "תוצאה | Results",
+          "properties": {
+            "status": { "type": "string", "x-ms-summary": "סטטוס | Status" },
+            "code": { "type": "integer", "x-ms-summary": "קוד | Code" },
+            "description": { "type": "string", "x-ms-summary": "תיאור | Description" }
+          }
+        },
+        "data": {
+          "type": "object",
+          "x-ms-summary": "נתונים | Data",
+          "properties": {
+            "customer_uid": { "type": "string", "x-ms-summary": "מזהה לקוח | Customer UID" }
+          }
+        }
+      }
+    },
+    "RefundRequest": {
+      "type": "object",
+      "required": [ "transaction_uid", "amount" ],
+      "properties": {
+        "transaction_uid": { "type": "string", "x-ms-summary": "מזהה עסקה | Transaction UID" },
+        "amount": { "type": "number", "x-ms-summary": "סכום לזיכוי | Refund amount" },
+        "more_info": { "type": "string", "x-ms-summary": "מידע נוסף (מפתח D365) | More info (D365 key)" },
+        "cvv": { "type": "string", "x-ms-visibility": "advanced", "x-ms-summary": "CVV (אם נדרש) | CVV (if required)" },
+        "initial_invoice": { "type": "boolean", "default": false, "x-ms-summary": "הפקת מסמך זיכוי | Issue refund document" },
+        "items": { "type": "array", "x-ms-visibility": "advanced", "x-ms-summary": "פריטים | Items", "items": { "$ref": "#/definitions/TransactionItem" } }
+      }
+    },
+    "CancelRequest": {
+      "type": "object",
+      "required": [ "terminal_uid", "transaction_uid", "cashier_uid" ],
+      "properties": {
+        "terminal_uid": { "type": "string", "x-ms-summary": "מסוף | Terminal UID" },
+        "transaction_uid": { "type": "string", "x-ms-summary": "מזהה עסקה | Transaction UID" },
+        "cashier_uid": { "type": "string", "x-ms-summary": "מזהה קופה | Cashier UID" }
+      }
+    },
+    "ViewTransactionsRequest": {
+      "type": "object",
+      "properties": {
+        "transaction_uid": { "type": "string", "x-ms-summary": "מזהה עסקה | Transaction UID" },
+        "customer_uid": { "type": "string", "x-ms-summary": "מזהה לקוח | Customer UID" },
+        "fromDate": { "type": "string", "x-ms-summary": "מתאריך | From date" },
+        "untilDate": { "type": "string", "x-ms-summary": "עד תאריך | Until date" },
+        "more_info": { "type": "string", "x-ms-summary": "מידע נוסף (מפתח D365) | More info (D365 key)" }
+      }
+    },
+    "ChargeByTransactionUidRequest": {
+      "type": "object",
+      "required": [ "transaction_uid", "amount" ],
+      "properties": {
+        "transaction_uid": { "type": "string", "x-ms-summary": "מזהה עסקה מקורית | Original transaction UID" },
+        "amount": { "type": "number", "x-ms-summary": "סכום | Amount" },
+        "more_info": { "type": "string", "x-ms-summary": "מידע נוסף (מפתח D365) | More info (D365 key)" },
+        "cvv": { "type": "string", "x-ms-summary": "CVV (אם נדרש) | CVV (if required)" },
+        "items": {
+          "type": "array",
+          "x-ms-summary": "פריטים | Items",
+          "items": { "$ref": "#/definitions/TransactionItem" }
+        }
+      }
+    },
+    "RecurringRequest": {
+      "type": "object",
+      "required": [ "terminal_uid", "customer_uid", "card_token", "cashier_uid", "currency_code", "instant_first_payment", "recurring_type", "recurring_range", "number_of_charges", "start_date" ],
+      "properties": {
+        "terminal_uid": { "type": "string", "x-ms-summary": "מסוף | Terminal UID", "x-ms-dynamic-values": { "operationId": "MyTerminals", "value-path": "uuid", "value-title": "name_terminal" } },
+        "customer_uid": { "type": "string", "x-ms-summary": "מזהה לקוח | Customer UID" },
+        "card_token": { "type": "string", "x-ms-summary": "טוקן כרטיס | Card token" },
+        "cashier_uid": { "type": "string", "x-ms-summary": "מזהה קופה | Cashier UID" },
+        "currency_code": { "type": "string", "default": "ILS", "x-ms-summary": "מטבע | Currency", "enum": [ "ILS", "USD", "EUR", "GBP" ], "x-ms-enum-values": [ { "value": "ILS", "displayName": "₪ שקל | ILS" }, { "value": "USD", "displayName": "$ דולר | USD" }, { "value": "EUR", "displayName": "€ יורו | EUR" }, { "value": "GBP", "displayName": "£ ליש\"ט | GBP" } ] },
+        "instant_first_payment": { "type": "boolean", "x-ms-summary": "חיוב ראשון מיידי | Instant first payment" },
+        "recurring_type": { "type": "integer", "x-ms-summary": "תדירות | Recurring type", "enum": [ 0, 1, 2 ], "x-ms-enum-values": [ { "value": 0, "displayName": "יומי | Daily" }, { "value": 1, "displayName": "שבועי | Weekly" }, { "value": 2, "displayName": "חודשי | Monthly" } ] },
+        "recurring_range": { "type": "integer", "default": 1, "x-ms-summary": "מרווח | Range" },
+        "number_of_charges": { "type": "integer", "x-ms-summary": "מספר חיובים (0=ללא הגבלה) | Number of charges (0=unlimited)" },
+        "start_date": { "type": "string", "x-ms-summary": "תאריך התחלה | Start date" },
+        "end_date": { "type": "string", "x-ms-visibility": "advanced", "x-ms-summary": "תאריך סיום | End date" },
+        "items": { "type": "array", "x-ms-summary": "פריטים | Items", "items": { "$ref": "#/definitions/RecurringItem" } },
+        "bank_account_uid": { "type": "string", "x-ms-visibility": "advanced", "x-ms-summary": "חשבון בנק לקוח (מס\"ב) | Customer bank account (MASAV)" },
+        "company_bank_account_uid": { "type": "string", "x-ms-visibility": "advanced", "x-ms-summary": "חשבון בנק חברה (מס\"ב) | Company bank account (MASAV)" },
+        "one_time_items": { "type": "array", "x-ms-visibility": "advanced", "x-ms-summary": "פריטים חד-פעמיים | One-time items", "items": { "$ref": "#/definitions/RecurringItem" } },
+        "one_time_charge_date": { "type": "string", "x-ms-visibility": "advanced", "x-ms-summary": "תאריך חיוב חד-פעמי | One-time charge date" },
+        "successful_invoice": { "type": "boolean", "default": false, "x-ms-visibility": "advanced", "x-ms-summary": "חשבונית בהצלחה | Invoice on success" },
+        "send_customer_success_email": { "type": "boolean", "default": false, "x-ms-visibility": "advanced", "x-ms-summary": "מייל בהצלחה | Success email" },
+        "customer_failure_email": { "type": "boolean", "default": false, "x-ms-visibility": "advanced", "x-ms-summary": "מייל בכשל | Failure email" },
+        "send_customer_success_sms": { "type": "boolean", "default": false, "x-ms-visibility": "advanced", "x-ms-summary": "SMS בהצלחה | Success SMS" },
+        "customer_failure_sms": { "type": "boolean", "default": false, "x-ms-visibility": "advanced", "x-ms-summary": "SMS בכשל | Failure SMS" },
+        "extra_info": { "type": "string", "x-ms-visibility": "advanced", "x-ms-summary": "מידע נוסף | Extra info" }
+      }
+    },
+    "RecurringItem": {
+      "type": "object",
+      "properties": {
+        "product_uid": { "type": "string", "x-ms-summary": "מזהה מוצר | Product UID" },
+        "quantity": { "type": "number", "x-ms-summary": "כמות | Quantity" },
+        "price": { "type": "number", "x-ms-summary": "מחיר | Price" },
+        "discount_type": { "type": "string", "x-ms-summary": "סוג הנחה | Discount type", "enum": [ "percentage", "amount" ] },
+        "discount_value": { "type": "number", "x-ms-summary": "ערך הנחה | Discount value" },
+        "product_invoice_extra_details": { "type": "string", "x-ms-summary": "פרטי מוצר לחשבונית | Invoice extra details" }
+      }
+    },
+    "TransactionItem": {
+      "type": "object",
+      "properties": {
+        "name": { "type": "string", "x-ms-summary": "תיאור | Name" },
+        "product_uid": { "type": "string", "x-ms-summary": "מזהה מוצר | Product UID" },
+        "image_url": { "type": "string", "x-ms-summary": "תמונה | Image URL" },
+        "category_uid": { "type": "string", "x-ms-summary": "מזהה קטגוריה | Category UID" },
+        "quantity": { "type": "number", "x-ms-summary": "כמות | Quantity" },
+        "barcode": { "type": "string", "x-ms-summary": "ברקוד | Barcode" },
+        "value": { "type": "integer", "x-ms-summary": "ערך | Value" },
+        "price": { "type": "number", "x-ms-summary": "מחיר | Price" },
+        "discount_type": { "type": "string", "x-ms-summary": "סוג הנחה | Discount type", "enum": [ "amount", "percentage" ] },
+        "discount_value": { "type": "integer", "x-ms-summary": "ערך הנחה | Discount value" },
+        "shipping": { "type": "boolean", "x-ms-summary": "משלוח | Shipping" },
+        "vat_type": { "type": "integer", "x-ms-summary": "סוג מע\"מ | VAT type", "enum": [ 0, 1, 2 ], "x-ms-enum-values": [ { "value": 0, "displayName": "כולל מע\"מ | VAT included" }, { "value": 1, "displayName": "ללא מע\"מ | VAT excluded" }, { "value": 2, "displayName": "פטור ממע\"מ | VAT exempt" } ] }
+      }
+    },
+    "ViewCustomersResponse": {
+      "type": "object",
+      "properties": {
+        "pages": { "type": "integer", "x-ms-summary": "עמודים | Pages" },
+        "count": { "type": "integer", "x-ms-summary": "כמות | Count" },
+        "customers": {
+          "type": "array",
+          "x-ms-summary": "לקוחות | Customers",
+          "items": {
+            "type": "object",
+            "properties": {
+              "company_uid": { "type": "string", "x-ms-summary": "מזהה חברה | Company UID" },
+              "customer_name": { "type": "string", "x-ms-summary": "שם לקוח | Customer name" },
+              "customer_uid": { "type": "string", "x-ms-summary": "מזהה לקוח | Customer UID" },
+              "vat_number": { "type": "string", "x-ms-summary": "ח.פ / עוסק | VAT number" },
+              "customer_number": { "type": "string", "x-ms-summary": "מספר לקוח | Customer number" },
+              "notes": { "type": "string", "x-ms-summary": "הערות | Notes" },
+              "phone": { "type": "string", "x-ms-summary": "טלפון | Phone" },
+              "email": { "type": "string", "x-ms-summary": "דוא\"ל | Email" },
+              "uid": { "type": "string", "x-ms-summary": "UID | UID" },
+              "paying_vat": { "type": "boolean", "x-ms-summary": "חייב במע\"מ | Paying VAT" },
+              "default": { "type": "boolean", "x-ms-summary": "ברירת מחדל | Default" },
+              "created_at": { "type": "string", "x-ms-summary": "נוצר בתאריך | Created at" },
+              "contacts": {
+                "type": "array",
+                "x-ms-summary": "אנשי קשר | Contacts",
+                "items": { "type": "object", "properties": { "full_name": { "type": "string", "x-ms-summary": "שם מלא | Full name" }, "cell_phone": { "type": "string", "x-ms-summary": "נייד | Cell phone" } } }
+              }
+            }
+          }
+        }
+      }
+    },
+    "ChargeSavedCardRequest": {
+      "type": "object",
+      "required": [ "terminal_uid", "cashier_uid", "customer_uid", "token", "amount", "currency_code", "credit_terms", "use_token" ],
+      "properties": {
+        "terminal_uid": { "type": "string", "x-ms-summary": "מסוף | Terminal UID", "x-ms-dynamic-values": { "operationId": "MyTerminals", "value-path": "uuid", "value-title": "name_terminal" } },
+        "cashier_uid": { "type": "string", "x-ms-summary": "מזהה קופה | Cashier UID" },
+        "customer_uid": { "type": "string", "x-ms-summary": "מזהה לקוח | Customer UID" },
+        "token": { "type": "string", "x-ms-summary": "טוקן כרטיס (רגיש) | Card token (sensitive)", "description": "טוקן כרטיס שמור בלבד. אין להזין מספר כרטיס/CVV.\n\nSaved-card token only. Do not enter PAN/CVV." },
+        "amount": { "type": "number", "x-ms-summary": "סכום | Amount" },
+        "currency_code": { "type": "string", "default": "ILS", "x-ms-summary": "מטבע | Currency", "enum": [ "ILS", "USD", "EUR", "GBP" ], "x-ms-enum-values": [ { "value": "ILS", "displayName": "₪ שקל | ILS" }, { "value": "USD", "displayName": "$ דולר | USD" }, { "value": "EUR", "displayName": "€ יורו | EUR" }, { "value": "GBP", "displayName": "£ ליש\"ט | GBP" } ] },
+        "credit_terms": { "type": "integer", "default": 1, "x-ms-summary": "תנאי אשראי | Credit terms", "enum": [ 1, 6, 8 ], "x-ms-enum-values": [ { "value": 1, "displayName": "רגיל | Regular" }, { "value": 6, "displayName": "קרדיט | Credit" }, { "value": 8, "displayName": "תשלומים | Payments" } ] },
+        "use_token": { "type": "boolean", "default": true, "x-ms-visibility": "internal" },
+        "initial_invoice": { "type": "boolean", "default": true, "x-ms-visibility": "advanced", "x-ms-summary": "הפקת מסמך | Issue document" },
+        "create_token": { "type": "boolean", "default": false, "x-ms-visibility": "advanced", "x-ms-summary": "החזר טוקן חדש | Return new token" },
+        "customer_name_invoice": { "type": "string", "x-ms-visibility": "advanced", "x-ms-summary": "שם לחשבונית | Invoice customer name" },
+        "deferMonths": { "type": "integer", "default": 0, "x-ms-visibility": "advanced", "x-ms-summary": "קוד מועדון | Club code (defer months)" },
+        "id": { "type": "string", "x-ms-visibility": "advanced", "x-ms-summary": "ת.ז בעל הכרטיס | Card holder ID" },
+        "add_data": { "type": "string", "x-ms-visibility": "advanced", "x-ms-summary": "נתון נוסף (רק אם נפתח בחברת האשראי) | Add data (only if enabled)" },
+        "original_terminal_uid": { "type": "string", "x-ms-visibility": "advanced", "x-ms-summary": "מסוף מקורי (J5) | Original terminal UID (J5)" },
+        "customer": { "$ref": "#/definitions/ChargeCustomer" },
+        "products": { "type": "array", "x-ms-visibility": "advanced", "x-ms-summary": "פריטים | Products", "items": { "$ref": "#/definitions/ChargeProduct" } },
+        "payments": { "type": "object", "x-ms-visibility": "advanced", "x-ms-summary": "תשלומים | Payments", "properties": { "number": { "type": "integer", "x-ms-summary": "מספר תשלומים | Number of payments" }, "first_amount": { "type": "integer", "x-ms-summary": "תשלום ראשון | First payment" }, "nonfirst_amount": { "type": "integer", "x-ms-summary": "יתר התשלומים | Remaining payments" } } },
+        "extra_info": { "type": "string", "x-ms-visibility": "advanced", "x-ms-summary": "מידע נוסף | Extra info" },
+        "more_info_1": { "type": "string", "x-ms-visibility": "advanced", "x-ms-summary": "מידע נוסף 1 (מפתח D365) | More info 1 (D365 key)" },
+        "more_info_2": { "type": "string", "x-ms-visibility": "advanced", "x-ms-summary": "מידע נוסף 2 | More info 2" },
+        "more_info_3": { "type": "string", "x-ms-visibility": "advanced", "x-ms-summary": "מידע נוסף 3 | More info 3" },
+        "more_info_4": { "type": "string", "x-ms-visibility": "advanced", "x-ms-summary": "מידע נוסף 4 | More info 4" },
+        "more_info_5": { "type": "string", "x-ms-visibility": "advanced", "x-ms-summary": "מידע נוסף 5 | More info 5" }
+      }
+    },
+    "ChargeProduct": {
+      "type": "object",
+      "properties": {
+        "product_uid": { "type": "string", "x-ms-summary": "מזהה מוצר | Product UID" },
+        "name": { "type": "string", "x-ms-summary": "שם | Name" },
+        "quantity": { "type": "string", "x-ms-summary": "כמות | Quantity" },
+        "price": { "type": "string", "x-ms-summary": "מחיר | Price" },
+        "currency_code": { "type": "string", "x-ms-summary": "מטבע | Currency" },
+        "discount_type": { "type": "string", "default": "amount", "x-ms-summary": "סוג הנחה | Discount type", "enum": [ "percentage", "amount" ] },
+        "discount_value": { "type": "integer", "x-ms-summary": "ערך הנחה | Discount value" },
+        "product_invoice_extra_details": { "type": "string", "x-ms-summary": "פרטי מוצר לחשבונית | Invoice extra details" },
+        "vat_type": { "type": "integer", "x-ms-summary": "סוג מע\"מ | VAT type", "enum": [ 0, 1, 2 ], "x-ms-enum-values": [ { "value": 0, "displayName": "כולל מע\"מ | VAT included" }, { "value": 1, "displayName": "ללא מע\"מ | VAT excluded" }, { "value": 2, "displayName": "פטור ממע\"מ | VAT exempt" } ] }
+      }
+    },
+    "ChargeCustomer": {
+      "type": "object",
+      "x-ms-summary": "לקוח (אופציונלי) | Customer (optional)",
+      "properties": {
+        "customer_name": { "type": "string", "x-ms-summary": "שם לקוח | Customer name" },
+        "email": { "type": "string", "x-ms-summary": "דוא\"ל | Email" },
+        "full_name": { "type": "string", "x-ms-summary": "שם איש קשר | Contact full name" },
+        "vat_number": { "type": "string", "x-ms-summary": "ח.פ / עוסק | VAT number" },
+        "phone": { "type": "string", "x-ms-summary": "טלפון | Phone" },
+        "cell_phone": { "type": "string", "x-ms-summary": "נייד | Cell phone" },
+        "address": { "type": "string", "x-ms-summary": "כתובת | Address" },
+        "city": { "type": "string", "x-ms-summary": "עיר | City" },
+        "country_ISO": { "type": "string", "x-ms-summary": "מדינה (ISO) | Country ISO" }
+      }
+    },
+    "ChargeResponse": {
+      "type": "object",
+      "properties": {
+        "results": {
+          "type": "object",
+          "x-ms-summary": "תוצאה | Results",
+          "properties": {
+            "status": { "type": "string", "x-ms-summary": "סטטוס | Status" },
+            "code": { "type": "integer", "x-ms-summary": "קוד | Code" },
+            "description": { "type": "string", "x-ms-summary": "תיאור | Description" }
+          }
+        },
+        "data": {
+          "type": "object",
+          "x-ms-summary": "נתונים | Data",
+          "properties": {
+            "transaction": {
+              "type": "object",
+              "x-ms-summary": "עסקה | Transaction",
+              "properties": {
+                "uid": { "type": "string", "x-ms-summary": "מזהה עסקה | Transaction UID" },
+                "number": { "type": "string", "x-ms-summary": "מספר | Number" },
+                "type": { "type": "string", "x-ms-summary": "סוג | Type" },
+                "date": { "type": "string", "x-ms-summary": "תאריך | Date" },
+                "status_code": { "type": "string", "x-ms-summary": "קוד סטטוס | Status code" },
+                "amount": { "type": "number", "x-ms-summary": "סכום | Amount" },
+                "currency": { "type": "string", "x-ms-summary": "מטבע | Currency" },
+                "credit_terms": { "type": "string", "x-ms-summary": "תנאי אשראי | Credit terms" },
+                "payments": {
+                  "type": "object",
+                  "x-ms-summary": "תשלומים | Payments",
+                  "properties": {
+                    "number_of_payments": { "type": "integer", "x-ms-summary": "מספר תשלומים | Number of payments" },
+                    "first_payment_amount": { "type": "integer", "x-ms-summary": "תשלום ראשון | First payment" },
+                    "rest_payments_amount": { "type": "integer", "x-ms-summary": "יתר התשלומים | Remaining payments" }
+                  }
+                },
+                "secure3D": {
+                  "type": "object",
+                  "x-ms-summary": "3D Secure | 3D Secure",
+                  "properties": {
+                    "status": { "type": "boolean", "x-ms-summary": "סטטוס | Status" },
+                    "tracking": { "type": "string", "x-ms-summary": "מעקב | Tracking" }
+                  }
+                },
+                "approval_number": { "type": "string", "x-ms-summary": "מספר אישור | Approval number" },
+                "voucher_number": { "type": "string", "x-ms-summary": "מספר שובר | Voucher number" },
+                "more_info": { "type": "string", "x-ms-summary": "מידע נוסף | More info" },
+                "more_info_1": { "type": "string", "x-ms-summary": "מידע נוסף 1 | More info 1" },
+                "more_info_2": { "type": "string", "x-ms-summary": "מידע נוסף 2 | More info 2" },
+                "more_info_3": { "type": "string", "x-ms-summary": "מידע נוסף 3 | More info 3" },
+                "more_info_4": { "type": "string", "x-ms-summary": "מידע נוסף 4 | More info 4" },
+                "more_info_5": { "type": "string", "x-ms-summary": "מידע נוסף 5 | More info 5" }
+              }
+            },
+            "data": {
+              "type": "object",
+              "x-ms-summary": "פרטים | Details",
+              "properties": {
+                "customer_uid": { "type": "string", "x-ms-summary": "מזהה לקוח | Customer UID" },
+                "terminal_uid": { "type": "string", "x-ms-summary": "מסוף | Terminal UID" },
+                "cashier_uid": { "type": "string", "x-ms-summary": "מזהה קופה | Cashier UID" },
+                "items": {
+                  "type": "array",
+                  "x-ms-summary": "פריטים | Items",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "amount_pay": { "type": "number", "x-ms-summary": "סכום לתשלום | Amount pay" },
+                      "discount_amount": { "type": "number", "x-ms-summary": "סכום הנחה | Discount amount" },
+                      "discount_type": { "type": "string", "x-ms-summary": "סוג הנחה | Discount type" },
+                      "discount_value": { "type": "number", "x-ms-summary": "ערך הנחה | Discount value" },
+                      "quantity": { "type": "string", "x-ms-summary": "כמות | Quantity" },
+                      "quantity_price": { "type": "number", "x-ms-summary": "מחיר ליחידה | Unit price" },
+                      "product_uid": { "type": "string", "x-ms-summary": "מזהה מוצר | Product UID" },
+                      "name": { "type": "string", "x-ms-summary": "שם | Name" }
+                    }
+                  }
+                },
+                "card_information": {
+                  "type": "object",
+                  "x-ms-summary": "פרטי כרטיס | Card information",
+                  "properties": {
+                    "four_digits": { "type": "string", "x-ms-summary": "4 ספרות אחרונות | Last 4 digits" },
+                    "expiry_month": { "type": "string", "x-ms-summary": "חודש תוקף | Expiry month" },
+                    "expiry_year": { "type": "string", "x-ms-summary": "שנת תוקף | Expiry year" },
+                    "clearing_id": { "type": "integer", "x-ms-summary": "מסלקה | Clearing ID" },
+                    "brand_id": { "type": "integer", "x-ms-summary": "מותג | Brand ID" },
+                    "issuer_id": { "type": "integer", "x-ms-summary": "מנפיק | Issuer ID" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "CategoryRequest": {
+      "type": "object",
+      "required": [ "name", "valid" ],
+      "properties": {
+        "name": { "type": "string", "x-ms-summary": "שם קטגוריה | Category name" },
+        "valid": { "type": "boolean", "default": true, "x-ms-summary": "פעיל | Valid", "description": "משפיע על סטטוס הקטגוריה\n\nAffects category status" }
+      }
+    },
+    "ProductRequest": {
+      "type": "object",
+      "required": [ "category_uids", "name", "price", "currency_code", "vat_type" ],
+      "properties": {
+        "category_uids": { "type": "array", "x-ms-summary": "קטגוריות | Category UIDs", "description": "מערך מזהי קטגוריות. אם לא הוזן — תשויך קטגוריית ברירת המחדל.\n\nArray of category UIDs. If empty, the product is assigned to the system default category.", "items": { "type": "string" } },
+        "name": { "type": "string", "x-ms-summary": "שם מוצר | Product name" },
+        "price": { "type": "integer", "x-ms-summary": "מחיר מכירה | Sell price" },
+        "currency_code": { "type": "string", "default": "ILS", "x-ms-summary": "מטבע | Currency", "enum": [ "ILS", "USD", "EUR", "GBP" ], "x-ms-enum-values": [ { "value": "ILS", "displayName": "₪ שקל | ILS" }, { "value": "USD", "displayName": "$ דולר | USD" }, { "value": "EUR", "displayName": "€ יורו | EUR" }, { "value": "GBP", "displayName": "£ ליש\"ט | GBP" } ] },
+        "vat_type": { "type": "integer", "x-ms-summary": "סוג מע\"מ | VAT type", "enum": [ 0, 1, 2 ], "x-ms-enum-values": [ { "value": 0, "displayName": "כולל מע\"מ | VAT included" }, { "value": 1, "displayName": "ללא מע\"מ | VAT excluded" }, { "value": 2, "displayName": "פטור ממע\"מ | VAT exempt" } ] },
+        "valid": { "type": "boolean", "default": true, "x-ms-visibility": "advanced", "x-ms-summary": "פעיל | Valid" },
+        "barcode": { "type": "string", "x-ms-visibility": "advanced", "x-ms-summary": "ברקוד | Barcode" },
+        "value": { "type": "string", "x-ms-visibility": "advanced", "x-ms-summary": "מחיר עלות | Cost price" },
+        "description": { "type": "string", "x-ms-visibility": "advanced", "x-ms-summary": "תיאור | Description" },
+        "fixed_amount_discount": { "type": "number", "x-ms-visibility": "advanced", "x-ms-summary": "הנחה בסכום קבוע | Fixed amount discount" },
+        "percentage_discount": { "type": "number", "x-ms-visibility": "advanced", "x-ms-summary": "הנחה באחוזים | Percentage discount" },
+        "guide_document_url": { "type": "string", "x-ms-visibility": "advanced", "x-ms-summary": "קישור למסמך מוצר | Guide document URL" }
+      }
+    },
+    "ViewTransactionsResponse": {
+      "type": "object",
+      "properties": {
+        "results": {
+          "type": "object",
+          "x-ms-summary": "תוצאה | Results",
+          "properties": {
+            "status": { "type": "string", "x-ms-summary": "סטטוס | Status" },
+            "code": { "type": "integer", "x-ms-summary": "קוד | Code" },
+            "description": { "type": "string", "x-ms-summary": "תיאור | Description" }
+          }
+        },
+        "data": { "x-ms-summary": "נתונים | Data", "description": "עשוי להיות מערך עסקאות כאשר נמצאו, או אובייקט ריק כאשר אין.\n\nMay be an array of transactions when found, or an empty object when none." }
+      }
+    },
+    "CreateDocumentRequest": {
+      "type": "object",
+      "required": [ "unique_identifier" ],
+      "properties": {
+        "unique_identifier": { "type": "string", "x-ms-summary": "מזהה ייחודי (מפתח D365) | Unique identifier (D365 key)", "description": "מחרוזת ייחודית למניעת כפילויות. מומלץ להשתמש במזהה הרשומה ב-Dynamics.\n\nUnique string preventing duplicate documents. Use the Dynamics record id." },
+        "doc_date": { "type": "string", "x-ms-summary": "תאריך מסמך | Document date (YYYY-MM-DD)" },
+        "brand_uuid": { "type": "string", "x-ms-visibility": "advanced", "x-ms-summary": "מזהה מותג | Brand UUID" },
+        "preview": { "type": "boolean", "x-ms-visibility": "advanced", "x-ms-summary": "תצוגה מקדימה | Preview" },
+        "draft": { "type": "boolean", "x-ms-visibility": "advanced", "x-ms-summary": "טיוטה | Draft" },
+        "hide_base_currency": { "type": "boolean", "x-ms-visibility": "advanced", "x-ms-summary": "הסתרת מטבע בסיס | Hide base currency" },
+        "more_info": { "type": "string", "x-ms-summary": "מידע נוסף (מופיע במסמך) | More info (shown on document)" },
+        "close_doc": { "type": "string", "x-ms-visibility": "advanced", "x-ms-summary": "מזהה מסמך לסגירה | Close document UID" },
+        "cancel_doc": { "type": "string", "x-ms-visibility": "advanced", "x-ms-summary": "מזהה מסמך לביטול | Cancel document UID" },
+        "transaction_uuid": { "type": "string", "x-ms-visibility": "advanced", "x-ms-summary": "מזהה עסקת PayPlus | Transaction UUID" },
+        "send_document_email": { "type": "boolean", "x-ms-summary": "שליחת מסמך בדוא\"ל | Send document email" },
+        "send_document_sms": { "type": "boolean", "x-ms-summary": "שליחת מסמך ב-SMS | Send document SMS" },
+        "callback_url": { "type": "string", "x-ms-visibility": "advanced", "x-ms-summary": "כתובת Callback | Callback URL" },
+        "vatType": { "type": "string", "x-ms-visibility": "advanced", "x-ms-summary": "אופן מע\"מ | VAT type", "enum": [ "vat-type-included", "vat-type-not-included", "vat-type-exempt" ], "x-ms-enum-values": [ { "value": "vat-type-included", "displayName": "כולל מע\"מ | VAT included" }, { "value": "vat-type-not-included", "displayName": "ללא מע\"מ | VAT not included" }, { "value": "vat-type-exempt", "displayName": "פטור ממע\"מ | VAT exempt" } ] },
+        "vat_percentage": { "type": "integer", "x-ms-visibility": "advanced", "x-ms-summary": "אחוז מע\"מ | VAT percentage" },
+        "language": { "type": "string", "x-ms-visibility": "advanced", "x-ms-summary": "שפה | Language", "enum": [ "he", "en" ], "x-ms-enum-values": [ { "value": "he", "displayName": "עברית | Hebrew" }, { "value": "en", "displayName": "אנגלית | English" } ] },
+        "currency_code": { "type": "string", "default": "ILS", "x-ms-summary": "מטבע | Currency code" },
+        "conversion_rate": { "type": "number", "x-ms-visibility": "advanced", "x-ms-summary": "שער המרה | Conversion rate" },
+        "autocalculate_rate": { "type": "boolean", "x-ms-visibility": "advanced", "x-ms-summary": "חישוב שער אוטומטי | Auto-calculate rate" },
+        "prevent_email": { "type": "boolean", "x-ms-visibility": "advanced", "x-ms-summary": "מניעת שליחת דוא\"ל | Prevent email" },
+        "totalAmount": { "type": "integer", "x-ms-summary": "סכום כולל | Total amount" },
+        "customer": { "$ref": "#/definitions/DocumentCustomer" },
+        "items": { "type": "array", "x-ms-summary": "שורות מסמך | Items", "items": { "$ref": "#/definitions/DocumentItem" } },
+        "payments": { "type": "array", "x-ms-summary": "תשלומים | Payments", "items": { "$ref": "#/definitions/DocumentPayment" } },
+        "tags": { "type": "array", "x-ms-visibility": "advanced", "x-ms-summary": "תגיות | Tags", "items": { "type": "string" } }
+      }
+    },
+    "DocumentCustomer": {
+      "type": "object",
+      "properties": {
+        "customer_name": { "type": "string", "x-ms-summary": "שם לקוח | Customer name" },
+        "customer_uid": { "type": "string", "x-ms-summary": "מזהה לקוח קיים | Existing customer UID" },
+        "email": { "type": "string", "x-ms-summary": "דוא\"ל | Email" },
+        "phone": { "type": "string", "x-ms-summary": "טלפון | Phone" },
+        "vat_number": { "type": "string", "x-ms-summary": "ח.פ / ת.ז / עוסק | VAT / ID number" },
+        "business_number": { "type": "string", "x-ms-visibility": "advanced", "x-ms-summary": "מספר עסק | Business number" },
+        "address": { "type": "string", "x-ms-summary": "כתובת | Address" },
+        "city": { "type": "string", "x-ms-summary": "עיר | City" },
+        "postal_code": { "type": "string", "x-ms-summary": "מיקוד | Postal code" },
+        "country_iso": { "type": "string", "default": "IL", "x-ms-visibility": "advanced", "x-ms-summary": "מדינה (ISO) | Country ISO" },
+        "more_info": { "type": "string", "x-ms-visibility": "advanced", "x-ms-summary": "מידע נוסף | More info" }
+      }
+    },
+    "DocumentItem": {
+      "type": "object",
+      "properties": {
+        "name": { "type": "string", "x-ms-summary": "תיאור | Name" },
+        "product_uid": { "type": "string", "x-ms-summary": "מזהה מוצר | Product UID" },
+        "barcode": { "type": "string", "x-ms-visibility": "advanced", "x-ms-summary": "ברקוד | Barcode" },
+        "quantity": { "type": "number", "x-ms-summary": "כמות | Quantity" },
+        "price": { "type": "number", "x-ms-summary": "מחיר ליחידה | Unit price" },
+        "vat_type": { "type": "integer", "x-ms-summary": "סוג מע\"מ | VAT type", "enum": [ 0, 1, 2 ], "x-ms-enum-values": [ { "value": 0, "displayName": "כולל מע\"מ | VAT included" }, { "value": 1, "displayName": "ללא מע\"מ | VAT excluded" }, { "value": 2, "displayName": "פטור ממע\"מ | VAT exempt" } ] },
+        "discount_type": { "type": "string", "x-ms-visibility": "advanced", "x-ms-summary": "סוג הנחה | Discount type", "enum": [ "percentage", "amount" ] },
+        "discount_value": { "type": "number", "x-ms-visibility": "advanced", "x-ms-summary": "ערך הנחה | Discount value" },
+        "category_uid": { "type": "string", "x-ms-visibility": "advanced", "x-ms-summary": "מזהה קטגוריה | Category UID" }
+      }
+    },
+    "DocumentPayment": {
+      "type": "object",
+      "properties": {
+        "payment_type": { "type": "string", "x-ms-summary": "סוג תשלום | Payment type", "description": "אמצעי התשלום (מזומן, כרטיס אשראי, המחאה, העברה בנקאית וכו')\n\nPayment method (cash, credit-card, cheque, bank-transfer, etc.)" },
+        "amount": { "type": "number", "x-ms-summary": "סכום | Amount" },
+        "date": { "type": "string", "x-ms-summary": "תאריך | Date (YYYY-MM-DD)" },
+        "currency": { "type": "string", "x-ms-visibility": "advanced", "x-ms-summary": "מטבע | Currency" },
+        "card_type": { "type": "string", "x-ms-visibility": "advanced", "x-ms-summary": "סוג כרטיס | Card type" },
+        "four_digits": { "type": "string", "x-ms-visibility": "advanced", "x-ms-summary": "4 ספרות אחרונות | Last 4 digits" },
+        "card_expiry": { "type": "string", "x-ms-visibility": "advanced", "x-ms-summary": "תוקף כרטיס | Card expiry (MM/YY)" },
+        "number_of_payments": { "type": "integer", "x-ms-visibility": "advanced", "x-ms-summary": "מספר תשלומים | Number of payments" },
+        "bank": { "type": "string", "x-ms-visibility": "advanced", "x-ms-summary": "בנק | Bank" },
+        "branch": { "type": "string", "x-ms-visibility": "advanced", "x-ms-summary": "סניף | Branch" },
+        "account_number": { "type": "string", "x-ms-visibility": "advanced", "x-ms-summary": "מספר חשבון | Account number" },
+        "cheque_number": { "type": "string", "x-ms-visibility": "advanced", "x-ms-summary": "מספר המחאה | Cheque number" },
+        "transaction_uid": { "type": "string", "x-ms-visibility": "advanced", "x-ms-summary": "מזהה עסקה | Transaction UID" }
+      }
+    },
+    "GetDocumentsByTransactionUidRequest": {
+      "type": "object",
+      "required": [ "transaction_uid" ],
+      "properties": {
+        "transaction_uid": { "type": "string", "x-ms-summary": "מזהה עסקה | Transaction UID" },
+        "filter": { "type": "string", "x-ms-visibility": "advanced", "x-ms-summary": "סינון | Filter" }
+      }
+    },
+    "DocumentResult": {
+      "type": "object",
+      "properties": {
+        "results": {
+          "type": "object",
+          "x-ms-summary": "תוצאה | Results",
+          "properties": {
+            "status": { "type": "string", "x-ms-summary": "סטטוס | Status" },
+            "code": { "type": "integer", "x-ms-summary": "קוד | Code" },
+            "description": { "type": "string", "x-ms-summary": "תיאור | Description" }
+          }
+        },
+        "data": { "x-ms-summary": "נתונים | Data" }
+      }
+    },
+    "ApiResult": {
+      "type": "object",
+      "properties": {
+        "results": {
+          "type": "object",
+          "x-ms-summary": "תוצאה | Results",
+          "properties": {
+            "status": { "type": "string", "x-ms-summary": "סטטוס | Status" },
+            "code": { "type": "integer", "x-ms-summary": "קוד | Code" },
+            "description": { "type": "string", "x-ms-summary": "תיאור | Description" }
+          }
+        },
+        "data": { "type": "object", "x-ms-summary": "נתונים | Data" }
+      }
+    },
+    "PaymentPagesListResponse": {
+      "type": "object",
+      "properties": {
+        "results": {
+          "type": "object",
+          "x-ms-summary": "תוצאה | Results",
+          "properties": {
+            "status": { "type": "string", "x-ms-summary": "סטטוס | Status" },
+            "code": { "type": "integer", "x-ms-summary": "קוד | Code" },
+            "description": { "type": "string", "x-ms-summary": "תיאור | Description" }
+          }
+        },
+        "data": {
+          "type": "array",
+          "x-ms-summary": "דפי תשלום | Payment pages",
+          "items": {
+            "type": "object",
+            "properties": {
+              "uid": { "type": "string", "x-ms-summary": "מזהה דף | Page UID" },
+              "name": { "type": "string", "x-ms-summary": "שם דף | Page name" },
+              "valid": { "x-ms-summary": "פעיל | Valid" },
+              "terminal_uid": { "type": "string", "x-ms-summary": "מזהה מסוף | Terminal UID" },
+              "terminal_name": { "type": "string", "x-ms-summary": "שם מסוף | Terminal name" },
+              "charge_method": { "type": "integer", "x-ms-summary": "סוג חיוב | Charge method" }
+            }
+          }
+        },
+        "count": { "type": "integer", "x-ms-summary": "מספר דפים | Count" },
+        "pages": { "type": "integer", "x-ms-summary": "מספר עמודים | Pages" }
+      }
+    },
+    "MyTerminalsResponse": {
+      "type": "array",
+      "x-ms-summary": "מסופים | Terminals",
+      "items": {
+        "type": "object",
+        "properties": {
+          "uuid": { "type": "string", "x-ms-summary": "מזהה מסוף | Terminal UID" },
+          "name_terminal": { "type": "string", "x-ms-summary": "שם מסוף | Terminal name" },
+          "terminal_type_id": { "type": "integer", "x-ms-summary": "סוג מסוף | Terminal type" },
+          "merchant_number": { "type": "string", "x-ms-summary": "מספר ספק | Merchant number" }
+        }
+      }
+    }
+  },
+  "parameters": {},
+  "responses": {},
+  "tags": []
+}

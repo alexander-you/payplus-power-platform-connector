@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+
+  <data name="PayPlus_Wallet_Display" xml:space="preserve"><value>PayPlus Credit Card Wallet</value></data>
+  <data name="PayPlus_Wallet_Desc" xml:space="preserve"><value>Apple-style wallet that displays a customer's saved PayPlus credit cards with quick actions to collect a new card manually or via self-service. Read-only display.</value></data>
+  <data name="PayPlus_Wallet_Dataset" xml:space="preserve"><value>Credit cards</value></data>
+
+  <data name="title" xml:space="preserve"><value>PayPlus Wallet</value></data>
+  <data name="subtitle" xml:space="preserve"><value>Saved payment cards</value></data>
+  <data name="cardsSuffix" xml:space="preserve"><value>cards</value></data>
+  <data name="cardOne" xml:space="preserve"><value>card</value></data>
+
+  <data name="addManual" xml:space="preserve"><value>Manual update</value></data>
+  <data name="selfService" xml:space="preserve"><value>Self-service</value></data>
+  <data name="chEmail" xml:space="preserve"><value>Email</value></data>
+  <data name="chSms" xml:space="preserve"><value>SMS</value></data>
+  <data name="chWhatsapp" xml:space="preserve"><value>WhatsApp</value></data>
+
+  <data name="lblExpires" xml:space="preserve"><value>Valid thru</value></data>
+  <data name="lblCardholder" xml:space="preserve"><value>Card holder</value></data>
+  <data name="lblUpdated" xml:space="preserve"><value>Updated</value></data>
+  <data name="lblChannel" xml:space="preserve"><value>Channel</value></data>
+  <data name="lblBy" xml:space="preserve"><value>By</value></data>
+  <data name="lblStatus" xml:space="preserve"><value>Status</value></data>
+  <data name="lblCustomerId" xml:space="preserve"><value>PayPlus customer ID</value></data>
+  <data name="backTitle" xml:space="preserve"><value>Card details</value></data>
+  <data name="flipHint" xml:space="preserve"><value>Tap to flip the card</value></data>
+
+  <data name="srcAgent" xml:space="preserve"><value>Agent</value></data>
+  <data name="srcCustomer" xml:space="preserve"><value>Customer</value></data>
+
+  <data name="badgeDefault" xml:space="preserve"><value>Default</value></data>
+  <data name="badgeActive" xml:space="preserve"><value>Active</value></data>
+  <data name="badgeInactive" xml:space="preserve"><value>Inactive</value></data>
+
+  <data name="deactivateHint" xml:space="preserve"><value>Click to deactivate the card</value></data>
+  <data name="deactivateTitle" xml:space="preserve"><value>Deactivate card</value></data>
+  <data name="deactivateText" xml:space="preserve"><value>Deactivate this credit card? It will be marked as inactive.</value></data>
+  <data name="deactivateConfirm" xml:space="preserve"><value>Deactivate</value></data>
+  <data name="reactivateHint" xml:space="preserve"><value>Click to reactivate the card</value></data>
+  <data name="reactivateTitle" xml:space="preserve"><value>Reactivate card</value></data>
+  <data name="reactivateText" xml:space="preserve"><value>Reactivate this card? It will be marked as active.</value></data>
+  <data name="reactivateConfirm" xml:space="preserve"><value>Reactivate</value></data>
+  <data name="cancel" xml:space="preserve"><value>Cancel</value></data>
+
+  <data name="emptyTitle" xml:space="preserve"><value>No cards on file</value></data>
+  <data name="emptyBody" xml:space="preserve"><value>Collect a card manually, or send the customer a secure self-service link.</value></data>
+  <data name="loading" xml:space="preserve"><value>Loading cards…</value></data>
+  <data name="loadError" xml:space="preserve"><value>Could not load cards.</value></data>
+  <data name="dash" xml:space="preserve"><value>—</value></data>
+</root>

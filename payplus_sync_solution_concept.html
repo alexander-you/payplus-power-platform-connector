@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>תפיסת פתרון סנכרון Dynamics 365 ל-PayPlus</title>
+  <script>
+    (() => {
+      const param = new URLSearchParams(window.location.search).get("scoutTheme");
+      const theme =
+        param || (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+      document.documentElement.setAttribute("data-theme", theme);
+    })();
+  </script>
+  <style>
+    :root {
+      color-scheme: light;
+      --cp-bg: #f7f4ef;
+      --cp-bg-elevated: #fcfbf8;
+      --cp-surface: #ffffff;
+      --cp-surface-soft: #f5f5f5;
+      --cp-border: #dedede;
+      --cp-border-strong: #919191;
+      --cp-text: #242424;
+      --cp-text-muted: #5c5c5c;
+      --cp-text-soft: #6f6f6f;
+      --cp-accent: #b11f4b;
+      --cp-accent-hover: #9a1a41;
+      --cp-accent-soft: rgba(177, 31, 75, 0.08);
+      --cp-accent-fg: #ffffff;
+      --cp-success: #16a34a;
+      --cp-danger: #dc2626;
+      --cp-warning: #f59e0b;
+      --cp-link: #0078d4;
+      --cp-shadow: 0 18px 48px rgba(0, 0, 0, 0.12);
+      --cp-overlay: rgba(255, 255, 255, 0.8);
+      --cp-panel: rgba(255, 255, 255, 0.86);
+      --cp-panel-strong: rgba(255, 255, 255, 0.96);
+      --cp-sheen: rgba(255, 255, 255, 0.55);
+      --cp-highlight: rgba(177, 31, 75, 0.12);
+    }
+    html[data-theme="dark"] {
+      color-scheme: dark;
+      --cp-bg: #3d3b3a;
+      --cp-bg-elevated: #343231;
+      --cp-surface: #292929;
+      --cp-surface-soft: #2e2e2e;
+      --cp-border: #474747;
+      --cp-border-strong: #5f5f5f;
+      --cp-text: #dedede;
+      --cp-text-muted: #919191;
+      --cp-text-soft: #b0b0b0;
+      --cp-accent: #fd8ea1;
+      --cp-accent-hover: #fb7b91;
+      --cp-accent-soft: rgba(253, 142, 161, 0.14);
+      --cp-accent-fg: #1a1a1a;
+      --cp-success: #4ade80;
+      --cp-danger: #f87171;
+      --cp-warning: #fbbf24;
+      --cp-link: #4da6ff;
+      --cp-shadow: 0 18px 48px rgba(0, 0, 0, 0.32);
+      --cp-overlay: rgba(41, 41, 41, 0.88);
+      --cp-panel: rgba(41, 41, 41, 0.72);
+      --cp-panel-strong: rgba(41, 41, 41, 0.96);
+      --cp-sheen: rgba(255, 255, 255, 0.04);
+      --cp-highlight: rgba(253, 142, 161, 0.12);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background: var(--cp-bg);
+      color: var(--cp-text);
+      font-family: "Segoe UI", Aptos, Calibri, -apple-system, BlinkMacSystemFont, sans-serif;
+      line-height: 1.72;
+    }
+    a { color: var(--cp-link); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    code, .mono {
+      direction: ltr;
+      unicode-bidi: isolate;
+      font-family: Consolas, "Courier New", Courier, monospace;
+      background: var(--cp-surface-soft);
+      border: 1px solid var(--cp-border);
+      border-radius: 0.625rem;
+      padding: 2px 6px;
+      font-size: 0.92em;
+    }
+    .page {
+      max-width: 1380px;
+      margin: 0 auto;
+      padding: 32px 24px 72px;
+    }
+    .cover {
+      min-height: 70vh;
+      display: grid;
+      align-content: center;
+      gap: 24px;
+      padding: 48px;
+      border: 1px solid var(--cp-border);
+      border-radius: 16px;
+      background: linear-gradient(135deg, var(--cp-panel-strong), var(--cp-bg-elevated));
+      box-shadow: var(--cp-shadow);
+    }
+    .eyebrow {
+      margin: 0;
+      color: var(--cp-accent);
+      font-weight: 700;
+      letter-spacing: 0;
+    }
+    h1, h2, h3, h4 { margin: 0; line-height: 1.25; }
+    h1 { font-size: clamp(2.2rem, 5vw, 4.6rem); max-width: 1050px; }
+    h2 { font-size: clamp(1.6rem, 3vw, 2.35rem); margin-bottom: 14px; }
+    h3 { font-size: 1.22rem; margin: 24px 0 10px; }
+    h4 { font-size: 1rem; margin: 16px 0 8px; }
+    p { margin: 0 0 12px; }
+    .subtitle {
+      color: var(--cp-text-muted);
+      font-size: 1.12rem;
+      max-width: 980px;
+    }
+    .meta-grid, .cards, .model-grid, .flow-grid {
+      display: grid;
+      gap: 16px;
+    }
+    .meta-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    .cards { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .model-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .flow-grid { grid-template-columns: repeat(5, minmax(0, 1fr)); align-items: stretch; }
+    .meta, .card, .table-card, .callout, .flow-step {
+      background: var(--cp-surface);
+      border: 1px solid var(--cp-border);
+      border-radius: 16px;
+      padding: 18px;
+    }
+    .meta span, .card span, .table-card span {
+      display: block;
+      color: var(--cp-text-muted);
+      font-size: 0.86rem;
+    }
+    .meta strong, .card strong, .table-card strong {
+      display: block;
+      color: var(--cp-text);
+      margin-top: 4px;
+    }
+    nav.toc {
+      position: sticky;
+      top: 0;
+      z-index: 5;
+      margin: 22px 0 30px;
+      padding: 12px;
+      background: var(--cp-panel-strong);
+      border: 1px solid var(--cp-border);
+      border-radius: 16px;
+      box-shadow: var(--cp-shadow);
+    }
+    nav.toc ul {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+    nav.toc a {
+      display: inline-flex;
+      align-items: center;
+      min-height: 34px;
+      padding: 6px 12px;
+      border: 1px solid var(--cp-border);
+      border-radius: 0.625rem;
+      background: var(--cp-surface);
+      color: var(--cp-text);
+      font-weight: 650;
+      text-decoration: none;
+    }
+    nav.toc a:hover { border-color: var(--cp-accent); color: var(--cp-accent); }
+    section { margin: 42px 0; scroll-margin-top: 96px; }
+    .lead {
+      color: var(--cp-text-muted);
+      font-size: 1.04rem;
+      max-width: 1060px;
+    }
+    .pill-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      min-height: 30px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: var(--cp-accent-soft);
+      color: var(--cp-accent);
+      border: 1px solid var(--cp-border);
+      font-weight: 650;
+      font-size: 0.9rem;
+    }
+    .callout {
+      border-color: var(--cp-border-strong);
+      background: linear-gradient(135deg, var(--cp-surface), var(--cp-bg-elevated));
+    }
+    .flow-step {
+      display: grid;
+      align-content: start;
+      gap: 8px;
+      min-height: 160px;
+    }
+    .flow-step b { color: var(--cp-accent); }
+    .table-wrap {
+      margin-top: 14px;
+      overflow-x: auto;
+      border: 1px solid var(--cp-border);
+      border-radius: 16px;
+      background: var(--cp-surface);
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 980px;
+      direction: rtl;
+    }
+    th, td {
+      padding: 11px 12px;
+      border-bottom: 1px solid var(--cp-border);
+      vertical-align: top;
+      text-align: right;
+    }
+    th {
+      position: sticky;
+      top: 0;
+      z-index: 1;
+      background: var(--cp-bg-elevated);
+      color: var(--cp-text);
+      font-weight: 750;
+      white-space: nowrap;
+    }
+    tr:last-child td { border-bottom: 0; }
+    td.en, th.en, td.schema, th.schema { direction: ltr; text-align: left; }
+    .section-title {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 12px;
+    }
+    .section-title .schema-name {
+      direction: ltr;
+      color: var(--cp-accent);
+      font-family: Consolas, "Courier New", Courier, monospace;
+      font-size: 0.96rem;
+      border: 1px solid var(--cp-border);
+      border-radius: 0.625rem;
+      padding: 4px 8px;
+      background: var(--cp-surface-soft);
+    }
+    .compact-list {
+      margin: 10px 0 0;
+      padding: 0 20px 0 0;
+    }
+    .compact-list li { margin-bottom: 6px; }
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      min-height: 26px;
+      padding: 2px 8px;
+      border-radius: 0.625rem;
+      border: 1px solid var(--cp-border);
+      background: var(--cp-surface-soft);
+      color: var(--cp-text-muted);
+      font-size: 0.85rem;
+      font-weight: 650;
+    }
+    .status-ok { color: var(--cp-success); }
+    .status-warn { color: var(--cp-warning); }
+    .status-danger { color: var(--cp-danger); }
+    footer {
+      margin-top: 48px;
+      padding-top: 24px;
+      border-top: 1px solid var(--cp-border);
+      color: var(--cp-text-muted);
+      font-size: 0.92rem;
+    }
+    @media (max-width: 980px) {
+      .cover { padding: 32px 22px; min-height: auto; }
+      .meta-grid, .cards, .model-grid, .flow-grid { grid-template-columns: 1fr; }
+      nav.toc { position: static; }
+      .page { padding: 20px 14px 52px; }
+    }
+    @media print {
+      nav.toc { position: static; box-shadow: none; }
+      .cover { min-height: auto; box-shadow: none; }
+      section { break-inside: avoid; }
+      .table-wrap { overflow: visible; }
+      table { min-width: 0; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header class="cover" id="cover">
+      <p class="eyebrow">Dynamics 365 / Dataverse → PayPlus</p>
+      <h1>תפיסת פתרון ומודל נתונים לסנכרון PayPlus</h1>
+      <p class="subtitle">מסמך תכנון למנגנון סנכרון חד-כיווני מ-Dynamics 365 אל PayPlus, מבוסס טבלאות הגדרה, Outbox, Power Automate ויכולת התאמה לטבלאות ושדות OOTB או מותאמים.</p>
+      <div class="meta-grid">
+        <div class="meta"><span>תאריך</span><strong>10 ביולי 2026</strong></div>
+        <div class="meta"><span>Publisher Prefix</span><strong class="mono">alex</strong></div>
+        <div class="meta"><span>כיוון סנכרון</span><strong>D365 → PayPlus</strong></div>
+        <div class="meta"><span>מנוע ביצוע</span><strong>Power Automate + Dataverse Plugin</strong></div>
+      </div>
+    </header>
+
+    <nav class="toc" aria-label="תוכן עניינים">
+      <ul>
+        <li><a href="#concept">תפיסה</a></li>
+        <li><a href="#architecture">ארכיטקטורה</a></li>
+        <li><a href="#model-overview">מודל נתונים</a></li>
+        <li><a href="#configuration-tables">טבלאות הגדרה</a></li>
+        <li><a href="#runtime-tables">טבלאות ריצה</a></li>
+        <li><a href="#relationships">קשרים</a></li>
+        <li><a href="#processing">תהליכי יצירה ועדכון</a></li>
+        <li><a href="#implementation">שלבי יישום</a></li>
+      </ul>
+    </nav>
+
+    <section id="concept">
+      <h2>תפיסת פתרון</h2>
+      <p class="lead">הפתרון מבוסס על הפרדה בין הגדרה, זיהוי אירוע וביצוע סנכרון. Dynamics 365 הוא מקור האמת. PayPlus מקבל יצירה ועדכון בלבד. ה-Plugin לא קורא ל-PayPlus, אלא יוצר אירוע סנכרון בטבלת Outbox. Power Automate קורא את האירוע, בונה payload לפי מיפוי דינמי, מפעיל את ה-Custom Connector ומעדכן סטטוס.</p>
+      <div class="cards">
+        <div class="card">
+          <span>עקרון ראשון</span>
+          <strong>Metadata-driven mapping</strong>
+          <p>טבלאות ושדות אינם hardcoded בתוך Flow. המיפוי נשמר בטבלאות Dataverse כדי לתמוך גם ב-OOTB וגם בטבלאות לקוח.</p>
+        </div>
+        <div class="card">
+          <span>עקרון שני</span>
+          <strong>Current state sync</strong>
+          <p>בעדכונים נשלח המצב הנוכחי של הרשומה ב-D365, ולא בהכרח כל מצב ביניים שנוצר בזמן עריכה מקבילית.</p>
+        </div>
+        <div class="card">
+          <span>עקרון שלישי</span>
+          <strong>Operational visibility</strong>
+          <p>כל אירוע סנכרון מקבל סטטוס, מספר ניסיונות, שגיאה אחרונה ויכולת הרצה מחדש.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="architecture">
+      <h2>ארכיטקטורה תפעולית</h2>
+      <p class="lead">הארכיטקטורה המומלצת ל-Production ללא Azure Function היא שילוב של Async Plugin, טבלת Outbox ו-Power Automate כמעבד הסנכרון.</p>
+      <div class="flow-grid">
+        <div class="flow-step"><b>1</b><strong>Create / Update</strong><p>משתמש או תהליך מעדכן רשומה ב-Dynamics 365.</p></div>
+        <div class="flow-step"><b>2</b><strong>Async Plugin</strong><p>בודק אם הטבלה והשדות רלוונטיים לסנכרון לפי הגדרות.</p></div>
+        <div class="flow-step"><b>3</b><strong>Outbox</strong><p>נוצרת או מתעדכנת משימת סנכרון עם סטטוס <span class="tag">Pending</span>.</p></div>
+        <div class="flow-step"><b>4</b><strong>Power Automate</strong><p>קורא את הרשומה העדכנית, מפעיל מיפוי ושולח ל-PayPlus.</p></div>
+        <div class="flow-step"><b>5</b><strong>State / Log</strong><p>נשמר PayPlus UID, סטטוס, payload, response ושגיאות.</p></div>
+      </div>
+      <div class="callout">
+        <h3>החלטת תכנון מרכזית</h3>
+        <p>טבלת Outbox היא טבלת Dataverse רגילה ולא Elastic. היא תור עבודה קריטי עם סטטוס, retry וקשרים למיפוי ול-Sync State. אם יידרש ארכיון בנפח גבוה, ניתן לשקול Elastic רק עבור לוג היסטורי משני.</p>
+      </div>
+    </section>
+
+    <section id="model-overview">
+      <h2>סקירת מודל הנתונים</h2>
+      <p class="lead">המודל מחולק לטבלאות הגדרה שמגדירות מה ואיך לסנכרן, ולטבלאות ריצה שמתעדות מה קרה בפועל.</p>
+      <div class="model-grid">
+        <div class="table-card">
+          <span>Configuration</span>
+          <strong>טבלאות הגדרה</strong>
+          <ul class="compact-list">
+            <li><code>alex_payplus_syncprofile</code> - פרופיל סנכרון.</li>
+            <li><code>alex_payplus_entitymapping</code> - מיפוי טבלת מקור לאובייקט PayPlus.</li>
+            <li><code>alex_payplus_fieldmapping</code> - מיפוי שדות.</li>
+            <li><code>alex_payplus_filterrule</code> - תנאי סינון לסנכרון.</li>
+            <li><code>alex_payplus_transformrule</code> - כללי המרה.</li>
+            <li><code>alex_payplus_valuemapping</code> - מיפוי ערכים כמו Currency, VAT וקטגוריה.</li>
+          </ul>
+        </div>
+        <div class="table-card">
+          <span>Runtime</span>
+          <strong>טבלאות ריצה</strong>
+          <ul class="compact-list">
+            <li><code>alex_payplus_syncoutbox</code> - תור משימות סנכרון.</li>
+            <li><code>alex_payplus_syncstate</code> - קשר בין רשומת Dynamics לבין PayPlus UID.</li>
+            <li><code>alex_payplus_synclog</code> - תיעוד ריצות, שגיאות ותגובות.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>שם טבלה בעברית</th>
+              <th class="en">English Table Name</th>
+              <th class="schema">Schema Name</th>
+              <th>סוג</th>
+              <th>משמעות בעברית</th>
+              <th class="en">Short English Meaning</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>פרופיל סנכרון PayPlus</td><td class="en">PayPlus Sync Profile</td><td class="schema"><code>alex_payplus_syncprofile</code></td><td>הגדרה</td><td>פרופיל על שמרכז הגדרות סביבתיות והתנהגות ברירת מחדל.</td><td class="en">Top-level sync profile for environment and default behavior.</td></tr>
+            <tr><td>מיפוי ישות PayPlus</td><td class="en">PayPlus Entity Mapping</td><td class="schema"><code>alex_payplus_entitymapping</code></td><td>הגדרה</td><td>מגדיר איזו טבלת Dataverse מסתנכרנת לאיזה אובייקט PayPlus.</td><td class="en">Maps a Dataverse source table to a PayPlus target object.</td></tr>
+            <tr><td>מיפוי שדה PayPlus</td><td class="en">PayPlus Field Mapping</td><td class="schema"><code>alex_payplus_fieldmapping</code></td><td>הגדרה</td><td>מגדיר איך שדה מקור, קבוע או כלל ממלא שדה יעד ב-PayPlus.</td><td class="en">Maps source fields, constants, or rules into PayPlus payload fields.</td></tr>
+            <tr><td>כלל סינון PayPlus</td><td class="en">PayPlus Filter Rule</td><td class="schema"><code>alex_payplus_filterrule</code></td><td>הגדרה</td><td>מגדיר תנאי זכאות לסנכרון, למשל פעיל בלבד או מסומן לסנכרון.</td><td class="en">Defines eligibility filters for source records.</td></tr>
+            <tr><td>כלל המרה PayPlus</td><td class="en">PayPlus Transform Rule</td><td class="schema"><code>alex_payplus_transformrule</code></td><td>הגדרה</td><td>מגדיר המרות כמו ניקוי טלפון, קוד מטבע או ערך ברירת מחדל.</td><td class="en">Defines reusable transformations for payload values.</td></tr>
+            <tr><td>מיפוי ערכים PayPlus</td><td class="en">PayPlus Value Mapping</td><td class="schema"><code>alex_payplus_valuemapping</code></td><td>הגדרה</td><td>ממפה ערכי Dynamics לערכי PayPlus כמו VAT, Currency, Category וסטטוסים.</td><td class="en">Maps Dynamics values to PayPlus values such as VAT, currency, category, and status.</td></tr>
+            <tr><td>תור סנכרון PayPlus</td><td class="en">PayPlus Sync Outbox</td><td class="schema"><code>alex_payplus_syncoutbox</code></td><td>ריצה</td><td>משימת סנכרון שנוצרה בעקבות יצירה או עדכון ב-D365.</td><td class="en">Operational queue item created from a D365 create or update event.</td></tr>
+            <tr><td>מצב סנכרון PayPlus</td><td class="en">PayPlus Sync State</td><td class="schema"><code>alex_payplus_syncstate</code></td><td>ריצה</td><td>שומר קורלציה בין רשומת מקור לבין מזהה PayPlus.</td><td class="en">Stores correlation between a source row and the PayPlus object UID.</td></tr>
+            <tr><td>לוג סנכרון PayPlus</td><td class="en">PayPlus Sync Log</td><td class="schema"><code>alex_payplus_synclog</code></td><td>ריצה</td><td>תיעוד מפורט של ריצות, תגובות, שגיאות וניסיונות חוזרים.</td><td class="en">Detailed history of sync attempts, responses, errors, and retries.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="configuration-tables">
+      <h2>טבלאות הגדרה</h2>
+
+      <article class="table-card" id="syncprofile">
+        <div class="section-title"><h3>פרופיל סנכרון PayPlus</h3><span class="schema-name">alex_payplus_syncprofile</span></div>
+        <p class="lead">טבלת אב שמייצגת פרופיל סנכרון לסביבה או תרחיש עסקי. מומלץ להגדיר אותה כטבלת Dataverse רגילה בבעלות Organization.</p>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>שם שדה בעברית</th><th class="en">English Field Name</th><th class="schema">Schema Name</th><th>סוג נתון</th><th>חובה</th><th class="en">Short English Description</th><th>תיאור קצר בעברית</th></tr></thead>
+            <tbody>
+              <tr><td>שם</td><td class="en">Name</td><td class="schema"><code>alex_name</code></td><td>Text</td><td>כן</td><td class="en">Human-readable profile name.</td><td>שם פרופיל הסנכרון להצגה וניהול.</td></tr>
+              <tr><td>סביבה</td><td class="en">Environment</td><td class="schema"><code>alex_environment</code></td><td>Choice</td><td>כן</td><td class="en">Target PayPlus environment such as Sandbox or Production.</td><td>בחירת סביבת PayPlus עבור הפרופיל.</td></tr>
+              <tr><td>פעיל</td><td class="en">Is Active</td><td class="schema"><code>alex_isactive</code></td><td>Two Options</td><td>כן</td><td class="en">Controls whether the sync profile can be used.</td><td>קובע האם הפרופיל פעיל ליצירת משימות סנכרון.</td></tr>
+              <tr><td>מצב פעולה ברירת מחדל</td><td class="en">Default Operation Mode</td><td class="schema"><code>alex_defaultoperationmode</code></td><td>Choice</td><td>לא</td><td class="en">Default operation policy, for example create only or create and update.</td><td>מדיניות ברירת מחדל לפעולות הסנכרון.</td></tr>
+              <tr><td>מספר ניסיונות ברירת מחדל</td><td class="en">Default Retry Count</td><td class="schema"><code>alex_defaultretrycount</code></td><td>Whole Number</td><td>לא</td><td class="en">Default number of retry attempts for failed sync jobs.</td><td>מספר ניסיונות חוזרים בעת כשל.</td></tr>
+              <tr><td>מרווח ניסיון חוזר בדקות</td><td class="en">Retry Interval Minutes</td><td class="schema"><code>alex_retryintervalminutes</code></td><td>Whole Number</td><td>לא</td><td class="en">Default delay before the next retry attempt.</td><td>השהיה מומלצת לפני ניסיון חוזר.</td></tr>
+              <tr><td>מטבע ברירת מחדל</td><td class="en">Default Currency Code</td><td class="schema"><code>alex_defaultcurrencycode</code></td><td>Text</td><td>לא</td><td class="en">Fallback ISO currency code when source currency is not available.</td><td>קוד מטבע ISO לשימוש כאשר אין מטבע מקור.</td></tr>
+              <tr><td>שפת ברירת מחדל</td><td class="en">Default Language Code</td><td class="schema"><code>alex_defaultlanguagecode</code></td><td>Text</td><td>לא</td><td class="en">Fallback language code for PayPlus payloads.</td><td>קוד שפה לשימוש כברירת מחדל.</td></tr>
+              <tr><td>כשל בשדה חובה חסר</td><td class="en">Fail On Missing Required Field</td><td class="schema"><code>alex_failonmissingrequiredfield</code></td><td>Two Options</td><td>כן</td><td class="en">Fails the job when a required target field cannot be resolved.</td><td>קובע האם חסר בשדה חובה יעצור את הסנכרון.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </article>
+
+      <article class="table-card" id="entitymapping">
+        <div class="section-title"><h3>מיפוי ישות PayPlus</h3><span class="schema-name">alex_payplus_entitymapping</span></div>
+        <p class="lead">טבלת מיפוי בין טבלת מקור ב-Dataverse לבין אובייקט יעד ב-PayPlus. כאן תתאפשר תמיכה בטבלאות לקוח מותאמות כמו טבלת מוצרים פרטית.</p>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>שם שדה בעברית</th><th class="en">English Field Name</th><th class="schema">Schema Name</th><th>סוג נתון</th><th>חובה</th><th class="en">Short English Description</th><th>תיאור קצר בעברית</th></tr></thead>
+            <tbody>
+              <tr><td>שם</td><td class="en">Name</td><td class="schema"><code>alex_name</code></td><td>Text</td><td>כן</td><td class="en">Readable mapping name.</td><td>שם מיפוי להצגה וניהול.</td></tr>
+              <tr><td>פרופיל סנכרון</td><td class="en">Sync Profile</td><td class="schema"><code>alex_syncprofileid</code></td><td>Lookup</td><td>כן</td><td class="en">Parent sync profile for this entity mapping.</td><td>קישור לפרופיל הסנכרון האב.</td></tr>
+              <tr><td>שם לוגי של טבלת מקור</td><td class="en">Source Table Logical Name</td><td class="schema"><code>alex_sourcetablelogicalname</code></td><td>Text</td><td>כן</td><td class="en">Dataverse logical table name such as contact, product, or a custom table.</td><td>שם לוגי של טבלת המקור ב-Dataverse.</td></tr>
+              <tr><td>שם תצוגה של טבלת מקור</td><td class="en">Source Table Display Name</td><td class="schema"><code>alex_sourcetabledisplayname</code></td><td>Text</td><td>לא</td><td class="en">Friendly source table display name.</td><td>שם ידידותי של טבלת המקור.</td></tr>
+              <tr><td>אובייקט יעד</td><td class="en">Target Object</td><td class="schema"><code>alex_targetobject</code></td><td>Choice</td><td>כן</td><td class="en">PayPlus object type such as Customer, Product, Document, or Transaction.</td><td>סוג האובייקט שאליו שולחים ב-PayPlus.</td></tr>
+              <tr><td>אפשר יצירה</td><td class="en">Allow Create</td><td class="schema"><code>alex_allowcreate</code></td><td>Two Options</td><td>כן</td><td class="en">Allows create operations for this mapping.</td><td>מאפשר יצירת אובייקט חדש ב-PayPlus.</td></tr>
+              <tr><td>אפשר עדכון</td><td class="en">Allow Update</td><td class="schema"><code>alex_allowupdate</code></td><td>Two Options</td><td>כן</td><td class="en">Allows update operations for this mapping.</td><td>מאפשר עדכון אובייקט קיים ב-PayPlus.</td></tr>
+              <tr><td>פעיל</td><td class="en">Is Active</td><td class="schema"><code>alex_isactive</code></td><td>Two Options</td><td>כן</td><td class="en">Controls whether the entity mapping is active.</td><td>קובע האם המיפוי פעיל.</td></tr>
+              <tr><td>מצב טיפול בשינויים</td><td class="en">Change Handling Mode</td><td class="schema"><code>alex_changehandlingmode</code></td><td>Choice</td><td>כן</td><td class="en">Defines whether sync sends current state or captured event payload.</td><td>קובע האם לשלוח מצב נוכחי או payload שנשמר באירוע.</td></tr>
+              <tr><td>איחוד עדכונים</td><td class="en">Coalesce Updates</td><td class="schema"><code>alex_coalesceupdates</code></td><td>Two Options</td><td>כן</td><td class="en">Merges multiple pending updates for the same source row.</td><td>מאחד עדכונים פתוחים לאותה רשומה כדי למנוע שליחת ערכים ישנים.</td></tr>
+              <tr><td>מדיניות UID חסר</td><td class="en">Missing UID Policy</td><td class="schema"><code>alex_missinguidpolicy</code></td><td>Choice</td><td>כן</td><td class="en">Policy for update events when no PayPlus UID exists.</td><td>קובע מה עושים בעדכון ללא מזהה PayPlus שמור.</td></tr>
+              <tr><td>סטטוס Plugin Step</td><td class="en">Plugin Step Status</td><td class="schema"><code>alex_pluginstepstatus</code></td><td>Choice</td><td>לא</td><td class="en">Registration status for dynamic plugin steps on custom tables.</td><td>סטטוס רישום Plugin Step עבור טבלאות מותאמות.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </article>
+
+      <article class="table-card" id="fieldmapping">
+        <div class="section-title"><h3>מיפוי שדה PayPlus</h3><span class="schema-name">alex_payplus_fieldmapping</span></div>
+        <p class="lead">טבלה זו מגדירה כיצד כל שדה ב-payload של PayPlus מקבל ערך מתוך Dataverse, ערך קבוע, כלל המרה או רשומה קשורה.</p>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>שם שדה בעברית</th><th class="en">English Field Name</th><th class="schema">Schema Name</th><th>סוג נתון</th><th>חובה</th><th class="en">Short English Description</th><th>תיאור קצר בעברית</th></tr></thead>
+            <tbody>
+              <tr><td>שם</td><td class="en">Name</td><td class="schema"><code>alex_name</code></td><td>Text</td><td>כן</td><td class="en">Readable field mapping name.</td><td>שם מיפוי שדה להצגה.</td></tr>
+              <tr><td>מיפוי ישות</td><td class="en">Entity Mapping</td><td class="schema"><code>alex_entitymappingid</code></td><td>Lookup</td><td>כן</td><td class="en">Parent entity mapping for this field rule.</td><td>קישור למיפוי הישות שאליו השדה שייך.</td></tr>
+              <tr><td>שם שדה יעד</td><td class="en">Target Field Logical Name</td><td class="schema"><code>alex_targetfieldlogicalname</code></td><td>Text</td><td>כן</td><td class="en">PayPlus payload field name such as customer_name or email.</td><td>שם השדה ב-payload של PayPlus.</td></tr>
+              <tr><td>שם תצוגה יעד</td><td class="en">Target Field Display Name</td><td class="schema"><code>alex_targetfielddisplayname</code></td><td>Text</td><td>לא</td><td class="en">Friendly target field label.</td><td>שם ידידותי לשדה היעד.</td></tr>
+              <tr><td>שם שדה מקור</td><td class="en">Source Field Logical Name</td><td class="schema"><code>alex_sourcefieldlogicalname</code></td><td>Text</td><td>לא</td><td class="en">Dataverse source column logical name.</td><td>שם לוגי של שדה המקור ב-Dataverse.</td></tr>
+              <tr><td>שם תצוגה מקור</td><td class="en">Source Field Display Name</td><td class="schema"><code>alex_sourcefielddisplayname</code></td><td>Text</td><td>לא</td><td class="en">Friendly source field label.</td><td>שם ידידותי של שדה המקור.</td></tr>
+              <tr><td>סוג מקור</td><td class="en">Source Type</td><td class="schema"><code>alex_sourcetype</code></td><td>Choice</td><td>כן</td><td class="en">Defines whether the value comes from a field, constant, formula, lookup, or related record.</td><td>סוג מקור הערך: שדה, קבוע, נוסחה, lookup או רשומה קשורה.</td></tr>
+              <tr><td>חובה ל-payload</td><td class="en">Required For Payload</td><td class="schema"><code>alex_requiredforpayload</code></td><td>Two Options</td><td>כן</td><td class="en">Indicates whether the PayPlus target field is mandatory.</td><td>מסמן האם שדה היעד חובה עבור PayPlus.</td></tr>
+              <tr><td>סוג נתון PayPlus</td><td class="en">PayPlus Data Type</td><td class="schema"><code>alex_payplusdatatype</code></td><td>Choice</td><td>לא</td><td class="en">Expected PayPlus value type.</td><td>סוג הנתון הצפוי בצד PayPlus.</td></tr>
+              <tr><td>סוג נתון Dataverse</td><td class="en">Dataverse Data Type</td><td class="schema"><code>alex_dataversetype</code></td><td>Choice</td><td>לא</td><td class="en">Source Dataverse column data type.</td><td>סוג הנתון של שדה המקור.</td></tr>
+              <tr><td>ערך ברירת מחדל</td><td class="en">Default Value</td><td class="schema"><code>alex_defaultvalue</code></td><td>Text</td><td>לא</td><td class="en">Fallback value when source is empty.</td><td>ערך לשימוש כאשר המקור ריק.</td></tr>
+              <tr><td>טיפול בערך ריק</td><td class="en">Null Handling</td><td class="schema"><code>alex_nullhandling</code></td><td>Choice</td><td>כן</td><td class="en">Controls omit, send null, use default, or fail behavior.</td><td>קובע כיצד לטפל בערך חסר.</td></tr>
+              <tr><td>כלל המרה</td><td class="en">Transform Rule</td><td class="schema"><code>alex_transformruleid</code></td><td>Lookup</td><td>לא</td><td class="en">Optional transformation rule for the field value.</td><td>כלל המרה אופציונלי לערך השדה.</td></tr>
+              <tr><td>סדר</td><td class="en">Sort Order</td><td class="schema"><code>alex_sortorder</code></td><td>Whole Number</td><td>לא</td><td class="en">Processing and display order.</td><td>סדר עיבוד והצגה.</td></tr>
+              <tr><td>פעיל</td><td class="en">Is Active</td><td class="schema"><code>alex_isactive</code></td><td>Two Options</td><td>כן</td><td class="en">Controls whether this field mapping is active.</td><td>קובע האם מיפוי השדה פעיל.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </article>
+
+      <article class="table-card" id="filterrule">
+        <div class="section-title"><h3>כלל סינון PayPlus</h3><span class="schema-name">alex_payplus_filterrule</span></div>
+        <p class="lead">טבלה אופציונלית אך מומלצת שמגדירה מתי רשומה זכאית לסנכרון. למשל רק איש קשר פעיל, רק רשומות עם דגל Sync to PayPlus, או רק מוצרים עם מחיר.</p>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>שם שדה בעברית</th><th class="en">English Field Name</th><th class="schema">Schema Name</th><th>סוג נתון</th><th>חובה</th><th class="en">Short English Description</th><th>תיאור קצר בעברית</th></tr></thead>
+            <tbody>
+              <tr><td>שם</td><td class="en">Name</td><td class="schema"><code>alex_name</code></td><td>Text</td><td>כן</td><td class="en">Readable filter rule name.</td><td>שם כלל הסינון.</td></tr>
+              <tr><td>מיפוי ישות</td><td class="en">Entity Mapping</td><td class="schema"><code>alex_entitymappingid</code></td><td>Lookup</td><td>כן</td><td class="en">Parent entity mapping for the filter.</td><td>קישור למיפוי הישות שאליו הכלל שייך.</td></tr>
+              <tr><td>שדה מקור</td><td class="en">Source Field Logical Name</td><td class="schema"><code>alex_sourcefieldlogicalname</code></td><td>Text</td><td>כן</td><td class="en">Source Dataverse field evaluated by the rule.</td><td>שדה המקור שעליו מופעל התנאי.</td></tr>
+              <tr><td>אופרטור</td><td class="en">Operator</td><td class="schema"><code>alex_operator</code></td><td>Choice</td><td>כן</td><td class="en">Comparison operator such as equals, not equals, contains, or greater than.</td><td>סוג ההשוואה של התנאי.</td></tr>
+              <tr><td>ערך להשוואה</td><td class="en">Compare Value</td><td class="schema"><code>alex_comparevalue</code></td><td>Text</td><td>לא</td><td class="en">Value used by the comparison.</td><td>הערך שאליו משווים.</td></tr>
+              <tr><td>קבוצה לוגית</td><td class="en">Logical Group</td><td class="schema"><code>alex_logicalgroup</code></td><td>Text</td><td>לא</td><td class="en">Groups multiple rules for AND or OR evaluation.</td><td>קיבוץ תנאים עבור לוגיקה מורכבת.</td></tr>
+              <tr><td>פעיל</td><td class="en">Is Active</td><td class="schema"><code>alex_isactive</code></td><td>Two Options</td><td>כן</td><td class="en">Controls whether the filter rule is active.</td><td>קובע האם כלל הסינון פעיל.</td></tr>
+              <tr><td>תיאור</td><td class="en">Description</td><td class="schema"><code>alex_description</code></td><td>Multiline Text</td><td>לא</td><td class="en">Business explanation of the rule.</td><td>הסבר עסקי לכלל.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </article>
+
+      <article class="table-card" id="transformrule">
+        <div class="section-title"><h3>כלל המרה PayPlus</h3><span class="schema-name">alex_payplus_transformrule</span></div>
+        <p class="lead">כלל המרה מאפשר שימוש חוזר בלוגיקה כמו ניקוי מספר טלפון, המרת קוד מטבע, מיפוי option set, שרשור שם מלא או יצירת ערך קבוע.</p>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>שם שדה בעברית</th><th class="en">English Field Name</th><th class="schema">Schema Name</th><th>סוג נתון</th><th>חובה</th><th class="en">Short English Description</th><th>תיאור קצר בעברית</th></tr></thead>
+            <tbody>
+              <tr><td>שם</td><td class="en">Name</td><td class="schema"><code>alex_name</code></td><td>Text</td><td>כן</td><td class="en">Readable transformation rule name.</td><td>שם כלל ההמרה.</td></tr>
+              <tr><td>סוג כלל</td><td class="en">Rule Kind</td><td class="schema"><code>alex_rulekind</code></td><td>Choice</td><td>כן</td><td class="en">Transformation category such as trim, normalize phone, lookup mapping, or concatenate.</td><td>סוג ההמרה שיש להפעיל.</td></tr>
+              <tr><td>ביטוי</td><td class="en">Expression</td><td class="schema"><code>alex_expression</code></td><td>Multiline Text</td><td>לא</td><td class="en">Optional expression for formula-based transformations.</td><td>ביטוי אופציונלי לכללי המרה מבוססי נוסחה.</td></tr>
+              <tr><td>פרמטרים JSON</td><td class="en">Parameters JSON</td><td class="schema"><code>alex_parametersjson</code></td><td>Multiline Text</td><td>לא</td><td class="en">JSON parameters used by the transformation engine.</td><td>פרמטרים בפורמט JSON להפעלת הכלל.</td></tr>
+              <tr><td>סוג פלט</td><td class="en">Output Type</td><td class="schema"><code>alex_outputtype</code></td><td>Choice</td><td>לא</td><td class="en">Expected output data type.</td><td>סוג הנתון הצפוי לאחר ההמרה.</td></tr>
+              <tr><td>פעיל</td><td class="en">Is Active</td><td class="schema"><code>alex_isactive</code></td><td>Two Options</td><td>כן</td><td class="en">Controls whether the transformation is active.</td><td>קובע האם כלל ההמרה פעיל.</td></tr>
+              <tr><td>תיאור</td><td class="en">Description</td><td class="schema"><code>alex_description</code></td><td>Multiline Text</td><td>לא</td><td class="en">Short explanation of the transformation.</td><td>הסבר קצר של ההמרה.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </article>
+
+      <article class="table-card" id="valuemapping">
+        <div class="section-title"><h3>מיפוי ערכים PayPlus</h3><span class="schema-name">alex_payplus_valuemapping</span></div>
+        <p class="lead">טבלה זו מאפשרת מיפוי בין ערכי Dynamics לערכי PayPlus, למשל סוג מע״מ, קטגוריית מוצר, קוד מטבע, שיטת תשלום או סטטוס.</p>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>שם שדה בעברית</th><th class="en">English Field Name</th><th class="schema">Schema Name</th><th>סוג נתון</th><th>חובה</th><th class="en">Short English Description</th><th>תיאור קצר בעברית</th></tr></thead>
+            <tbody>
+              <tr><td>שם</td><td class="en">Name</td><td class="schema"><code>alex_name</code></td><td>Text</td><td>כן</td><td class="en">Readable value mapping name.</td><td>שם מיפוי הערך.</td></tr>
+              <tr><td>פרופיל סנכרון</td><td class="en">Sync Profile</td><td class="schema"><code>alex_syncprofileid</code></td><td>Lookup</td><td>כן</td><td class="en">Profile that owns the value mapping.</td><td>פרופיל הסנכרון שאליו המיפוי שייך.</td></tr>
+              <tr><td>קבוצת מיפוי</td><td class="en">Mapping Group</td><td class="schema"><code>alex_mappinggroup</code></td><td>Text</td><td>כן</td><td class="en">Group name such as Currency, VAT, Category, or Status.</td><td>קבוצת הערכים שאותה ממפים.</td></tr>
+              <tr><td>ערך מקור</td><td class="en">Source Value</td><td class="schema"><code>alex_sourcevalue</code></td><td>Text</td><td>כן</td><td class="en">Dynamics value or code.</td><td>ערך המקור מתוך Dynamics.</td></tr>
+              <tr><td>ערך יעד</td><td class="en">Target Value</td><td class="schema"><code>alex_targetvalue</code></td><td>Text</td><td>לא</td><td class="en">PayPlus target value or code.</td><td>ערך היעד לשליחה ל-PayPlus.</td></tr>
+              <tr><td>UID יעד</td><td class="en">Target UID</td><td class="schema"><code>alex_targetuid</code></td><td>Text</td><td>לא</td><td class="en">PayPlus UID when the mapping points to a PayPlus object.</td><td>מזהה PayPlus כאשר הערך הוא אובייקט יעד.</td></tr>
+              <tr><td>ברירת מחדל</td><td class="en">Is Default</td><td class="schema"><code>alex_isdefault</code></td><td>Two Options</td><td>לא</td><td class="en">Marks this value as the default for the mapping group.</td><td>מסמן ערך כברירת מחדל לקבוצה.</td></tr>
+              <tr><td>פעיל</td><td class="en">Is Active</td><td class="schema"><code>alex_isactive</code></td><td>Two Options</td><td>כן</td><td class="en">Controls whether the value mapping is active.</td><td>קובע האם מיפוי הערך פעיל.</td></tr>
+              <tr><td>תיאור</td><td class="en">Description</td><td class="schema"><code>alex_description</code></td><td>Multiline Text</td><td>לא</td><td class="en">Business note for the mapping.</td><td>הערה עסקית לגבי המיפוי.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </article>
+    </section>
+
+    <section id="runtime-tables">
+      <h2>טבלאות ריצה</h2>
+
+      <article class="table-card" id="syncoutbox">
+        <div class="section-title"><h3>תור סנכרון PayPlus</h3><span class="schema-name">alex_payplus_syncoutbox</span></div>
+        <p class="lead">טבלת Outbox היא תור משימות הסנכרון. כל רשומה מייצגת פעולה שצריך לבצע מול PayPlus. ה-Flow מאזין לרשומות ממתינות ומעבד אותן.</p>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>שם שדה בעברית</th><th class="en">English Field Name</th><th class="schema">Schema Name</th><th>סוג נתון</th><th>חובה</th><th class="en">Short English Description</th><th>תיאור קצר בעברית</th></tr></thead>
+            <tbody>
+              <tr><td>שם</td><td class="en">Name</td><td class="schema"><code>alex_name</code></td><td>Text</td><td>כן</td><td class="en">Readable job name generated from source and operation.</td><td>שם משימת הסנכרון.</td></tr>
+              <tr><td>פרופיל סנכרון</td><td class="en">Sync Profile</td><td class="schema"><code>alex_syncprofileid</code></td><td>Lookup</td><td>כן</td><td class="en">Profile used to process the job.</td><td>פרופיל הסנכרון של המשימה.</td></tr>
+              <tr><td>מיפוי ישות</td><td class="en">Entity Mapping</td><td class="schema"><code>alex_entitymappingid</code></td><td>Lookup</td><td>כן</td><td class="en">Entity mapping that produced the job.</td><td>מיפוי הישות שלפיו המשימה נוצרה.</td></tr>
+              <tr><td>מצב סנכרון</td><td class="en">Sync State</td><td class="schema"><code>alex_syncstateid</code></td><td>Lookup</td><td>לא</td><td class="en">Existing correlation state, when available.</td><td>קישור למצב סנכרון קיים אם נמצא.</td></tr>
+              <tr><td>שם לוגי של טבלת מקור</td><td class="en">Source Table Logical Name</td><td class="schema"><code>alex_sourcetablelogicalname</code></td><td>Text</td><td>כן</td><td class="en">Logical name of the source Dataverse table.</td><td>שם הטבלה שממנה הגיע האירוע.</td></tr>
+              <tr><td>מזהה רשומת מקור</td><td class="en">Source Row ID</td><td class="schema"><code>alex_sourcerowid</code></td><td>Text</td><td>כן</td><td class="en">GUID of the source row stored as text for dynamic table support.</td><td>GUID של רשומת המקור, נשמר כטקסט כדי לתמוך בטבלאות דינמיות.</td></tr>
+              <tr><td>אובייקט יעד</td><td class="en">Target Object</td><td class="schema"><code>alex_targetobject</code></td><td>Choice</td><td>כן</td><td class="en">PayPlus target object to synchronize.</td><td>סוג אובייקט היעד ב-PayPlus.</td></tr>
+              <tr><td>פעולה</td><td class="en">Operation</td><td class="schema"><code>alex_operation</code></td><td>Choice</td><td>כן</td><td class="en">Sync operation such as Create, Update, Deactivate, or Delete.</td><td>סוג הפעולה שיש לבצע.</td></tr>
+              <tr><td>סטטוס</td><td class="en">Status</td><td class="schema"><code>alex_status</code></td><td>Choice</td><td>כן</td><td class="en">Processing status such as Pending, Processing, Succeeded, Failed, Retry Scheduled, or Superseded.</td><td>סטטוס עיבוד המשימה.</td></tr>
+              <tr><td>מפתח קורלציה</td><td class="en">Correlation Key</td><td class="schema"><code>alex_correlationkey</code></td><td>Text</td><td>כן</td><td class="en">Deterministic key used for idempotency and duplicate detection.</td><td>מפתח קבוע לזיהוי כפילויות וקורלציה.</td></tr>
+              <tr><td>גרסת מקור</td><td class="en">Source Version Number</td><td class="schema"><code>alex_sourceversionnumber</code></td><td>Text</td><td>לא</td><td class="en">Source row version captured when the job was created.</td><td>גרסת רשומת המקור בעת יצירת המשימה.</td></tr>
+              <tr><td>תאריך שינוי מקור</td><td class="en">Source Modified On</td><td class="schema"><code>alex_sourcemodifiedon</code></td><td>Date and Time</td><td>לא</td><td class="en">Source row modified date at detection time.</td><td>מועד שינוי רשומת המקור בזמן הזיהוי.</td></tr>
+              <tr><td>זוהה לאחרונה בתאריך</td><td class="en">Last Detected On</td><td class="schema"><code>alex_lastdetectedon</code></td><td>Date and Time</td><td>לא</td><td class="en">Last time a relevant change was detected for the same open job.</td><td>מועד זיהוי אחרון עבור משימה פתוחה שאוחדה.</td></tr>
+              <tr><td>מספר ניסיונות</td><td class="en">Attempt Count</td><td class="schema"><code>alex_attemptcount</code></td><td>Whole Number</td><td>כן</td><td class="en">Number of processing attempts already made.</td><td>מספר ניסיונות העיבוד שבוצעו.</td></tr>
+              <tr><td>מספר ניסיונות מרבי</td><td class="en">Maximum Attempts</td><td class="schema"><code>alex_maxattempts</code></td><td>Whole Number</td><td>לא</td><td class="en">Maximum retry attempts allowed for the job.</td><td>מספר ניסיונות מקסימלי למשימה.</td></tr>
+              <tr><td>ניסיון הבא בתאריך</td><td class="en">Next Retry On</td><td class="schema"><code>alex_nextretryon</code></td><td>Date and Time</td><td>לא</td><td class="en">Scheduled time for the next retry.</td><td>מועד ניסיון חוזר הבא.</td></tr>
+              <tr><td>נעול עד</td><td class="en">Locked Until</td><td class="schema"><code>alex_lockeduntil</code></td><td>Date and Time</td><td>לא</td><td class="en">Temporary processing lock to avoid concurrent workers processing the same job.</td><td>נעילה זמנית למניעת עיבוד כפול.</td></tr>
+              <tr><td>החל עיבוד בתאריך</td><td class="en">Processing Started On</td><td class="schema"><code>alex_processingstartedon</code></td><td>Date and Time</td><td>לא</td><td class="en">Timestamp when processing started.</td><td>מועד תחילת העיבוד.</td></tr>
+              <tr><td>עובד בתאריך</td><td class="en">Processed On</td><td class="schema"><code>alex_processedon</code></td><td>Date and Time</td><td>לא</td><td class="en">Timestamp when processing completed.</td><td>מועד סיום העיבוד.</td></tr>
+              <tr><td>צילום Payload</td><td class="en">Payload Snapshot</td><td class="schema"><code>alex_payloadsnapshot</code></td><td>Multiline Text</td><td>לא</td><td class="en">Optional JSON payload sent or planned for PayPlus.</td><td>צילום JSON של ה-payload לצורך תחקור.</td></tr>
+              <tr><td>צילום תגובה</td><td class="en">Response Snapshot</td><td class="schema"><code>alex_responsesnapshot</code></td><td>Multiline Text</td><td>לא</td><td class="en">Optional PayPlus response snapshot.</td><td>צילום תגובת PayPlus.</td></tr>
+              <tr><td>שגיאה אחרונה</td><td class="en">Last Error</td><td class="schema"><code>alex_lasterror</code></td><td>Multiline Text</td><td>לא</td><td class="en">Latest error message or validation failure.</td><td>הודעת השגיאה האחרונה.</td></tr>
+              <tr><td>הוחלף על ידי</td><td class="en">Superseded By</td><td class="schema"><code>alex_supersededbyid</code></td><td>Lookup</td><td>לא</td><td class="en">Newer outbox item that supersedes this job.</td><td>משימה חדשה יותר שהחליפה את המשימה הנוכחית.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </article>
+
+      <article class="table-card" id="syncstate">
+        <div class="section-title"><h3>מצב סנכרון PayPlus</h3><span class="schema-name">alex_payplus_syncstate</span></div>
+        <p class="lead">טבלה זו שומרת את הקשר בין רשומת Dynamics לבין האובייקט שנוצר ב-PayPlus. זהו הרכיב המרכזי למניעת כפילויות ולבחירה בין Create ל-Update.</p>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>שם שדה בעברית</th><th class="en">English Field Name</th><th class="schema">Schema Name</th><th>סוג נתון</th><th>חובה</th><th class="en">Short English Description</th><th>תיאור קצר בעברית</th></tr></thead>
+            <tbody>
+              <tr><td>שם</td><td class="en">Name</td><td class="schema"><code>alex_name</code></td><td>Text</td><td>כן</td><td class="en">Readable correlation name.</td><td>שם מצב הסנכרון.</td></tr>
+              <tr><td>פרופיל סנכרון</td><td class="en">Sync Profile</td><td class="schema"><code>alex_syncprofileid</code></td><td>Lookup</td><td>כן</td><td class="en">Profile that owns the correlation state.</td><td>פרופיל הסנכרון שאליו המצב שייך.</td></tr>
+              <tr><td>מיפוי ישות</td><td class="en">Entity Mapping</td><td class="schema"><code>alex_entitymappingid</code></td><td>Lookup</td><td>כן</td><td class="en">Entity mapping used for the correlated object.</td><td>מיפוי הישות של הרשומה המסונכרנת.</td></tr>
+              <tr><td>שם לוגי של טבלת מקור</td><td class="en">Source Table Logical Name</td><td class="schema"><code>alex_sourcetablelogicalname</code></td><td>Text</td><td>כן</td><td class="en">Logical name of the source table.</td><td>שם לוגי של טבלת המקור.</td></tr>
+              <tr><td>מזהה רשומת מקור</td><td class="en">Source Row ID</td><td class="schema"><code>alex_sourcerowid</code></td><td>Text</td><td>כן</td><td class="en">Source row GUID stored as text.</td><td>GUID של רשומת המקור.</td></tr>
+              <tr><td>אובייקט יעד</td><td class="en">Target Object</td><td class="schema"><code>alex_targetobject</code></td><td>Choice</td><td>כן</td><td class="en">PayPlus target object type.</td><td>סוג אובייקט היעד ב-PayPlus.</td></tr>
+              <tr><td>PayPlus UID</td><td class="en">PayPlus UID</td><td class="schema"><code>alex_payplusuid</code></td><td>Text</td><td>לא</td><td class="en">UID returned by PayPlus after successful creation.</td><td>מזהה האובייקט שנוצר ב-PayPlus.</td></tr>
+              <tr><td>מספר חיצוני PayPlus</td><td class="en">PayPlus External Number</td><td class="schema"><code>alex_payplusexternalnumber</code></td><td>Text</td><td>לא</td><td class="en">External number or unique identifier sent to PayPlus.</td><td>מספר חיצוני או מזהה ייחודי שנשלח ל-PayPlus.</td></tr>
+              <tr><td>מפתח קורלציה</td><td class="en">Correlation Key</td><td class="schema"><code>alex_correlationkey</code></td><td>Text</td><td>כן</td><td class="en">Unique deterministic key for the source-target pair.</td><td>מפתח ייחודי לזוג מקור-יעד.</td></tr>
+              <tr><td>פעולה אחרונה</td><td class="en">Last Operation</td><td class="schema"><code>alex_lastoperation</code></td><td>Choice</td><td>לא</td><td class="en">Last operation processed for the object.</td><td>הפעולה האחרונה שבוצעה.</td></tr>
+              <tr><td>סטטוס אחרון</td><td class="en">Last Status</td><td class="schema"><code>alex_laststatus</code></td><td>Choice</td><td>לא</td><td class="en">Last known sync status.</td><td>סטטוס הסנכרון האחרון.</td></tr>
+              <tr><td>סונכרן לאחרונה בתאריך</td><td class="en">Last Synced On</td><td class="schema"><code>alex_lastsyncedon</code></td><td>Date and Time</td><td>לא</td><td class="en">Last successful synchronization timestamp.</td><td>מועד סנכרון מוצלח אחרון.</td></tr>
+              <tr><td>Hash של Payload אחרון</td><td class="en">Last Payload Hash</td><td class="schema"><code>alex_lastpayloadhash</code></td><td>Text</td><td>לא</td><td class="en">Hash of the last successful payload for change detection.</td><td>חתימת payload אחרון לזיהוי שינוי ממשי.</td></tr>
+              <tr><td>גרסת מקור אחרונה</td><td class="en">Last Source Version Number</td><td class="schema"><code>alex_lastsourceversionnumber</code></td><td>Text</td><td>לא</td><td class="en">Source version number from the last successful sync.</td><td>גרסת מקור בסנכרון המוצלח האחרון.</td></tr>
+              <tr><td>פעיל</td><td class="en">Is Active</td><td class="schema"><code>alex_isactive</code></td><td>Two Options</td><td>כן</td><td class="en">Controls whether the correlation is active.</td><td>קובע האם הקורלציה פעילה.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </article>
+
+      <article class="table-card" id="synclog">
+        <div class="section-title"><h3>לוג סנכרון PayPlus</h3><span class="schema-name">alex_payplus_synclog</span></div>
+        <p class="lead">טבלת היסטוריה ותחקור. היא מיועדת לשימוש תפעולי, ניטור, ניתוח כשלים ותיעוד תגובת PayPlus.</p>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>שם שדה בעברית</th><th class="en">English Field Name</th><th class="schema">Schema Name</th><th>סוג נתון</th><th>חובה</th><th class="en">Short English Description</th><th>תיאור קצר בעברית</th></tr></thead>
+            <tbody>
+              <tr><td>שם</td><td class="en">Name</td><td class="schema"><code>alex_name</code></td><td>Text</td><td>כן</td><td class="en">Readable log entry name.</td><td>שם רשומת הלוג.</td></tr>
+              <tr><td>פרופיל סנכרון</td><td class="en">Sync Profile</td><td class="schema"><code>alex_syncprofileid</code></td><td>Lookup</td><td>לא</td><td class="en">Related sync profile.</td><td>פרופיל הסנכרון הרלוונטי.</td></tr>
+              <tr><td>משימת Outbox</td><td class="en">Outbox Job</td><td class="schema"><code>alex_outboxid</code></td><td>Lookup</td><td>לא</td><td class="en">Related outbox job.</td><td>משימת Outbox קשורה.</td></tr>
+              <tr><td>מצב סנכרון</td><td class="en">Sync State</td><td class="schema"><code>alex_syncstateid</code></td><td>Lookup</td><td>לא</td><td class="en">Related correlation state.</td><td>מצב סנכרון קשור.</td></tr>
+              <tr><td>מיפוי ישות</td><td class="en">Entity Mapping</td><td class="schema"><code>alex_entitymappingid</code></td><td>Lookup</td><td>לא</td><td class="en">Entity mapping used during the event.</td><td>מיפוי הישות שהופעל.</td></tr>
+              <tr><td>סוג אירוע</td><td class="en">Event Type</td><td class="schema"><code>alex_eventtype</code></td><td>Choice</td><td>כן</td><td class="en">Log event type such as Request, Response, Error, Retry, Skip, or Validation.</td><td>סוג האירוע המתועד.</td></tr>
+              <tr><td>סטטוס</td><td class="en">Status</td><td class="schema"><code>alex_status</code></td><td>Choice</td><td>כן</td><td class="en">Result status such as Success, Failure, Warning, or Info.</td><td>סטטוס רשומת הלוג.</td></tr>
+              <tr><td>הודעה</td><td class="en">Message</td><td class="schema"><code>alex_message</code></td><td>Multiline Text</td><td>לא</td><td class="en">Human-readable event message.</td><td>הודעה קריאה למשתמש או למנהל מערכת.</td></tr>
+              <tr><td>Payload בקשה</td><td class="en">Request Payload</td><td class="schema"><code>alex_requestpayload</code></td><td>Multiline Text</td><td>לא</td><td class="en">Request payload snapshot.</td><td>צילום בקשה שנשלחה.</td></tr>
+              <tr><td>Payload תגובה</td><td class="en">Response Payload</td><td class="schema"><code>alex_responsepayload</code></td><td>Multiline Text</td><td>לא</td><td class="en">Response payload snapshot.</td><td>צילום תגובה שהתקבלה.</td></tr>
+              <tr><td>קוד HTTP</td><td class="en">HTTP Status Code</td><td class="schema"><code>alex_httpstatuscode</code></td><td>Whole Number</td><td>לא</td><td class="en">HTTP status code returned by PayPlus or connector.</td><td>קוד HTTP שהתקבל מהמחבר או PayPlus.</td></tr>
+              <tr><td>קוד תוצאה PayPlus</td><td class="en">PayPlus Result Code</td><td class="schema"><code>alex_payplusresultcode</code></td><td>Text</td><td>לא</td><td class="en">PayPlus business result code when available.</td><td>קוד תוצאה עסקי של PayPlus אם קיים.</td></tr>
+              <tr><td>משך במילישניות</td><td class="en">Duration Milliseconds</td><td class="schema"><code>alex_durationms</code></td><td>Whole Number</td><td>לא</td><td class="en">Processing duration for the attempt.</td><td>משך ניסיון העיבוד.</td></tr>
+              <tr><td>מספר ניסיון</td><td class="en">Attempt Number</td><td class="schema"><code>alex_attemptnumber</code></td><td>Whole Number</td><td>לא</td><td class="en">Attempt number associated with the event.</td><td>מספר הניסיון שאליו הלוג שייך.</td></tr>
+              <tr><td>אירע בתאריך</td><td class="en">Occurred On</td><td class="schema"><code>alex_occurredon</code></td><td>Date and Time</td><td>כן</td><td class="en">Timestamp of the log event.</td><td>מועד האירוע.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </article>
+    </section>
+
+    <section id="relationships">
+      <h2>קשרים בין הטבלאות</h2>
+      <p class="lead">המודל משתמש ב-Lookups רגילים בין טבלאות הפתרון. הקישור לרשומות המקור העסקיות, למשל <code>contact</code> או טבלת מוצר מותאמת, נשמר כזיהוי דינמי באמצעות שם טבלה ומזהה רשומה ולא כ-Lookup קשיח.</p>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>שם קשר בעברית</th>
+              <th class="en">Relationship Name</th>
+              <th class="schema">Schema Name</th>
+              <th>סוג</th>
+              <th>מטבלה</th>
+              <th>לטבלה</th>
+              <th>משמעות בעברית</th>
+              <th class="en">English Meaning</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>פרופיל למיפויי ישות</td><td class="en">Sync Profile to Entity Mappings</td><td class="schema"><code>alex_payplussyncprofile_alex_payplusentitymapping</code></td><td>1:N</td><td><code>alex_payplus_syncprofile</code></td><td><code>alex_payplus_entitymapping</code></td><td>פרופיל אחד כולל כמה מיפויי ישות.</td><td class="en">One profile owns multiple entity mappings.</td></tr>
+            <tr><td>מיפוי ישות למיפויי שדה</td><td class="en">Entity Mapping to Field Mappings</td><td class="schema"><code>alex_payplusentitymapping_alex_payplusfieldmapping</code></td><td>1:N</td><td><code>alex_payplus_entitymapping</code></td><td><code>alex_payplus_fieldmapping</code></td><td>לכל מיפוי ישות יש קבוצת שדות יעד ומקורות.</td><td class="en">Each entity mapping owns its field mapping definitions.</td></tr>
+            <tr><td>מיפוי ישות לכללי סינון</td><td class="en">Entity Mapping to Filter Rules</td><td class="schema"><code>alex_payplusentitymapping_alex_payplusfilterrule</code></td><td>1:N</td><td><code>alex_payplus_entitymapping</code></td><td><code>alex_payplus_filterrule</code></td><td>כללי הסינון קובעים האם רשומת מקור זכאית לסנכרון.</td><td class="en">Filter rules determine source record eligibility.</td></tr>
+            <tr><td>כלל המרה למיפויי שדה</td><td class="en">Transform Rule to Field Mappings</td><td class="schema"><code>alex_payplustransformrule_alex_payplusfieldmapping</code></td><td>1:N</td><td><code>alex_payplus_transformrule</code></td><td><code>alex_payplus_fieldmapping</code></td><td>כלל המרה אחד יכול לשמש כמה מיפויי שדה.</td><td class="en">A reusable transform rule can be referenced by multiple field mappings.</td></tr>
+            <tr><td>פרופיל למיפויי ערכים</td><td class="en">Sync Profile to Value Mappings</td><td class="schema"><code>alex_payplussyncprofile_alex_payplusvaluemapping</code></td><td>1:N</td><td><code>alex_payplus_syncprofile</code></td><td><code>alex_payplus_valuemapping</code></td><td>מיפויי ערכים מוגדרים לפי פרופיל וסביבה.</td><td class="en">Value mappings are scoped to a sync profile.</td></tr>
+            <tr><td>פרופיל למשימות Outbox</td><td class="en">Sync Profile to Outbox Jobs</td><td class="schema"><code>alex_payplussyncprofile_alex_payplussyncoutbox</code></td><td>1:N</td><td><code>alex_payplus_syncprofile</code></td><td><code>alex_payplus_syncoutbox</code></td><td>כל משימת סנכרון שייכת לפרופיל.</td><td class="en">Each sync job belongs to a profile.</td></tr>
+            <tr><td>מיפוי ישות למשימות Outbox</td><td class="en">Entity Mapping to Outbox Jobs</td><td class="schema"><code>alex_payplusentitymapping_alex_payplussyncoutbox</code></td><td>1:N</td><td><code>alex_payplus_entitymapping</code></td><td><code>alex_payplus_syncoutbox</code></td><td>משימה נוצרת לפי מיפוי ישות ספציפי.</td><td class="en">Jobs are produced by a specific entity mapping.</td></tr>
+            <tr><td>מצב סנכרון למשימות Outbox</td><td class="en">Sync State to Outbox Jobs</td><td class="schema"><code>alex_payplussyncstate_alex_payplussyncoutbox</code></td><td>1:N</td><td><code>alex_payplus_syncstate</code></td><td><code>alex_payplus_syncoutbox</code></td><td>כמה משימות יכולות להתייחס לאותה קורלציה.</td><td class="en">Multiple jobs can reference the same source-target correlation.</td></tr>
+            <tr><td>פרופיל למצבי סנכרון</td><td class="en">Sync Profile to Sync States</td><td class="schema"><code>alex_payplussyncprofile_alex_payplussyncstate</code></td><td>1:N</td><td><code>alex_payplus_syncprofile</code></td><td><code>alex_payplus_syncstate</code></td><td>מצבי סנכרון נשמרים לפי פרופיל.</td><td class="en">Correlation states are scoped to a sync profile.</td></tr>
+            <tr><td>מיפוי ישות למצבי סנכרון</td><td class="en">Entity Mapping to Sync States</td><td class="schema"><code>alex_payplusentitymapping_alex_payplussyncstate</code></td><td>1:N</td><td><code>alex_payplus_entitymapping</code></td><td><code>alex_payplus_syncstate</code></td><td>כל קורלציה נוצרת לפי מיפוי ישות.</td><td class="en">Each correlation state is associated with an entity mapping.</td></tr>
+            <tr><td>משימת Outbox ללוגים</td><td class="en">Outbox Job to Sync Logs</td><td class="schema"><code>alex_payplussyncoutbox_alex_payplussynclog</code></td><td>1:N</td><td><code>alex_payplus_syncoutbox</code></td><td><code>alex_payplus_synclog</code></td><td>לכל משימה יכולים להיות כמה אירועי לוג.</td><td class="en">Each job can have multiple log entries.</td></tr>
+            <tr><td>מצב סנכרון ללוגים</td><td class="en">Sync State to Sync Logs</td><td class="schema"><code>alex_payplussyncstate_alex_payplussynclog</code></td><td>1:N</td><td><code>alex_payplus_syncstate</code></td><td><code>alex_payplus_synclog</code></td><td>לוגים יכולים להיות משויכים לקורלציה קיימת.</td><td class="en">Logs can be associated with a correlation state.</td></tr>
+            <tr><td>החלפת משימת Outbox</td><td class="en">Outbox Supersedes Outbox</td><td class="schema"><code>alex_payplussyncoutbox_alex_supersededby</code></td><td>N:1 עצמי</td><td><code>alex_payplus_syncoutbox</code></td><td><code>alex_payplus_syncoutbox</code></td><td>משימה ישנה יכולה להיות מסומנת כמוחלפת על ידי משימה חדשה יותר.</td><td class="en">An older job can be marked as superseded by a newer job.</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="callout">
+        <h3>קשר דינמי לרשומות מקור</h3>
+        <p>אין ליצור Lookup קשיח מ-Outbox או Sync State אל <code>contact</code>, <code>product</code> או טבלת לקוח מותאמת. במקום זאת נשמרים <code>alex_sourcetablelogicalname</code> ו-<code>alex_sourcerowid</code>. כך אותו מודל תומך גם ב-OOTB וגם בטבלאות מותאמות.</p>
+      </div>
+    </section>
+
+    <section id="processing">
+      <h2>תהליכי יצירה ועדכון</h2>
+      <div class="cards">
+        <div class="card">
+          <span>Create</span>
+          <strong>יצירת Contact כ-Customer</strong>
+          <p>בעת יצירת איש קשר שעומד בתנאי הסינון, ה-Plugin יוצר Outbox עם <code>alex_operation = Create</code>. ה-Flow קורא את ה-Contact, בונה payload לפי Field Mapping, מפעיל CreateCustomer ושומר PayPlus UID ב-Sync State.</p>
+        </div>
+        <div class="card">
+          <span>Update</span>
+          <strong>עדכון מצב נוכחי</strong>
+          <p>בעת עדכון, ה-Plugin משווה שדות שהשתנו מול Field Mapping. אם השתנה שדה ממופה, נוצרת או מתעדכנת משימת Outbox. ה-Flow קורא את הרשומה העדכנית ושולח את הערך האחרון.</p>
+        </div>
+        <div class="card">
+          <span>Custom Table</span>
+          <strong>טבלת מוצרים מותאמת</strong>
+          <p>אם לקוח בוחר טבלה כמו <code>new_customerproduct</code>, מוסיפים Entity Mapping ו-Field Mapping. ניתן לרשום Plugin Step לטבלה זו או להשתמש ב-polling כחלופה.</p>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>תרחיש</th><th>התנהגות מומלצת</th><th>טבלאות מעורבות</th><th>הערת תכנון</th></tr></thead>
+          <tbody>
+            <tr><td>יצירה ראשונה</td><td>יצירת Outbox במצב Pending, קריאה ל-PayPlus, יצירת Sync State.</td><td><code>syncoutbox</code>, <code>syncstate</code>, <code>synclog</code></td><td>להשתמש ב-<code>alex_correlationkey</code> למניעת כפילות.</td></tr>
+            <tr><td>עדכון עם UID קיים</td><td>יצירת או איחוד Outbox, קריאת מצב נוכחי, Update ב-PayPlus.</td><td><code>fieldmapping</code>, <code>syncoutbox</code>, <code>syncstate</code></td><td>לא לשלוח payload ישן שנשמר בזמן האירוע אם המיפוי מוגדר Current State.</td></tr>
+            <tr><td>עדכון ללא UID</td><td>הפעלת Missing UID Policy: Create, Block או Failed.</td><td><code>entitymapping</code>, <code>syncoutbox</code>, <code>synclog</code></td><td>ללקוחות ומוצרים אפשר בדרך כלל לבצע Create; למסמכים פיננסיים עדיף לחסום לבדיקה.</td></tr>
+            <tr><td>שני עדכונים מקבילים</td><td>Coalescing למשימה פתוחה או סימון Superseded למשימה ישנה.</td><td><code>syncoutbox</code></td><td>PayPlus יקבל את המצב האחרון של D365, לא ערך ביניים.</td></tr>
+            <tr><td>כשל PayPlus</td><td>רישום שגיאה, הגדלת Attempt Count וקביעת Next Retry On.</td><td><code>syncoutbox</code>, <code>synclog</code></td><td>לא לאבד אירוע סנכרון גם אם ה-Flow נכשל זמנית.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="implementation">
+      <h2>שלבי יישום מומלצים</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>שלב</th><th>תוצר</th><th>פירוט</th><th>קריטריון סיום</th></tr></thead>
+          <tbody>
+            <tr><td>1</td><td>הקמת טבלאות הגדרה</td><td>יצירת Sync Profile, Entity Mapping, Field Mapping, Filter Rule, Transform Rule ו-Value Mapping.</td><td>ניתן להגדיר <code>contact → Customer</code> ללא שינוי Flow.</td></tr>
+            <tr><td>2</td><td>הקמת טבלאות ריצה</td><td>יצירת Sync Outbox, Sync State ו-Sync Log עם Views בסיסיים למנהל מערכת.</td><td>ניתן ליצור ידנית Outbox ולראות סטטוס.</td></tr>
+            <tr><td>3</td><td>Flow מעבד Outbox</td><td>Power Automate קורא Outbox, קורא רשומת מקור דינמית, בונה payload, מפעיל PayPlus Custom Connector ומעדכן לוג.</td><td>Outbox ידני יוצר Customer ב-PayPlus ושומר UID.</td></tr>
+            <tr><td>4</td><td>Plugin לזיהוי אירועים</td><td>Async Plugin על Create/Update של Contact עם בדיקת שדות ממופים ו-Coalescing.</td><td>יצירה ועדכון ב-Contact יוצרים Outbox תקין.</td></tr>
+            <tr><td>5</td><td>UI ניהול</td><td>Model-driven app לניהול מיפויים, צפייה בשגיאות והרצה מחדש.</td><td>אדמין יכול לשנות מיפוי ולתקן כשל ללא קוד.</td></tr>
+            <tr><td>6</td><td>הרחבה לטבלאות נוספות</td><td>Product, Invoice, Custom Product Tables וטבלאות נוספות לפי הצורך.</td><td>הוספת מקור חדש נעשית דרך Entity Mapping ו-Field Mapping.</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="callout">
+        <h3>המלצה לפתיחה</h3>
+        <p>להתחיל עם מיפוי אחד מלא: <code>contact</code> אל PayPlus <code>Customer</code>. זה מוכיח את כל רכיבי הארכיטקטורה בלי להיכנס עדיין למורכבות של מוצרים, מטבעות, קטגוריות ומסמכים פיננסיים.</p>
+      </div>
+    </section>
+
+    <footer>
+      <p>מסמך תפיסת פתרון זה מתאר מודל מוצע. שמות הסכמה כוללים את קידומת ה-publisher <span class="mono">alex</span> ומיועדים ליישום כטבלאות Dataverse רגילות במסגרת פתרון D365 PayPlus.</p>
+    </footer>
+  </main>
+</body>
+</html>

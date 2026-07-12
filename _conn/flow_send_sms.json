@@ -1,0 +1,178 @@
+{
+  "schemaVersion": "1.0.0.0",
+  "properties": {
+    "connectionReferences": {
+      "alex_payplus_dataverse": {
+        "runtimeSource": "embedded",
+        "connection": { "connectionReferenceLogicalName": "alex_payplus_dataverse" },
+        "api": { "name": "shared_commondataserviceforapps" }
+      },
+      "shared_alex-5fpayplus-5f5849d39a0feaf28d-1": {
+        "runtimeSource": "embedded",
+        "connection": { "connectionReferenceLogicalName": "alex_payplusprod" },
+        "api": { "name": "shared_alex-5fpayplus-5f5849d39a0feaf28d", "logicalName": "alex_5Fpayplus" }
+      },
+      "shared_alex-5fpayplus-20sandbox-5f5849d39a0feaf28d-1": {
+        "runtimeSource": "embedded",
+        "connection": { "connectionReferenceLogicalName": "alex_payplussandbox" },
+        "api": { "name": "shared_alex-5fpayplus-20sandbox-5f5849d39a0feaf28d", "logicalName": "alex_5Fpayplus-20sandbox" }
+      }
+    },
+    "definition": {
+      "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+      "contentVersion": "1.0.0.0",
+      "parameters": {
+        "$connections": { "defaultValue": {}, "type": "Object" },
+        "$authentication": { "defaultValue": {}, "type": "SecureObject" }
+      },
+      "triggers": {
+        "When_a_session_is_created": {
+          "metadata": { "operationMetadataId": "55111111-1111-4111-8111-111111111111" },
+          "type": "OpenApiConnectionWebhook",
+          "inputs": {
+            "host": {
+              "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps",
+              "operationId": "SubscribeWebhookTrigger",
+              "connectionName": "alex_payplus_dataverse"
+            },
+            "parameters": {
+              "subscriptionRequest/message": 1,
+              "subscriptionRequest/entityname": "alex_pp_hfsession",
+              "subscriptionRequest/scope": 4,
+              "subscriptionRequest/filterexpression": "alex_channel eq 100000002"
+            },
+            "authentication": "@parameters('$authentication')"
+          }
+        }
+      },
+      "actions": {
+        "Get_config_row": {
+          "runAfter": {},
+          "metadata": { "operationMetadataId": "55222222-2222-4222-8222-222222222222" },
+          "type": "OpenApiConnection",
+          "inputs": {
+            "host": {
+              "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps",
+              "operationId": "ListRecords",
+              "connectionName": "alex_payplus_dataverse"
+            },
+            "parameters": {
+              "entityName": "alex_payplusconfigurations",
+              "$select": "alex_environment,alex_paymentpageuidref,alex_terminaluidref",
+              "$top": 1
+            },
+            "authentication": "@parameters('$authentication')"
+          }
+        },
+        "Switch_on_environment": {
+          "runAfter": { "Get_config_row": ["Succeeded"] },
+          "type": "Switch",
+          "expression": "@first(outputs('Get_config_row')?['body/value'])?['alex_environment']",
+          "cases": {
+            "Production": {
+              "case": 100000000,
+              "actions": {
+                "Generate_link_Production": {
+                  "runAfter": {},
+                  "metadata": { "operationMetadataId": "55333333-3333-4333-8333-333333333333" },
+                  "type": "OpenApiConnection",
+                  "inputs": {
+                    "host": {
+                      "apiId": "/providers/Microsoft.PowerApps/apis/shared_alex-5fpayplus-5f5849d39a0feaf28d",
+                      "operationId": "GeneratePaymentLink",
+                      "connectionName": "shared_alex-5fpayplus-5f5849d39a0feaf28d-1"
+                    },
+                    "parameters": {
+                      "body/payment_page_uid": "@first(outputs('Get_config_row')?['body/value'])?['alex_paymentpageuidref']",
+                      "body/amount": 1,
+                      "body/currency_code": "ILS",
+                      "body/refURL_origin": "https://demo-contact-center-en.crm4.dynamics.com",
+                      "body/create_token": true,
+                      "body/more_info": "@triggerOutputs()?['body/alex_requestid']",
+                      "body/hosted_fields": false,
+                      "body/terminal_uid": "@first(outputs('Get_config_row')?['body/value'])?['alex_terminaluidref']",
+                      "body/charge_method": 1
+                    },
+                    "authentication": "@parameters('$authentication')"
+                  }
+                }
+              }
+            },
+            "Sandbox": {
+              "case": 100000001,
+              "actions": {
+                "Generate_link_Sandbox": {
+                  "runAfter": {},
+                  "metadata": { "operationMetadataId": "55444444-4444-4444-8444-444444444444" },
+                  "type": "OpenApiConnection",
+                  "inputs": {
+                    "host": {
+                      "apiId": "/providers/Microsoft.PowerApps/apis/shared_alex-5fpayplus-20sandbox-5f5849d39a0feaf28d",
+                      "operationId": "GeneratePaymentLink",
+                      "connectionName": "shared_alex-5fpayplus-20sandbox-5f5849d39a0feaf28d-1"
+                    },
+                    "parameters": {
+                      "body/payment_page_uid": "@first(outputs('Get_config_row')?['body/value'])?['alex_paymentpageuidref']",
+                      "body/amount": 1,
+                      "body/currency_code": "ILS",
+                      "body/refURL_origin": "https://demo-contact-center-en.crm4.dynamics.com",
+                      "body/create_token": true,
+                      "body/more_info": "@triggerOutputs()?['body/alex_requestid']",
+                      "body/hosted_fields": false,
+                      "body/terminal_uid": "@first(outputs('Get_config_row')?['body/value'])?['alex_terminaluidref']",
+                      "body/charge_method": 1
+                    },
+                    "authentication": "@parameters('$authentication')"
+                  }
+                }
+              }
+            }
+          },
+          "default": {
+            "actions": {
+              "Terminate_unknown_environment": {
+                "runAfter": {},
+                "metadata": { "operationMetadataId": "55555555-5555-4555-8555-555555555555" },
+                "type": "Terminate",
+                "inputs": { "runStatus": "Failed", "runError": { "code": "UnknownEnvironment", "message": "alex_environment is not set to Production or Sandbox in the PayPlus configuration row." } }
+              }
+            }
+          }
+        },
+        "Update_session_link": {
+          "runAfter": { "Switch_on_environment": ["Succeeded"] },
+          "metadata": { "operationMetadataId": "55666666-6666-4666-8666-666666666666" },
+          "type": "OpenApiConnection",
+          "inputs": {
+            "host": {
+              "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps",
+              "operationId": "UpdateRecord",
+              "connectionName": "alex_payplus_dataverse"
+            },
+            "parameters": {
+              "entityName": "alex_pp_hfsessions",
+              "recordId": "@triggerOutputs()?['body/alex_pp_hfsessionid']",
+              "item/alex_paymentpagelink": "@coalesce(body('Generate_link_Production')?['data']?['payment_page_link'], body('Generate_link_Sandbox')?['data']?['payment_page_link'])",
+              "item/alex_pagerequestuid": "@coalesce(body('Generate_link_Production')?['data']?['page_request_uid'], body('Generate_link_Sandbox')?['data']?['page_request_uid'])",
+              "item/alex_status": "Ready"
+            },
+            "authentication": "@parameters('$authentication')"
+          }
+        },
+        "Compose_SMS_delivery": {
+          "runAfter": { "Update_session_link": ["Succeeded"] },
+          "metadata": { "operationMetadataId": "55777777-7777-4777-8777-777777777777" },
+          "type": "Compose",
+          "inputs": {
+            "channel": "SMS",
+            "paymentLink": "@coalesce(body('Generate_link_Production')?['data']?['payment_page_link'], body('Generate_link_Sandbox')?['data']?['payment_page_link'])",
+            "sessionId": "@triggerOutputs()?['body/alex_pp_hfsessionid']",
+            "contact": "@triggerOutputs()?['body/_alex_contact_value']",
+            "account": "@triggerOutputs()?['body/_alex_account_value']",
+            "note": "Placeholder: wire the actual SMS delivery of paymentLink here."
+          }
+        }
+      }
+    }
+  }
+}

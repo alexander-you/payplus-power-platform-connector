@@ -1,0 +1,75 @@
+{
+  "schemaVersion": "1.0.0.0",
+  "properties": {
+    "connectionReferences": {
+      "alex_payplus_dataverse": {
+        "runtimeSource": "embedded",
+        "connection": { "connectionReferenceLogicalName": "alex_payplus_dataverse" },
+        "api": { "name": "shared_commondataserviceforapps" }
+      }
+    },
+    "definition": {
+      "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+      "contentVersion": "1.0.0.0",
+      "parameters": {
+        "$connections": { "defaultValue": {}, "type": "Object" },
+        "$authentication": { "defaultValue": {}, "type": "SecureObject" }
+      },
+      "triggers": {
+        "Every_day": {
+          "metadata": { "operationMetadataId": "e1a11111-1111-4111-8111-111111111111" },
+          "type": "Recurrence",
+          "recurrence": {
+            "frequency": "Day",
+            "interval": 1
+          }
+        }
+      },
+      "actions": {
+        "List_expired_pending_sessions": {
+          "runAfter": {},
+          "metadata": { "operationMetadataId": "e6a66666-6666-4666-8666-666666666666" },
+          "type": "OpenApiConnection",
+          "inputs": {
+            "host": {
+              "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps",
+              "operationId": "ListRecords",
+              "connectionName": "alex_payplus_dataverse"
+            },
+            "parameters": {
+              "entityName": "alex_pp_hfsessions",
+              "$select": "alex_pp_hfsessionid,alex_status,alex_expireson",
+              "$filter": "alex_status ne 'Tokenized' and alex_status ne 'Expired' and alex_expireson ne null and alex_expireson lt @{utcNow()}"
+            },
+            "authentication": "@parameters('$authentication')"
+          }
+        },
+        "For_each_expired_session": {
+          "runAfter": { "List_expired_pending_sessions": ["Succeeded"] },
+          "type": "Foreach",
+          "foreach": "@outputs('List_expired_pending_sessions')?['body/value']",
+          "actions": {
+            "Mark_as_expired": {
+              "runAfter": {},
+              "metadata": { "operationMetadataId": "e3a33333-3333-4333-8333-333333333333" },
+              "type": "OpenApiConnection",
+              "inputs": {
+                "host": {
+                  "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps",
+                  "operationId": "UpdateRecord",
+                  "connectionName": "alex_payplus_dataverse"
+                },
+                "parameters": {
+                  "entityName": "alex_pp_hfsessions",
+                  "recordId": "@items('For_each_expired_session')?['alex_pp_hfsessionid']",
+                  "item/alex_status": "Expired"
+                },
+                "authentication": "@parameters('$authentication')"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

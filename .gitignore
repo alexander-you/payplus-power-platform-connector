@@ -1,0 +1,25 @@
+# ---- Node / PCF ----
+node_modules/
+out/
+**/generated/
+*.tsbuildinfo
+.pcfproj.user
+
+# ---- .NET / MSBuild ----
+bin/
+obj/
+*.user
+
+# ---- Power Platform packaging ----
+*.zip
+
+# ---- OS / editor ----
+Thumbs.db
+Desktop.ini
+.DS_Store
+.vs/
+*.log
+
+# ---- local secrets / tokens ----
+*.env
+.env

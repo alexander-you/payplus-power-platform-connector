@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+
+  <data name="PayPlus_Wallet_Display" xml:space="preserve"><value>ארנק כרטיסי אשראי PayPlus</value></data>
+  <data name="PayPlus_Wallet_Desc" xml:space="preserve"><value>ארנק בסגנון Apple שמציג את כרטיסי האשראי השמורים של הלקוח ב-PayPlus, עם פעולות מהירות לאיסוף כרטיס חדש ידנית או בשירות עצמי. תצוגה בלבד.</value></data>
+  <data name="PayPlus_Wallet_Dataset" xml:space="preserve"><value>כרטיסי אשראי</value></data>
+
+  <data name="title" xml:space="preserve"><value>ארנק PayPlus</value></data>
+  <data name="subtitle" xml:space="preserve"><value>כרטיסי תשלום שמורים</value></data>
+  <data name="cardsSuffix" xml:space="preserve"><value>כרטיסים</value></data>
+  <data name="cardOne" xml:space="preserve"><value>כרטיס</value></data>
+
+  <data name="addManual" xml:space="preserve"><value>עדכון ידני</value></data>
+  <data name="selfService" xml:space="preserve"><value>שירות עצמי</value></data>
+  <data name="chEmail" xml:space="preserve"><value>דואר אלקטרוני</value></data>
+  <data name="chSms" xml:space="preserve"><value>מסרון</value></data>
+  <data name="chWhatsapp" xml:space="preserve"><value>WhatsApp</value></data>
+
+  <data name="lblExpires" xml:space="preserve"><value>בתוקף עד</value></data>
+  <data name="lblCardholder" xml:space="preserve"><value>בעל הכרטיס</value></data>
+  <data name="lblUpdated" xml:space="preserve"><value>עודכן</value></data>
+  <data name="lblChannel" xml:space="preserve"><value>ערוץ</value></data>
+  <data name="lblBy" xml:space="preserve"><value>ע״י</value></data>
+  <data name="lblStatus" xml:space="preserve"><value>סטטוס</value></data>
+  <data name="lblCustomerId" xml:space="preserve"><value>מזהה לקוח PayPlus</value></data>
+  <data name="backTitle" xml:space="preserve"><value>פרטי הכרטיס</value></data>
+  <data name="flipHint" xml:space="preserve"><value>לחצו להיפוך הכרטיס</value></data>
+
+  <data name="srcAgent" xml:space="preserve"><value>נציג</value></data>
+  <data name="srcCustomer" xml:space="preserve"><value>לקוח</value></data>
+
+  <data name="badgeDefault" xml:space="preserve"><value>ברירת מחדל</value></data>
+  <data name="badgeActive" xml:space="preserve"><value>פעיל</value></data>
+  <data name="badgeInactive" xml:space="preserve"><value>לא פעיל</value></data>
+
+  <data name="deactivateHint" xml:space="preserve"><value>לחצו לביטול השימוש בכרטיס</value></data>
+  <data name="deactivateTitle" xml:space="preserve"><value>ביטול שימוש בכרטיס</value></data>
+  <data name="deactivateText" xml:space="preserve"><value>האם לבטל את השימוש בכרטיס אשראי זה? הכרטיס יסומן כלא פעיל.</value></data>
+  <data name="deactivateConfirm" xml:space="preserve"><value>בטל שימוש</value></data>
+  <data name="reactivateHint" xml:space="preserve"><value>לחצו להפעלת הכרטיס מחדש</value></data>
+  <data name="reactivateTitle" xml:space="preserve"><value>הפעלת כרטיס מחדש</value></data>
+  <data name="reactivateText" xml:space="preserve"><value>האם להפעיל מחדש את הכרטיס? הכרטיס יסומן כפעיל.</value></data>
+  <data name="reactivateConfirm" xml:space="preserve"><value>הפעל מחדש</value></data>
+  <data name="cancel" xml:space="preserve"><value>ביטול</value></data>
+
+  <data name="emptyTitle" xml:space="preserve"><value>אין כרטיסים שמורים</value></data>
+  <data name="emptyBody" xml:space="preserve"><value>אספו כרטיס ידנית, או שלחו ללקוח קישור מאובטח לשירות עצמי.</value></data>
+  <data name="loading" xml:space="preserve"><value>טוען כרטיסים…</value></data>
+  <data name="loadError" xml:space="preserve"><value>טעינת הכרטיסים נכשלה.</value></data>
+  <data name="dash" xml:space="preserve"><value>—</value></data>
+</root>
