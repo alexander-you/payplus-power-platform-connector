@@ -20,6 +20,10 @@ This reduces risk because:
 
 The connector design must not include first-phase operations that accept raw card number, full card track data, or CVV. Payment link generation should pass business and payment request fields only, such as amount, currency, customer reference, item description, terminal, and payment page UID.
 
+## Terminal And Payment Page Tables Store No Card Data
+
+The `alex_payplus_terminal` and `alex_payplus_paymentpage` tables store only non-sensitive PayPlus resource metadata (terminal and payment page UIDs, merchant number, activity type, currency, process type, and similar configuration). They never store PAN, CVV, or cardholder data. They are populated from the PayPlus terminals and payment pages endpoints and are used only to select the terminal and page for hosted payment link generation.
+
 ## CVV Must Never Be Stored
 
 CVV must not be stored in any form:

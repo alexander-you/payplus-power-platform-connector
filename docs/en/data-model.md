@@ -8,7 +8,9 @@ For the runtime behaviour that consumes this model, see [architecture.md](archit
 
 | Group | Logical name | Display name | Purpose |
 | --- | --- | --- | --- |
-| Configuration | `alex_payplusconfiguration` | PayPlus Configuration | Connector environment, setup wizard state, discovered terminal and payment pages, self-service channel toggles, and validation status. |
+| Configuration | `alex_payplusconfiguration` | PayPlus Configuration | Connector environment, setup wizard state, account-level default (fallback) terminal and payment page, self-service channel toggles, and validation status. |
+| Terminals | `alex_payplus_terminal` | PayPlus Terminal | Discovered PayPlus terminals for the environment, with default selection and terminal-level policies. |
+| Terminals | `alex_payplus_paymentpage` | PayPlus Payment Page | Discovered PayPlus payment pages, each linked to a terminal, with default selection and page-level behavior. |
 | Configuration | `alex_payplus_syncprofile` | PayPlus Sync Profile | Root of a sync package. One active profile per environment; holds defaults and drives connector routing. |
 | Sync mapping | `alex_payplus_entitymapping` | PayPlus Entity Mapping | Maps one Dataverse source table to one PayPlus target object. |
 | Sync mapping | `alex_payplus_fieldmapping` | PayPlus Field Mapping | Field-level mapping between a source field and a PayPlus field. |
@@ -25,6 +27,9 @@ For the runtime behaviour that consumes this model, see [architecture.md](archit
 
 ```mermaid
 erDiagram
+    CONFIGURATION ||--o{ TERMINAL : "discovers"
+    CONFIGURATION ||--o{ PAYMENTPAGE : "discovers"
+    TERMINAL ||--o{ PAYMENTPAGE : "has"
     SYNCPROFILE ||--o{ ENTITYMAPPING : "has"
     SYNCPROFILE ||--o{ VALUEMAPPING : "has"
     SYNCPROFILE ||--o{ SYNCOUTBOX : "scopes"
@@ -45,6 +50,25 @@ erDiagram
     ACCOUNT ||--o{ HFSESSION : "requests"
     CONTACT ||--o{ HFSESSION : "requests"
 
+    CONFIGURATION {
+        guid alex_payplusconfigurationid PK
+        choice alex_environment
+        string alex_terminaluidref
+        string alex_paymentpageuidref
+    }
+    TERMINAL {
+        guid alex_payplus_terminalid PK
+        string alex_terminaluid
+        choice alex_environment
+        bool alex_isdefault
+    }
+    PAYMENTPAGE {
+        guid alex_payplus_paymentpageid PK
+        lookup alex_terminalid FK
+        string alex_paymentpageuid
+        choice alex_environment
+        bool alex_isdefault
+    }
     SYNCPROFILE {
         guid alex_payplus_syncprofileid PK
         string alex_name
@@ -130,6 +154,11 @@ erDiagram
 
 | Child table | Foreign key column | Parent table |
 | --- | --- | --- |
+| `alex_payplus_terminal` | `alex_configurationid` | `alex_payplusconfiguration` |
+| `alex_payplus_terminal` | `alex_syncprofileid` | `alex_payplus_syncprofile` |
+| `alex_payplus_paymentpage` | `alex_terminalid` | `alex_payplus_terminal` |
+| `alex_payplus_paymentpage` | `alex_configurationid` | `alex_payplusconfiguration` |
+| `alex_payplus_paymentpage` | `alex_syncprofileid` | `alex_payplus_syncprofile` |
 | `alex_payplus_entitymapping` | `alex_syncprofileid` | `alex_payplus_syncprofile` |
 | `alex_payplus_valuemapping` | `alex_syncprofileid` | `alex_payplus_syncprofile` |
 | `alex_payplus_fieldmapping` | `alex_entitymappingid` | `alex_payplus_entitymapping` |
@@ -159,13 +188,13 @@ Single configuration record for the connector and self-service behaviour.
 | Column | Type | Explanation |
 | --- | --- | --- |
 | `alex_name` | Text | Configuration name. |
-| `alex_environment` | Choice | PayPlus environment (Sandbox / Production). |
-| `alex_setupstage` | Choice | Setup wizard stage (Connect, Pages, Validate, Done). |
+| `alex_environment` | Choice | PayPlus environment (Production / Sandbox). |
+| `alex_setupstage` | Choice | Setup wizard stage (Connect, Terminals & pages, Validate, Done). |
 | `alex_setupcompleted` | Yes/No | Setup finished. |
 | `alex_configvalidated` | Yes/No | Configuration validated. |
-| `alex_terminaluidref` | Text | Selected PayPlus terminal UID. |
-| `alex_paymentpageuidref` | Text | Selected payment page UID. |
-| `alex_paymentpages` | Multiline (JSON) | Cached list of payment pages. |
+| `alex_terminaluidref` | Text | Account-level default (fallback) PayPlus terminal UID. All runtime flows use this default when a specific terminal is not provided. It is set during the setup wizard's Validate step and mirrors the terminal record flagged with `alex_isdefault`. |
+| `alex_paymentpageuidref` | Text | Account-level default (fallback) payment page UID. All runtime flows use this default when a specific page is not provided. It is set during the Validate step and mirrors the page record flagged with `alex_isdefault`. |
+| `alex_paymentpages` | Multiline (JSON) | Legacy/cache list of payment pages. The authoritative discovered pages now live in the `alex_payplus_paymentpage` table. |
 | `alex_lastvalidationstatus` | Choice | Last validation status. |
 | `alex_lastvalidationcode` | Whole number | Last validation result/HTTP code. |
 | `alex_lastvalidationmessage` | Text | Last validation message. |
@@ -173,6 +202,78 @@ Single configuration record for the connector and self-service behaviour.
 | `alex_validationrequestid` | Text | Validation request id. |
 | `alex_selfservice_{email\|sms\|whatsapp}_{account\|contact}` | Yes/No | Enables self-service card collection per channel and parent type. |
 | `alex_selfservice_{email\|sms\|whatsapp}_{account\|contact}_expiry` | Whole number | Link validity window in days for each channel and parent type. |
+
+### PayPlus Terminal (`alex_payplus_terminal`)
+
+One row per PayPlus terminal discovered for the environment. Rows are populated by the **PayPlus - Import Terminals & Pages** flow, keyed by environment + terminal UID. A single default per environment is enforced by the `EnforceSingleDefaultTerminal` plugin.
+
+| Column | Type | Explanation |
+| --- | --- | --- |
+| `alex_terminaluid` | Text | PayPlus terminal UUID. Natural key together with the environment. |
+| `alex_merchantnumber` | Text | Merchant number. |
+| `alex_legalentity` | Text | Legal entity. |
+| `alex_terminaltypeid` | Whole number | Terminal type id. |
+| `alex_activitytype` | Choice | Activity type (Website, Call Center, Retail, Donations, Other). |
+| `alex_primarycurrency` | Choice | Primary currency (ILS, USD, EUR, GBP). |
+| `alex_recurring_enabled` | Yes/No | Recurring charges enabled. |
+| `alex_tokenization_enabled` | Yes/No | Tokenization enabled. |
+| `alex_cvv_policy` | Choice | CVV policy (Required, Not Required, Conditional, Unknown). |
+| `alex_cvv_policy_source` | Choice | CVV policy source. |
+| `alex_cvv_required_j5` | Choice | CVV required for J5 completion. |
+| `alex_cvv_required_recurring_init` | Choice | CVV required at recurring init. |
+| `alex_threeds_policy` | Choice | 3D Secure policy (Default, On, Off, Conditional). |
+| `alex_settings_verified_on` | Date/time | Settings verified on. |
+| `alex_rawjson` | Multiline | Raw PayPlus terminal payload. |
+| `alex_lastsyncon` | Date/time | Last synced on. |
+| `alex_environment` | Choice | PayPlus environment (Production / Sandbox). |
+| `alex_isdefault` | Yes/No | Default terminal for the environment. Enforced single-per-environment by the `EnforceSingleDefaultTerminal` plugin. |
+| `alex_isactive` | Yes/No | Active terminal. |
+| `alex_description` | Multiline | Business description (when to use). |
+| `alex_configurationid` | Lookup → PayPlus Configuration | Owning configuration. |
+| `alex_syncprofileid` | Lookup → PayPlus Sync Profile | Owning sync profile. |
+| `alex_approvedby` | Lookup → User | Approved by. |
+| `alex_name` | Text | Name. |
+
+### PayPlus Payment Page (`alex_payplus_paymentpage`)
+
+One row per PayPlus payment page; each page belongs to a terminal. Rows are populated by the **PayPlus - Import Terminals & Pages** flow, keyed by environment + page UID. A single default per terminal + process type is enforced by the `EnforceSingleDefaultPage` plugin.
+
+| Column | Type | Explanation |
+| --- | --- | --- |
+| `alex_paymentpageuid` | Text | PayPlus payment page UUID. Natural key together with the environment. |
+| `alex_terminalid` | Lookup → PayPlus Terminal | The owning terminal. |
+| `alex_processtype` | Choice | Process type (Charge, Approval, Check, Token Only, Recurring). |
+| `alex_purpose` | Choice | Page purpose. |
+| `alex_audience` | Choice | Audience. |
+| `alex_channel` | Choice | Primary channel (Website, Call Center, WhatsApp, Email, QR). |
+| `alex_tokenbehavior` | Choice | Token behavior (No Token, Optional, Required, Token Only). |
+| `alex_createtoken_default` | Yes/No | Create token by default. |
+| `alex_cvv_inherit_terminal` | Yes/No | Inherit CVV from terminal. |
+| `alex_cvv_policy_displayed` | Choice | CVV policy (displayed). |
+| `alex_threeds_policy` | Choice | 3D Secure policy. |
+| `alex_for_card_update` | Yes/No | For card update. |
+| `alex_for_subscription` | Yes/No | For subscription. |
+| `alex_openamount` | Yes/No | Open amount. |
+| `alex_maxpayments` | Whole number | Max payments. |
+| `alex_defaultcurrency` | Text | Default currency. |
+| `alex_language` | Text | Language. |
+| `alex_identification_required` | Yes/No | Identification required. |
+| `alex_cashieruid` | Text | Cashier UID. |
+| `alex_cashiername` | Text | Cashier name. |
+| `alex_chargemethod` | Whole number | Charge method (numeric). |
+| `alex_selectionpriority` | Whole number | Selection priority. |
+| `alex_startdate` | Date/time | Start date. |
+| `alex_enddate` | Date/time | End date. |
+| `alex_valid` | Yes/No | Valid in PayPlus. |
+| `alex_rawjson` | Multiline | Raw PayPlus payment page payload. |
+| `alex_lastsyncon` | Date/time | Last synced on. |
+| `alex_environment` | Choice | PayPlus environment (Production / Sandbox). |
+| `alex_isdefault` | Yes/No | Default page for its terminal + process type. Enforced single-per (terminal + process type) by the `EnforceSingleDefaultPage` plugin. |
+| `alex_isactive` | Yes/No | Active page. |
+| `alex_description` | Multiline | Description for the user. |
+| `alex_configurationid` | Lookup → PayPlus Configuration | Owning configuration. |
+| `alex_syncprofileid` | Lookup → PayPlus Sync Profile | Owning sync profile. |
+| `alex_name` | Text | Name. |
 
 ### PayPlus Sync Profile (`alex_payplus_syncprofile`)
 
@@ -393,6 +494,17 @@ Hosted-fields / self-service card capture session used by the tokenization polli
 
 ### Environment (`alex_environment`)
 
+The `alex_environment` choice uses **two different value mappings** depending on the table. Be careful not to confuse them.
+
+**Environment — configuration, terminal, and payment page tables** (`alex_payplusconfiguration`, `alex_payplus_terminal`, `alex_payplus_paymentpage`):
+
+| Value | Label |
+| --- | --- |
+| 100000000 | Production |
+| 100000001 | Sandbox |
+
+**Environment — sync profile and sync runtime tables** (`alex_payplus_syncprofile`, `alex_payplus_syncoutbox`, `alex_payplus_syncstate`, `alex_payplus_synclog`):
+
 | Value | Label |
 | --- | --- |
 | 100000000 | Sandbox |
@@ -487,7 +599,7 @@ Hosted-fields / self-service card capture session used by the tokenization polli
 | Value | Label |
 | --- | --- |
 | 100000000 | Connect |
-| 100000001 | Pages |
+| 100000001 | Terminals & pages |
 | 100000002 | Validate |
 | 100000003 | Done |
 
@@ -509,12 +621,110 @@ Hosted-fields / self-service card capture session used by the tokenization polli
 
 ### Card / session channel (`alex_channel`)
 
+Used by the `alex_creditcard` and `alex_pp_hfsession` tables. This is a **different** choice from the payment-page Channel below.
+
 | Value | Label |
 | --- | --- |
 | 100000000 | Manual |
 | 100000001 | Email |
 | 100000002 | SMS |
 | 100000003 | WhatsApp |
+
+### Activity type (`alex_activitytype`) — terminal
+
+| Value | Label |
+| --- | --- |
+| 100000000 | Website |
+| 100000001 | Call Center |
+| 100000002 | Retail |
+| 100000003 | Donations |
+| 100000004 | Other |
+
+### Primary currency (`alex_primarycurrency`) — terminal
+
+| Value | Label |
+| --- | --- |
+| 100000000 | ILS |
+| 100000001 | USD |
+| 100000002 | EUR |
+| 100000003 | GBP |
+
+### CVV policy (`alex_cvv_policy`) — terminal
+
+| Value | Label |
+| --- | --- |
+| 100000000 | Required |
+| 100000001 | Not Required |
+| 100000002 | Conditional |
+| 100000003 | Unknown |
+
+### 3D Secure policy (`alex_threeds_policy`) — terminal and payment page
+
+| Value | Label |
+| --- | --- |
+| 100000000 | Default |
+| 100000001 | On |
+| 100000002 | Off |
+| 100000003 | Conditional |
+
+### Process type (`alex_processtype`) — payment page
+
+| Value | Label |
+| --- | --- |
+| 100000000 | Charge |
+| 100000001 | Approval |
+| 100000002 | Check |
+| 100000003 | Token Only |
+| 100000004 | Recurring |
+
+### Purpose (`alex_purpose`) — payment page
+
+| Value | Label |
+| --- | --- |
+| 100000000 | Call Center |
+| 100000001 | Website |
+| 100000002 | Donation |
+| 100000003 | Invoice |
+| 100000004 | QR |
+| 100000005 | Subscription |
+| 100000006 | Card Update |
+| 100000007 | Event |
+| 100000008 | Approval |
+| 100000009 | Brand |
+| 100000010 | Business Customer |
+| 100000011 | Private Customer |
+
+### Audience (`alex_audience`) — payment page
+
+| Value | Label |
+| --- | --- |
+| 100000000 | New Customer |
+| 100000001 | Existing Customer |
+| 100000002 | Subscriber |
+| 100000003 | Business |
+| 100000004 | Donor |
+| 100000005 | Private |
+
+### Channel (`alex_channel`) — payment page
+
+This is a **different** choice from the Card / session channel above.
+
+| Value | Label |
+| --- | --- |
+| 100000000 | Website |
+| 100000001 | Call Center |
+| 100000002 | WhatsApp |
+| 100000003 | Email |
+| 100000004 | QR |
+
+### Token behavior (`alex_tokenbehavior`) — payment page
+
+| Value | Label |
+| --- | --- |
+| 100000000 | No Token |
+| 100000001 | Optional |
+| 100000002 | Required |
+| 100000003 | Token Only |
 
 ## Notes
 

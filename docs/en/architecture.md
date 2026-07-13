@@ -64,6 +64,8 @@ Power Automate flows can call connector actions such as:
 - `RefundByTransaction`
 - `ChargeSavedCard` when a saved PayPlus token is available and approved for use
 
+A dedicated setup flow, `PayPlus - Import Terminals & Pages`, reads the PayPlus terminals (`MyTerminals`) and their payment pages (`ListPaymentPages`) through the connector and upserts rows into the `alex_payplus_terminal` and `alex_payplus_paymentpage` tables, keyed by environment + UID. New records get `alex_isdefault = false` initially. It runs during setup (Terminals & pages step) and can be re-run to refresh the catalog.
+
 Flows should enable secure inputs and secure outputs for any action that might carry sensitive values such as tokens or customer identifiers.
 
 ## Dynamics 365 / Dataverse
@@ -127,10 +129,26 @@ Discovery actions support setup and designer usability:
 - `MyTerminals`: retrieves terminals and returns UUIDs used as `terminal_uid`.
 - `ListPaymentPages`: retrieves payment pages for a selected terminal.
 
+During setup these actions are used by the `PayPlus - Import Terminals & Pages` flow to populate dedicated Dataverse tables (`alex_payplus_terminal` and `alex_payplus_paymentpage`) rather than only assisting designer dropdowns. The imported catalog supports default selection (`alex_isdefault`) and terminal-level and page-level policies.
+
 Designer limitation found in POC:
 
 - Dependent dropdowns using `x-ms-dynamic-values` can cause a 409 manifest error when the list source requires a parameter.
 - A working approach was found by using `x-ms-dynamic-values` for the terminal dropdown and `x-ms-dynamic-list` for dependent payment page values.
+
+## Setup And Installation
+
+The setup wizard (`alex_payplus_setup.html`) drives a four-step installation:
+
+1. **Connect** — enter and validate the PayPlus connection.
+2. **Terminals & pages** — fetch all terminals and their payment pages from PayPlus, preview them, and Import them. The import creates the `alex_payplus_terminal` and `alex_payplus_paymentpage` records.
+3. **Validate** — pick the default terminal and its default payment page. This writes `alex_terminaluidref` / `alex_paymentpageuidref` on the configuration and marks `alex_isdefault = true` on the chosen terminal and page records. A quick connection smoke-test (a sample hosted payment link) runs, and then a mandatory, blocking import of document types runs — the installation cannot complete until document types are imported successfully.
+4. **Done** — management center, including an on-demand per-page connection test.
+
+Two plugins keep the defaults consistent:
+
+- `EnforceSingleDefaultTerminal` — one default terminal per environment.
+- `EnforceSingleDefaultPage` — one default page per terminal + process type.
 
 ## Continuous Sync Engine
 

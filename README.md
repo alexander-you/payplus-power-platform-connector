@@ -78,7 +78,7 @@ A typical process is:
 - Use PayPlus sandbox and production environments.
 - Store PayPlus API credentials as secure connection parameters.
 - Inject `api-key` and `secret-key` request headers through connector policies.
-- Retrieve terminals and payment pages for setup or dynamic input assistance.
+- Import terminals and payment pages into dedicated Dataverse tables (`alex_payplus_terminal`, `alex_payplus_paymentpage`), with default terminal and default page selection per environment.
 - Write back payment request identifiers and status values to Dataverse, if Dataverse is used.
 - Validate a connection by generating a minimal PayPlus hosted payment link in sandbox or production.
 - Support Hebrew and English business data where the underlying PayPlus and Dynamics fields support it.
@@ -230,7 +230,7 @@ This repository intentionally contains no real secrets, no real API keys, no rea
 - שימוש בסביבת Sandbox ובסביבת Production של PayPlus.
 - שמירת פרטי הגישה ל-PayPlus כפרמטרים מאובטחים ברמת החיבור.
 - הזרקת הכותרות `api-key` ו-`secret-key` באמצעות policies של המחבר.
-- שליפת מסופים ודפי תשלום לצורך הגדרה או סיוע בבחירת ערכים.
+- ייבוא מסופים ועמודי תשלום לטבלאות Dataverse יעודיות (`alex_payplus_terminal`, `alex_payplus_paymentpage`), כולל בחירת מסוף ברירת מחדל ועמוד ברירת מחדל לכל סביבה.
 - כתיבה חוזרת של מזהי בקשת תשלום וסטטוסים ל-Dataverse, אם נעשה בו שימוש.
 - אימות חיבור באמצעות יצירת קישור תשלום מינימלי בסביבת בדיקות או ייצור.
 - תמיכה בנתונים עסקיים בעברית ובאנגלית כאשר השדות ב-PayPlus וב-Dynamics תומכים בכך.
