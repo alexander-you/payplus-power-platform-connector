@@ -84,6 +84,14 @@ interface FieldMapping {
     isActive: boolean;
 }
 
+interface FilterRule {
+    id: string;
+    sourceLogical: string;
+    operator: number;
+    compareValue: string;
+    isActive: boolean;
+}
+
 interface AutoMapChoice {
     sourceLogical: string;
     sourceType: number;
@@ -124,6 +132,13 @@ const SOURCE_TYPE_LOOKUP = 100000003;
 const SOURCE_TYPE_RELATED = 100000004;
 const SOURCE_TYPE_VALUE_MAPPING = 100000005;
 const NULL_OMIT = 100000000;
+const FILTER_EQUALS = 100000000;
+const FILTER_NOT_EQUALS = 100000001;
+const FILTER_CONTAINS = 100000002;
+const FILTER_GREATER_THAN = 100000003;
+const FILTER_LESS_THAN = 100000004;
+const FILTER_IS_NULL = 100000005;
+const FILTER_IS_NOT_NULL = 100000006;
 const CHANGE_CURRENT_STATE = 100000000;
 const MISSING_UID_CREATE = 100000000;
 const PLUGIN_NOT_REQUIRED = 100000000;
@@ -183,6 +198,32 @@ const UI = {
         clearMapping: "Clear",
         sourceTable: "Dynamics source",
         payplusTarget: "PayPlus target",
+        filterRulesTitle: "Sync conditions",
+        filterRulesHint: "Optional per-table filters. Active conditions are cumulative: Condition 1 AND Condition 2 AND Condition 3.",
+        filterLogicActive: "Sync is active. All active conditions must match before an outbox row is created.",
+        filterLogicInactive: "Sync is off. Conditions are saved here and will be evaluated only after sync is started.",
+        filterSyncOn: "Sync active",
+        filterSyncOff: "Sync off",
+        filterInactive: "Inactive - ignored",
+        filterAnd: "AND",
+        filterValueNotUsed: "Value is not used for this operator",
+        noFilterRules: "No conditions. Every changed source row can enter this sync mapping.",
+        addFilterRule: "Add condition",
+        filterField: "Dynamics field",
+        filterOperator: "Operator",
+        filterValue: "Compare value",
+        filterEnabled: "Enabled",
+        deleteFilterRule: "Delete",
+        filterEquals: "Equals",
+        filterNotEquals: "Not equals",
+        filterContains: "Contains",
+        filterGreaterThan: "Greater than",
+        filterLessThan: "Less than",
+        filterIsNull: "Is null",
+        filterIsNotNull: "Is not null",
+        filterRuleAdded: "Condition added.",
+        filterRuleDeleted: "Condition deleted.",
+        filterNeedsSourceField: "Choose a source table before adding a condition.",
         searchField: "Search field",
         missingOnly: "Missing only",
         requiredOnly: "Required only",
@@ -287,6 +328,32 @@ const UI = {
         clearMapping: "נקה",
         sourceTable: "מקור Dynamics",
         payplusTarget: "יעד PayPlus",
+        filterRulesTitle: "תנאי סנכרון",
+        filterRulesHint: "סינון אופציונלי פר טבלה. התנאים הפעילים מצטברים: תנאי 1 וגם תנאי 2 וגם תנאי 3.",
+        filterLogicActive: "הסנכרון פעיל. כל התנאים הפעילים חייבים להתקיים לפני יצירת outbox.",
+        filterLogicInactive: "הסנכרון כבוי. התנאים נשמרים כאן וייבדקו רק לאחר הפעלת הסנכרון.",
+        filterSyncOn: "סנכרון פעיל",
+        filterSyncOff: "סנכרון כבוי",
+        filterInactive: "לא פעיל - לא נבדק",
+        filterAnd: "וגם",
+        filterValueNotUsed: "אין שימוש בערך עבור אופרטור זה",
+        noFilterRules: "אין תנאים. כל רשומת מקור שהשתנתה יכולה להיכנס למיפוי הסנכרון הזה.",
+        addFilterRule: "הוסף תנאי",
+        filterField: "שדה Dynamics",
+        filterOperator: "אופרטור",
+        filterValue: "ערך להשוואה",
+        filterEnabled: "פעיל",
+        deleteFilterRule: "מחק",
+        filterEquals: "שווה",
+        filterNotEquals: "לא שווה",
+        filterContains: "מכיל",
+        filterGreaterThan: "גדול מ",
+        filterLessThan: "קטן מ",
+        filterIsNull: "ריק",
+        filterIsNotNull: "לא ריק",
+        filterRuleAdded: "התנאי נוסף.",
+        filterRuleDeleted: "התנאי נמחק.",
+        filterNeedsSourceField: "יש לבחור טבלת מקור לפני הוספת תנאי.",
         searchField: "חיפוש שדה",
         missingOnly: "רק חסרים",
         requiredOnly: "רק שדות חובה",
@@ -857,6 +924,7 @@ export class MappingStudio implements ComponentFramework.StandardControl<IInputs
     private profile: ProfileInfo = { name: "", environment: "", isActive: false };
     private mappings: EntityMapping[] = [];
     private fields: FieldMapping[] = [];
+    private filterRules: FilterRule[] = [];
     private transformRules: TransformRule[] = [];
     private selectedMappingId = "";
     private stats: SyncStats = { pending: 0, succeeded: 0, failed: 0, lastSync: "" };
@@ -956,7 +1024,7 @@ export class MappingStudio implements ComponentFramework.StandardControl<IInputs
             }
             const selected = this.selectedMapping();
             if (selected) await this.ensureSourceFields(selected.sourceLogical);
-            await Promise.all([this.loadFields(), this.loadStats()]);
+            await Promise.all([this.loadFields(), this.loadFilterRules(), this.loadStats()]);
             await this.ensureTargetFieldsForSelected();
             if (op === this.operationId) {
                 this.status = "ready";
@@ -1001,6 +1069,18 @@ export class MappingStudio implements ComponentFramework.StandardControl<IInputs
             `&$filter=${filter}&$orderby=alex_sortorder asc,createdon asc`;
         const result = await this.context.webAPI.retrieveMultipleRecords("alex_payplus_fieldmapping", query);
         this.fields = result.entities.map((row) => this.parseField(row));
+    }
+
+    private async loadFilterRules(): Promise<void> {
+        if (!this.selectedMappingId || !this.profileId || this.selectedMappingId === "draft") {
+            this.filterRules = [];
+            return;
+        }
+        const filter = encodeURIComponent(`_alex_entitymappingid_value eq ${this.selectedMappingId} and statecode eq 0`);
+        const query = "?$select=alex_payplus_filterruleid,alex_sourcefieldlogicalname,alex_operator,alex_comparevalue,alex_isactive,createdon" +
+            `&$filter=${filter}&$orderby=createdon asc`;
+        const result = await this.context.webAPI.retrieveMultipleRecords("alex_payplus_filterrule", query);
+        this.filterRules = result.entities.map((row) => this.parseFilterRule(row));
     }
 
     private async loadTransformRules(): Promise<void> {
@@ -1182,6 +1262,16 @@ export class MappingStudio implements ComponentFramework.StandardControl<IInputs
         };
     }
 
+    private parseFilterRule(row: ComponentFramework.WebApi.Entity): FilterRule {
+        return {
+            id: this.textValue(row, "alex_payplus_filterruleid"),
+            sourceLogical: this.textValue(row, "alex_sourcefieldlogicalname"),
+            operator: row["alex_operator"] == null ? FILTER_EQUALS : Number(row["alex_operator"]),
+            compareValue: this.textValue(row, "alex_comparevalue"),
+            isActive: row["alex_isactive"] !== false
+        };
+    }
+
     private render(): void {
         this.closePortal();
         this.root.innerHTML = this.shellHtml();
@@ -1249,7 +1339,7 @@ export class MappingStudio implements ComponentFramework.StandardControl<IInputs
         const syncButtonText = selected.isActive ? this.t("deactivateSync") : this.t("activateSync");
         const lockHint = selected.isActive ? `<div class="ppms-lock-note">${this.esc(this.t("activeSyncLock"))}</div>` : "";
         const editDisabled = selected.isActive ? "disabled" : "";
-        return `<section class="ppms-pane ppms-main">${this.advancedWarningHtml(selected)}${lockHint}<div class="ppms-main-head"><div><strong>${this.esc(selected.sourceDisplay || selected.sourceLogical)}</strong><span>${this.esc(this.t("sourceToTarget"))}: ${this.esc(selected.sourceLogical)} -> ${this.esc(this.targetLabel(selected.targetValue))}</span></div><div class="ppms-actions"><button class="ppms-btn" id="ppms-auto-map" type="button" ${editDisabled}>${this.esc(this.t("autoMap"))}</button><button class="ppms-btn" id="ppms-validate" type="button">${this.esc(this.t("validate"))}</button><button class="ppms-btn" id="ppms-register-steps" type="button" ${editDisabled}>${this.esc(this.t("registerSteps"))}</button><button class="ppms-btn ppms-primary" id="ppms-activate" type="button">${this.esc(syncButtonText)}</button></div></div>${this.mappingSelectorsHtml(selected)}${this.mappingFiltersHtml()}${this.fieldOptionsHtml(selected)}<div class="ppms-grid"><div class="ppms-row ppms-grid-head"><span>${this.esc(this.t("payplusField"))}</span><span>${this.esc(this.t("sourceType"))}</span><span>${this.esc(this.t("dynamicsField"))}</span><span>${this.esc(this.t("required"))}</span><span>${this.esc(this.t("status"))}</span><span>${this.esc(this.t("actions"))}</span></div>${this.fieldRowsHtml(selected)}</div></section>`;
+        return `<section class="ppms-pane ppms-main">${this.advancedWarningHtml(selected)}${lockHint}<div class="ppms-main-head"><div><strong>${this.esc(selected.sourceDisplay || selected.sourceLogical)}</strong><span>${this.esc(this.t("sourceToTarget"))}: ${this.esc(selected.sourceLogical)} -> ${this.esc(this.targetLabel(selected.targetValue))}</span></div><div class="ppms-actions"><button class="ppms-btn" id="ppms-auto-map" type="button" ${editDisabled}>${this.esc(this.t("autoMap"))}</button><button class="ppms-btn" id="ppms-validate" type="button">${this.esc(this.t("validate"))}</button><button class="ppms-btn" id="ppms-register-steps" type="button" ${editDisabled}>${this.esc(this.t("registerSteps"))}</button><button class="ppms-btn ppms-primary" id="ppms-activate" type="button">${this.esc(syncButtonText)}</button></div></div>${this.mappingSelectorsHtml(selected)}${this.filterRulesHtml(selected)}${this.mappingFiltersHtml()}${this.fieldOptionsHtml(selected)}<div class="ppms-grid"><div class="ppms-row ppms-grid-head"><span>${this.esc(this.t("payplusField"))}</span><span>${this.esc(this.t("sourceType"))}</span><span>${this.esc(this.t("dynamicsField"))}</span><span>${this.esc(this.t("required"))}</span><span>${this.esc(this.t("status"))}</span><span>${this.esc(this.t("actions"))}</span></div>${this.fieldRowsHtml(selected)}</div></section>`;
     }
 
     private advancedWarningHtml(mapping: EntityMapping): string {
@@ -1260,6 +1350,24 @@ export class MappingStudio implements ComponentFramework.StandardControl<IInputs
     private mappingSelectorsHtml(selected: EntityMapping): string {
         const targetValue = selected.targetValue ?? this.newTarget;
         return `<div class="ppms-selectors"><label><span>${this.esc(this.t("sourceTable"))}</span>${this.sourceComboHtml("ppms-edit-source", "editSource", selected.sourceLogical, this.t("sourceTable"), selected.isActive)}</label><label><span>${this.esc(this.t("payplusTarget"))}</span>${this.targetComboHtml("ppms-edit-target", "editTarget", targetValue, this.t("payplusTarget"), selected.isActive)}</label></div>`;
+    }
+
+    private filterRulesHtml(mapping: EntityMapping): string {
+        const disabled = mapping.isActive || !this.profileId ? "disabled" : "";
+        const activeCount = this.filterRules.filter((rule) => rule.isActive).length;
+        const logicText = mapping.isActive ? this.t("filterLogicActive") : this.t("filterLogicInactive");
+        const stateText = mapping.isActive ? this.t("filterSyncOn") : this.t("filterSyncOff");
+        const rows = this.filterRules.length ? this.filterRules.map((rule, index) => `${index > 0 ? `<div class="ppms-filter-join">${this.esc(this.t("filterAnd"))}</div>` : ""}${this.filterRuleRowHtml(mapping, rule, index)}`).join("") : `<div class="ppms-filter-empty">${this.esc(this.t("noFilterRules"))}</div>`;
+        return `<div class="ppms-filter-rules"><div class="ppms-filter-head"><div><strong>${this.esc(this.t("filterRulesTitle"))}</strong><span>${this.esc(this.t("filterRulesHint"))}</span></div><button class="ppms-btn" id="ppms-add-filter-rule" type="button" ${disabled}>${this.esc(this.t("addFilterRule"))}</button></div><div class="ppms-filter-logic ${mapping.isActive ? "active" : "inactive"}"><b>${activeCount}</b><span>${this.esc(logicText)}</span><em>${this.esc(stateText)}</em></div><div class="ppms-filter-cards">${rows}</div></div>`;
+    }
+
+    private filterRuleRowHtml(mapping: EntityMapping, rule: FilterRule, index: number): string {
+        const disabled = mapping.isActive ? "disabled" : "";
+        const needsValue = this.filterOperatorNeedsValue(rule.operator);
+        const fieldOptions = this.sourceFields(mapping.sourceLogical).map((field) => `<option value="${this.esc(field.logical)}" ${field.logical === rule.sourceLogical ? "selected" : ""}>${this.esc(this.fieldOptionLabel(field))}</option>`).join("");
+        const operatorOptions = this.filterOperatorOptions().map((operator) => `<option value="${operator.value}" ${operator.value === rule.operator ? "selected" : ""}>${this.esc(operator.label)}</option>`).join("");
+        const valuePlaceholder = needsValue ? this.t("filterValue") : this.t("filterValueNotUsed");
+        return `<div class="ppms-filter-card ${rule.isActive ? "" : "inactive"}" data-filter-id="${this.esc(rule.id)}"><div class="ppms-filter-card-head"><b>${this.esc(`${index + 1}. ${this.t("filterRulesTitle")}`)}</b><label class="ppms-check"><input type="checkbox" class="ppms-filter-active" data-filter-id="${this.esc(rule.id)}" ${rule.isActive ? "checked" : ""} ${disabled} />${this.esc(rule.isActive ? this.t("filterEnabled") : this.t("filterInactive"))}</label></div><div class="ppms-filter-controls"><label><span>${this.esc(this.t("filterField"))}</span><select class="ppms-input ppms-filter-field" data-filter-id="${this.esc(rule.id)}" ${disabled}>${fieldOptions}</select></label><label><span>${this.esc(this.t("filterOperator"))}</span><select class="ppms-input ppms-filter-operator" data-filter-id="${this.esc(rule.id)}" ${disabled}>${operatorOptions}</select></label><label><span>${this.esc(this.t("filterValue"))}</span><input class="ppms-input ppms-filter-value" data-filter-id="${this.esc(rule.id)}" value="${this.esc(rule.compareValue)}" placeholder="${this.esc(valuePlaceholder)}" ${needsValue ? "" : "disabled"} ${disabled} /></label><button class="ppms-clear-field ppms-delete-filter" type="button" data-filter-id="${this.esc(rule.id)}" ${disabled}>${this.esc(this.t("deleteFilterRule"))}</button></div></div>`;
     }
 
     private advancedTargetsToggleHtml(): string {
@@ -1302,6 +1410,7 @@ export class MappingStudio implements ComponentFramework.StandardControl<IInputs
         this.root.querySelectorAll<HTMLButtonElement>(".ppms-source[data-mapping-id]").forEach((button) => button.addEventListener("click", () => { void this.selectMapping(button.dataset.mappingId || ""); }));
         this.bindComboInputs();
         this.byId("ppms-add-mapping")?.addEventListener("click", () => { void this.addMapping(); });
+        this.byId("ppms-add-filter-rule")?.addEventListener("click", () => { void this.addFilterRule(); });
         this.byId("ppms-auto-map")?.addEventListener("click", () => { void this.applyAutoMap(); });
         this.byId("ppms-validate")?.addEventListener("click", () => this.validateSelected());
         this.byId("ppms-register-steps")?.addEventListener("click", () => { void this.registerSelectedSteps(); });
@@ -1321,6 +1430,21 @@ export class MappingStudio implements ComponentFramework.StandardControl<IInputs
         this.root.querySelectorAll<HTMLButtonElement>(".ppms-clear-field[data-field-id]").forEach((button) => {
             button.addEventListener("click", () => { void this.clearFieldMapping(button.dataset.fieldId || ""); });
         });
+        this.root.querySelectorAll<HTMLSelectElement>(".ppms-filter-field[data-filter-id]").forEach((select) => {
+            select.addEventListener("change", () => { void this.updateFilterRule(select.dataset.filterId || "", { sourceLogical: select.value }); });
+        });
+        this.root.querySelectorAll<HTMLSelectElement>(".ppms-filter-operator[data-filter-id]").forEach((select) => {
+            select.addEventListener("change", () => { void this.updateFilterRule(select.dataset.filterId || "", { operator: Number(select.value) }); });
+        });
+        this.root.querySelectorAll<HTMLInputElement>(".ppms-filter-value[data-filter-id]").forEach((input) => {
+            input.addEventListener("change", () => { void this.updateFilterRule(input.dataset.filterId || "", { compareValue: input.value }); });
+        });
+        this.root.querySelectorAll<HTMLInputElement>(".ppms-filter-active[data-filter-id]").forEach((input) => {
+            input.addEventListener("change", () => { void this.updateFilterRule(input.dataset.filterId || "", { isActive: input.checked }); });
+        });
+        this.root.querySelectorAll<HTMLButtonElement>(".ppms-delete-filter[data-filter-id]").forEach((button) => {
+            button.addEventListener("click", () => { void this.deleteFilterRule(button.dataset.filterId || ""); });
+        });
         this.bindFieldCombos();
     }
 
@@ -1330,7 +1454,7 @@ export class MappingStudio implements ComponentFramework.StandardControl<IInputs
         this.fields = [];
         this.render();
         await this.ensureSourceFields(this.selectedMapping()?.sourceLogical || "");
-        await Promise.all([this.loadFields(), this.loadStats()]);
+        await Promise.all([this.loadFields(), this.loadFilterRules(), this.loadStats()]);
         await this.ensureTargetFieldsForSelected();
         this.render();
     }
@@ -1394,6 +1518,7 @@ export class MappingStudio implements ComponentFramework.StandardControl<IInputs
             });
             await this.loadMappings();
             await this.applyAutoMap(false);
+            await this.deleteFilterRulesForMapping(selected.id);
         });
     }
 
@@ -1413,6 +1538,68 @@ export class MappingStudio implements ComponentFramework.StandardControl<IInputs
             });
             await this.loadMappings();
         });
+    }
+
+    private async addFilterRule(): Promise<void> {
+        const selected = this.selectedMapping();
+        if (!selected || !this.profileId) return;
+        if (!this.ensureEditable(selected)) return;
+        const firstField = this.sourceFields(selected.sourceLogical)[0];
+        if (!firstField) {
+            this.toast(this.t("filterNeedsSourceField"));
+            return;
+        }
+        await this.runBusy(this.t("savingChanges"), async () => {
+            await this.context.webAPI.createRecord("alex_payplus_filterrule", {
+                alex_name: `${firstField.logical} ${this.operatorLabel(FILTER_EQUALS)}`,
+                alex_sourcefieldlogicalname: firstField.logical,
+                alex_operator: FILTER_EQUALS,
+                alex_comparevalue: null,
+                alex_isactive: false,
+                "alex_entitymappingid@odata.bind": `/alex_payplus_entitymappings(${selected.id})`
+            });
+            await this.loadFilterRules();
+        });
+        this.toast(this.t("filterRuleAdded"));
+    }
+
+    private async updateFilterRule(ruleId: string, changes: Partial<FilterRule>): Promise<void> {
+        const selected = this.selectedMapping();
+        const current = this.filterRules.find((rule) => rule.id === ruleId);
+        if (!selected || !current || !this.profileId) return;
+        if (!this.ensureEditable(selected)) return;
+        const nextSource = changes.sourceLogical ?? current.sourceLogical;
+        const nextOperator = changes.operator ?? current.operator;
+        const nextCompareValue = this.filterOperatorNeedsValue(nextOperator) ? (changes.compareValue ?? current.compareValue) : "";
+        await this.runBusy(this.t("savingChanges"), async () => {
+            await this.context.webAPI.updateRecord("alex_payplus_filterrule", ruleId, {
+                alex_name: `${nextSource} ${this.operatorLabel(nextOperator)}`,
+                alex_sourcefieldlogicalname: nextSource,
+                alex_operator: nextOperator,
+                alex_comparevalue: nextCompareValue || null,
+                alex_isactive: changes.isActive ?? current.isActive
+            });
+            await this.loadFilterRules();
+        });
+    }
+
+    private async deleteFilterRule(ruleId: string): Promise<void> {
+        const selected = this.selectedMapping();
+        if (!selected || !ruleId || !this.profileId) return;
+        if (!this.ensureEditable(selected)) return;
+        await this.runBusy(this.t("savingChanges"), async () => {
+            await this.context.webAPI.deleteRecord("alex_payplus_filterrule", ruleId);
+            await this.loadFilterRules();
+        });
+        this.toast(this.t("filterRuleDeleted"));
+    }
+
+    private async deleteFilterRulesForMapping(mappingId: string): Promise<void> {
+        const existing = [...this.filterRules];
+        for (const rule of existing) {
+            await this.context.webAPI.deleteRecord("alex_payplus_filterrule", rule.id);
+        }
+        if (mappingId === this.selectedMappingId) this.filterRules = [];
     }
 
     private async applyAutoMap(showToast = true): Promise<void> {
@@ -1752,6 +1939,26 @@ export class MappingStudio implements ComponentFramework.StandardControl<IInputs
         ];
     }
 
+    private filterOperatorOptions(): { value: number; label: string }[] {
+        return [
+            { value: FILTER_EQUALS, label: this.t("filterEquals") },
+            { value: FILTER_NOT_EQUALS, label: this.t("filterNotEquals") },
+            { value: FILTER_CONTAINS, label: this.t("filterContains") },
+            { value: FILTER_GREATER_THAN, label: this.t("filterGreaterThan") },
+            { value: FILTER_LESS_THAN, label: this.t("filterLessThan") },
+            { value: FILTER_IS_NULL, label: this.t("filterIsNull") },
+            { value: FILTER_IS_NOT_NULL, label: this.t("filterIsNotNull") }
+        ];
+    }
+
+    private operatorLabel(operator: number): string {
+        return this.filterOperatorOptions().find((option) => option.value === operator)?.label || this.t("filterEquals");
+    }
+
+    private filterOperatorNeedsValue(operator: number): boolean {
+        return operator !== FILTER_IS_NULL && operator !== FILTER_IS_NOT_NULL;
+    }
+
     private sourceTypeLabel(sourceType: number): string {
         return this.sourceTypeOptions().find((option) => option.value === sourceType)?.label || this.t("sourceTypeField");
     }
@@ -1845,6 +2052,7 @@ export class MappingStudio implements ComponentFramework.StandardControl<IInputs
         if (!this.draft) {
             this.mappings = [];
             this.fields = [];
+            this.filterRules = [];
             this.selectedMappingId = "";
             return;
         }

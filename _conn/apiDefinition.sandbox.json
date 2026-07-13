@@ -190,7 +190,7 @@
           { "name": "vat_number", "in": "query", "required": false, "type": "string", "x-ms-summary": "ח.פ / עוסק | VAT number" },
           { "name": "email", "in": "query", "required": false, "type": "string", "x-ms-summary": "דוא\"ל | Email" },
           { "name": "skip", "in": "query", "required": false, "type": "string", "x-ms-summary": "דילוג | Skip" },
-          { "name": "take", "in": "query", "required": false, "type": "string", "x-ms-summary": "כמות (מקס' 500) | Take (max 500)" }
+          { "name": "take", "in": "query", "required": true, "type": "string", "default": "100", "x-ms-summary": "כמות (מקס' 500) | Take (max 500)" }
         ],
         "responses": {
           "200": {
@@ -431,7 +431,7 @@
         "responses": {
           "200": {
             "description": "הצלחה | Success",
-            "schema": { "$ref": "#/definitions/ApiResult" }
+            "schema": { "$ref": "#/definitions/ViewProductsResponse" }
           }
         }
       }
@@ -772,10 +772,10 @@
         "x-ms-visibility": "important",
         "produces": [ "application/json" ],
         "parameters": [
-          { "name": "language_code", "in": "query", "required": false, "type": "string", "x-ms-summary": "שפת תגובה | Language code", "description": "שפת התגובה המועדפת, למשל he\n\nPreferred response language, e.g. he" }
+          { "name": "language_code", "in": "query", "required": false, "type": "string", "default": "he", "enum": [ "he", "en" ], "x-ms-summary": "שפת תגובה | Language code", "x-ms-enum-values": [ { "value": "he", "displayName": "עברית | Hebrew" }, { "value": "en", "displayName": "אנגלית | English" } ], "description": "שפת התגובה המועדפת\n\nPreferred response language" }
         ],
         "responses": {
-          "200": { "description": "הצלחה | Success", "schema": { "$ref": "#/definitions/DocumentResult" } }
+          "200": { "description": "הצלחה | Success", "schema": { "type": "array", "items": { "type": "object" } } }
         }
       }
     },
@@ -1048,7 +1048,7 @@
         "business_city": { "type": "string", "x-ms-summary": "עיר | City" },
         "business_postal_code": { "type": "string", "x-ms-summary": "מיקוד | Postal code" },
         "business_country_iso": { "type": "string", "default": "IL", "x-ms-summary": "מדינה (ISO) | Country ISO" },
-        "subject_code": { "type": "string", "x-ms-summary": "קוד נושא מספרי קצר | Short numeric subject code" },
+        "subject_code": { "type": "string", "x-ms-summary": "מזהה חיצוני (חשבון D365) | External id (D365 account)" },
         "communication_email": { "type": "string", "x-ms-summary": "דוא\"ל לתקשורת | Communication email" }
       }
     },
@@ -1071,7 +1071,7 @@
         "business_city": { "type": "string", "x-ms-summary": "עיר | City" },
         "business_postal_code": { "type": "string", "x-ms-summary": "מיקוד | Postal code" },
         "business_country_iso": { "type": "string", "default": "IL", "x-ms-summary": "מדינה (ISO) | Country ISO" },
-        "subject_code": { "type": "string", "x-ms-summary": "קוד נושא מספרי קצר | Short numeric subject code" },
+        "subject_code": { "type": "string", "x-ms-summary": "מזהה חיצוני (חשבון D365) | External id (D365 account)" },
         "communication_email": { "type": "string", "x-ms-summary": "דוא\"ל לתקשורת | Communication email" }
       }
     },
@@ -1479,7 +1479,7 @@
         "conversion_rate": { "type": "number", "x-ms-visibility": "advanced", "x-ms-summary": "שער המרה | Conversion rate" },
         "autocalculate_rate": { "type": "boolean", "x-ms-visibility": "advanced", "x-ms-summary": "חישוב שער אוטומטי | Auto-calculate rate" },
         "prevent_email": { "type": "boolean", "x-ms-visibility": "advanced", "x-ms-summary": "מניעת שליחת דוא\"ל | Prevent email" },
-        "totalAmount": { "type": "integer", "x-ms-summary": "סכום כולל | Total amount" },
+        "totalAmount": { "type": "number", "x-ms-summary": "סכום כולל | Total amount" },
         "customer": { "$ref": "#/definitions/DocumentCustomer" },
         "items": { "type": "array", "x-ms-summary": "שורות מסמך | Items", "items": { "$ref": "#/definitions/DocumentItem" } },
         "payments": { "type": "array", "x-ms-summary": "תשלומים | Payments", "items": { "$ref": "#/definitions/DocumentPayment" } },
@@ -1489,7 +1489,7 @@
     "DocumentCustomer": {
       "type": "object",
       "properties": {
-        "customer_name": { "type": "string", "x-ms-summary": "שם לקוח | Customer name" },
+        "name": { "type": "string", "x-ms-summary": "שם לקוח | Customer name" },
         "customer_uid": { "type": "string", "x-ms-summary": "מזהה לקוח קיים | Existing customer UID" },
         "email": { "type": "string", "x-ms-summary": "דוא\"ל | Email" },
         "phone": { "type": "string", "x-ms-summary": "טלפון | Phone" },
@@ -1601,6 +1601,17 @@
         },
         "count": { "type": "integer", "x-ms-summary": "מספר דפים | Count" },
         "pages": { "type": "integer", "x-ms-summary": "מספר עמודים | Pages" }
+      }
+    },
+    "ViewProductsResponse": {
+      "type": "array",
+      "x-ms-summary": "מוצרים | Products",
+      "items": {
+        "type": "object",
+        "properties": {
+          "uid": { "type": "string", "x-ms-summary": "מזהה מוצר | Product UID" },
+          "name": { "type": "string", "x-ms-summary": "שם מוצר | Product name" }
+        }
       }
     },
     "MyTerminalsResponse": {

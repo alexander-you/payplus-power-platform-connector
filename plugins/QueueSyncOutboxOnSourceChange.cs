@@ -28,6 +28,13 @@ namespace PayPlus.Plugins
         private const int DataTypeDateTime = 100000005;
         private const int DataTypeChoice = 100000007;
         private const int DataTypeArray = 100000009;
+        private const int FilterEquals = 100000000;
+        private const int FilterNotEquals = 100000001;
+        private const int FilterContains = 100000002;
+        private const int FilterGreaterThan = 100000003;
+        private const int FilterLessThan = 100000004;
+        private const int FilterIsNull = 100000005;
+        private const int FilterIsNotNull = 100000006;
 
         public void Execute(IServiceProvider serviceProvider)
         {
@@ -91,6 +98,12 @@ namespace PayPlus.Plugins
             if (profileRef == null || targetObject == null)
             {
                 tracer.Trace("QueueSyncOutboxOnSourceChange: mapping {0} missing profile or target.", mappingId);
+                return;
+            }
+
+            if (!PassesFilterRules(service, mappingId, sourceTable, sourceId, tracer))
+            {
+                tracer.Trace("QueueSyncOutboxOnSourceChange: source row {0}/{1} skipped by filter rules for mapping {2}.", sourceTable, sourceId, mappingId);
                 return;
             }
 
@@ -187,6 +200,82 @@ namespace PayPlus.Plugins
             {
                 tracer.Trace("QueueSyncOutboxOnSourceChange: payload build failed. {0}", ex);
                 return new PayloadBuildResult("{}", ex.Message);
+            }
+        }
+
+        private static bool PassesFilterRules(IOrganizationService service, Guid mappingId, string sourceTable, Guid sourceId, ITracingService tracer)
+        {
+            try
+            {
+                var rules = RetrieveFilterRules(service, mappingId);
+                if (rules.Entities.Count == 0) return true;
+
+                var source = service.Retrieve(sourceTable, sourceId, FilterColumns(rules));
+                foreach (var rule in rules.Entities)
+                {
+                    if (!EvaluateFilterRule(service, source, rule)) return false;
+                }
+                return true;
+            }
+            catch (Exception ex)
+            {
+                tracer.Trace("QueueSyncOutboxOnSourceChange: filter evaluation failed for mapping {0}. {1}", mappingId, ex);
+                return false;
+            }
+        }
+
+        private static EntityCollection RetrieveFilterRules(IOrganizationService service, Guid mappingId)
+        {
+            var query = new QueryExpression("alex_payplus_filterrule")
+            {
+                ColumnSet = new ColumnSet("alex_sourcefieldlogicalname", "alex_operator", "alex_comparevalue", "alex_isactive"),
+                Criteria = new FilterExpression(LogicalOperator.And)
+            };
+            query.Criteria.AddCondition("statecode", ConditionOperator.Equal, 0);
+            query.Criteria.AddCondition("alex_isactive", ConditionOperator.Equal, true);
+            query.Criteria.AddCondition("alex_entitymappingid", ConditionOperator.Equal, mappingId);
+            query.AddOrder("createdon", OrderType.Ascending);
+            return service.RetrieveMultiple(query);
+        }
+
+        private static ColumnSet FilterColumns(EntityCollection rules)
+        {
+            var names = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            foreach (var rule in rules.Entities)
+            {
+                var source = rule.GetAttributeValue<string>("alex_sourcefieldlogicalname");
+                if (String.IsNullOrWhiteSpace(source)) continue;
+                names.Add(source.Contains(".") ? RelatedLookupColumnName(source) : source);
+            }
+            var columns = new ColumnSet(false);
+            foreach (var name in names) columns.AddColumn(name);
+            return columns;
+        }
+
+        private static bool EvaluateFilterRule(IOrganizationService service, Entity source, Entity rule)
+        {
+            var sourceField = rule.GetAttributeValue<string>("alex_sourcefieldlogicalname");
+            if (String.IsNullOrWhiteSpace(sourceField)) return true;
+
+            var operation = OptionValue(rule, "alex_operator", FilterEquals);
+            var compareValue = rule.GetAttributeValue<string>("alex_comparevalue") ?? String.Empty;
+            var value = sourceField.Contains(".")
+                ? ResolveRelatedFieldValue(service, source, sourceField)
+                : source.Contains(sourceField) ? NormalizeAttributeValue(source[sourceField]) : null;
+
+            var isNull = value == null || (value is string text && String.IsNullOrWhiteSpace(text));
+            if (operation == FilterIsNull) return isNull;
+            if (operation == FilterIsNotNull) return !isNull;
+
+            var valueText = value == null ? String.Empty : Convert.ToString(value, CultureInfo.InvariantCulture) ?? String.Empty;
+            switch (operation)
+            {
+                case FilterNotEquals: return !String.Equals(valueText, compareValue, StringComparison.OrdinalIgnoreCase);
+                case FilterContains: return valueText.IndexOf(compareValue, StringComparison.OrdinalIgnoreCase) >= 0;
+                case FilterGreaterThan: return TryCompare(value, compareValue, out var greater) && greater > 0;
+                case FilterLessThan: return TryCompare(value, compareValue, out var less) && less < 0;
+                case FilterEquals:
+                default: return String.Equals(valueText, compareValue, StringComparison.OrdinalIgnoreCase);
             }
         }
 
@@ -380,6 +469,31 @@ namespace PayPlus.Plugins
             if (number == 0) return false;
             if (number == 1) return true;
             return value;
+        }
+
+        private static bool TryCompare(object value, string compareValue, out int result)
+        {
+            result = 0;
+            if (value == null) return false;
+
+            if (Decimal.TryParse(Convert.ToString(value, CultureInfo.InvariantCulture), NumberStyles.Any, CultureInfo.InvariantCulture, out var leftDecimal)
+                && Decimal.TryParse(compareValue, NumberStyles.Any, CultureInfo.InvariantCulture, out var rightDecimal))
+            {
+                result = leftDecimal.CompareTo(rightDecimal);
+                return true;
+            }
+
+            if (DateTime.TryParse(Convert.ToString(value, CultureInfo.InvariantCulture), CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal, out var leftDate)
+                && DateTime.TryParse(compareValue, CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal, out var rightDate))
+            {
+                result = leftDate.CompareTo(rightDate);
+                return true;
+            }
+
+            var valueText = Convert.ToString(value, CultureInfo.InvariantCulture);
+            if (String.IsNullOrEmpty(valueText) || String.IsNullOrEmpty(compareValue)) return false;
+            result = String.Compare(valueText, compareValue, StringComparison.OrdinalIgnoreCase);
+            return true;
         }
 
         private static int? ToInt(object value)

@@ -58,22 +58,37 @@
     .stp.done .lbl{color:var(--ok)}
     .stp-line{height:2px;background:var(--line);flex:1;margin:0 -8px;position:relative;top:-11px;min-width:20px}
     .stp-line.filled{background:var(--ok)}
-    /* collapsible done section */
-    .acc{border:1px solid var(--ok-border);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);background:var(--card)}
-    .acc-head{display:flex;align-items:center;gap:12px;padding:16px 18px;cursor:pointer;background:var(--ok-soft);user-select:none}
-    .acc-head .accok{width:26px;height:26px;border-radius:50%;background:var(--ok);color:#fff;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;flex:none}
-    .acc-head .acctxt{display:flex;flex-direction:column;gap:1px;min-width:0}
-    .acc-head .acctitle{font-weight:700;color:var(--ok);font-size:15px}
-    .acc-head .accsub{color:var(--muted);font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-    .acc-head .accchev{margin-inline-start:auto;transition:transform .2s ease;color:var(--ok);flex:none;font-size:13px}
-    .acc.open .acc-head .accchev{transform:rotate(180deg)}
-    .acc-body{padding:18px}
-    /* self-service toggles */
-    .ss-group{margin-top:14px}
-    .ss-group h4{margin:0 0 4px;font-size:13.5px;color:var(--brand-dark);font-weight:700}
-    .switchrow{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:11px 2px;border-bottom:1px solid var(--line)}
-    .switchrow:last-child{border-bottom:none}
-    .switchrow .ss-lbl{font-size:14px}
+    /* ===== Management Center ===== */
+    .mc{max-width:760px;margin:0 auto}
+    .mc-title{font-size:26px;font-weight:800;margin:0 0 4px}
+    .mc-sub{color:var(--muted);font-size:14px;margin:0 0 18px;line-height:1.55}
+    /* compact install status line */
+    .mc-status{display:flex;align-items:center;gap:9px;background:var(--ok-soft);border:1px solid var(--ok-border);border-radius:12px;padding:11px 15px;margin-bottom:16px;font-size:13.5px;flex-wrap:wrap}
+    .mc-status .ic{width:21px;height:21px;border-radius:50%;background:var(--ok);color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;flex:none}
+    .mc-status .st-txt{font-weight:600;color:var(--ok)}
+    .mc-status .st-when{color:var(--muted)}
+    .mc-status .st-link{margin-inline-start:auto;font-weight:600}
+    /* full-width section accordion */
+    .sec{background:var(--card);border:1px solid var(--line);border-radius:14px;margin-bottom:12px;overflow:hidden}
+    .sec-head{display:flex;align-items:center;gap:13px;padding:15px 18px;cursor:pointer;user-select:none}
+    .sec-head:hover{background:#fafbfe}
+    .sec-ic{width:36px;height:36px;border-radius:10px;background:var(--brand-soft);color:var(--brand);display:flex;align-items:center;justify-content:center;font-size:18px;flex:none}
+    .sec-tx{display:flex;flex-direction:column;gap:2px;min-width:0;flex:1}
+    .sec-title{font-weight:700;font-size:15.5px;color:var(--ink)}
+    .sec-desc{color:var(--muted);font-size:12.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .sec-chev{color:var(--muted);transition:transform .2s ease;font-size:12px;flex:none}
+    .sec.open .sec-chev{transform:rotate(180deg)}
+    .sec-body{border-top:1px solid var(--line);padding:2px 18px 12px}
+    .sec-intro{font-size:12.5px;color:var(--muted);line-height:1.55;margin:12px 0 2px}
+    /* setting rows — name+desc on start side, control on end side */
+    .set-grouptitle{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin:16px 0 2px}
+    .set-row{display:flex;align-items:center;gap:16px;padding:13px 0;border-bottom:1px solid var(--line)}
+    .set-row:last-child{border-bottom:none}
+    .set-info{flex:1;min-width:0}
+    .set-name{font-weight:600;font-size:14px;color:var(--ink)}
+    .set-desc{font-size:12.5px;color:var(--muted);margin-top:3px;line-height:1.45}
+    .set-ctrl{flex:none;display:flex;align-items:center;gap:12px}
+    /* toggle switch */
     .switch{position:relative;display:inline-block;width:44px;height:24px;flex:none}
     .switch input{opacity:0;width:0;height:0}
     .switch .track{position:absolute;inset:0;background:var(--line);border-radius:999px;transition:.2s}
@@ -81,20 +96,22 @@
     .switch input:checked ~ .track{background:var(--ok)}
     .switch input:checked ~ .knob{transform:translateX(20px)}
     html[dir="rtl"] .switch input:checked ~ .knob{transform:translateX(-20px)}
-    .ss-right{display:flex;align-items:center;gap:12px}
+    /* expiry input (self-service) */
     .ss-exp{display:flex;align-items:center;gap:6px;color:var(--muted);font-size:12.5px;transition:opacity .15s}
     .ss-exp.off{opacity:.4}
-    .ss-exp input{width:60px;padding:6px 8px;border:1px solid var(--line);border-radius:8px;font-size:13px;font-family:var(--font);text-align:center;color:var(--ink);background:#fff}
+    .ss-exp input{width:58px;padding:6px 8px;border:1px solid var(--line);border-radius:8px;font-size:13px;font-family:var(--font);text-align:center;color:var(--ink);background:#fff}
     .ss-exp input:focus{outline:none;border-color:var(--brand);box-shadow:0 0 0 3px var(--brand-soft)}
     .ss-exp input:disabled{background:#f4f5f8;color:var(--muted)}
-    .ss-card{margin-top:18px}
-    .ss-head{display:flex;align-items:flex-start;gap:12px;margin-bottom:14px}
-    .ss-head .ss-ico{width:40px;height:40px;border-radius:11px;background:var(--brand-soft);color:var(--brand);display:flex;align-items:center;justify-content:center;font-size:21px;flex:none}
-    .ss-head .ss-title{font-weight:800;font-size:16px;color:var(--ink)}
-    .ss-head .ss-sub{color:var(--muted);font-size:13px;line-height:1.5;margin-top:2px}
-    .mgmt-head{text-align:center;margin-bottom:18px}
-    .mgmt-title{font-size:24px;font-weight:800;margin:0 0 4px}
-    .mgmt-sub{color:var(--muted);font-size:13.5px;margin:0}
+    /* distribution-method sub-block (under a channel row) */
+    .dist-sub{padding:0 0 6px;display:flex;flex-direction:column;gap:9px}
+    .dist-methodrow{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+    .dist-lbl{font-size:12px;font-weight:600;color:var(--muted)}
+    .seg{display:inline-flex;border:1px solid var(--line);border-radius:9px;overflow:hidden;background:#fff}
+    .seg button{border:none;background:none;padding:6px 15px;font-size:12.5px;font-family:var(--font);color:var(--muted);cursor:pointer;transition:background .15s}
+    .seg button+button{border-inline-start:1px solid var(--line)}
+    .seg button:hover{background:#fafbfe}
+    .seg button.on{background:var(--brand);color:#fff;font-weight:600}
+    .seg button.on:hover{background:var(--brand)}
     .field{margin-bottom:16px}
     .field label{display:block;font-size:13px;font-weight:600;margin-bottom:7px}
     .field .hint{font-size:12px;color:var(--muted);margin-top:6px;line-height:1.5}
@@ -166,7 +183,12 @@ var App = (function(){
     fetchApi:"alex_FetchPayPlusOptions",
     connRef:{ prod:"alex_payplusprod", sandbox:"alex_payplussandbox" },
     // Sync profile table — NOTE its environment picklist is REVERSED vs the config table (Sandbox=100000000, Production=100000001).
-    syncprofile:{ table:"alex_payplus_syncprofile", nameCol:"alex_name", env:{ prod:100000001, sandbox:100000000 } }
+    syncprofile:{ table:"alex_payplus_syncprofile", nameCol:"alex_name", env:{ prod:100000001, sandbox:100000000 } },
+    docImport:{ notstarted:100000000, pending:100000001, success:100000002, failed:100000003 },
+    terminalsImport:{ notstarted:100000000, pending:100000001, success:100000002, failed:100000003 },
+    // Imported terminal/page tables (used to mark the chosen default via alex_isdefault).
+    defaults:{ terminalTable:"alex_payplus_terminal", terminalUidCol:"alex_terminaluid", terminalIdCol:"alex_payplus_terminalid",
+               pageTable:"alex_payplus_paymentpage", pageUidCol:"alex_paymentpageuid", pageIdCol:"alex_payplus_paymentpageid" }
   };
 
   /* ------------------------------------------------------------------ i18n (single language, auto-selected) */
@@ -196,9 +218,17 @@ var App = (function(){
       active:"פעיל", missing:"חסר",
       next:"המשך", back:"חזרה",
       /* stage 2 */
-      s2Caption:"שלב 2 · עמודי תשלום",
-      s2Title:"בחירת מסוף ועמוד תשלום",
-      s2Sub:"נשלוף מ-PayPlus את המסופים ואת עמודי התשלום שלכם דרך החיבור, כדי לבחור עמוד לאימות.",
+      s2Caption:"שלב 2 · מסופים ועמודי תשלום",
+      s2Title:"מסופים ועמודי תשלום",
+      s2Sub:"נשלוף מ-PayPlus את כל המסופים ואת עמודי התשלום שלהם. אשרו כדי לייבא את כולם ל-Dynamics.",
+      previewLoad:"טעינת מסופים ועמודים",
+      previewLoading:"שולף מסופים ועמודי תשלום…",
+      previewCount:"נמצאו {t} מסופים · {p} עמודי תשלום",
+      previewNoPages:"אין עמודי תשלום",
+      previewReload:"רענון הרשימה",
+      previewEmpty:"לא הוחזרו מסופים. ודאו שהמפתחות בחיבור נכונים ושה-flow ‘PayPlus - Fetch Options’ מופעל.",
+      confirmImport:"אשר וייבא",
+      importingLbl:"מייבא…",
       termTitle:"מסוף (Terminal)",
       fetchTerminals:"שליפת מסופים", fetching:"שולף…", refetch:"שליפה מחדש",
       pickTerminal:"— בחרו מסוף —",
@@ -214,7 +244,9 @@ var App = (function(){
       /* stage 3 */
       s3Caption:"שלב 3 · אימות",
       s3Title:"אימות החיבור",
-      s3Sub:"נריץ אימות מקצה לקצה: הפקת קישור תשלום לבדיקה מול העמוד שנבחר. התוצאה תתועד ברשומה.",
+      s3Sub:"בדיקת חיבור מהירה: נפיק קישור תשלום לדוגמה מול עמוד אחד כדי לוודא שהצינור עובד מקצה לקצה. כל המסופים ועמודי התשלום כבר יובאו בשלב הקודם.",
+      s3PageNote:"העמוד הזה משמש כדגימה לבדיקת החיבור בלבד — כל העמודים כבר יובאו. ניתן לבדוק כל עמוד בנפרד ממרכז הניהול, לאחר סיום ההתקנה.",
+      defaultNote:"המסוף והעמוד שתבחרו כאן יוגדרו כברירת המחדל של החשבון (fallback לכל התהליכים). האימות ירוץ מולם.",
       lblEnv:"סביבה", lblTerminal:"מסוף", lblPage:"עמוד תשלום",
       validateBtn:"הפעלת אימות", validatingLbl:"מאמת…",
       valFailed:"האימות נכשל (קוד {n}). בדקו שהמפתחות בחיבור נכונים ושעמוד התשלום שייך לאותה סביבה, ונסו שוב.",
@@ -225,7 +257,8 @@ var App = (function(){
       statusValidated:"מאומת", statusNotValidated:"לא מאומת",
       lblStatus:"סטטוס אימות", lblLastValidated:"אומת לאחרונה",
       reValidate:"אימות מחדש", restart:"התחלה מחדש",
-      doneSectionTitle:"התקנה — הושלמה בהצלחה", doneSectionSub:"אומת {when} · לחצו לפרטים",
+      doneSectionTitle:"ההתקנה הושלמה", doneSectionSub:"אומת {when} · לחצו לפרטים",
+      showDetails:"פרטים", hideDetails:"הסתר פרטים",
       doneLocked:"ההתקנה הושלמה. ניתן לאמת מחדש או להתחיל מחדש בכל עת.",
       mgmtBrand:"PayPlus · מרכז ניהול",
       mgmtTitle:"מרכז ניהול PayPlus",
@@ -234,8 +267,58 @@ var App = (function(){
       ssIntro:"בחרו באילו ערוצים הלקוח יוכל לקבל קישור לעדכון אמצעי התשלום, וקבעו לכמה ימים הקישור תקף לפני שהוא פג.",
       ssWarn:"הפעלת מתג כאן מגדירה הרשאה בלבד — היא אינה שולחת דבר. באחריותכם להקים את זרימות העבודה (Flows) ששולחות בפועל את הקישור בכל ערוץ.",
       ssGroupContact:"איש קשר", ssGroupAccount:"תיק לקוח",
-      ssSms:"SMS", ssEmail:"Email", ssWhatsapp:"WhatsApp", ssDays:"ימים",
+      ssSms:"SMS", ssEmail:"דוא\"ל", ssWhatsapp:"WhatsApp", ssDays:"ימי תוקף",
+      ssAccSub:"{n} ערוצים פעילים",
+      /* documents management */
+      docTitle:"ניהול מסמכים",
+      docAccSub:"הפקה, טיוטה, הפצה ושליחה אוטומטית",
+      docIntro:"הגדירו לכל סוג מסמך מה מותר: הפקה, צפייה בטיוטה, ערוצי הפצה ושליחה אוטומטית. כרגע נתמך סוג המסמך ‘הצעת מחיר’; סוגים נוספים יתווספו בהמשך.",
+      docQuote:"הצעת מחיר",
+      docEnable:"אפשר הפקת מסמך",
+      docEnableSub:"מאפשר להפיק את המסמך ב-PayPlus מתוך Dynamics.",
+      docDraft:"אפשר צפייה בטיוטה",
+      docDraftSub:"מאפשר להציג תצוגה מקדימה של המסמך לפני הפקה סופית.",
+      docDist:"אפשרויות הפצה",
+      docDistEmail:"דוא\"ל", docDistSms:"SMS", docDistWhatsapp:"WhatsApp",
+      docDistMethod:"שיטת הפצה:", docMethodPayPlus:"PayPlus", docMethodOther:"אחר",
+      docMethodOtherWarn:"בבחירת ‘אחר’ יש להקים זרימת עבודה מודרנית (Flow) או פלאגין על יישות מסמך PayPlus שיבצע את ההפצה בפועל.",
+      docAutoGroup:"אוטומציה",
+      docAutoSend:"שליחה אוטומטית במצב הפעלה",
+      docAutoHint:"כאשר הצעת מחיר עוברת למצב ‘מתבצע — פעיל’, ההצעה תישלח אוטומטית דרך PayPlus. ניתן לעדכן אחרת ב-Flow.",
       spCreated:"רשומת פרופיל {n} נוצרה בהצלחה — ניתן להגדיר סנכרון.",
+      /* document types import (last install step) */
+      docImportOk:"סוגי המסמכים יובאו בהצלחה מ-PayPlus.",
+      docImportPending:"ייבוא סוגי המסמכים ימשיך ברקע — ודאו שה-Flow ‘PayPlus - Import Document Types’ מופעל.",
+      docImportFail:"ייבוא סוגי המסמכים נכשל — בדקו את היסטוריית ה-Flow.",
+      docImportRowOk:"ייבוא סוגי מסמכים הושלם",
+      docImportRowFail:"ייבוא סוגי מסמכים נכשל",
+      docImportRowPending:"ייבוא סוגי מסמכים בתהליך…",
+      docImportRowNone:"ייבוא סוגי מסמכים טרם בוצע",
+      docImportReimport:"ייבוא מחדש",
+      docImportBlocking:"האימות הצליח — מייבא סוגי מסמכים מ-PayPlus… אנא המתינו.",
+      docImportBlockFail:"האימות הצליח, אך ייבוא סוגי המסמכים נכשל. ההתקנה תושלם רק לאחר ייבוא מוצלח — ודאו שה-Flow ‘PayPlus - Import Document Types’ מופעל ולחצו שוב על ‘הפעלת אימות’.",
+      docImportBlockPending:"האימות הצליח, אך ייבוא סוגי המסמכים טרם הסתיים. ההתקנה תושלם רק לאחר ייבוא מוצלח — ודאו שה-Flow ‘PayPlus - Import Document Types’ מופעל ולחצו שוב על ‘הפעלת אימות’.",
+      /* terminals & pages import */
+      terminalsImportOk:"המסופים ועמודי התשלום יובאו בהצלחה מ-PayPlus.",
+      terminalsImportPending:"ייבוא המסופים ימשיך ברקע — ודאו שה-Flow ‘PayPlus - Import Terminals & Pages’ מופעל.",
+      terminalsImportFail:"ייבוא המסופים נכשל — בדקו את היסטוריית ה-Flow.",
+      terminalsImportRowOk:"ייבוא מסופים ועמודי תשלום הושלם",
+      terminalsImportRowFail:"ייבוא מסופים נכשל",
+      terminalsImportRowPending:"ייבוא מסופים ועמודי תשלום בתהליך…",
+      terminalsImportRowNone:"ייבוא מסופים טרם בוצע",
+      terminalsImportReimport:"ייבוא מחדש",
+      /* per-page connection test (management center) */
+      pagesTitle:"בדיקת עמודי תשלום",
+      pagesAccSub:"בדיקת חיבור לכל עמוד תשלום בנפרד",
+      pagesIntro:"בדקו את החיבור לכל עמוד תשלום בנפרד (הפקת קישור לדוגמה). הבדיקה אינה משנה את סטטוס ההתקנה ואינה שולחת דבר ללקוח.",
+      pagesLoad:"טעינת מסופים ועמודים",
+      pagesLoading:"טוען מסופים ועמודי תשלום…",
+      pagesReload:"רענון הרשימה",
+      testPageBtn:"בדוק",
+      testAllBtn:"בדוק את כל העמודים",
+      testingLbl:"בודק…",
+      testOk:"תקין",
+      testFail:"נכשל",
       /* generic */
       errNoXrm:"לא ניתן להתחבר ל-Dynamics (Xrm). יש לפתוח את המשאב בתוך אפליקציית מודל.",
       errGeneric:"אירעה שגיאה", retry:"נסו שוב"
@@ -263,9 +346,17 @@ var App = (function(){
       connTestTimeout:"Connection test didn't finish in time. Make sure the ‘PayPlus - Fetch Options’ flow is turned on (make.powerautomate.com).",
       active:"Active", missing:"Missing",
       next:"Next", back:"Back",
-      s2Caption:"Step 2 · Payment pages",
-      s2Title:"Pick terminal & payment page",
-      s2Sub:"We'll fetch your terminals and payment pages from PayPlus through the connection, so you can choose a page to validate.",
+      s2Caption:"Step 2 · Terminals & pages",
+      s2Title:"Terminals & payment pages",
+      s2Sub:"We'll fetch all your terminals and their payment pages from PayPlus. Confirm to import them all into Dynamics.",
+      previewLoad:"Load terminals & pages",
+      previewLoading:"Fetching terminals & payment pages…",
+      previewCount:"Found {t} terminals · {p} payment pages",
+      previewNoPages:"No payment pages",
+      previewReload:"Reload list",
+      previewEmpty:"No terminals returned. Check the connection keys and that the ‘PayPlus - Fetch Options’ flow is on.",
+      confirmImport:"Confirm & import",
+      importingLbl:"Importing…",
       termTitle:"Terminal",
       fetchTerminals:"Fetch terminals", fetching:"Fetching…", refetch:"Re-fetch",
       pickTerminal:"— Select a terminal —",
@@ -280,7 +371,9 @@ var App = (function(){
       fetchErr:"The fetch failed. Check the connection and flow, then try again.",
       s3Caption:"Step 3 · Validate",
       s3Title:"Validate the connection",
-      s3Sub:"We'll run an end-to-end validation: generate a test payment link against the selected page. The result is recorded.",
+      s3Sub:"A quick connection check: we generate a sample payment link against one page to confirm the pipeline works end-to-end. All terminals & payment pages were already imported in the previous step.",
+      s3PageNote:"This page is only a sample for the connection test — all pages were already imported. You can test each page individually from the management center after setup completes.",
+      defaultNote:"The terminal and page you pick here become the account's default (fallback for all processes). Validation runs against them.",
       lblEnv:"Environment", lblTerminal:"Terminal", lblPage:"Payment page",
       validateBtn:"Run validation", validatingLbl:"Validating…",
       valFailed:"Validation failed (code {n}). Check that the connection keys are correct and the payment page belongs to the same environment, then try again.",
@@ -290,7 +383,8 @@ var App = (function(){
       statusValidated:"Validated", statusNotValidated:"Not validated",
       lblStatus:"Validation status", lblLastValidated:"Last validated",
       reValidate:"Re-validate", restart:"Start over",
-      doneSectionTitle:"Installation — completed", doneSectionSub:"Validated {when} · click for details",
+      doneSectionTitle:"Installation completed", doneSectionSub:"Validated {when} · click for details",
+      showDetails:"Details", hideDetails:"Hide details",
       doneLocked:"Setup is complete. You can re-validate or start over any time.",
       mgmtBrand:"PayPlus · Management Center",
       mgmtTitle:"PayPlus Management Center",
@@ -299,8 +393,58 @@ var App = (function(){
       ssIntro:"Choose which channels the customer can receive a card-update link on, and set how many days the link stays valid before it expires.",
       ssWarn:"Turning a switch on here grants permission only — it does not send anything. You are responsible for building the Flows that actually send the link on each channel.",
       ssGroupContact:"Contact", ssGroupAccount:"Customer file",
-      ssSms:"SMS", ssEmail:"Email", ssWhatsapp:"WhatsApp", ssDays:"days",
+      ssSms:"SMS", ssEmail:"Email", ssWhatsapp:"WhatsApp", ssDays:"valid days",
+      ssAccSub:"{n} channels enabled",
+      /* documents management */
+      docTitle:"Document management",
+      docAccSub:"Issuing, draft, distribution & auto-send",
+      docIntro:"For each document type, define what is allowed: issuing, draft preview, distribution channels and auto-send. The ‘Quote’ document type is supported now; more types will be added later.",
+      docQuote:"Quote",
+      docEnable:"Allow document issuing",
+      docEnableSub:"Enables issuing the document in PayPlus from Dynamics.",
+      docDraft:"Allow draft preview",
+      docDraftSub:"Lets you preview the document before it is finally issued.",
+      docDist:"Distribution options",
+      docDistEmail:"Email", docDistSms:"SMS", docDistWhatsapp:"WhatsApp",
+      docDistMethod:"Distribution method:", docMethodPayPlus:"PayPlus", docMethodOther:"Other",
+      docMethodOtherWarn:"When ‘Other’ is selected, set up a modern workflow (Flow) or a plugin on the PayPlus document entity to perform the actual distribution.",
+      docAutoGroup:"Automation",
+      docAutoSend:"Auto-send when active",
+      docAutoHint:"When a quote moves to the ‘In progress — active’ state, the quote is sent automatically through PayPlus. You can change this in the Flow.",
       spCreated:"Sync profile {n} created successfully — you can now configure sync.",
+      /* document types import (last install step) */
+      docImportOk:"Document types were imported from PayPlus.",
+      docImportPending:"Document import will continue in the background — make sure the ‘PayPlus - Import Document Types’ flow is on.",
+      docImportFail:"Document import failed — check the flow run history.",
+      docImportRowOk:"Document types imported",
+      docImportRowFail:"Document import failed",
+      docImportRowPending:"Importing document types…",
+      docImportRowNone:"Document types not imported yet",
+      docImportReimport:"Re-import",
+      docImportBlocking:"Validation succeeded — importing document types from PayPlus… please wait.",
+      docImportBlockFail:"Validation succeeded, but importing document types failed. Setup completes only after a successful import — make sure the ‘PayPlus - Import Document Types’ flow is on, then click ‘Run validation’ again.",
+      docImportBlockPending:"Validation succeeded, but the document-types import hasn't finished yet. Setup completes only after a successful import — make sure the ‘PayPlus - Import Document Types’ flow is on, then click ‘Run validation’ again.",
+      /* terminals & pages import */
+      terminalsImportOk:"Terminals & payment pages were imported from PayPlus.",
+      terminalsImportPending:"Terminals import will continue in the background — make sure the ‘PayPlus - Import Terminals & Pages’ flow is on.",
+      terminalsImportFail:"Terminals import failed — check the flow run history.",
+      terminalsImportRowOk:"Terminals & pages imported",
+      terminalsImportRowFail:"Terminals import failed",
+      terminalsImportRowPending:"Importing terminals & pages…",
+      terminalsImportRowNone:"Terminals not imported yet",
+      terminalsImportReimport:"Re-import",
+      /* per-page connection test (management center) */
+      pagesTitle:"Payment page tests",
+      pagesAccSub:"Test the connection for each payment page",
+      pagesIntro:"Test the connection for each payment page individually (generates a sample link). This does not change the install status and does not send anything to the customer.",
+      pagesLoad:"Load terminals & pages",
+      pagesLoading:"Loading terminals & payment pages…",
+      pagesReload:"Reload list",
+      testPageBtn:"Test",
+      testAllBtn:"Test all pages",
+      testingLbl:"Testing…",
+      testOk:"OK",
+      testFail:"Failed",
       errNoXrm:"Cannot reach Dynamics (Xrm). Open this resource inside a model-driven app.",
       errGeneric:"An error occurred", retry:"Retry"
     }
@@ -312,10 +456,15 @@ var App = (function(){
     sel:{ env:"prod", terminalUid:"", terminalLabel:"", pageUid:"", pageLabel:"" },
     conn:{ checked:false, configured:false, verified:false, tested:false, testing:false },
     stage:C.stage.connect,
-    terminals:[], pages:[],
-    busy:{ terminals:false, pages:false, validating:false },
+    terminals:[], pages:[], preview:[],
+    busy:{ terminals:false, pages:false, preview:false, validating:false, importing:false, importingTerminals:false, testingAll:false },
     msg:null,
     doneOpen:false,
+    ssOpen:false,
+    docOpen:false,
+    pagesOpen:false,
+    pageTests:{},
+    testingPageUid:"",
     view:"loading"
   };
 
@@ -337,7 +486,11 @@ var App = (function(){
       "?$select="+C.idcol+",alex_name,alex_setupcompleted,alex_configvalidated,alex_environment,alex_setupstage,"+
       "alex_paymentpageuidref,alex_terminaluidref,alex_paymentpages,alex_validationrequestid,alex_lastvalidatedon,alex_lastvalidationstatus,alex_lastvalidationcode,alex_lastvalidationmessage,"+
       "alex_selfservice_sms_contact,alex_selfservice_email_contact,alex_selfservice_whatsapp_contact,alex_selfservice_sms_account,alex_selfservice_email_account,alex_selfservice_whatsapp_account,"+
-      "alex_selfservice_sms_contact_expiry,alex_selfservice_email_contact_expiry,alex_selfservice_whatsapp_contact_expiry,alex_selfservice_sms_account_expiry,alex_selfservice_email_account_expiry,alex_selfservice_whatsapp_account_expiry&$top=1"
+      "alex_selfservice_sms_contact_expiry,alex_selfservice_email_contact_expiry,alex_selfservice_whatsapp_contact_expiry,alex_selfservice_sms_account_expiry,alex_selfservice_email_account_expiry,alex_selfservice_whatsapp_account_expiry,"+
+      "alex_doc_quote_enabled,alex_doc_quote_draftpreview,alex_doc_quote_dist_email,alex_doc_quote_dist_sms,alex_doc_quote_dist_whatsapp,alex_doc_quote_autosend,"+
+      "alex_doc_quote_dist_email_method,alex_doc_quote_dist_sms_method,alex_doc_quote_dist_whatsapp_method,"+
+      "alex_doc_import_enabled,alex_doc_import_status,alex_doc_import_on,alex_doc_import_message,"+
+      "alex_terminals_import_enabled,alex_terminals_import_status,alex_terminals_import_on,alex_terminals_import_message&$top=1"
     ).then(function(res){ return res.entities&&res.entities.length?res.entities[0]:null; });
   }
   function checkConnRef(){
@@ -428,6 +581,88 @@ var App = (function(){
       });
   }
 
+  // LAST install step — import PayPlus document types into alex_payplus_documenttype.
+  // Flips the alex_doc_import_enabled bit (which triggers the 'PayPlus - Import Document Types' flow),
+  // then polls the config row until the flow reports Success/Failed. Reflects the result on S.record.
+  function importDocumentTypes(){
+    return patchRecord({ alex_doc_import_enabled:true, alex_doc_import_status:C.docImport.pending, alex_doc_import_message:"" })
+      .then(function(){ return pollDocImport(); })
+      .then(function(res){
+        if(S.record){
+          S.record.alex_doc_import_status = res.ok?C.docImport.success : (res.timeout?C.docImport.pending : C.docImport.failed);
+          if(res.on!=null){ S.record.alex_doc_import_on=res.on; }
+          if(res.message!=null){ S.record.alex_doc_import_message=res.message; }
+        }
+        return res;
+      });
+  }
+  function pollDocImport(){
+    var start=Date.now(), step=4000, id=S.record[C.idcol];
+    return new Promise(function(resolve){
+      function loop(){
+        if(Date.now()-start>=120000){ resolve({ timeout:true }); return; }
+        api().retrieveRecord(C.table,id,"?$select=alex_doc_import_status,alex_doc_import_on,alex_doc_import_message").then(function(rec){
+          var st=rec.alex_doc_import_status;
+          if(st===C.docImport.success){ resolve({ ok:true, on:rec.alex_doc_import_on, message:rec.alex_doc_import_message }); return; }
+          if(st===C.docImport.failed){ resolve({ ok:false, on:rec.alex_doc_import_on, message:rec.alex_doc_import_message }); return; }
+          setTimeout(loop,step);
+        }).catch(function(){ setTimeout(loop,step); });
+      }
+      setTimeout(loop,step);
+    });
+  }
+  // Management-center action: re-run the document-types import on demand.
+  function reimportDocs(){
+    if(S.busy.importing) return;
+    S.busy.importing=true; S.msg=null; render();
+    importDocumentTypes().then(function(imp){
+      S.busy.importing=false;
+      S.msg={ kind:(imp&&imp.ok)?"ok":"warn", text:(imp&&imp.ok)?t("docImportOk"):((imp&&imp.timeout)?t("docImportPending"):t("docImportFail")) };
+      render();
+    }).catch(function(){ S.busy.importing=false; S.msg={ kind:"warn", text:t("docImportFail") }; render(); });
+  }
+
+  // Import PayPlus terminals + their payment pages into alex_payplus_terminal / alex_payplus_paymentpage.
+  // Flips the alex_terminals_import_enabled bit (triggers 'PayPlus - Import Terminals & Pages'),
+  // then polls the config row until the flow reports Success/Failed. Reflects the result on S.record.
+  function importTerminals(){
+    return patchRecord({ alex_terminals_import_enabled:true, alex_terminals_import_status:C.terminalsImport.pending, alex_terminals_import_message:"" })
+      .then(function(){ return pollTerminalsImport(); })
+      .then(function(res){
+        if(S.record){
+          S.record.alex_terminals_import_status = res.ok?C.terminalsImport.success : (res.timeout?C.terminalsImport.pending : C.terminalsImport.failed);
+          if(res.on!=null){ S.record.alex_terminals_import_on=res.on; }
+          if(res.message!=null){ S.record.alex_terminals_import_message=res.message; }
+        }
+        return res;
+      });
+  }
+  function pollTerminalsImport(){
+    var start=Date.now(), step=4000, id=S.record[C.idcol];
+    return new Promise(function(resolve){
+      function loop(){
+        if(Date.now()-start>=120000){ resolve({ timeout:true }); return; }
+        api().retrieveRecord(C.table,id,"?$select=alex_terminals_import_status,alex_terminals_import_on,alex_terminals_import_message").then(function(rec){
+          var st=rec.alex_terminals_import_status;
+          if(st===C.terminalsImport.success){ resolve({ ok:true, on:rec.alex_terminals_import_on, message:rec.alex_terminals_import_message }); return; }
+          if(st===C.terminalsImport.failed){ resolve({ ok:false, on:rec.alex_terminals_import_on, message:rec.alex_terminals_import_message }); return; }
+          setTimeout(loop,step);
+        }).catch(function(){ setTimeout(loop,step); });
+      }
+      setTimeout(loop,step);
+    });
+  }
+  // Management-center action: re-run the terminals & pages import on demand.
+  function reimportTerminals(){
+    if(S.busy.importingTerminals) return;
+    S.busy.importingTerminals=true; S.msg=null; render();
+    importTerminals().then(function(imp){
+      S.busy.importingTerminals=false;
+      S.msg={ kind:(imp&&imp.ok)?"ok":"warn", text:(imp&&imp.ok)?t("terminalsImportOk"):((imp&&imp.timeout)?t("terminalsImportPending"):t("terminalsImportFail")) };
+      render();
+    }).catch(function(){ S.busy.importingTerminals=false; S.msg={ kind:"warn", text:t("terminalsImportFail") }; render(); });
+  }
+
   /* ------------------------------------------------------------------ Custom API exec (unbound actions) */
   function execAction(name,params,paramTypes){
     var req=Object.assign({}, params, { getMetadata:function(){ return { boundParameter:null, operationType:0, operationName:name, parameterTypes:paramTypes }; } });
@@ -492,6 +727,86 @@ var App = (function(){
     });
   }
 
+  // Step 2 preview: fetch ALL terminals, then each terminal's pages, into S.preview (read-only display).
+  function loadPreview(){
+    if(S.busy.preview) return;
+    S.busy.preview=true; S.msg=null; S.preview=[]; render();
+    fetchOptions("terminals","").then(function(res){
+      if(!res.items){ S.busy.preview=false; S.msg={kind:"err",text:(res.error?t("fetchErr"):t("fetchTimeout"))}; render(); return; }
+      S.terminals=res.items;
+      if(!res.items.length){ S.busy.preview=false; S.msg={kind:"warn",text:t("previewEmpty")}; render(); return; }
+      var list=res.items.slice(), out=[];
+      (function next(i){
+        if(i>=list.length){ S.preview=out; S.busy.preview=false; render(); return; }
+        var term=list[i];
+        fetchOptions("pages",term.value).then(function(pr){
+          out.push({ value:term.value, label:term.label||term.value, pages:(pr.items||[]) }); next(i+1);
+        }).catch(function(){ out.push({ value:term.value, label:term.label||term.value, pages:[] }); next(i+1); });
+      })(0);
+    });
+  }
+  // Pick the first terminal that has a page, so the validation step has a representative page to test.
+  function autoSelectPage(){
+    for(var i=0;i<S.preview.length;i++){
+      var tm=S.preview[i];
+      if(tm.pages&&tm.pages.length){
+        S.sel.terminalUid=tm.value; S.sel.terminalLabel=tm.label;
+        var pg=tm.pages[0]; S.sel.pageUid=pg.value; S.sel.pageLabel=pg.label||pg.value;
+        return true;
+      }
+    }
+    return false;
+  }
+  // Step 3 default picker: choose the default terminal (auto-selects its first page).
+  function selDefaultTerminal(uid){
+    for(var i=0;i<S.preview.length;i++){
+      if(S.preview[i].value===uid){
+        var tm=S.preview[i];
+        S.sel.terminalUid=tm.value; S.sel.terminalLabel=tm.label;
+        var pg=(tm.pages&&tm.pages.length)?tm.pages[0]:null;
+        S.sel.pageUid=pg?pg.value:""; S.sel.pageLabel=pg?(pg.label||pg.value):"";
+        break;
+      }
+    }
+    render();
+  }
+  // Step 3 default picker: choose the default page within the selected terminal.
+  function selDefaultPage(uid){
+    var selTm=null; for(var i=0;i<S.preview.length;i++){ if(S.preview[i].value===S.sel.terminalUid){ selTm=S.preview[i]; break; } }
+    if(selTm&&selTm.pages){ for(var j=0;j<selTm.pages.length;j++){ if(selTm.pages[j].value===uid){ S.sel.pageUid=selTm.pages[j].value; S.sel.pageLabel=selTm.pages[j].label||selTm.pages[j].value; break; } } }
+    render();
+  }
+  // On completion, mark the chosen terminal + page as the account default (alex_isdefault) on the imported records.
+  // Plugins enforce single-default per env / per terminal+processtype; the config singleton refs are already set.
+  function setDefaults(){
+    var env=envVal(), tUid=S.sel.terminalUid, pUid=S.sel.pageUid, jobs=[];
+    if(tUid){
+      jobs.push(api().retrieveMultipleRecords(C.defaults.terminalTable,"?$select="+C.defaults.terminalIdCol+"&$filter=alex_environment eq "+env+" and "+C.defaults.terminalUidCol+" eq '"+tUid+"'&$top=1")
+        .then(function(r){ var e=r&&r.entities&&r.entities[0]; if(e){ return api().updateRecord(C.defaults.terminalTable,e[C.defaults.terminalIdCol],{ alex_isdefault:true }); } }));
+    }
+    if(pUid){
+      jobs.push(api().retrieveMultipleRecords(C.defaults.pageTable,"?$select="+C.defaults.pageIdCol+"&$filter=alex_environment eq "+env+" and "+C.defaults.pageUidCol+" eq '"+pUid+"'&$top=1")
+        .then(function(r){ var e=r&&r.entities&&r.entities[0]; if(e){ return api().updateRecord(C.defaults.pageTable,e[C.defaults.pageIdCol],{ alex_isdefault:true }); } }));
+    }
+    return Promise.all(jobs);
+  }
+  // Confirm step 2: trigger the terminals & pages import (creates the records), then continue to validation.
+  function confirmImport(){
+    if(S.busy.importingTerminals||!S.preview.length) return;
+    S.busy.importingTerminals=true; S.msg=null; render();
+    importTerminals().then(function(imp){
+      S.busy.importingTerminals=false;
+      if(imp&&imp.ok){
+        autoSelectPage();
+        S.msg={kind:"ok",text:t("terminalsImportOk")};
+        goValidate();
+      } else {
+        S.msg={kind:(imp&&imp.timeout)?"warn":"err", text:(imp&&imp.timeout)?t("terminalsImportPending"):t("terminalsImportFail")};
+        render();
+      }
+    }).catch(function(){ S.busy.importingTerminals=false; S.msg={kind:"err",text:t("terminalsImportFail")}; render(); });
+  }
+
   /* ------------------------------------------------------------------ VALIDATE */
   function validate(){
     if(S.busy.validating||!S.sel.pageUid) return;
@@ -525,37 +840,85 @@ var App = (function(){
   }
   function finishValidate(res){
     var ok=!!(res&&res.ok);
-    if(ok){
-      return saveStage(C.stage.done,{ alex_setupcompleted:true, alex_configvalidated:true, alex_paymentpageuidref:S.sel.pageUid, alex_terminaluidref:S.sel.terminalUid })
-        .then(function(){ return ensureSyncProfile(); })
-        .then(function(spName){
-          S.busy.validating=false;
-          if(S.record){ S.record.alex_lastvalidatedon=new Date().toISOString(); }
-          S.msg=spName?{ kind:"ok", text:t("spCreated",{ n:spName }) }:null;
-          S.stage=C.stage.done; render();
-        })
-        .catch(function(){ S.busy.validating=false; if(S.record){ S.record.alex_lastvalidatedon=new Date().toISOString(); } S.stage=C.stage.done; render(); });
+    if(!ok){
+      return patchRecord({ alex_configvalidated:false }).then(function(){
+        S.busy.validating=false;
+        var msg=(res&&res.timeout)?t("valTimeout"):t("valFailed",{n:(res&&res.status)||"—"});
+        if(res&&res.message){ msg+=" — "+res.message; }
+        S.msg={kind:"err",text:msg}; render();
+      });
     }
-    return patchRecord({ alex_configvalidated:false }).then(function(){
-      S.busy.validating=false;
-      var msg=(res&&res.timeout)?t("valTimeout"):t("valFailed",{n:(res&&res.status)||"—"});
-      if(res&&res.message){ msg+=" — "+res.message; }
-      S.msg={kind:"err",text:msg}; render();
-    });
+    // Validation passed — the document-types import is a MANDATORY, blocking install step.
+    // Setup is NOT marked complete (and we don't advance to the management center) until it succeeds.
+    S.msg={kind:"info",text:t("docImportBlocking")}; render();
+    return ensureSyncProfile()
+      .then(function(spName){ S.spNameHolder=spName; return importDocumentTypes(); })
+      .then(function(imp){
+        if(imp&&imp.ok){
+          return saveStage(C.stage.done,{ alex_setupcompleted:true, alex_configvalidated:true, alex_paymentpageuidref:S.sel.pageUid, alex_terminaluidref:S.sel.terminalUid })
+            .then(function(){ return setDefaults().catch(function(){ return null; }); })
+            .then(function(){
+              S.busy.validating=false;
+              if(S.record){ S.record.alex_lastvalidatedon=new Date().toISOString(); }
+              var parts=[];
+              if(S.spNameHolder){ parts.push(t("spCreated",{ n:S.spNameHolder })); }
+              parts.push(t("docImportOk"));
+              S.spNameHolder=null;
+              S.msg={ kind:"ok", text:parts.join(" · ") };
+              S.stage=C.stage.done; render();
+            });
+        }
+        // Blocked: documents did not import — stay on the validate step, do NOT complete setup.
+        S.busy.validating=false; S.spNameHolder=null;
+        S.msg={ kind:"err", text:(imp&&imp.timeout)?t("docImportBlockPending"):t("docImportBlockFail") }; render();
+      })
+      .catch(function(){ S.busy.validating=false; S.spNameHolder=null; S.msg={ kind:"err", text:t("docImportBlockFail") }; render(); });
   }
 
   /* ------------------------------------------------------------------ navigation */
   function toStage(stageVal){ S.msg=null; S.stage=stageVal; saveStage(stageVal); render(); }
   function toggleDone(){ S.doneOpen=!S.doneOpen; render(); }
+  function toggleSS(){ S.ssOpen=!S.ssOpen; render(); }
+  function toggleDoc(){ S.docOpen=!S.docOpen; render(); }
+  function togglePages(){ S.pagesOpen=!S.pagesOpen; render(); if(S.pagesOpen&&!S.preview.length&&!S.busy.preview){ loadPreview(); } }
+  // Management-center: test the connection for a single payment page (generates a sample link).
+  // Reuses the validate Custom API but does NOT touch alex_configvalidated / setup stage.
+  function testPage(terminalUid,pageUid){
+    if(S.testingPageUid||S.busy.validating) return Promise.resolve(false);
+    S.testingPageUid=pageUid; S.pageTests[pageUid]="pending"; S.msg=null; render();
+    var reqId=genGuid(), envName=(S.record&&S.record.alex_environment===C.env.sandbox)?"Sandbox":"Production";
+    return patchRecord({ alex_validationrequestid:reqId, alex_lastvalidationstatus:C.valStatus.pending, alex_lastvalidationmessage:"" })
+      .then(function(){ return execAction(C.validateApi,
+        { payment_page_uid:pageUid, terminal_uid:terminalUid, environment:envName, request_id:reqId },
+        { payment_page_uid:strType, terminal_uid:strType, environment:strType, request_id:strType }); })
+      .then(function(){ return pollValidation(reqId); })
+      .then(function(res){
+        S.pageTests[pageUid]=(res&&res.ok)?"ok":((res&&res.timeout)?"pending":"fail");
+        S.testingPageUid=""; render(); return !!(res&&res.ok);
+      })
+      .catch(function(){ S.pageTests[pageUid]="fail"; S.testingPageUid=""; render(); return false; });
+  }
+  // Management-center: test every imported page sequentially.
+  function testAllPages(){
+    if(S.busy.testingAll||S.testingPageUid||!S.preview.length) return;
+    S.busy.testingAll=true; S.msg=null; render();
+    var jobs=[];
+    S.preview.forEach(function(tm){ (tm.pages||[]).forEach(function(p){ jobs.push({ tu:tm.value, pu:p.value }); }); });
+    (function next(i){
+      if(i>=jobs.length){ S.busy.testingAll=false; render(); return; }
+      testPage(jobs[i].tu,jobs[i].pu).then(function(){ next(i+1); });
+    })(0);
+  }
   function setSS(field,on){ var d={}; d[field]=!!on; if(S.record){ S.record[field]=!!on; } patchRecord(d).then(render); }
   function setSSExpiry(field,val){ var n=parseInt(val,10); if(isNaN(n)||n<1){ n=1; } if(n>3650){ n=3650; } var d={}; d[field]=n; if(S.record){ S.record[field]=n; } patchRecord(d); }
-  function goPages(){ S.msg=null; S.stage=C.stage.pages; saveStage(C.stage.pages); render(); }
+  function setDistMethod(field,val){ var v=parseInt(val,10); var d={}; d[field]=v; if(S.record){ S.record[field]=v; } patchRecord(d).then(render); }
+  function goPages(){ S.msg=null; S.stage=C.stage.pages; saveStage(C.stage.pages); render(); if(!S.preview.length&&!S.busy.preview){ loadPreview(); } }
   function goValidate(){ S.msg=null; S.stage=C.stage.validate; saveStage(C.stage.validate,{ alex_paymentpageuidref:S.sel.pageUid, alex_terminaluidref:S.sel.terminalUid }); render(); }
-  function restart(){ S.msg=null; S.terminals=[]; S.pages=[]; S.sel.terminalUid=""; S.sel.pageUid=""; S.stage=C.stage.connect;
+  function restart(){ S.msg=null; S.terminals=[]; S.pages=[]; S.preview=[]; S.pageTests={}; S.testingPageUid=""; S.sel.terminalUid=""; S.sel.pageUid=""; S.stage=C.stage.connect;
     saveStage(C.stage.connect,{ alex_setupcompleted:false, alex_configvalidated:false, alex_terminaluidref:"", alex_paymentpageuidref:"" }); render(); }
 
   /* ------------------------------------------------------------------ event handlers */
-  function setEnv(v){ S.sel.env=(v==="sandbox")?"sandbox":"prod"; S.msg=null; S.terminals=[]; S.pages=[]; S.sel.terminalUid=""; S.sel.pageUid="";
+  function setEnv(v){ S.sel.env=(v==="sandbox")?"sandbox":"prod"; S.msg=null; S.terminals=[]; S.pages=[]; S.preview=[]; S.pageTests={}; S.testingPageUid=""; S.sel.terminalUid=""; S.sel.pageUid="";
     S.conn.verified=false; S.conn.tested=false; checkConnRef().then(render); render(); }
   function setTerminal(v){ S.sel.terminalUid=v; var tt=S.terminals.filter(function(x){return x.value===v;})[0]; S.sel.terminalLabel=tt?tt.label:""; S.pages=[]; S.sel.pageUid=""; if(v){ patchRecord({ alex_terminaluidref:v }); } render(); }
   function setPage(v){ S.sel.pageUid=v; var pp=S.pages.filter(function(x){return x.value===v;})[0]; S.sel.pageLabel=pp?pp.label:""; render(); }
@@ -609,34 +972,32 @@ var App = (function(){
     h+='</div>'; return h;
   }
 
-  /* stage 2 — pages */
+  /* stage 2 — terminals & pages preview + import */
   function stagePages(){
     var h=stepper()+header(t("s2Caption"),t("s2Title"),t("s2Sub"))+'<div class="card">';
-    // terminals
-    h+='<div class="subhead">'+t("termTitle")+'</div>';
-    if(!S.terminals.length){
-      h+='<div class="field"><button class="btn primary" '+(S.busy.terminals?"disabled":"")+' onclick="App.fetchTerminals()">'+
-         (S.busy.terminals?('<span class="spinner"></span> '+t("fetching")):t("fetchTerminals"))+'</button><div class="hint">'+t("termHint")+'</div></div>';
+    if(S.busy.preview){
+      h+='<div class="center"><span class="spinner dark"></span> '+esc(t("previewLoading"))+'</div>';
+    } else if(!S.preview.length){
+      h+='<div class="field"><button class="btn primary" onclick="App.loadPreview()">'+t("previewLoad")+'</button></div>';
     } else {
-      h+='<div class="field"><select onchange="App.setTerminal(this.value)"><option value="">'+esc(t("pickTerminal"))+'</option>'+
-         S.terminals.map(function(x){ return '<option value="'+esc(x.value)+'"'+(S.sel.terminalUid===x.value?" selected":"")+'>'+esc(x.label||x.value)+'</option>'; }).join("")+
-         '</select><div class="hint">'+t("termHint")+' · <a href="#" onclick="App.fetchTerminals();return false;">'+t("refetch")+'</a></div></div>';
-    }
-    // pages (only after terminal chosen)
-    if(S.sel.terminalUid){
-      h+='<div class="divider"></div><div class="subhead">'+t("pageTitle")+'</div>';
-      if(!S.pages.length){
-        h+='<div class="field"><button class="btn primary" '+(S.busy.pages?"disabled":"")+' onclick="App.fetchPages()">'+
-           (S.busy.pages?('<span class="spinner"></span> '+t("fetching")):t("fetchPages"))+'</button><div class="hint">'+t("pageHint")+'</div></div>';
-      } else {
-        h+='<div class="field"><select onchange="App.setPage(this.value)"><option value="">'+esc(t("pickPage"))+'</option>'+
-           S.pages.map(function(x){ return '<option value="'+esc(x.value)+'"'+(S.sel.pageUid===x.value?" selected":"")+'>'+esc(x.label||x.value)+'</option>'; }).join("")+
-           '</select><div class="hint">'+t("pageHint")+' · <a href="#" onclick="App.fetchPages();return false;">'+t("refetch")+'</a></div></div>';
-      }
+      var totalPages=S.preview.reduce(function(a,x){ return a+((x.pages&&x.pages.length)||0); },0);
+      h+='<div class="subhead">'+esc(t("previewCount",{t:S.preview.length,p:totalPages}))+' · <a href="#" onclick="App.loadPreview();return false;">'+t("previewReload")+'</a></div>';
+      S.preview.forEach(function(tm){
+        h+='<div style="border:1px solid #e5e7eb;border-radius:10px;padding:10px 12px;margin-bottom:8px">';
+        h+='<div style="font-weight:600;margin-bottom:4px">🖥️ '+esc(tm.label)+'</div>';
+        if(tm.pages&&tm.pages.length){
+          h+='<ul style="margin:0;padding-inline-start:20px">'+tm.pages.map(function(p){ return '<li>'+esc(p.label||p.value)+'</li>'; }).join("")+'</ul>';
+        } else {
+          h+='<div style="color:#6b7280;font-size:.9em">'+esc(t("previewNoPages"))+'</div>';
+        }
+        h+='</div>';
+      });
     }
     h+=noteHtml();
-    h+='<div class="actions"><button class="btn ghost" onclick="App.toStage('+C.stage.connect+')">← '+t("back")+'</button>'+
-       '<div class="right"><button class="btn primary" '+(S.sel.pageUid?"":"disabled")+' onclick="App.goValidate()">'+t("next")+' →</button></div></div>';
+    var canConfirm=S.preview.length&&!S.busy.importingTerminals&&!S.busy.preview;
+    h+='<div class="actions"><button class="btn ghost" '+(S.busy.importingTerminals?"disabled":"")+' onclick="App.toStage('+C.stage.connect+')">← '+t("back")+'</button>'+
+       '<div class="right"><button class="btn primary" '+(canConfirm?"":"disabled")+' onclick="App.confirmImport()">'+
+       (S.busy.importingTerminals?('<span class="spinner"></span> '+t("importingLbl")):(t("confirmImport")+' →'))+'</button></div></div>';
     h+='</div>'; return h;
   }
 
@@ -644,8 +1005,19 @@ var App = (function(){
   function stageValidate(){
     var h=stepper()+header(t("s3Caption"),t("s3Title"),t("s3Sub"))+'<div class="card">';
     h+='<div class="kv"><span class="k">'+t("lblEnv")+'</span><span class="v">'+esc(S.sel.env==="sandbox"?t("envSandbox"):t("envProd"))+'</span></div>';
-    if(S.sel.terminalLabel){ h+='<div class="kv"><span class="k">'+t("lblTerminal")+'</span><span class="v">'+esc(S.sel.terminalLabel)+'</span></div>'; }
-    h+='<div class="kv"><span class="k">'+t("lblPage")+'</span><span class="v">'+esc(S.sel.pageLabel||S.sel.pageUid||"—")+'</span></div>';
+    if(S.preview.length){
+      var tOpts=S.preview.map(function(tm){ return '<option value="'+esc(tm.value)+'"'+(tm.value===S.sel.terminalUid?" selected":"")+'>'+esc(tm.label)+'</option>'; }).join("");
+      h+='<div class="field" style="margin-top:12px"><label>'+t("lblTerminal")+'</label><select '+(S.busy.validating?"disabled":"")+' onchange="App.selDefaultTerminal(this.value)">'+tOpts+'</select></div>';
+      var selTm=null; for(var i=0;i<S.preview.length;i++){ if(S.preview[i].value===S.sel.terminalUid){ selTm=S.preview[i]; break; } }
+      var pages=(selTm&&selTm.pages)||[];
+      var pOpts=pages.length?pages.map(function(p){ return '<option value="'+esc(p.value)+'"'+(p.value===S.sel.pageUid?" selected":"")+'>'+esc(p.label||p.value)+'</option>'; }).join(""):('<option value="">'+esc(t("previewNoPages"))+'</option>');
+      h+='<div class="field"><label>'+t("lblPage")+'</label><select '+((S.busy.validating||!pages.length)?"disabled":"")+' onchange="App.selDefaultPage(this.value)">'+pOpts+'</select></div>';
+      h+='<div class="note info">ℹ '+esc(t("defaultNote"))+'</div>';
+    } else {
+      if(S.sel.terminalLabel){ h+='<div class="kv"><span class="k">'+t("lblTerminal")+'</span><span class="v">'+esc(S.sel.terminalLabel)+'</span></div>'; }
+      h+='<div class="kv"><span class="k">'+t("lblPage")+'</span><span class="v">'+esc(S.sel.pageLabel||S.sel.pageUid||"—")+'</span></div>';
+      h+='<div class="note info" style="margin-top:12px">ℹ '+esc(t("s3PageNote"))+'</div>';
+    }
     h+=noteHtml();
     h+='<div class="actions"><button class="btn ghost" '+(S.busy.validating?"disabled":"")+' onclick="App.toStage('+C.stage.pages+')">← '+t("back")+'</button>'+
        '<div class="right"><button class="btn primary" '+((S.sel.pageUid&&!S.busy.validating)?"":"disabled")+' onclick="App.validate()">'+
@@ -654,37 +1026,178 @@ var App = (function(){
   }
 
   /* stage 4 — done / management center */
-  function ssRow(lbl,onField,expField){
-    var r=S.record||{};
-    var on=!!r[onField];
-    var exp=(r[expField]==null?7:r[expField]);
-    return '<div class="switchrow">'+
-      '<span class="ss-lbl">'+esc(lbl)+'</span>'+
-      '<div class="ss-right">'+
-        '<div class="ss-exp'+(on?"":" off")+'">'+
-          '<input type="number" min="1" max="3650" value="'+esc(exp)+'" '+(on?"":"disabled")+
-            ' onchange="App.setSSExpiry(\''+expField+'\',this.value)" aria-label="'+esc(t("ssDays"))+'"/>'+
-          '<span class="ss-days">'+esc(t("ssDays"))+'</span>'+
-        '</div>'+
-        '<label class="switch"><input type="checkbox" '+(on?"checked":"")+' onchange="App.setSS(\''+onField+'\',this.checked)"><span class="track"></span><span class="knob"></span></label>'+
-      '</div>'+
-    '</div>';
+  // A toggle switch bound to a boolean config field.
+  function switchCtrl(field){
+    var r=S.record||{}; var on=!!r[field];
+    return '<label class="switch"><input type="checkbox" '+(on?"checked":"")+' onchange="App.setSS(\''+field+'\',this.checked)"><span class="track"></span><span class="knob"></span></label>';
   }
-  function ssGroup(title,rows){ return '<div class="ss-group"><h4>'+esc(title)+'</h4>'+rows+'</div>'; }
-  function selfServiceSection(){
-    var contact=ssRow(t("ssSms"),"alex_selfservice_sms_contact","alex_selfservice_sms_contact_expiry")+
-                ssRow(t("ssEmail"),"alex_selfservice_email_contact","alex_selfservice_email_contact_expiry")+
-                ssRow(t("ssWhatsapp"),"alex_selfservice_whatsapp_contact","alex_selfservice_whatsapp_contact_expiry");
-    var account=ssRow(t("ssSms"),"alex_selfservice_sms_account","alex_selfservice_sms_account_expiry")+
-                ssRow(t("ssEmail"),"alex_selfservice_email_account","alex_selfservice_email_account_expiry")+
-                ssRow(t("ssWhatsapp"),"alex_selfservice_whatsapp_account","alex_selfservice_whatsapp_account_expiry");
-    var h='<div class="card ss-card">';
-    h+='<div class="ss-head"><span class="ss-ico">👤</span><div><div class="ss-title">'+esc(t("ssTitle"))+'</div><div class="ss-sub">'+esc(t("ssIntro"))+'</div></div></div>';
-    h+='<div class="note warn">⚠ '+esc(t("ssWarn"))+'</div>';
-    h+=ssGroup(t("ssGroupContact"),contact);
-    h+=ssGroup(t("ssGroupAccount"),account);
+  // A setting row: name (+ optional description) on the start side, control on the end side.
+  function setRow(name,desc,ctrl){
+    return '<div class="set-row"><div class="set-info"><div class="set-name">'+esc(name)+'</div>'+
+      (desc?('<div class="set-desc">'+esc(desc)+'</div>'):'')+'</div>'+
+      '<div class="set-ctrl">'+ctrl+'</div></div>';
+  }
+  // A plain on/off setting row.
+  function toggleSetting(name,field,desc){ return setRow(name,desc,switchCtrl(field)); }
+  // A self-service setting row: expiry input + switch as the control.
+  function ssSetting(name,desc,onField,expField){
+    var r=S.record||{}; var on=!!r[onField]; var exp=(r[expField]==null?7:r[expField]);
+    var ctrl='<div class="ss-exp'+(on?"":" off")+'">'+
+        '<input type="number" min="1" max="3650" value="'+esc(exp)+'" '+(on?"":"disabled")+
+          ' onchange="App.setSSExpiry(\''+expField+'\',this.value)" aria-label="'+esc(t("ssDays"))+'"/>'+
+        '<span class="ss-days">'+esc(t("ssDays"))+'</span>'+
+      '</div>'+switchCtrl(onField);
+    return setRow(name,desc,ctrl);
+  }
+  function groupTitle(txt){ return '<div class="set-grouptitle">'+esc(txt)+'</div>'; }
+  // A distribution-channel row: on/off toggle, and when ON, a PayPlus/Other method selector.
+  // methodField is a picklist (100000000=PayPlus, 100000001=Other). null is treated as PayPlus.
+  function distRow(name,enableField,methodField){
+    var r=S.record||{}; var on=!!r[enableField];
+    var h=toggleSetting(name,enableField);
+    if(on){
+      var m=(r[methodField]==null?100000000:r[methodField]);
+      var isOther=(m===100000001);
+      h+='<div class="dist-sub">'+
+        '<div class="dist-methodrow">'+
+          '<span class="dist-lbl">'+esc(t("docDistMethod"))+'</span>'+
+          '<div class="seg" role="group">'+
+            '<button type="button" class="'+(isOther?"":"on")+'" onclick="App.setDistMethod(\''+methodField+'\',100000000)">'+esc(t("docMethodPayPlus"))+'</button>'+
+            '<button type="button" class="'+(isOther?"on":"")+'" onclick="App.setDistMethod(\''+methodField+'\',100000001)">'+esc(t("docMethodOther"))+'</button>'+
+          '</div>'+
+        '</div>'+
+        (isOther?('<div class="note warn">⚠ '+esc(t("docMethodOtherWarn"))+'</div>'):'')+
+      '</div>';
+    }
+    return h;
+  }
+  // Full-width collapsible section. opts:{open,icon,title,desc,toggle,body}
+  function section(opts){
+    var h='<div class="sec'+(opts.open?" open":"")+'">';
+    h+='<div class="sec-head" onclick="'+opts.toggle+'" role="button" tabindex="0">'+
+       '<span class="sec-ic">'+opts.icon+'</span>'+
+       '<span class="sec-tx"><span class="sec-title">'+esc(opts.title)+'</span>'+
+       (opts.desc?('<span class="sec-desc">'+esc(opts.desc)+'</span>'):'')+'</span>'+
+       '<span class="sec-chev">▼</span></div>';
+    if(opts.open){ h+='<div class="sec-body">'+opts.body+'</div>'; }
     h+='</div>';
     return h;
+  }
+  function selfServiceSection(){
+    var r=S.record||{};
+    var flags=["alex_selfservice_sms_contact","alex_selfservice_email_contact","alex_selfservice_whatsapp_contact","alex_selfservice_sms_account","alex_selfservice_email_account","alex_selfservice_whatsapp_account"];
+    var n=flags.reduce(function(a,f){ return a+(r[f]?1:0); },0);
+    var body='<div class="sec-intro">'+esc(t("ssIntro"))+'</div>';
+    body+=groupTitle(t("ssGroupContact"))+
+      ssSetting(t("ssEmail"),null,"alex_selfservice_email_contact","alex_selfservice_email_contact_expiry")+
+      ssSetting(t("ssSms"),null,"alex_selfservice_sms_contact","alex_selfservice_sms_contact_expiry")+
+      ssSetting(t("ssWhatsapp"),null,"alex_selfservice_whatsapp_contact","alex_selfservice_whatsapp_contact_expiry");
+    body+=groupTitle(t("ssGroupAccount"))+
+      ssSetting(t("ssEmail"),null,"alex_selfservice_email_account","alex_selfservice_email_account_expiry")+
+      ssSetting(t("ssSms"),null,"alex_selfservice_sms_account","alex_selfservice_sms_account_expiry")+
+      ssSetting(t("ssWhatsapp"),null,"alex_selfservice_whatsapp_account","alex_selfservice_whatsapp_account_expiry");
+    body+='<div class="note warn" style="margin-top:14px">⚠ '+esc(t("ssWarn"))+'</div>';
+    return section({ open:S.ssOpen, icon:"👤", title:t("ssTitle"), desc:t("ssAccSub",{n:n}), toggle:"App.toggleSS()", body:body });
+  }
+  // Document management — modular per document type (currently: Quote). Add a type by adding fields + a group.
+  function documentSection(){
+    var body='<div class="sec-intro">'+esc(t("docIntro"))+'</div>';
+    body+=groupTitle(t("docQuote"))+
+      toggleSetting(t("docEnable"),"alex_doc_quote_enabled",t("docEnableSub"))+
+      toggleSetting(t("docDraft"),"alex_doc_quote_draftpreview",t("docDraftSub"));
+    body+=groupTitle(t("docDist"))+
+      distRow(t("docDistEmail"),"alex_doc_quote_dist_email","alex_doc_quote_dist_email_method")+
+      distRow(t("docDistSms"),"alex_doc_quote_dist_sms","alex_doc_quote_dist_sms_method")+
+      distRow(t("docDistWhatsapp"),"alex_doc_quote_dist_whatsapp","alex_doc_quote_dist_whatsapp_method");
+    body+=groupTitle(t("docAutoGroup"))+
+      toggleSetting(t("docAutoSend"),"alex_doc_quote_autosend");
+    body+='<div class="note info" style="margin-top:14px">ℹ '+esc(t("docAutoHint"))+'</div>';
+    return section({ open:S.docOpen, icon:"📄", title:t("docTitle"), desc:t("docAccSub"), toggle:"App.toggleDoc()", body:body });
+  }
+  // Expanded installation details (inside the management center).
+  function installDetails(r,lastVal){
+    var h='<div class="sec open"><div class="sec-body" style="border-top:none;padding-top:12px">';
+    h+='<div class="kv"><span class="k">'+t("lblEnv")+'</span><span class="v">'+esc(r.alex_environment===C.env.sandbox?t("envSandbox"):t("envProd"))+'</span></div>';
+    h+='<div class="kv"><span class="k">'+t("lblPage")+'</span><span class="v">'+esc(r.alex_paymentpageuidref||"—")+'</span></div>';
+    h+='<div class="kv"><span class="k">'+t("lblTerminal")+'</span><span class="v">'+esc(r.alex_terminaluidref||"—")+'</span></div>';
+    h+='<div class="kv"><span class="k">'+t("lblStatus")+'</span><span class="v">'+esc(r.alex_configvalidated?t("statusValidated"):t("statusNotValidated"))+'</span></div>';
+    h+='<div class="kv"><span class="k">'+t("lblLastValidated")+'</span><span class="v">'+esc(lastVal)+'</span></div>';
+    h+='<div class="actions"><button class="btn ghost" onclick="App.restart()">'+t("restart")+'</button>'+
+       '<div class="right"><button class="btn primary" onclick="App.toStage('+C.stage.validate+')">'+t("reValidate")+'</button></div></div>';
+    h+='</div></div>';
+    return h;
+  }
+  // Document-types import status (last install step) shown in the management center.
+  function docImportStatusRow(r){
+    var st=r.alex_doc_import_status;
+    var on=r.alex_doc_import_on?new Date(r.alex_doc_import_on).toLocaleString(S.lang==="he"?"he-IL":"en-GB"):"—";
+    var ic, txt;
+    if(S.busy.importing||st===C.docImport.pending){ ic="⏳"; txt=t("docImportRowPending"); }
+    else if(st===C.docImport.success){ ic="✓"; txt=t("docImportRowOk"); }
+    else if(st===C.docImport.failed){ ic="✗"; txt=t("docImportRowFail"); }
+    else { ic="•"; txt=t("docImportRowNone"); }
+    var showWhen=(st===C.docImport.success||st===C.docImport.failed);
+    var link=S.busy.importing?"":('<a href="#" class="st-link" onclick="App.reimportDocs();return false;">'+esc(t("docImportReimport"))+'</a>');
+    var when=showWhen?('<span class="st-when">· '+esc(on)+'</span>'):"";
+    return '<div class="mc-status"><span class="ic">'+ic+'</span>'+
+           '<span class="st-txt">'+esc(txt)+'</span>'+when+link+'</div>';
+  }
+  // Terminals & payment-pages import status shown in the management center.
+  function terminalsImportStatusRow(r){
+    var st=r.alex_terminals_import_status;
+    var on=r.alex_terminals_import_on?new Date(r.alex_terminals_import_on).toLocaleString(S.lang==="he"?"he-IL":"en-GB"):"—";
+    var ic, txt;
+    if(S.busy.importingTerminals||st===C.terminalsImport.pending){ ic="⏳"; txt=t("terminalsImportRowPending"); }
+    else if(st===C.terminalsImport.success){ ic="✓"; txt=t("terminalsImportRowOk"); }
+    else if(st===C.terminalsImport.failed){ ic="✗"; txt=t("terminalsImportRowFail"); }
+    else { ic="•"; txt=t("terminalsImportRowNone"); }
+    var showWhen=(st===C.terminalsImport.success||st===C.terminalsImport.failed);
+    var link=S.busy.importingTerminals?"":('<a href="#" class="st-link" onclick="App.reimportTerminals();return false;">'+esc(t("terminalsImportReimport"))+'</a>');
+    var when=showWhen?('<span class="st-when">· '+esc(on)+'</span>'):"";
+    return '<div class="mc-status"><span class="ic">'+ic+'</span>'+
+           '<span class="st-txt">'+esc(txt)+'</span>'+when+link+'</div>';
+  }
+  // A small pass/fail/pending chip for a single page test.
+  function pageTestChip(pageUid){
+    var st=S.pageTests[pageUid];
+    if(st==="ok") return chip("ok",t("testOk"));
+    if(st==="fail") return chip("err",t("testFail"));
+    if(st==="pending") return '<span class="chip pending"><span class="dot"></span>'+esc(t("testingLbl"))+'</span>';
+    return "";
+  }
+  // Per-page connection test section (management center): list terminals → pages, each with a Test button.
+  function pagesSection(){
+    var body;
+    if(S.busy.preview){
+      body='<div class="center" style="padding:14px"><span class="spinner dark"></span> '+esc(t("pagesLoading"))+'</div>';
+    } else if(!S.preview.length){
+      body='<div class="sec-intro">'+esc(t("pagesIntro"))+'</div>'+
+        '<div class="field" style="margin-top:10px"><button class="btn primary" onclick="App.loadPreview()">'+t("pagesLoad")+'</button></div>';
+    } else {
+      var busy=S.busy.testingAll||!!S.testingPageUid;
+      body='<div class="sec-intro">'+esc(t("pagesIntro"))+' · <a href="#" onclick="App.loadPreview();return false;">'+t("pagesReload")+'</a></div>';
+      S.preview.forEach(function(tm){
+        body+='<div style="border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin:8px 0">';
+        body+='<div style="font-weight:600;margin-bottom:6px">🖥️ '+esc(tm.label)+'</div>';
+        if(tm.pages&&tm.pages.length){
+          tm.pages.forEach(function(p){
+            var testing=S.testingPageUid===p.value;
+            body+='<div class="item" style="padding:6px 0">'+
+              '<div class="l">'+esc(p.label||p.value)+'</div>'+
+              '<div class="row" style="gap:8px">'+pageTestChip(p.value)+
+                '<button class="btn ghost" style="padding:5px 12px;font-size:12.5px" '+(busy?"disabled":"")+' onclick="App.testPage(\''+p.value+'\',\''+tm.value+'\')">'+
+                (testing?('<span class="spinner"></span> '+t("testingLbl")):t("testPageBtn"))+'</button>'+
+              '</div></div>';
+          });
+        } else {
+          body+='<div style="color:var(--muted);font-size:.9em">'+esc(t("previewNoPages"))+'</div>';
+        }
+        body+='</div>';
+      });
+      body+='<div class="actions" style="margin-top:8px"><div class="right"><button class="btn primary" '+(busy?"disabled":"")+' onclick="App.testAllPages()">'+
+        (S.busy.testingAll?('<span class="spinner"></span> '+t("testingLbl")):t("testAllBtn"))+'</button></div></div>';
+    }
+    return section({ open:S.pagesOpen, icon:"🖥️", title:t("pagesTitle"), desc:t("pagesAccSub"), toggle:"App.togglePages()", body:body });
   }
   function stageDone(){
     var r=S.record||{};
@@ -703,19 +1216,21 @@ var App = (function(){
     body+='</div>';
     var completed=!!(r.alex_setupcompleted&&r.alex_configvalidated);
     if(!completed){ return stepper()+body; }
-    // installation completed → management center: header + collapsed install section (stepper inside) + self-service
-    var open=S.doneOpen, h='';
-    h+='<div class="mgmt-head"><h1 class="mgmt-title">'+esc(t("mgmtTitle"))+'</h1><p class="mgmt-sub">'+esc(t("mgmtSub"))+'</p></div>';
+    // installation completed → management center
+    var h='<div class="mc">';
+    h+='<div class="mc-title">'+esc(t("mgmtTitle"))+'</div><p class="mc-sub">'+esc(t("mgmtSub"))+'</p>';
     h+=noteHtml();
-    h+='<div class="acc'+(open?" open":"")+'">';
-    h+='<div class="acc-head" onclick="App.toggleDone()" role="button" tabindex="0">'+
-       '<span class="accok">✓</span>'+
-       '<span class="acctxt"><span class="acctitle">'+esc(t("doneSectionTitle"))+'</span>'+
-       '<span class="accsub">'+esc(t("doneSectionSub",{when:lastVal}))+'</span></span>'+
-       '<span class="accchev">▼</span></div>';
-    if(open){ h+='<div class="acc-body">'+stepper()+body+'</div>'; }
-    h+='</div>';
+    h+='<div class="mc-status"><span class="ic">✓</span>'+
+       '<span class="st-txt">'+esc(t("doneSectionTitle"))+'</span>'+
+       '<span class="st-when">· '+esc(lastVal)+'</span>'+
+       '<a href="#" class="st-link" onclick="App.toggleDone();return false;">'+esc(S.doneOpen?t("hideDetails"):t("showDetails"))+'</a></div>';
+    if(S.doneOpen){ h+=installDetails(r,lastVal); }
+    h+=docImportStatusRow(r);
+    h+=terminalsImportStatusRow(r);
+    h+=pagesSection();
     h+=selfServiceSection();
+    h+=documentSection();
+    h+='</div>';
     return h;
   }
 
@@ -736,9 +1251,12 @@ var App = (function(){
 
   return {
     reload:reload, setEnv:setEnv, goPages:goPages, goValidate:goValidate, toStage:toStage,
-    testConnection:testConnection, toggleDone:toggleDone,
+    testConnection:testConnection, toggleDone:toggleDone, toggleSS:toggleSS, toggleDoc:toggleDoc,
     fetchTerminals:fetchTerminals, fetchPages:fetchPages, setTerminal:setTerminal, setPage:setPage,
-    validate:validate, restart:restart, setSS:setSS, setSSExpiry:setSSExpiry
+    loadPreview:loadPreview, confirmImport:confirmImport,
+    togglePages:togglePages, testPage:testPage, testAllPages:testAllPages,
+    selDefaultTerminal:selDefaultTerminal, selDefaultPage:selDefaultPage,
+    validate:validate, restart:restart, setSS:setSS, setSSExpiry:setSSExpiry, setDistMethod:setDistMethod, reimportDocs:reimportDocs, reimportTerminals:reimportTerminals
   };
 })();
 </script>

@@ -1,0 +1,566 @@
+{
+  "schemaVersion": "1.0.0.0",
+  "properties": {
+    "connectionReferences": {
+      "alex_payplus_dataverse": {
+        "runtimeSource": "embedded",
+        "connection": { "connectionReferenceLogicalName": "alex_payplus_dataverse" },
+        "api": { "name": "shared_commondataserviceforapps" }
+      },
+      "shared_alex-5fpayplus-5f5849d39a0feaf28d-1": {
+        "runtimeSource": "embedded",
+        "connection": { "connectionReferenceLogicalName": "alex_payplusprod" },
+        "api": { "name": "shared_alex-5fpayplus-5f5849d39a0feaf28d", "logicalName": "alex_5Fpayplus" }
+      },
+      "shared_alex-5fpayplus-20sandbox-5f5849d39a0feaf28d-1": {
+        "runtimeSource": "embedded",
+        "connection": { "connectionReferenceLogicalName": "alex_payplussandbox" },
+        "api": { "name": "shared_alex-5fpayplus-20sandbox-5f5849d39a0feaf28d", "logicalName": "alex_5Fpayplus-20sandbox" }
+      }
+    },
+    "definition": {
+      "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+      "contentVersion": "1.0.0.0",
+      "parameters": {
+        "$connections": { "defaultValue": {}, "type": "Object" },
+        "$authentication": { "defaultValue": {}, "type": "SecureObject" }
+      },
+      "triggers": {
+        "When_a_quote_is_activated": {
+          "metadata": { "operationMetadataId": "b0000000-0000-4000-8000-000000000001" },
+          "type": "OpenApiConnectionWebhook",
+          "inputs": {
+            "host": {
+              "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps",
+              "operationId": "SubscribeWebhookTrigger",
+              "connectionName": "alex_payplus_dataverse"
+            },
+            "parameters": {
+              "subscriptionRequest/message": 4,
+              "subscriptionRequest/entityname": "quote",
+              "subscriptionRequest/scope": 4,
+              "subscriptionRequest/filteringattributes": "statecode"
+            },
+            "authentication": "@parameters('$authentication')"
+          },
+          "conditions": [
+            { "expression": "@equals(triggerOutputs()?['body/statecode'], 1)" }
+          ]
+        }
+      },
+      "actions": {
+        "Initialize_items": {
+          "runAfter": {},
+          "metadata": { "operationMetadataId": "b0000000-0000-4000-8000-000000000002" },
+          "type": "InitializeVariable",
+          "inputs": { "variables": [ { "name": "varItems", "type": "array", "value": [] } ] }
+        },
+        "Initialize_customer_uid": {
+          "runAfter": { "Initialize_items": ["Succeeded"] },
+          "metadata": { "operationMetadataId": "b0000000-0000-4000-8000-00000000002a" },
+          "type": "InitializeVariable",
+          "inputs": { "variables": [ { "name": "varCustomerUid", "type": "string", "value": "" } ] }
+        },
+        "Get_config_row": {
+          "runAfter": { "Initialize_customer_uid": ["Succeeded"] },
+          "metadata": { "operationMetadataId": "b0000000-0000-4000-8000-000000000003" },
+          "type": "OpenApiConnection",
+          "inputs": {
+            "host": {
+              "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps",
+              "operationId": "ListRecords",
+              "connectionName": "alex_payplus_dataverse"
+            },
+            "parameters": {
+              "entityName": "alex_payplusconfigurations",
+              "$select": "alex_environment",
+              "$top": 1
+            },
+            "authentication": "@parameters('$authentication')"
+          }
+        },
+        "Get_quote": {
+          "runAfter": { "Get_config_row": ["Succeeded"] },
+          "metadata": { "operationMetadataId": "b0000000-0000-4000-8000-000000000004" },
+          "type": "OpenApiConnection",
+          "inputs": {
+            "host": {
+              "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps",
+              "operationId": "GetItem",
+              "connectionName": "alex_payplus_dataverse"
+            },
+            "parameters": {
+              "entityName": "quotes",
+              "recordId": "@triggerOutputs()?['body/quoteid']",
+              "$select": "name,quotenumber,emailaddress,totalamount,billto_name,billto_line1,billto_city,billto_postalcode,billto_country,billto_telephone,_customerid_value",
+              "$expand": "customerid_account,customerid_contact"
+            },
+            "authentication": "@parameters('$authentication')"
+          }
+        },
+        "Compose_source_table": {
+          "runAfter": { "Get_quote": ["Succeeded"] },
+          "metadata": { "operationMetadataId": "b0000000-0000-4000-8000-000000000049" },
+          "type": "Compose",
+          "inputs": "@coalesce(body('Get_quote')?['_customerid_value@Microsoft.Dynamics.CRM.lookuplogicalname'], if(empty(body('Get_quote')?['customerid_contact']), 'account', 'contact'))"
+        },
+        "Compose_customer_record": {
+          "runAfter": { "Compose_source_table": ["Succeeded"] },
+          "metadata": { "operationMetadataId": "b0000000-0000-4000-8000-00000000004a" },
+          "type": "Compose",
+          "inputs": "@coalesce(body('Get_quote')?['customerid_contact'], body('Get_quote')?['customerid_account'], json('{}'))"
+        },
+        "List_entity_mapping": {
+          "runAfter": { "Compose_customer_record": ["Succeeded"] },
+          "metadata": { "operationMetadataId": "b0000000-0000-4000-8000-00000000004b" },
+          "type": "OpenApiConnection",
+          "inputs": {
+            "host": {
+              "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps",
+              "operationId": "ListRecords",
+              "connectionName": "alex_payplus_dataverse"
+            },
+            "parameters": {
+              "entityName": "alex_payplus_entitymappings",
+              "$select": "alex_payplus_entitymappingid",
+              "$filter": "alex_sourcetablelogicalname eq '@{outputs('Compose_source_table')}' and alex_targetobject eq 100000000 and alex_isactive eq true and statecode eq 0",
+              "$top": 1
+            },
+            "authentication": "@parameters('$authentication')"
+          }
+        },
+        "Compose_entity_mapping_id": {
+          "runAfter": { "List_entity_mapping": ["Succeeded"] },
+          "metadata": { "operationMetadataId": "b0000000-0000-4000-8000-00000000004c" },
+          "type": "Compose",
+          "inputs": "@coalesce(first(outputs('List_entity_mapping')?['body/value'])?['alex_payplus_entitymappingid'], '00000000-0000-0000-0000-000000000000')"
+        },
+        "List_vat_field_mapping": {
+          "runAfter": { "Compose_entity_mapping_id": ["Succeeded"] },
+          "metadata": { "operationMetadataId": "b0000000-0000-4000-8000-00000000004d" },
+          "type": "OpenApiConnection",
+          "inputs": {
+            "host": {
+              "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps",
+              "operationId": "ListRecords",
+              "connectionName": "alex_payplus_dataverse"
+            },
+            "parameters": {
+              "entityName": "alex_payplus_fieldmappings",
+              "$select": "alex_sourcefieldlogicalname,alex_defaultvalue",
+              "$filter": "_alex_entitymappingid_value eq @{outputs('Compose_entity_mapping_id')} and alex_targetfieldlogicalname eq 'vat_number' and alex_isactive eq true and statecode eq 0",
+              "$top": 1
+            },
+            "authentication": "@parameters('$authentication')"
+          }
+        },
+        "List_email_field_mapping": {
+          "runAfter": { "List_vat_field_mapping": ["Succeeded"] },
+          "metadata": { "operationMetadataId": "b0000000-0000-4000-8000-00000000004e" },
+          "type": "OpenApiConnection",
+          "inputs": {
+            "host": {
+              "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps",
+              "operationId": "ListRecords",
+              "connectionName": "alex_payplus_dataverse"
+            },
+            "parameters": {
+              "entityName": "alex_payplus_fieldmappings",
+              "$select": "alex_sourcefieldlogicalname,alex_defaultvalue",
+              "$filter": "_alex_entitymappingid_value eq @{outputs('Compose_entity_mapping_id')} and alex_targetfieldlogicalname eq 'email' and alex_isactive eq true and statecode eq 0",
+              "$top": 1
+            },
+            "authentication": "@parameters('$authentication')"
+          }
+        },
+        "Resolve_vat_field": {
+          "runAfter": { "List_email_field_mapping": ["Succeeded"] },
+          "metadata": { "operationMetadataId": "b0000000-0000-4000-8000-00000000004f" },
+          "type": "Compose",
+          "inputs": "@coalesce(first(outputs('List_vat_field_mapping')?['body/value'])?['alex_sourcefieldlogicalname'], 'governmentid')"
+        },
+        "Resolve_email_field": {
+          "runAfter": { "Resolve_vat_field": ["Succeeded"] },
+          "metadata": { "operationMetadataId": "b0000000-0000-4000-8000-000000000050" },
+          "type": "Compose",
+          "inputs": "@coalesce(first(outputs('List_email_field_mapping')?['body/value'])?['alex_sourcefieldlogicalname'], 'emailaddress1')"
+        },
+        "Compose_customer_keys": {
+          "runAfter": { "Resolve_email_field": ["Succeeded"] },
+          "metadata": { "operationMetadataId": "b0000000-0000-4000-8000-000000000005" },
+          "type": "Compose",
+          "inputs": {
+            "name": "@coalesce(outputs('Compose_customer_record')?['fullname'], outputs('Compose_customer_record')?['name'], if(empty(body('Get_quote')?['billto_name']), null, body('Get_quote')?['billto_name']), if(empty(body('Get_quote')?['emailaddress']), null, body('Get_quote')?['emailaddress']), concat('Quote ', coalesce(body('Get_quote')?['quotenumber'], body('Get_quote')?['name'], '')))",
+            "email": "@coalesce(outputs('Compose_customer_record')?[outputs('Resolve_email_field')], body('Get_quote')?['emailaddress'], '')",
+            "phone": "@coalesce(body('Get_quote')?['billto_telephone'], outputs('Compose_customer_record')?['telephone1'], '')",
+            "vat": "@coalesce(outputs('Compose_customer_record')?[outputs('Resolve_vat_field')], '')",
+            "address": "@coalesce(body('Get_quote')?['billto_line1'], outputs('Compose_customer_record')?['address1_line1'], '')",
+            "city": "@coalesce(body('Get_quote')?['billto_city'], outputs('Compose_customer_record')?['address1_city'], '')",
+            "postal_code": "@coalesce(body('Get_quote')?['billto_postalcode'], outputs('Compose_customer_record')?['address1_postalcode'], '')"
+          }
+        },
+        "Has_customer_search_keys": {
+          "runAfter": { "Compose_customer_keys": ["Succeeded"] },
+          "type": "If",
+          "expression": {
+            "or": [
+              { "not": { "equals": [ "@empty(coalesce(outputs('Compose_customer_keys')?['vat'], ''))", true ] } },
+              { "not": { "equals": [ "@empty(coalesce(outputs('Compose_customer_keys')?['email'], ''))", true ] } }
+            ]
+          },
+          "actions": {
+            "Find_customer_by_env": {
+              "runAfter": {},
+              "type": "Switch",
+              "expression": "@first(outputs('Get_config_row')?['body/value'])?['alex_environment']",
+              "cases": {
+                "Production": {
+                  "case": 100000000,
+                  "actions": {
+                    "Find_customer_Production": {
+                      "runAfter": {},
+                      "metadata": { "operationMetadataId": "b0000000-0000-4000-8000-000000000006" },
+                      "type": "OpenApiConnection",
+                      "inputs": {
+                        "host": {
+                          "apiId": "/providers/Microsoft.PowerApps/apis/shared_alex-5fpayplus-5f5849d39a0feaf28d",
+                          "operationId": "ViewCustomers",
+                          "connectionName": "shared_alex-5fpayplus-5f5849d39a0feaf28d-1"
+                        },
+                        "parameters": {
+                          "vat_number": "@outputs('Compose_customer_keys')?['vat']",
+                          "email": "@outputs('Compose_customer_keys')?['email']",
+                          "take": "100"
+                        },
+                        "retryPolicy": { "type": "none" },
+                        "authentication": "@parameters('$authentication')"
+                      }
+                    }
+                  }
+                },
+                "Sandbox": {
+                  "case": 100000001,
+                  "actions": {
+                    "Find_customer_Sandbox": {
+                      "runAfter": {},
+                      "metadata": { "operationMetadataId": "b0000000-0000-4000-8000-000000000007" },
+                      "type": "OpenApiConnection",
+                      "inputs": {
+                        "host": {
+                          "apiId": "/providers/Microsoft.PowerApps/apis/shared_alex-5fpayplus-20sandbox-5f5849d39a0feaf28d",
+                          "operationId": "ViewCustomers",
+                          "connectionName": "shared_alex-5fpayplus-20sandbox-5f5849d39a0feaf28d-1"
+                        },
+                        "parameters": {
+                          "vat_number": "@outputs('Compose_customer_keys')?['vat']",
+                          "email": "@outputs('Compose_customer_keys')?['email']",
+                          "take": "100"
+                        },
+                        "retryPolicy": { "type": "none" },
+                        "authentication": "@parameters('$authentication')"
+                      }
+                    }
+                  }
+                }
+              },
+              "default": {
+                "actions": {
+                  "Terminate_unknown_environment": {
+                    "runAfter": {},
+                    "metadata": { "operationMetadataId": "b0000000-0000-4000-8000-000000000008" },
+                    "type": "Terminate",
+                    "inputs": { "runStatus": "Failed", "runError": { "code": "UnknownEnvironment", "message": "alex_environment is not set to Production or Sandbox in the PayPlus configuration row." } }
+                  }
+                }
+              }
+            },
+            "Compose_customer_result": {
+              "runAfter": { "Find_customer_by_env": ["Succeeded"] },
+              "metadata": { "operationMetadataId": "b0000000-0000-4000-8000-000000000009" },
+              "type": "Compose",
+              "inputs": "@coalesce(body('Find_customer_Production'), body('Find_customer_Sandbox'))"
+            },
+            "Filter_matched_customers": {
+              "runAfter": { "Compose_customer_result": ["Succeeded"] },
+              "metadata": { "operationMetadataId": "b0000000-0000-4000-8000-0000000000a1" },
+              "type": "Query",
+              "inputs": {
+                "from": "@coalesce(outputs('Compose_customer_result')?['customers'], json('[]'))",
+                "where": "@or(and(not(empty(outputs('Compose_customer_keys')?['vat'])), equals(toLower(trim(coalesce(item()?['vat_number'], ''))), toLower(trim(coalesce(outputs('Compose_customer_keys')?['vat'], ''))))), and(not(empty(outputs('Compose_customer_keys')?['email'])), equals(toLower(trim(coalesce(item()?['email'], ''))), toLower(trim(coalesce(outputs('Compose_customer_keys')?['email'], ''))))))"
+              }
+            },
+            "Set_customer_uid_matched": {
+              "runAfter": { "Filter_matched_customers": ["Succeeded"] },
+              "metadata": { "operationMetadataId": "b0000000-0000-4000-8000-0000000000a3" },
+              "type": "SetVariable",
+              "inputs": { "name": "varCustomerUid", "value": "@if(equals(length(body('Filter_matched_customers')), 1), first(body('Filter_matched_customers'))?['customer_uid'], '')" }
+            }
+          },
+          "else": {
+            "actions": {
+              "Set_customer_uid_none": {
+                "runAfter": {},
+                "metadata": { "operationMetadataId": "b0000000-0000-4000-8000-0000000000a4" },
+                "type": "SetVariable",
+                "inputs": { "name": "varCustomerUid", "value": "" }
+              }
+            }
+          }
+        },
+        "Get_quote_lines": {
+          "runAfter": { "Has_customer_search_keys": ["Succeeded"] },
+          "metadata": { "operationMetadataId": "b0000000-0000-4000-8000-00000000000b" },
+          "type": "OpenApiConnection",
+          "inputs": {
+            "host": {
+              "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps",
+              "operationId": "ListRecords",
+              "connectionName": "alex_payplus_dataverse"
+            },
+            "parameters": {
+              "entityName": "quotedetails",
+              "$select": "productname,productdescription,productnumber,quantity,priceperunit,manualdiscountamount",
+              "$filter": "_quoteid_value eq @{triggerOutputs()?['body/quoteid']}"
+            },
+            "authentication": "@parameters('$authentication')"
+          }
+        },
+        "For_each_line": {
+          "runAfter": { "Get_quote_lines": ["Succeeded"] },
+          "type": "Foreach",
+          "foreach": "@outputs('Get_quote_lines')?['body/value']",
+          "runtimeConfiguration": { "concurrency": { "repetitions": 1 } },
+          "actions": {
+            "Condition_has_barcode": {
+              "runAfter": {},
+              "type": "If",
+              "expression": {
+                "and": [
+                  { "not": { "equals": [ "@empty(coalesce(items('For_each_line')?['productnumber'], ''))", true ] } }
+                ]
+              },
+              "actions": {
+                "Find_product_by_env": {
+                  "runAfter": {},
+                  "type": "Switch",
+                  "expression": "@first(outputs('Get_config_row')?['body/value'])?['alex_environment']",
+                  "cases": {
+                    "Production": {
+                      "case": 100000000,
+                      "actions": {
+                        "Find_product_Production": {
+                          "runAfter": {},
+                          "metadata": { "operationMetadataId": "b0000000-0000-4000-8000-00000000000c" },
+                          "type": "OpenApiConnection",
+                          "inputs": {
+                            "host": {
+                              "apiId": "/providers/Microsoft.PowerApps/apis/shared_alex-5fpayplus-5f5849d39a0feaf28d",
+                              "operationId": "ViewProducts",
+                              "connectionName": "shared_alex-5fpayplus-5f5849d39a0feaf28d-1"
+                            },
+                            "parameters": {
+                              "barcode": "@items('For_each_line')?['productnumber']"
+                            },
+                            "retryPolicy": { "type": "none" },
+                            "authentication": "@parameters('$authentication')"
+                          }
+                        }
+                      }
+                    },
+                    "Sandbox": {
+                      "case": 100000001,
+                      "actions": {
+                        "Find_product_Sandbox": {
+                          "runAfter": {},
+                          "metadata": { "operationMetadataId": "b0000000-0000-4000-8000-00000000000d" },
+                          "type": "OpenApiConnection",
+                          "inputs": {
+                            "host": {
+                              "apiId": "/providers/Microsoft.PowerApps/apis/shared_alex-5fpayplus-20sandbox-5f5849d39a0feaf28d",
+                              "operationId": "ViewProducts",
+                              "connectionName": "shared_alex-5fpayplus-20sandbox-5f5849d39a0feaf28d-1"
+                            },
+                            "parameters": {
+                              "barcode": "@items('For_each_line')?['productnumber']"
+                            },
+                            "retryPolicy": { "type": "none" },
+                            "authentication": "@parameters('$authentication')"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "default": {
+                    "actions": {
+                      "Compose_product_unknown_env": {
+                        "runAfter": {},
+                        "type": "Compose",
+                        "inputs": "alex_environment is not Production or Sandbox - product will be sent as write-in."
+                      }
+                    }
+                  }
+                },
+                "Compose_product_result": {
+                  "runAfter": { "Find_product_by_env": ["Succeeded"] },
+                  "type": "Compose",
+                  "inputs": "@coalesce(body('Find_product_Production'), body('Find_product_Sandbox'), json('[]'))"
+                },
+                "Condition_single_product": {
+                  "runAfter": { "Compose_product_result": ["Succeeded"] },
+                  "type": "If",
+                  "expression": {
+                    "and": [
+                      { "equals": [ "@length(coalesce(outputs('Compose_product_result'), json('[]')))", 1 ] }
+                    ]
+                  },
+                  "actions": {
+                    "Append_item_with_product": {
+                      "runAfter": {},
+                      "type": "AppendToArrayVariable",
+                      "inputs": {
+                        "name": "varItems",
+                        "value": {
+                          "product_uid": "@first(outputs('Compose_product_result'))?['uid']",
+                          "name": "@coalesce(items('For_each_line')?['productname'], items('For_each_line')?['productdescription'], first(outputs('Compose_product_result'))?['name'], '\u05e4\u05e8\u05d9\u05d8')",
+                          "quantity": "@coalesce(items('For_each_line')?['quantity'], 1)",
+                          "price": "@coalesce(items('For_each_line')?['priceperunit'], 0)"
+                        }
+                      }
+                    }
+                  },
+                  "else": {
+                    "actions": {
+                      "Append_item_writein_ambiguous": {
+                        "runAfter": {},
+                        "type": "AppendToArrayVariable",
+                        "inputs": {
+                          "name": "varItems",
+                          "value": {
+                            "name": "@coalesce(items('For_each_line')?['productname'], items('For_each_line')?['productdescription'], '\u05e4\u05e8\u05d9\u05d8')",
+                            "quantity": "@coalesce(items('For_each_line')?['quantity'], 1)",
+                            "price": "@coalesce(items('For_each_line')?['priceperunit'], 0)"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "else": {
+                "actions": {
+                  "Append_item_writein_nobarcode": {
+                    "runAfter": {},
+                    "type": "AppendToArrayVariable",
+                    "inputs": {
+                      "name": "varItems",
+                      "value": {
+                        "name": "@coalesce(items('For_each_line')?['productname'], items('For_each_line')?['productdescription'], '\u05e4\u05e8\u05d9\u05d8')",
+                        "quantity": "@coalesce(items('For_each_line')?['quantity'], 1)",
+                        "price": "@coalesce(items('For_each_line')?['priceperunit'], 0)"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "Create_quote_by_env": {
+          "runAfter": { "For_each_line": ["Succeeded"] },
+          "type": "Switch",
+          "expression": "@first(outputs('Get_config_row')?['body/value'])?['alex_environment']",
+          "cases": {
+            "Production": {
+              "case": 100000000,
+              "actions": {
+                "Create_quote_Production": {
+                  "runAfter": {},
+                  "metadata": { "operationMetadataId": "b0000000-0000-4000-8000-00000000000e" },
+                  "type": "OpenApiConnection",
+                  "inputs": {
+                    "host": {
+                      "apiId": "/providers/Microsoft.PowerApps/apis/shared_alex-5fpayplus-5f5849d39a0feaf28d",
+                      "operationId": "CreateQuote",
+                      "connectionName": "shared_alex-5fpayplus-5f5849d39a0feaf28d-1"
+                    },
+                    "parameters": {
+                      "body/unique_identifier": "@triggerOutputs()?['body/quoteid']",
+                      "body/doc_date": "@formatDateTime(utcNow(),'yyyy-MM-dd')",
+                      "body/language": "he",
+                      "body/currency_code": "ILS",
+                      "body/totalAmount": "@coalesce(body('Get_quote')?['totalamount'], 0)",
+                      "body/more_info": "@concat('Quote ', coalesce(body('Get_quote')?['quotenumber'], body('Get_quote')?['name'], ''))",
+                      "body/customer/customer_uid": "@if(empty(variables('varCustomerUid')), null, variables('varCustomerUid'))",
+                      "body/customer/name": "@outputs('Compose_customer_keys')?['name']",
+                      "body/customer/email": "@outputs('Compose_customer_keys')?['email']",
+                      "body/customer/phone": "@outputs('Compose_customer_keys')?['phone']",
+                      "body/customer/vat_number": "@outputs('Compose_customer_keys')?['vat']",
+                      "body/customer/address": "@outputs('Compose_customer_keys')?['address']",
+                      "body/customer/city": "@outputs('Compose_customer_keys')?['city']",
+                      "body/customer/postal_code": "@outputs('Compose_customer_keys')?['postal_code']",
+                      "body/items": "@variables('varItems')"
+                    },
+                    "retryPolicy": { "type": "none" },
+                    "authentication": "@parameters('$authentication')"
+                  }
+                }
+              }
+            },
+            "Sandbox": {
+              "case": 100000001,
+              "actions": {
+                "Create_quote_Sandbox": {
+                  "runAfter": {},
+                  "metadata": { "operationMetadataId": "b0000000-0000-4000-8000-00000000000f" },
+                  "type": "OpenApiConnection",
+                  "inputs": {
+                    "host": {
+                      "apiId": "/providers/Microsoft.PowerApps/apis/shared_alex-5fpayplus-20sandbox-5f5849d39a0feaf28d",
+                      "operationId": "CreateQuote",
+                      "connectionName": "shared_alex-5fpayplus-20sandbox-5f5849d39a0feaf28d-1"
+                    },
+                    "parameters": {
+                      "body/unique_identifier": "@triggerOutputs()?['body/quoteid']",
+                      "body/doc_date": "@formatDateTime(utcNow(),'yyyy-MM-dd')",
+                      "body/language": "he",
+                      "body/currency_code": "ILS",
+                      "body/totalAmount": "@coalesce(body('Get_quote')?['totalamount'], 0)",
+                      "body/more_info": "@concat('Quote ', coalesce(body('Get_quote')?['quotenumber'], body('Get_quote')?['name'], ''))",
+                      "body/customer/customer_uid": "@if(empty(variables('varCustomerUid')), null, variables('varCustomerUid'))",
+                      "body/customer/name": "@outputs('Compose_customer_keys')?['name']",
+                      "body/customer/email": "@outputs('Compose_customer_keys')?['email']",
+                      "body/customer/phone": "@outputs('Compose_customer_keys')?['phone']",
+                      "body/customer/vat_number": "@outputs('Compose_customer_keys')?['vat']",
+                      "body/customer/address": "@outputs('Compose_customer_keys')?['address']",
+                      "body/customer/city": "@outputs('Compose_customer_keys')?['city']",
+                      "body/customer/postal_code": "@outputs('Compose_customer_keys')?['postal_code']",
+                      "body/items": "@variables('varItems')"
+                    },
+                    "retryPolicy": { "type": "none" },
+                    "authentication": "@parameters('$authentication')"
+                  }
+                }
+              }
+            }
+          },
+          "default": {
+            "actions": {
+              "Terminate_unknown_environment_create": {
+                "runAfter": {},
+                "metadata": { "operationMetadataId": "b0000000-0000-4000-8000-000000000010" },
+                "type": "Terminate",
+                "inputs": { "runStatus": "Failed", "runError": { "code": "UnknownEnvironment", "message": "alex_environment is not set to Production or Sandbox in the PayPlus configuration row." } }
+              }
+            }
+          }
+        },
+        "Compose_document_result": {
+          "runAfter": { "Create_quote_by_env": ["Succeeded"] },
+          "metadata": { "operationMetadataId": "b0000000-0000-4000-8000-000000000011" },
+          "type": "Compose",
+          "inputs": "@coalesce(body('Create_quote_Production'), body('Create_quote_Sandbox'))"
+        }
+      }
+    }
+  }
+}
