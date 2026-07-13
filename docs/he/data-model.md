@@ -8,7 +8,9 @@
 
 | קבוצה | שם לוגי | שם תצוגה | מטרה |
 | --- | --- | --- | --- |
-| תצורה | `alex_payplusconfiguration` | תצורת PayPlus | סביבת המחבר, מצב אשף ההתקנה, מסוף ודפי תשלום שהתגלו, מתגי שירות עצמי וסטטוס אימות. |
+| תצורה | `alex_payplusconfiguration` | תצורת PayPlus | סביבת המחבר, מצב אשף ההתקנה, מסוף ועמוד תשלום ברירת מחדל (fallback) ברמת החשבון, מתגי שירות עצמי וסטטוס אימות. |
+| מסופים | `alex_payplus_terminal` | מסוף PayPlus | מסופי PayPlus שהתגלו עבור הסביבה, עם בחירת ברירת מחדל ומדיניות ברמת המסוף. |
+| מסופים | `alex_payplus_paymentpage` | עמוד תשלום PayPlus | עמודי תשלום של PayPlus שהתגלו, כל אחד מקושר למסוף, עם בחירת ברירת מחדל והתנהגות ברמת העמוד. |
 | תצורה | `alex_payplus_syncprofile` | פרופיל סנכרון PayPlus | שורש חבילת סנכרון. פרופיל פעיל אחד לכל סביבה; מחזיק ברירות מחדל ומכתיב ניתוב מחבר. |
 | מיפוי סנכרון | `alex_payplus_entitymapping` | מיפוי ישות PayPlus | ממפה טבלת מקור אחת ב-Dataverse לאובייקט יעד אחד ב-PayPlus. |
 | מיפוי סנכרון | `alex_payplus_fieldmapping` | מיפוי שדה PayPlus | מיפוי ברמת השדה בין שדה מקור לשדה PayPlus. |
@@ -25,6 +27,9 @@
 
 ```mermaid
 erDiagram
+    CONFIGURATION ||--o{ TERMINAL : "discovers"
+    CONFIGURATION ||--o{ PAYMENTPAGE : "discovers"
+    TERMINAL ||--o{ PAYMENTPAGE : "has"
     SYNCPROFILE ||--o{ ENTITYMAPPING : "has"
     SYNCPROFILE ||--o{ VALUEMAPPING : "has"
     SYNCPROFILE ||--o{ SYNCOUTBOX : "scopes"
@@ -45,6 +50,25 @@ erDiagram
     ACCOUNT ||--o{ HFSESSION : "requests"
     CONTACT ||--o{ HFSESSION : "requests"
 
+    CONFIGURATION {
+        guid alex_payplusconfigurationid PK
+        choice alex_environment
+        string alex_terminaluidref
+        string alex_paymentpageuidref
+    }
+    TERMINAL {
+        guid alex_payplus_terminalid PK
+        string alex_terminaluid
+        choice alex_environment
+        bool alex_isdefault
+    }
+    PAYMENTPAGE {
+        guid alex_payplus_paymentpageid PK
+        lookup alex_terminalid FK
+        string alex_paymentpageuid
+        choice alex_environment
+        bool alex_isdefault
+    }
     SYNCPROFILE {
         guid alex_payplus_syncprofileid PK
         string alex_name
@@ -130,6 +154,11 @@ erDiagram
 
 | טבלת ילד | עמודת מפתח זר | טבלת אב |
 | --- | --- | --- |
+| `alex_payplus_terminal` | `alex_configurationid` | `alex_payplusconfiguration` |
+| `alex_payplus_terminal` | `alex_syncprofileid` | `alex_payplus_syncprofile` |
+| `alex_payplus_paymentpage` | `alex_terminalid` | `alex_payplus_terminal` |
+| `alex_payplus_paymentpage` | `alex_configurationid` | `alex_payplusconfiguration` |
+| `alex_payplus_paymentpage` | `alex_syncprofileid` | `alex_payplus_syncprofile` |
 | `alex_payplus_entitymapping` | `alex_syncprofileid` | `alex_payplus_syncprofile` |
 | `alex_payplus_valuemapping` | `alex_syncprofileid` | `alex_payplus_syncprofile` |
 | `alex_payplus_fieldmapping` | `alex_entitymappingid` | `alex_payplus_entitymapping` |
@@ -159,13 +188,13 @@ erDiagram
 | עמודה | סוג | הסבר |
 | --- | --- | --- |
 | `alex_name` | טקסט | שם התצורה. |
-| `alex_environment` | Choice | סביבת PayPlus (Sandbox / Production). |
-| `alex_setupstage` | Choice | שלב אשף ההתקנה (Connect, Pages, Validate, Done). |
+| `alex_environment` | Choice | סביבת PayPlus (Production / Sandbox). |
+| `alex_setupstage` | Choice | שלב אשף ההתקנה (חיבור, מסופים ועמודי תשלום, אימות, סיום). |
 | `alex_setupcompleted` | כן/לא | ההתקנה הושלמה. |
 | `alex_configvalidated` | כן/לא | התצורה אומתה. |
-| `alex_terminaluidref` | טקסט | מזהה המסוף שנבחר. |
-| `alex_paymentpageuidref` | טקסט | מזהה דף התשלום שנבחר. |
-| `alex_paymentpages` | טקסט מרובה (JSON) | רשימת דפי תשלום שנשמרה במטמון. |
+| `alex_terminaluidref` | טקסט | מזהה המסוף שנבחר כברירת מחדל של החשבון (fallback). כל התהליכים משתמשים בו כאשר לא סופק מסוף ספציפי. נקבע בשלב האימות של האשף ומשקף את רשומת המסוף המסומנת ב-`alex_isdefault`. |
+| `alex_paymentpageuidref` | טקסט | מזהה עמוד התשלום שנבחר כברירת מחדל של החשבון (fallback). כל התהליכים משתמשים בו כאשר לא סופק עמוד ספציפי. נקבע בשלב האימות ומשקף את רשומת העמוד המסומנת ב-`alex_isdefault`. |
+| `alex_paymentpages` | טקסט מרובה (JSON) | שדה מורשת/מטמן של רשימת עמודי תשלום. העמודים המוסמכים שהתגלו שוכנים כעת בטבלה `alex_payplus_paymentpage`. |
 | `alex_lastvalidationstatus` | Choice | סטטוס הבדיקה האחרון. |
 | `alex_lastvalidationcode` | מספר שלם | קוד תוצאה/HTTP אחרון. |
 | `alex_lastvalidationmessage` | טקסט | הודעת בדיקה אחרונה. |
@@ -173,6 +202,78 @@ erDiagram
 | `alex_validationrequestid` | טקסט | מזהה בקשת בדיקה. |
 | `alex_selfservice_{email\|sms\|whatsapp}_{account\|contact}` | כן/לא | הפעלת איסוף כרטיס בשירות עצמי לפי ערוץ וסוג אב. |
 | `alex_selfservice_{email\|sms\|whatsapp}_{account\|contact}_expiry` | מספר שלם | חלון תוקף הקישור בימים לכל ערוץ וסוג אב. |
+
+### מסוף PayPlus (`alex_payplus_terminal`)
+
+שורה אחת לכל מסוף PayPlus שהתגלה עבור הסביבה. השורות מאוכלסות על ידי תהליך **PayPlus - Import Terminals & Pages**, לפי מפתח סביבה + מזהה מסוף. ברירת מחדל יחידה לכל סביבה נאכפת על ידי הפלאגין `EnforceSingleDefaultTerminal`.
+
+| עמודה | סוג | הסבר |
+| --- | --- | --- |
+| `alex_terminaluid` | טקסט | מזהה מסוף (UUID של PayPlus). מפתח טבעי יחד עם הסביבה. |
+| `alex_merchantnumber` | טקסט | מספר בית עסק. |
+| `alex_legalentity` | טקסט | ישות משפטית. |
+| `alex_terminaltypeid` | מספר שלם | קוד סוג מסוף. |
+| `alex_activitytype` | Choice | סוג פעילות (אתר, מוקד, קמעונאות, תרומות, אחר). |
+| `alex_primarycurrency` | Choice | מטבע עיקרי (ILS, USD, EUR, GBP). |
+| `alex_recurring_enabled` | כן/לא | חיובים מחזוריים פעילים. |
+| `alex_tokenization_enabled` | כן/לא | טוקניזציה פעילה. |
+| `alex_cvv_policy` | Choice | מדיניות CVV (נדרש, לא נדרש, מותנה, לא ידוע). |
+| `alex_cvv_policy_source` | Choice | מקור מדיניות CVV. |
+| `alex_cvv_required_j5` | Choice | CVV נדרש בהשלמת J5. |
+| `alex_cvv_required_recurring_init` | Choice | CVV נדרש באתחול מחזורי. |
+| `alex_threeds_policy` | Choice | מדיניות 3D Secure (ברירת מחדל, פעיל, כבוי, מותנה). |
+| `alex_settings_verified_on` | תאריך/שעה | מועד אימות ההגדרות. |
+| `alex_rawjson` | טקסט מרובה | JSON גולמי של מטען המסוף מ-PayPlus. |
+| `alex_lastsyncon` | תאריך/שעה | סונכרן לאחרונה. |
+| `alex_environment` | Choice | סביבת PayPlus (Production / Sandbox). |
+| `alex_isdefault` | כן/לא | מסוף ברירת מחדל לסביבה. נאכף יחיד-לכל-סביבה על ידי הפלאגין `EnforceSingleDefaultTerminal`. |
+| `alex_isactive` | כן/לא | פעיל. |
+| `alex_description` | טקסט מרובה | תיאור עסקי (מתי להשתמש). |
+| `alex_configurationid` | Lookup → תצורת PayPlus | קונפיגורציה בעלים. |
+| `alex_syncprofileid` | Lookup → פרופיל סנכרון PayPlus | פרופיל סנכרון בעלים. |
+| `alex_approvedby` | Lookup → משתמש | אושר על ידי. |
+| `alex_name` | טקסט | שם. |
+
+### עמוד תשלום PayPlus (`alex_payplus_paymentpage`)
+
+שורה אחת לכל עמוד תשלום של PayPlus; כל עמוד שייך למסוף. השורות מאוכלסות על ידי תהליך **PayPlus - Import Terminals & Pages**, לפי מפתח סביבה + מזהה עמוד. ברירת מחדל יחידה לכל מסוף + סוג תהליך נאכפת על ידי הפלאגין `EnforceSingleDefaultPage`.
+
+| עמודה | סוג | הסבר |
+| --- | --- | --- |
+| `alex_paymentpageuid` | טקסט | מזהה עמוד תשלום (UUID של PayPlus). מפתח טבעי יחד עם הסביבה. |
+| `alex_terminalid` | Lookup → מסוף PayPlus | המסוף שאליו שייך העמוד. |
+| `alex_processtype` | Choice | סוג תהליך (חיוב, אישור, בדיקה, טוקן בלבד, מחזורי). |
+| `alex_purpose` | Choice | מטרת העמוד. |
+| `alex_audience` | Choice | קהל יעד. |
+| `alex_channel` | Choice | ערוץ עיקרי (אתר, מוקד, WhatsApp, אימייל, QR). |
+| `alex_tokenbehavior` | Choice | התנהגות טוקן (ללא טוקן, אופציונלי, נדרש, טוקן בלבד). |
+| `alex_createtoken_default` | כן/לא | יצירת טוקן כברירת מחדל. |
+| `alex_cvv_inherit_terminal` | כן/לא | ירושת CVV מהמסוף. |
+| `alex_cvv_policy_displayed` | Choice | מדיניות CVV מוצגת. |
+| `alex_threeds_policy` | Choice | מדיניות 3D Secure. |
+| `alex_for_card_update` | כן/לא | מיועד לעדכון כרטיס. |
+| `alex_for_subscription` | כן/לא | מיועד להצטרפות למנוי. |
+| `alex_openamount` | כן/לא | סכום פתוח. |
+| `alex_maxpayments` | מספר שלם | מספר תשלומים מרבי. |
+| `alex_defaultcurrency` | טקסט | מטבע ברירת מחדל. |
+| `alex_language` | טקסט | שפה. |
+| `alex_identification_required` | כן/לא | שדה זיהוי נדרש. |
+| `alex_cashieruid` | טקסט | מזהה קופה. |
+| `alex_cashiername` | טקסט | שם קופה. |
+| `alex_chargemethod` | מספר שלם | סוג פעולה מספרי. |
+| `alex_selectionpriority` | מספר שלם | עדיפות בחירה. |
+| `alex_startdate` | תאריך/שעה | תאריך התחלה. |
+| `alex_enddate` | תאריך/שעה | תאריך סיום. |
+| `alex_valid` | כן/לא | תקין ב-PayPlus. |
+| `alex_rawjson` | טקסט מרובה | JSON גולמי של מטען עמוד התשלום מ-PayPlus. |
+| `alex_lastsyncon` | תאריך/שעה | סונכרן לאחרונה. |
+| `alex_environment` | Choice | סביבת PayPlus (Production / Sandbox). |
+| `alex_isdefault` | כן/לא | עמוד ברירת מחדל למסוף שלו + סוג תהליך. נאכף יחיד-לכל (מסוף + סוג תהליך) על ידי הפלאגין `EnforceSingleDefaultPage`. |
+| `alex_isactive` | כן/לא | פעיל. |
+| `alex_description` | טקסט מרובה | תיאור למשתמש. |
+| `alex_configurationid` | Lookup → תצורת PayPlus | קונפיגורציה בעלים. |
+| `alex_syncprofileid` | Lookup → פרופיל סנכרון PayPlus | פרופיל סנכרון בעלים. |
+| `alex_name` | טקסט | שם. |
 
 ### פרופיל סנכרון PayPlus (`alex_payplus_syncprofile`)
 
@@ -393,6 +494,17 @@ erDiagram
 
 ### סביבה (`alex_environment`)
 
+ה-Choice של `alex_environment` משתמש ב**שני מיפויי ערכים שונים** בהתאם לטבלה. יש להיזהר לא לבלבל ביניהם.
+
+**סביבה — טבלאות התצורה, המסוף ועמוד התשלום** (`alex_payplusconfiguration`, `alex_payplus_terminal`, `alex_payplus_paymentpage`):
+
+| ערך | תווית |
+| --- | --- |
+| 100000000 | Production |
+| 100000001 | Sandbox |
+
+**סביבה — טבלאות פרופיל הסנכרון וזמן הריצה** (`alex_payplus_syncprofile`, `alex_payplus_syncoutbox`, `alex_payplus_syncstate`, `alex_payplus_synclog`):
+
 | ערך | תווית |
 | --- | --- |
 | 100000000 | Sandbox |
@@ -487,7 +599,7 @@ erDiagram
 | ערך | תווית |
 | --- | --- |
 | 100000000 | Connect |
-| 100000001 | Pages |
+| 100000001 | Terminals & pages |
 | 100000002 | Validate |
 | 100000003 | Done |
 
@@ -509,12 +621,110 @@ erDiagram
 
 ### ערוץ כרטיס / סשן (`alex_channel`)
 
+משמש את הטבלאות `alex_creditcard` ו-`alex_pp_hfsession`. זהו Choice **שונה** מה-Channel של עמוד התשלום שלמטה.
+
 | ערך | תווית |
 | --- | --- |
 | 100000000 | ידני |
 | 100000001 | אימייל |
 | 100000002 | SMS |
 | 100000003 | WhatsApp |
+
+### סוג פעילות (`alex_activitytype`) — מסוף
+
+| ערך | תווית |
+| --- | --- |
+| 100000000 | אתר |
+| 100000001 | מוקד |
+| 100000002 | קמעונאות |
+| 100000003 | תרומות |
+| 100000004 | אחר |
+
+### מטבע עיקרי (`alex_primarycurrency`) — מסוף
+
+| ערך | תווית |
+| --- | --- |
+| 100000000 | ILS |
+| 100000001 | USD |
+| 100000002 | EUR |
+| 100000003 | GBP |
+
+### מדיניות CVV (`alex_cvv_policy`) — מסוף
+
+| ערך | תווית |
+| --- | --- |
+| 100000000 | נדרש |
+| 100000001 | לא נדרש |
+| 100000002 | מותנה |
+| 100000003 | לא ידוע |
+
+### מדיניות 3D Secure (`alex_threeds_policy`) — מסוף ועמוד תשלום
+
+| ערך | תווית |
+| --- | --- |
+| 100000000 | ברירת מחדל |
+| 100000001 | פעיל |
+| 100000002 | כבוי |
+| 100000003 | מותנה |
+
+### סוג תהליך (`alex_processtype`) — עמוד תשלום
+
+| ערך | תווית |
+| --- | --- |
+| 100000000 | חיוב |
+| 100000001 | אישור |
+| 100000002 | בדיקה |
+| 100000003 | טוקן בלבד |
+| 100000004 | מחזורי |
+
+### מטרת העמוד (`alex_purpose`) — עמוד תשלום
+
+| ערך | תווית |
+| --- | --- |
+| 100000000 | מוקד |
+| 100000001 | אתר |
+| 100000002 | תרומה |
+| 100000003 | חשבונית |
+| 100000004 | QR |
+| 100000005 | מנוי |
+| 100000006 | עדכון כרטיס |
+| 100000007 | אירוע |
+| 100000008 | אישור |
+| 100000009 | מותג |
+| 100000010 | לקוח עסקי |
+| 100000011 | לקוח פרטי |
+
+### קהל יעד (`alex_audience`) — עמוד תשלום
+
+| ערך | תווית |
+| --- | --- |
+| 100000000 | לקוח חדש |
+| 100000001 | לקוח קיים |
+| 100000002 | מנוי |
+| 100000003 | עסקי |
+| 100000004 | תורם |
+| 100000005 | פרטי |
+
+### ערוץ (`alex_channel`) — עמוד תשלום
+
+זהו Choice **שונה** מערוץ הכרטיס / סשן שלמעלה.
+
+| ערך | תווית |
+| --- | --- |
+| 100000000 | אתר |
+| 100000001 | מוקד |
+| 100000002 | WhatsApp |
+| 100000003 | אימייל |
+| 100000004 | QR |
+
+### התנהגות טוקן (`alex_tokenbehavior`) — עמוד תשלום
+
+| ערך | תווית |
+| --- | --- |
+| 100000000 | ללא טוקן |
+| 100000001 | אופציונלי |
+| 100000002 | נדרש |
+| 100000003 | טוקן בלבד |
 
 ## הערות
 

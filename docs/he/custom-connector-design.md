@@ -66,6 +66,8 @@ Policy נוסף מזריק `secret-key` מתוך `@connectionParameters('secretK
 
 ניתן לסמן את `ListPaymentPages` כ-internal כאשר היא משמשת רק למילוי ערכי dropdown. ניתן גם להשאיר אותה גלויה לצורך פתרון תקלות או אימות הגדרה.
 
+מעבר ל-dropdown, `MyTerminals` ו-`ListPaymentPages` נצרכות על ידי התהליך `PayPlus - Import Terminals & Pages`, המבצע upsert של המסופים ועמודי התשלום שהתגלו לתוך הטבלאות הייעודיות `alex_payplus_terminal` ו-`alex_payplus_paymentpage` ב-Dataverse (לפי מפתח סביבה + UID). סכמת המחבר עצמה אינה משתנה; המשאבים שהתגלו נשמרים כעת עם בחירת ברירת מחדל, ולא רק כסיוע ל-Designer.
+
 פעולות עזר או internal לא צריכות לחשוף סודות או שדות כרטיס גולמיים.
 
 ## Dynamic dropdowns

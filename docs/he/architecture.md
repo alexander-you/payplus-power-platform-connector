@@ -64,6 +64,8 @@
 - `RefundByTransaction`
 - `ChargeSavedCard` כאשר קיים טוקן שמור של PayPlus וקיים אישור להשתמש בו
 
+תהליך ייעודי להתקנה, `PayPlus - Import Terminals & Pages`, קורא את מסופי PayPlus (`MyTerminals`) ואת עמודי התשלום שלהם (`ListPaymentPages`) דרך המחבר, ומבצע upsert לשורות בטבלאות `alex_payplus_terminal` ו-`alex_payplus_paymentpage`, לפי מפתח סביבה + UID. רשומות חדשות מקבלות `alex_isdefault = false` בתחילה. התהליך רץ במהלך ההתקנה (שלב מסופים ועמודי תשלום) וניתן להריץ אותו שוב לרענון הקטלוג.
+
 מומלץ להפעיל Secure Inputs ו-Secure Outputs לכל פעולה שעלולה להכיל ערכים רגישים כגון טוקנים או מזהי לקוח.
 
 ## Dynamics 365 / Dataverse
@@ -127,10 +129,26 @@ Dataverse הוא אופציונלי אך מומלץ כאשר נדרשים מעק
 - `MyTerminals`: שליפת מסופים והחזרת UUID המשמש כ-`terminal_uid`.
 - `ListPaymentPages`: שליפת דפי תשלום עבור מסוף נבחר.
 
+במהלך ההתקנה פעולות אלו משמשות את התהליך `PayPlus - Import Terminals & Pages` לאיכלוס טבלאות ייעודיות ב-Dataverse (`alex_payplus_terminal` ו-`alex_payplus_paymentpage`), ולא רק לסיוע לרשימות ב-Designer. הקטלוג שיובא תומך בבחירת ברירת מחדל (`alex_isdefault`) ובמדיניות ברמת המסוף וברמת העמוד.
+
 מגבלת Designer שנמצאה ב-POC:
 
 - רשימות תלויות באמצעות `x-ms-dynamic-values` עלולות לגרום לשגיאת Manifest 409 כאשר מקור הרשימה דורש פרמטר.
 - נמצא דפוס שעובד: שימוש ב-`x-ms-dynamic-values` עבור בחירת מסוף, וב-`x-ms-dynamic-list` עבור רשימת דפי תשלום תלויה.
+
+## התקנה והגדרה
+
+אשף ההתקנה (`alex_payplus_setup.html`) מנהל התקנה בארבעה שלבים:
+
+1. **חיבור** — הזנת ואימות החיבור ל-PayPlus.
+2. **מסופים ועמודי תשלום** — שליפת כל המסופים ועמודי התשלום שלהם מ-PayPlus, תצוגה מקדימה, וייבוא שלהם. הייבוא יוצר את רשומות `alex_payplus_terminal` ו-`alex_payplus_paymentpage`.
+3. **אימות** — בחירת המסוף ברירת המחדל ועמוד התשלום ברירת המחדל שלו. פעולה זו כותבת `alex_terminaluidref` / `alex_paymentpageuidref` על התצורה ומסמנת `alex_isdefault = true` על רשומות המסוף והעמוד שנבחרו. מתבצעת בדיקת חיבור מהירה (קישור תשלום מתארח לדוגמה), ולאחר מכן מתבצע ייבוא סוגי מסמכים משמעותי וחוסם — ההתקנה אינה יכולה להסתיים עד שסוגי המסמכים ייובאו בהצלחה.
+4. **סיום** — מרכז ניהול, כולל בדיקת חיבור לפי עמוד לפי דרישה.
+
+שני פלאגינים שומרים על עקביות ברירות המחדל:
+
+- `EnforceSingleDefaultTerminal` — מסוף ברירת מחדל אחד לכל סביבה.
+- `EnforceSingleDefaultPage` — עמוד ברירת מחדל אחד לכל מסוף + סוג תהליך.
 
 ## מנוע סנכרון רציף
 

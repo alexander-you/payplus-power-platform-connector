@@ -66,6 +66,8 @@ The primary business action is `GeneratePaymentLink`.
 
 `ListPaymentPages` can be marked internal when used only to populate dropdown values. It may also be made visible for troubleshooting or setup validation.
 
+Beyond dropdowns, `MyTerminals` and `ListPaymentPages` are consumed by the `PayPlus - Import Terminals & Pages` flow, which upserts the discovered terminals and payment pages into the dedicated `alex_payplus_terminal` and `alex_payplus_paymentpage` Dataverse tables (keyed by environment + UID). The connector schema itself is unchanged; the discovered resources are now persisted with default selection rather than only assisting the designer.
+
 Internal or helper operations should not expose secrets or raw card fields.
 
 ## Dynamic Dropdowns

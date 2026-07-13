@@ -105,6 +105,51 @@ Actions:
 - Confirm payment page configuration in PayPlus.
 - Use manual payment page UID only when validated.
 
+## Terminals & Pages Import Failed
+
+Possible causes:
+
+- The `PayPlus - Import Terminals & Pages` flow is turned off or its connection is broken.
+- `MyTerminals` or `ListPaymentPages` returned an empty or invalid response.
+- Environment mismatch between the configuration and the connection.
+
+Actions:
+
+- Confirm the flow is turned on and uses a valid connection.
+- Re-run the import from the setup wizard's Terminals & pages step (or the management center re-import link).
+- Verify rows appear in `alex_payplus_terminal` and `alex_payplus_paymentpage`, keyed by environment + UID.
+- Remember the import is idempotent: re-running upserts by (environment + UID) and preserves business/policy fields.
+
+## No Default Terminal Or Page
+
+Possible causes:
+
+- The Validate step was not completed, so no record is flagged `alex_isdefault`.
+- A default was cleared and not re-selected.
+
+Actions:
+
+- Re-run the Validate step and pick a default terminal and its default payment page. This writes `alex_terminaluidref` / `alex_paymentpageuidref` on the configuration and marks `alex_isdefault = true`.
+- Only one default terminal per environment and one default page per terminal + process type are allowed; the `EnforceSingleDefaultTerminal` and `EnforceSingleDefaultPage` plugins clear the previous default automatically.
+
+## Document Types Import Blocks Setup Completion
+
+Symptoms:
+
+- The Validate step does not advance to Done.
+- Setup stays on Validate because the document-types import failed or timed out.
+
+Possible causes:
+
+- The document-types import is a mandatory, blocking step; the installation cannot complete until it succeeds.
+- The import flow is off, or its connection is broken.
+- The flow used an invalid inline `filter()` expression.
+
+Actions:
+
+- Confirm the document-types import flow is turned on and its connection is valid, then click Run validation again.
+- Power Automate has no `filter()` expression function; use a **Filter array (Query)** action to filter arrays.
+
 ## Designer 409 Error Fetching Manifest
 
 Possible causes:

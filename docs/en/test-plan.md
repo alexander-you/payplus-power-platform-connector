@@ -43,6 +43,18 @@ Unit tests are limited because this is primarily a low-code connector solution. 
 - Recreate or rebind connection references and confirm flows use the expected connection.
 - Confirm secure connection parameter values are not readable from normal APIs.
 
+## Setup Wizard And Terminals/Pages Tests
+
+- Run the `PayPlus - Import Terminals & Pages` flow and confirm rows are created in `alex_payplus_terminal` and `alex_payplus_paymentpage`, keyed by environment + UID.
+- Confirm each payment page is linked to its owning terminal (`alex_terminalid`).
+- Re-run the import and confirm it is idempotent (upsert by environment + UID, no duplicates, business/policy fields preserved).
+- New records default to `alex_isdefault = false`.
+- In the Validate step, pick a default terminal and its default page; confirm `alex_terminaluidref` / `alex_paymentpageuidref` are written on the configuration and `alex_isdefault = true` is set on the chosen records.
+- Attempt to set a second default terminal for the same environment and confirm `EnforceSingleDefaultTerminal` clears the previous default.
+- Attempt to set a second default page for the same terminal + process type and confirm `EnforceSingleDefaultPage` clears the previous default.
+- Confirm the document-types import is a mandatory, blocking step: setup does not advance to Done until document types import successfully; a failed/timed-out import keeps setup on Validate.
+- From the management center (Done step), run the on-demand connection test for an individual payment page.
+
 ## Runtime Tests
 
 - Generate a payment link with valid amount, currency, terminal, payment page, customer, and item.

@@ -31,6 +31,32 @@ Important controls:
 - Store only terminal and payment page metadata.
 - Handle empty lists and invalid terminal responses.
 
+## Import Terminals & Pages
+
+Purpose:
+
+- Named `PayPlus - Import Terminals & Pages`.
+- Reads the PayPlus terminals (`MyTerminals`) and their payment pages (`ListPaymentPages`) through the connector.
+- Upserts rows into the `alex_payplus_terminal` and `alex_payplus_paymentpage` Dataverse tables, keyed by environment + UID.
+- New records get `alex_isdefault = false` initially; the default is chosen later in the setup wizard's Validate step.
+- Runs during setup (Terminals & pages step) and can be re-run to refresh the catalog.
+
+Important controls:
+
+- Upsert by (environment + UID); do not overwrite business/policy fields on re-import.
+- Link each payment page to its owning terminal (`alex_terminalid`).
+- Two plugins keep defaults consistent: `EnforceSingleDefaultTerminal` (one default terminal per environment) and `EnforceSingleDefaultPage` (one default page per terminal + process type).
+
+## Import Document Types
+
+Purpose:
+
+- Imports PayPlus document types into Dataverse. Runs as a mandatory, blocking step at the end of setup validation.
+
+Important controls:
+
+- Power Automate has no `filter()` expression function; use a **Filter array (Query)** action to filter arrays. An earlier version of this flow used an invalid inline `filter()` expression and was fixed to use a Filter array action.
+
 ## Generate Payment Link
 
 Purpose:

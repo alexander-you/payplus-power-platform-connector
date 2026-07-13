@@ -106,7 +106,18 @@ In simple terms:
 - Terminal: where the payment is processed.
 - Payment page: what the customer opens to pay.
 
-The setup process may let an administrator choose the terminal and payment page. Normal users may only see friendly names.
+An organization can have **many** terminals, and each terminal can have **many** payment pages. During setup an administrator imports all terminals and their payment pages from PayPlus into Dynamics 365, and then picks one **default terminal** and one **default payment page** that runtime processes fall back to when a specific one is not provided. Normal users may only see friendly names.
+
+## Setup Wizard (Administrator)
+
+An administrator completes a four-step setup wizard:
+
+1. **Connect** — enter and validate the PayPlus connection.
+2. **Terminals & pages** — fetch all terminals and their payment pages from PayPlus, preview them, and import them. Import creates a record for each terminal and payment page.
+3. **Validate** — pick the default terminal and its default payment page, run a quick connection smoke-test (a sample hosted payment link), and then a mandatory import of document types. The installation cannot complete until document types are imported successfully.
+4. **Done** — the management center, including an on-demand connection test for each individual payment page.
+
+A single default terminal per environment and a single default page per terminal and process type are enforced automatically, so choosing a new default clears the previous one.
 
 ## Why Card Details Are Not Entered In Dynamics Or Flow
 
