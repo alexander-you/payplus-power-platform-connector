@@ -22,6 +22,15 @@
 | זמן ריצה | `alex_payplus_synclog` | לוג סנכרון PayPlus | תיעוד ניסיונות סנכרון ותוצאות. |
 | טוקניזציה | `alex_creditcard` | כרטיס אשראי | מטא-דאטה מטוקן של כרטיס וטוקן PayPlus לחשבון או לאיש קשר. |
 | טוקניזציה | `alex_pp_hfsession` | סשן איסוף כרטיס | סשן איסוף כרטיס ב-Hosted Fields / שירות עצמי. |
+| חיוב ותשלומים | `alex_payplusbillingcase` | תיק גבייה PayPlus | עוגן הגבייה לרשומת מקור (כל טבלה). עוקב אחר סכומים, יתרות, סטטוס וזרימת המסמך הצפויה. מניע את Payment Wizard. |
+| חיוב ותשלומים | `alex_paypluspaymentline` | שורת תשלום PayPlus | ניסיון תשלום/קבלה אחד מול תיק גבייה (כרטיס, טוקן, העברה בנקאית, המחאה, מזומן), עם מצב סליקה/אימות והמסמך שהופק. |
+| חיוב ותשלומים | `alex_payplusreceiptallocation` | שיוך קבלה PayPlus | משייך שורת תשלום למה שהיא מסלקת (חשבונית, שורת חשבונית, או שורת מקור), עם snapshots וסטטוס. |
+| מסמכים | `alex_payplusdocument` | מסמך PayPlus | מסמך Invoice+ (חשבונית, קבלה, חשבונית-מס-קבלה, זיכוי, הצעת מחיר ועוד) עם מזהי PayPlus, סכומים, סטטוס, קישור למקור ודגלי הפצה. |
+| מסמכים | `alex_payplusdocumentactionlog` | יומן פעולות מסמך PayPlus | תיעוד פעולות שהתבקשו על מסמך (שליחה במייל/SMS/WhatsApp, יצירת קישור) והסטטוס שלהן. |
+| מסמכים | `alex_payplus_documenttype` | סוג מסמך PayPlus | קטלוג מיובא של סוגי מסמכי PayPlus עם קטגוריה, קודים, כותרות דו-לשוניות ומדיניות. |
+| ייחוס בנקים | `alex_bank` | בנק | רשימת בנקים; דגל נתמך-PayPlus. |
+| ייחוס בנקים | `alex_bankbranch` | סניף בנק | סניפי בנק עם קוד, עיר וכתובת. |
+| מידע-אב לקוח | `alex_customerbankaccount` | חשבון בנק של לקוח | חשבון בנק של לקוח (בנק + סניף, IBAN/SWIFT, הוראת קבע), מוצג ע"י פקד Bank Account Wallet. |
 
 ## תרשים קשרי ישויות (ERD)
 
@@ -489,6 +498,201 @@ erDiagram
 | `alex_status` | טקסט | סטטוס הסשן. |
 | `alex_message` | טקסט | הודעת סטטוס או שגיאה. |
 | `alex_expireson` | תאריך/שעה | תפוגת הסשן. |
+
+## מנוע חיוב ומסמכים
+
+טבלאות אלו מממשות גבייה והפקת מסמכי Invoice+. הן **בלתי תלויות ב-Dynamics 365 Sales** — תיק הגבייה מעוגן ל*כל* רשומת מקור דרך `alex_sourceentitylogicalname` + `alex_sourceentityid`, כך שניתן לגבות תשלום ולהפיק מסמך ללא חשבונית כלל. כשהמקור הוא במקרה חשבונית Sales, ה-lookups הנוספים של Sales (`alex_invoiceid`, `alex_invoicedetailid`) מאוכלסים גם הם.
+
+```mermaid
+erDiagram
+    BILLINGCASE ||--o{ PAYMENTLINE : "collects via"
+    BILLINGCASE ||--o{ RECEIPTALLOCATION : "settles via"
+    BILLINGCASE ||--o{ DOCUMENT : "issues"
+    PAYMENTLINE ||--o{ RECEIPTALLOCATION : "allocated by"
+    PAYMENTLINE }o--o| DOCUMENT : "receipt"
+    DOCUMENT ||--o{ DOCUMENTACTIONLOG : "logs"
+    DOCUMENT }o--o| DOCUMENTTYPE : "typed as"
+    DOCUMENT }o--o| DOCUMENT : "reverses / parent"
+    ACCOUNT ||--o{ BILLINGCASE : "customer"
+    CONTACT ||--o{ BILLINGCASE : "customer"
+    BANK ||--o{ BANKBRANCH : "has"
+    BANK ||--o{ CUSTOMERBANKACCOUNT : "at"
+    BANKBRANCH ||--o{ CUSTOMERBANKACCOUNT : "at"
+    ACCOUNT ||--o{ CUSTOMERBANKACCOUNT : "owns"
+    CONTACT ||--o{ CUSTOMERBANKACCOUNT : "owns"
+
+    BILLINGCASE {
+        guid alex_payplusbillingcaseid PK
+        string alex_sourceentitylogicalname
+        string alex_sourceentityid
+        decimal alex_totalamount
+        decimal alex_openbalance
+        choice alex_status
+        choice alex_defaultflow
+    }
+    PAYMENTLINE {
+        guid alex_paypluspaymentlineid PK
+        lookup alex_billingcaseid FK
+        decimal alex_amount
+        choice alex_paymentmethod
+        choice alex_status
+        lookup alex_receiptdocumentid FK
+    }
+    RECEIPTALLOCATION {
+        guid alex_payplusreceiptallocationid PK
+        lookup alex_billingcaseid FK
+        lookup alex_paymentlineid FK
+        decimal alex_allocatedamount
+        choice alex_status
+    }
+    DOCUMENT {
+        guid alex_payplusdocumentid PK
+        lookup alex_billingcaseid FK
+        choice alex_documentrole
+        string alex_documentnumber
+        decimal alex_totalamount
+        string alex_documentstatus
+    }
+```
+
+### תיק גבייה (`alex_payplusbillingcase`)
+
+עוגן הגבייה לרשומת מקור אחת. עמודות הסכום מתוחזקות ככל שתשלומים ושיוכים מתקדמים.
+
+| עמודה | סוג | הסבר |
+| --- | --- | --- |
+| `alex_name` / `alex_uniqueidentifier` | טקסט | שם התיק ומפתח יציב. |
+| `alex_sourceentitylogicalname` | טקסט | שם לוגי של רשומת המקור (למשל `invoice`, או כל טבלה מותאמת). |
+| `alex_sourceentityid` | טקסט | מזהה רשומת המקור. |
+| `alex_sourcedisplayname` / `alex_sourceurl` | טקסט | תווית וקישור עומק חזרה למקור. |
+| `alex_accountid` / `alex_contactid` | Lookup | הלקוח (account או contact). |
+| `alex_configurationid` | Lookup → הגדרה | הגדרת PayPlus הבעלים. |
+| `alex_totalamount` / `alex_vatamount` | מטבע | סה"כ ומע"מ. |
+| `alex_amountdue` / `alex_paidamount` / `alex_openbalance` | מטבע | חוב, שולם ויתרה. |
+| `alex_allocatedamount` / `alex_unallocatedamount` | מטבע | כספים משויכים מול לא-משויכים. |
+| `alex_processingamount` / `alex_pendingverificationamount` / `alex_failedamount` / `alex_futurecommitmentamount` | מטבע | בטיפול, ממתין לאימות, נכשל ומחויב-עתידי. |
+| `alex_status` | Choice | סטטוס התיק (פתוח, סגור, בוטל). |
+| `alex_defaultflow` | Choice | זרימת המסמך הצפויה (למשל חשבונית-מס-קבלה). |
+| `alex_allowpartialreceipts` / `alex_requirereceipttocloseinvoice` | כן/לא | מדיניות תשלום חלקי וסגירה. |
+| `alex_documentstatussummary` / `alex_lastissueddocument` / `alex_nextexpecteddocument` | טקסט | סיכום התקדמות מסמכים. |
+| `alex_openedon` / `alex_closedon` / `alex_cancelledon` | תאריך/שעה | חותמות מחזור-חיים. |
+
+### שורת תשלום (`alex_paypluspaymentline`)
+
+ניסיון תשלום/קבלה אחד מול תיק גבייה. תומך בכרטיס, טוקן שמור, העברה בנקאית, המחאה (כולל סדרת המחאות) ומזומן, עם תהליכי סליקה ואימות בנקאי ידני.
+
+| עמודה | סוג | הסבר |
+| --- | --- | --- |
+| `alex_billingcaseid` | Lookup → תיק גבייה | תיק האב. |
+| `alex_amount` / `alex_currencycode` | מטבע / טקסט | סכום ומטבע. |
+| `alex_paymentmethod` | Choice | כרטיס, טוקן, העברה, המחאה, מזומן. |
+| `alex_chargemode` | Choice | אופן ביצוע החיוב. |
+| `alex_status` | Choice | סטטוס התשלום. |
+| `alex_creditcardid` | Lookup → כרטיס | טוקן שמור שנעשה בו שימוש. |
+| `alex_cardbrand` / `alex_cardlast4` / `alex_approvalnumber` / `alex_installments` | טקסט / מספר | פרטי תוצאת כרטיס. |
+| `alex_customerbankaccountid` / `alex_companybankaccountid` | Lookup | חשבונות בנק להעברות. |
+| `alex_banknumber` / `alex_branchnumber` / `alex_accountnumber` / `alex_checknumber` | טקסט | מזהי בנק/המחאה. |
+| `alex_clearingstatus` / `alex_clearedon` / `alex_valuedate` / `alex_depositdate` | Choice / תאריך | מחזור סליקה. |
+| `alex_bankverificationstatus` / `alex_verifiedamount` / `alex_verifiedon` / `alex_verifiedby` | Choice / מטבע / תאריך / טקסט | אימות בנקאי ידני. |
+| `alex_receiptdocumentid` | Lookup → מסמך | הקבלה שהופקה לתשלום זה. |
+| `alex_requesteddocflow` / `alex_issueremainderdoc` / `alex_remainderdocflow` | Choice / כן-לא | זרימת המסמך המבוקשת. |
+| `alex_idempotencykey` / `alex_externaltransactionid` / `alex_requestid` | טקסט | Idempotency וקורלציה. |
+| `alex_islocked` / `alex_lockuntil` / `alex_retryblocked` | כן-לא / תאריך | נעילות ובקרת ניסיון חוזר. |
+
+### שיוך קבלה (`alex_payplusreceiptallocation`)
+
+משייך שורת תשלום למה שהיא מסלקת: חשבונית שלמה, שורת חשבונית, או שורת מקור גנרית. שומר snapshots לצורכי ביקורת.
+
+| עמודה | סוג | הסבר |
+| --- | --- | --- |
+| `alex_billingcaseid` | Lookup → תיק גבייה | תיק האב. |
+| `alex_paymentlineid` | Lookup → שורת תשלום | התשלום המשויך. |
+| `alex_allocatedamount` / `alex_actualallocatedamount` / `alex_proposedamount` | מטבע | שיוך מוצע מול בפועל. |
+| `alex_allocationtype` | Choice | מה מסולק. |
+| `alex_status` | Choice | סטטוס השיוך. |
+| `alex_invoiceid` / `alex_invoicedetailid` | Lookup | יעדי Sales (רק כשהמקור הוא Sales). |
+| `alex_invoicedocumentid` / `alex_receiptdocumentid` | Lookup → מסמך | מסמכי PayPlus קשורים. |
+| `alex_sourcelineid` / `alex_sourcelinenumber` / `alex_sourceitemname` | טקסט | שורת מקור גנרית (לא-Sales). |
+| `alex_openamountsnapshot` / `alex_remainingafterallocation` | מטבע | תצלומי יתרה. |
+| `alex_activatedon` / `alex_reversedon` / `alex_cancelledon` / `alex_failedon` | תאריך/שעה | חותמות מחזור-חיים. |
+
+### מסמך PayPlus (`alex_payplusdocument`)
+
+מסמך Invoice+. זו הטבלה שזרימות ה-*Preview* ופקדי Document Ledger / Document Preview קוראים; רשומה ממתינה מפעילה את זרימת המסמך.
+
+| עמודה | סוג | הסבר |
+| --- | --- | --- |
+| `alex_name` / `alex_documentnumber` / `alex_uniqueidentifier` | טקסט | שמות ומספרים. |
+| `alex_billingcaseid` | Lookup → תיק גבייה | התיק הבעלים. |
+| `alex_documentrole` / `alex_documenttypecode` / `alex_documenttypeid` | Choice / טקסט / Lookup | תפקיד וסוג המסמך. |
+| `alex_documentstatus` / `alex_businessstatus` / `alex_workbenchdocumentstatus` | טקסט / Choice | שדות סטטוס. |
+| `alex_totalamount` / `alex_vatamount` / `alex_vatpercentage` / `alex_paidamount` / `alex_balanceamount` | מטבע | סכומים. |
+| `alex_currencycode` / `alex_conversionrate` | טקסט / Decimal | מטבע. |
+| `alex_accountid` / `alex_contactid` | Lookup | הלקוח. |
+| `alex_customername` / `alex_customeremail` / `alex_customervatnumber` / `alex_customeraddress` | טקסט | פרטי לקוח מפורקים. |
+| `alex_invoiceid` / `alex_quoteid` / `alex_salesorderid` | Lookup | מקור Sales (רק כשרלוונטי). |
+| `alex_sourceentitylogicalname` / `alex_sourceentityid` / `alex_sourceurl` | טקסט | קישור מקור גנרי. |
+| `alex_parentdocumentid` / `alex_reversesdocumentid` / `alex_relatedinvoicedocumentid` | Lookup → מסמך | קשרי מסמכים. |
+| `alex_payplusdocumentuuid` / `alex_transactionuid` / `alex_paymentrequestuid` | טקסט | מזהי PayPlus. |
+| `alex_pdfurl` / `alex_copypdfurl` / `alex_documenturl` / `alex_paymentpagelink` | טקסט | קישורים. |
+| `alex_requestedaction` / `alex_requestedactionstatus` / `alex_requestedchannel` / `alex_requestedlinktype` | Choice | פעולה מבוקשת (שליחה/קישור) וערוץ. |
+| `alex_sentbyemail` / `alex_sentbysms` / `alex_sentbywhatsapp` | כן/לא | דגלי הפצה. |
+| `alex_terminalid` / `alex_paymentpageid` / `alex_configurationid` | Lookup | ניתוב PayPlus. |
+| `alex_environment` | Choice | Sandbox / Production. |
+| `alex_itemsjson` / `alex_paymentsjson` / `alex_rawrequest` / `alex_rawresponse` | רב-שורתי | Payloads גולמיים. |
+
+### יומן פעולות מסמך (`alex_payplusdocumentactionlog`)
+
+תיעוד פעולות שהתבקשו על מסמך.
+
+| עמודה | סוג | הסבר |
+| --- | --- | --- |
+| `alex_payplusdocumentid` | Lookup → מסמך | מסמך היעד. |
+| `alex_action` | Choice | הפעולה שהתבקשה. |
+| `alex_channel` / `alex_linktype` | Choice | ערוץ הפצה וסוג קישור. |
+| `alex_status` | Choice | סטטוס הפעולה. |
+| `alex_resolvedlink` | טקסט | הקישור שנוצר. |
+| `alex_requestedby` / `alex_requestedon` | טקסט / תאריך | מי/מתי. |
+| `alex_message` / `alex_payloadjson` | רב-שורתי | פירוט ו-payload. |
+
+### סוג מסמך (`alex_payplus_documenttype`)
+
+קטלוג מיובא של סוגי מסמכי PayPlus (מאוכלס ע"י זרימת *Import Document Types*).
+
+| עמודה | סוג | הסבר |
+| --- | --- | --- |
+| `alex_name` / `alex_code` / `alex_typecode` | טקסט / מספר | שם וקודים. |
+| `alex_titleen` / `alex_titlehe` / `alex_payplustitle` | טקסט | כותרות דו-לשוניות. |
+| `alex_category` | Choice | קטגוריית מסמך. |
+| `alex_caninitiate` / `alex_declarable` / `alex_hidden` / `alex_isactive` | כן/לא | דגלי מדיניות. |
+| `alex_configurationid` / `alex_syncprofileid` | Lookup | הגדרה/פרופיל בעלים. |
+| `alex_environment` / `alex_source` | Choice | סביבה ומקור. |
+
+### בנק (`alex_bank`) וסניף בנק (`alex_bankbranch`)
+
+נתוני ייחוס המיובאים ע"י זרימת *Import Banks & Branches* ומשמשים את Bank Account Wallet.
+
+| טבלה | עמודה | סוג | הסבר |
+| --- | --- | --- | --- |
+| `alex_bank` | `alex_name` / `alex_bankcode` | טקסט / מספר | שם וקוד בנק. |
+| `alex_bank` | `alex_ispayplussupported` / `alex_payplusbankname` | כן-לא / טקסט | תמיכת PayPlus. |
+| `alex_bankbranch` | `alex_bankid` | Lookup → בנק | הבנק ההורה. |
+| `alex_bankbranch` | `alex_name` / `alex_branchcode` | טקסט / מספר | שם וקוד סניף. |
+| `alex_bankbranch` | `alex_city` / `alex_branchaddress` / `alex_zipcode` / `alex_telephone` | טקסט | מיקום הסניף. |
+
+### חשבון בנק של לקוח (`alex_customerbankaccount`)
+
+חשבון בנק של לקוח, מוצג ונערך ע"י פקד Bank Account Wallet.
+
+| עמודה | סוג | הסבר |
+| --- | --- | --- |
+| `alex_name` / `alex_accountholdername` | טקסט | שם החשבון ובעל החשבון. |
+| `alex_accountid` / `alex_contactid` | Lookup | הלקוח הבעלים. |
+| `alex_bankid` / `alex_branchid` | Lookup | בנק וסניף. |
+| `alex_accountnumber` / `alex_iban` / `alex_swift` | טקסט | מזהי חשבון. |
+| `alex_hasstandingorder` / `alex_standingorderreference` / `alex_standingordersince` | כן-לא / טקסט / תאריך | הוראת קבע. |
+| `alex_isdefault` / `alex_isactive` / `alex_isverified` | כן/לא | דגלי מצב. |
+| `alex_paypluscustomerbankaccountuid` / `alex_syncstatus` | טקסט / Choice | קישור PayPlus. |
 
 ## מדריך ערכי Choice
 

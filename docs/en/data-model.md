@@ -22,6 +22,15 @@ For the runtime behaviour that consumes this model, see [architecture.md](archit
 | Sync runtime | `alex_payplus_synclog` | PayPlus Sync Log | Audit trail of sync attempts and results. |
 | Tokenization | `alex_creditcard` | Credit Card | Tokenized card metadata and PayPlus token for an account or contact. |
 | Tokenization | `alex_pp_hfsession` | Card Collection Session | Hosted-fields / self-service card capture session. |
+| Billing & Payments | `alex_payplusbillingcase` | PayPlus Billing Case | The collection anchor for a source record (any table). Tracks totals, amounts due/paid/allocated, status, and the expected document flow. Drives the Payment Wizard. |
+| Billing & Payments | `alex_paypluspaymentline` | PayPlus Payment Line | One payment attempt/receipt against a billing case (card, token, bank transfer, check, cash), with clearing/verification state and the issued receipt document. |
+| Billing & Payments | `alex_payplusreceiptallocation` | PayPlus Receipt Allocation | Allocates a payment line to what it settles (an invoice, an invoice detail line, or a source line), with snapshots and status. |
+| Documents | `alex_payplusdocument` | PayPlus Document | An Invoice+ document (invoice, receipt, tax-invoice-receipt, credit, quote, and more) with its PayPlus identifiers, amounts, status, source linkage, and distribution flags. |
+| Documents | `alex_payplusdocumentactionlog` | PayPlus Document Action Log | Audit trail of actions requested on a document (send by email/SMS/WhatsApp, link generation) and their status. |
+| Documents | `alex_payplus_documenttype` | PayPlus Document Type | Imported catalog of PayPlus document types with category, codes, bilingual titles, and initiate/declarable policies. |
+| Bank reference | `alex_bank` | Bank | Israeli bank list; PayPlus-supported flag. |
+| Bank reference | `alex_bankbranch` | Bank Branch | Bank branches with code, city, and address. |
+| Customer master | `alex_customerbankaccount` | Customer Bank Account | A customer's bank account (bank + branch, IBAN/SWIFT, standing order), surfaced by the Bank Account Wallet control. |
 
 ## Entity Relationship Diagram
 
@@ -489,6 +498,201 @@ Hosted-fields / self-service card capture session used by the tokenization polli
 | `alex_status` | Text | Session status. |
 | `alex_message` | Text | Status or error message. |
 | `alex_expireson` | Date/time | Session expiry. |
+
+## Billing & Document Engine
+
+These tables implement collection and Invoice+ document issuance. They are **independent of Dynamics 365 Sales** — the billing case is anchored to *any* source record through `alex_sourceentitylogicalname` + `alex_sourceentityid`, so a payment can be collected and a document issued with no invoice at all. When the source happens to be a Sales `invoice`, the extra Sales lookups (`alex_invoiceid`, `alex_invoicedetailid`) are populated as well.
+
+```mermaid
+erDiagram
+    BILLINGCASE ||--o{ PAYMENTLINE : "collects via"
+    BILLINGCASE ||--o{ RECEIPTALLOCATION : "settles via"
+    BILLINGCASE ||--o{ DOCUMENT : "issues"
+    PAYMENTLINE ||--o{ RECEIPTALLOCATION : "allocated by"
+    PAYMENTLINE }o--o| DOCUMENT : "receipt"
+    DOCUMENT ||--o{ DOCUMENTACTIONLOG : "logs"
+    DOCUMENT }o--o| DOCUMENTTYPE : "typed as"
+    DOCUMENT }o--o| DOCUMENT : "reverses / parent"
+    ACCOUNT ||--o{ BILLINGCASE : "customer"
+    CONTACT ||--o{ BILLINGCASE : "customer"
+    BANK ||--o{ BANKBRANCH : "has"
+    BANK ||--o{ CUSTOMERBANKACCOUNT : "at"
+    BANKBRANCH ||--o{ CUSTOMERBANKACCOUNT : "at"
+    ACCOUNT ||--o{ CUSTOMERBANKACCOUNT : "owns"
+    CONTACT ||--o{ CUSTOMERBANKACCOUNT : "owns"
+
+    BILLINGCASE {
+        guid alex_payplusbillingcaseid PK
+        string alex_sourceentitylogicalname
+        string alex_sourceentityid
+        decimal alex_totalamount
+        decimal alex_openbalance
+        choice alex_status
+        choice alex_defaultflow
+    }
+    PAYMENTLINE {
+        guid alex_paypluspaymentlineid PK
+        lookup alex_billingcaseid FK
+        decimal alex_amount
+        choice alex_paymentmethod
+        choice alex_status
+        lookup alex_receiptdocumentid FK
+    }
+    RECEIPTALLOCATION {
+        guid alex_payplusreceiptallocationid PK
+        lookup alex_billingcaseid FK
+        lookup alex_paymentlineid FK
+        decimal alex_allocatedamount
+        choice alex_status
+    }
+    DOCUMENT {
+        guid alex_payplusdocumentid PK
+        lookup alex_billingcaseid FK
+        choice alex_documentrole
+        string alex_documentnumber
+        decimal alex_totalamount
+        string alex_documentstatus
+    }
+```
+
+### Billing Case (`alex_payplusbillingcase`)
+
+The collection anchor for one source record. Amount columns are maintained as payments and allocations progress.
+
+| Column | Type | Explanation |
+| --- | --- | --- |
+| `alex_name` / `alex_uniqueidentifier` | Text | Case name and stable key. |
+| `alex_sourceentitylogicalname` | Text | Logical name of the source record (e.g. `invoice`, or any custom table). |
+| `alex_sourceentityid` | Text | Id of the source record. |
+| `alex_sourcedisplayname` / `alex_sourceurl` | Text | Human label and deep link back to the source. |
+| `alex_accountid` / `alex_contactid` | Lookup | Customer (account or contact). |
+| `alex_configurationid` | Lookup → Configuration | Owning PayPlus configuration. |
+| `alex_totalamount` / `alex_vatamount` | Currency | Case total and VAT. |
+| `alex_amountdue` / `alex_paidamount` / `alex_openbalance` | Currency | Due, paid, and remaining balance. |
+| `alex_allocatedamount` / `alex_unallocatedamount` | Currency | Allocated vs. unallocated received funds. |
+| `alex_processingamount` / `alex_pendingverificationamount` / `alex_failedamount` / `alex_futurecommitmentamount` | Currency | In-flight, awaiting verification, failed, and future-committed amounts. |
+| `alex_status` | Choice | Case status (open, closed, cancelled). |
+| `alex_defaultflow` | Choice | Expected document flow (e.g. tax-invoice-receipt). |
+| `alex_allowpartialreceipts` / `alex_requirereceipttocloseinvoice` | Yes/No | Partial-payment and closing policies. |
+| `alex_documentstatussummary` / `alex_lastissueddocument` / `alex_nextexpecteddocument` | Text | Document progress summary. |
+| `alex_openedon` / `alex_closedon` / `alex_cancelledon` | Date/time | Lifecycle timestamps. |
+
+### Payment Line (`alex_paypluspaymentline`)
+
+One payment attempt/receipt against a billing case. Supports card, saved token, bank transfer, check (including check series), and cash, with clearing and manual bank-verification workflows.
+
+| Column | Type | Explanation |
+| --- | --- | --- |
+| `alex_billingcaseid` | Lookup → Billing Case | Parent case. |
+| `alex_amount` / `alex_currencycode` | Currency / Text | Payment amount and currency. |
+| `alex_paymentmethod` | Choice | Card, token, bank transfer, check, cash. |
+| `alex_chargemode` | Choice | How the charge is executed. |
+| `alex_status` | Choice | Payment status. |
+| `alex_creditcardid` | Lookup → Credit Card | Saved token used, if any. |
+| `alex_cardbrand` / `alex_cardlast4` / `alex_approvalnumber` / `alex_installments` | Text / Number | Card result details. |
+| `alex_customerbankaccountid` / `alex_companybankaccountid` | Lookup | Bank accounts for transfers. |
+| `alex_banknumber` / `alex_branchnumber` / `alex_accountnumber` / `alex_checknumber` | Text | Bank/check identifiers. |
+| `alex_clearingstatus` / `alex_clearedon` / `alex_valuedate` / `alex_depositdate` | Choice / Date | Clearing lifecycle. |
+| `alex_bankverificationstatus` / `alex_verifiedamount` / `alex_verifiedon` / `alex_verifiedby` | Choice / Currency / Date / Text | Manual bank-verification. |
+| `alex_receiptdocumentid` | Lookup → Document | Receipt issued for this payment. |
+| `alex_requesteddocflow` / `alex_issueremainderdoc` / `alex_remainderdocflow` | Choice / Yes-No | Document flow requested for this payment. |
+| `alex_idempotencykey` / `alex_externaltransactionid` / `alex_requestid` | Text | Idempotency and correlation. |
+| `alex_islocked` / `alex_lockuntil` / `alex_retryblocked` | Yes-No / Date | Concurrency and retry guards. |
+
+### Receipt Allocation (`alex_payplusreceiptallocation`)
+
+Allocates a payment line to what it settles: a whole invoice, an invoice detail line, or a generic source line. Keeps snapshots for auditability.
+
+| Column | Type | Explanation |
+| --- | --- | --- |
+| `alex_billingcaseid` | Lookup → Billing Case | Parent case. |
+| `alex_paymentlineid` | Lookup → Payment Line | Payment being allocated. |
+| `alex_allocatedamount` / `alex_actualallocatedamount` / `alex_proposedamount` | Currency | Proposed vs. actual allocation. |
+| `alex_allocationtype` | Choice | What is being settled. |
+| `alex_status` | Choice | Allocation status. |
+| `alex_invoiceid` / `alex_invoicedetailid` | Lookup | Sales targets (only when the source is Sales). |
+| `alex_invoicedocumentid` / `alex_receiptdocumentid` | Lookup → Document | Related PayPlus documents. |
+| `alex_sourcelineid` / `alex_sourcelinenumber` / `alex_sourceitemname` | Text | Generic (non-Sales) source line. |
+| `alex_openamountsnapshot` / `alex_remainingafterallocation` | Currency | Balance snapshots. |
+| `alex_activatedon` / `alex_reversedon` / `alex_cancelledon` / `alex_failedon` | Date/time | Lifecycle timestamps. |
+
+### PayPlus Document (`alex_payplusdocument`)
+
+An Invoice+ document. This is the table the *Preview* flows and the Document Ledger / Document Preview controls read; a pending row triggers the document flow.
+
+| Column | Type | Explanation |
+| --- | --- | --- |
+| `alex_name` / `alex_documentnumber` / `alex_uniqueidentifier` | Text | Names and numbers. |
+| `alex_billingcaseid` | Lookup → Billing Case | Owning case. |
+| `alex_documentrole` / `alex_documenttypecode` / `alex_documenttypeid` | Choice / Text / Lookup | Document role and type. |
+| `alex_documentstatus` / `alex_businessstatus` / `alex_workbenchdocumentstatus` | Text / Choice | Status fields. |
+| `alex_totalamount` / `alex_vatamount` / `alex_vatpercentage` / `alex_paidamount` / `alex_balanceamount` | Currency | Amounts. |
+| `alex_currencycode` / `alex_conversionrate` | Text / Decimal | Currency. |
+| `alex_accountid` / `alex_contactid` | Lookup | Customer. |
+| `alex_customername` / `alex_customeremail` / `alex_customervatnumber` / `alex_customeraddress` | Text | Denormalized customer details. |
+| `alex_invoiceid` / `alex_quoteid` / `alex_salesorderid` | Lookup | Sales source (only when applicable). |
+| `alex_sourceentitylogicalname` / `alex_sourceentityid` / `alex_sourceurl` | Text | Generic source linkage. |
+| `alex_parentdocumentid` / `alex_reversesdocumentid` / `alex_relatedinvoicedocumentid` | Lookup → Document | Document relationships. |
+| `alex_payplusdocumentuuid` / `alex_transactionuid` / `alex_paymentrequestuid` | Text | PayPlus identifiers. |
+| `alex_pdfurl` / `alex_copypdfurl` / `alex_documenturl` / `alex_paymentpagelink` | Text | Links. |
+| `alex_requestedaction` / `alex_requestedactionstatus` / `alex_requestedchannel` / `alex_requestedlinktype` | Choice | Requested action (send/link) and channel. |
+| `alex_sentbyemail` / `alex_sentbysms` / `alex_sentbywhatsapp` | Yes/No | Distribution flags. |
+| `alex_terminalid` / `alex_paymentpageid` / `alex_configurationid` | Lookup | PayPlus routing. |
+| `alex_environment` | Choice | Sandbox / Production. |
+| `alex_itemsjson` / `alex_paymentsjson` / `alex_rawrequest` / `alex_rawresponse` | Multiline | Raw payloads. |
+
+### Document Action Log (`alex_payplusdocumentactionlog`)
+
+Audit trail of actions requested on a document.
+
+| Column | Type | Explanation |
+| --- | --- | --- |
+| `alex_payplusdocumentid` | Lookup → Document | Target document. |
+| `alex_action` | Choice | Action requested. |
+| `alex_channel` / `alex_linktype` | Choice | Delivery channel and link type. |
+| `alex_status` | Choice | Action status. |
+| `alex_resolvedlink` | Text | Generated link. |
+| `alex_requestedby` / `alex_requestedon` | Text / Date | Who/when. |
+| `alex_message` / `alex_payloadjson` | Multiline | Detail and payload. |
+
+### Document Type (`alex_payplus_documenttype`)
+
+Imported catalog of PayPlus document types (populated by the *Import Document Types* flow).
+
+| Column | Type | Explanation |
+| --- | --- | --- |
+| `alex_name` / `alex_code` / `alex_typecode` | Text / Number | Type name and codes. |
+| `alex_titleen` / `alex_titlehe` / `alex_payplustitle` | Text | Bilingual titles. |
+| `alex_category` | Choice | Document category. |
+| `alex_caninitiate` / `alex_declarable` / `alex_hidden` / `alex_isactive` | Yes/No | Policy flags. |
+| `alex_configurationid` / `alex_syncprofileid` | Lookup | Owning configuration/profile. |
+| `alex_environment` / `alex_source` | Choice | Environment and origin. |
+
+### Bank (`alex_bank`) and Bank Branch (`alex_bankbranch`)
+
+Reference data imported by the *Import Banks & Branches* flow and used by the Bank Account Wallet.
+
+| Table | Column | Type | Explanation |
+| --- | --- | --- | --- |
+| `alex_bank` | `alex_name` / `alex_bankcode` | Text / Number | Bank name and code. |
+| `alex_bank` | `alex_ispayplussupported` / `alex_payplusbankname` | Yes-No / Text | PayPlus support. |
+| `alex_bankbranch` | `alex_bankid` | Lookup → Bank | Parent bank. |
+| `alex_bankbranch` | `alex_name` / `alex_branchcode` | Text / Number | Branch name and code. |
+| `alex_bankbranch` | `alex_city` / `alex_branchaddress` / `alex_zipcode` / `alex_telephone` | Text | Branch location. |
+
+### Customer Bank Account (`alex_customerbankaccount`)
+
+A customer's bank account, surfaced and edited by the Bank Account Wallet control.
+
+| Column | Type | Explanation |
+| --- | --- | --- |
+| `alex_name` / `alex_accountholdername` | Text | Account name and holder. |
+| `alex_accountid` / `alex_contactid` | Lookup | Owning customer. |
+| `alex_bankid` / `alex_branchid` | Lookup | Bank and branch. |
+| `alex_accountnumber` / `alex_iban` / `alex_swift` | Text | Account identifiers. |
+| `alex_hasstandingorder` / `alex_standingorderreference` / `alex_standingordersince` | Yes-No / Text / Date | Standing order. |
+| `alex_isdefault` / `alex_isactive` / `alex_isverified` | Yes/No | State flags. |
+| `alex_paypluscustomerbankaccountuid` / `alex_syncstatus` | Text / Choice | PayPlus linkage. |
 
 ## Choice Reference
 
