@@ -1,4 +1,4 @@
-# Deploy "PayPlus - Create Quote" cloud flow (DRAFT) to Dataverse + add to solution.
+# Deploy "PayPlus - Create Quote" cloud flow (DRAFT) to Dataverse + add to the Sales extension solution.
 # Pattern (documented in repo memory): POST/PATCH workflows by name, category=5, type=1,
 # primaryentity='none', clientdata = raw file content, then AddSolutionComponent ComponentType=29.
 # Flow is created as DRAFT (statecode 0). The USER must activate it in make.powerautomate.com
@@ -7,7 +7,7 @@
 $ErrorActionPreference = 'Stop'
 
 $org        = 'https://demo-contact-center-en.crm4.dynamics.com'
-$solution   = 'alex_d365_payplus'
+$solution   = 'alex_d365_payplus_sales_extended_data_model'
 $flowName   = 'PayPlus - Create Quote'
 $flowFile   = Join-Path $PSScriptRoot '_conn\flow_create_quote.json'
 
@@ -87,7 +87,7 @@ catch {
 Write-Host ''
 Write-Host "DONE. Flow '$flowName' = $wfId (DRAFT)."
 Write-Host 'NEXT (manual, required):'
-Write-Host '  1. make.powerautomate.com -> solution alex_d365_payplus -> turn the flow ON (activate).'
+Write-Host '  1. make.powerautomate.com -> solution alex_d365_payplus_sales_extended_data_model -> turn the flow ON (activate).'
 Write-Host '     (Web API cannot activate: PayPlus connections are user-owned -> ConnectionAuthorizationFailed.)'
 Write-Host '  2. If the connector was recently updated, bust the runtime cache (republish connector in maker UI'
 Write-Host '     OR recreate the connection) before the CreateQuote action resolves.'
