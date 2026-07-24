@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+
+  <data name="PayPlus_BankWallet_Display" xml:space="preserve"><value>חשבונות בנק PayPlus</value></data>
+  <data name="PayPlus_BankWallet_Desc" xml:space="preserve"><value>ארנק בסגנון Apple שמציג את חשבונות הבנק של הלקוח עם לוגו הבנק, ומאפשר להוסיף חשבון חדש (בחירת בנק וסניף, הוראת קבע) ישירות מתוך הפקד.</value></data>
+  <data name="PayPlus_BankWallet_Dataset" xml:space="preserve"><value>חשבונות בנק</value></data>
+
+  <data name="title" xml:space="preserve"><value>חשבונות בנק</value></data>
+  <data name="subtitle" xml:space="preserve"><value>חשבונות בנק שמורים</value></data>
+  <data name="countSuffix" xml:space="preserve"><value>חשבונות</value></data>
+  <data name="countOne" xml:space="preserve"><value>חשבון</value></data>
+  <data name="addBtn" xml:space="preserve"><value>הוספת חשבון</value></data>
+
+  <data name="lblHolder" xml:space="preserve"><value>בעל החשבון</value></data>
+  <data name="lblBranch" xml:space="preserve"><value>סניף</value></data>
+  <data name="lblAccountNo" xml:space="preserve"><value>חשבון</value></data>
+  <data name="badgeDefault" xml:space="preserve"><value>ברירת מחדל</value></data>
+  <data name="badgeStanding" xml:space="preserve"><value>הוראת קבע</value></data>
+  <data name="badgeInactive" xml:space="preserve"><value>לא פעיל</value></data>
+
+  <data name="emptyTitle" xml:space="preserve"><value>אין חשבונות בנק שמורים</value></data>
+  <data name="emptyBody" xml:space="preserve"><value>הוסיפו את חשבון הבנק של הלקוח כדי לאפשר גבייה בהוראת קבע.</value></data>
+  <data name="loading" xml:space="preserve"><value>טוען חשבונות…</value></data>
+  <data name="loadError" xml:space="preserve"><value>טעינת חשבונות הבנק נכשלה.</value></data>
+  <data name="dash" xml:space="preserve"><value>—</value></data>
+
+  <data name="panelTitle" xml:space="preserve"><value>חשבון בנק חדש</value></data>
+  <data name="panelSub" xml:space="preserve"><value>הוספת חשבון בנק ללקוח זה</value></data>
+  <data name="fBank" xml:space="preserve"><value>בנק</value></data>
+  <data name="fBankPh" xml:space="preserve"><value>בחרו בנק</value></data>
+  <data name="fBranch" xml:space="preserve"><value>סניף</value></data>
+  <data name="fBranchPh" xml:space="preserve"><value>בחרו סניף</value></data>
+  <data name="fBranchManualToggle" xml:space="preserve"><value>הסניף לא ברשימה? הזינו מספר ידנית</value></data>
+  <data name="fBranchManualPh" xml:space="preserve"><value>מספר סניף</value></data>
+  <data name="fAccountNo" xml:space="preserve"><value>מספר חשבון</value></data>
+  <data name="fAccountNoPh" xml:space="preserve"><value>מספר חשבון</value></data>
+  <data name="fHolder" xml:space="preserve"><value>שם בעל החשבון</value></data>
+  <data name="fHolderPh" xml:space="preserve"><value>כפי שמופיע בבנק</value></data>
+  <data name="fDefault" xml:space="preserve"><value>הגדר כחשבון ברירת מחדל</value></data>
+  <data name="fStanding" xml:space="preserve"><value>הוראת קבע</value></data>
+  <data name="fStandingHint" xml:space="preserve"><value>האם מוגדרת הוראת קבע על חשבון זה?</value></data>
+  <data name="fStandingSince" xml:space="preserve"><value>פעילה מתאריך</value></data>
+  <data name="fStandingRef" xml:space="preserve"><value>מספר אסמכתא / הרשאה</value></data>
+  <data name="fStandingRefPh" xml:space="preserve"><value>אופציונלי</value></data>
+  <data name="save" xml:space="preserve"><value>שמירת חשבון</value></data>
+  <data name="saving" xml:space="preserve"><value>שומר…</value></data>
+  <data name="cancel" xml:space="preserve"><value>ביטול</value></data>
+  <data name="close" xml:space="preserve"><value>סגירה</value></data>
+
+  <data name="saved" xml:space="preserve"><value>חשבון הבנק נשמר. מסתנכרן ל-PayPlus ברקע.</value></data>
+  <data name="saveError" xml:space="preserve"><value>שמירת חשבון הבנק נכשלה.</value></data>
+  <data name="vBank" xml:space="preserve"><value>יש לבחור בנק.</value></data>
+  <data name="vBranch" xml:space="preserve"><value>יש לבחור או להזין סניף.</value></data>
+  <data name="vAccountNo" xml:space="preserve"><value>יש להזין מספר חשבון.</value></data>
+  <data name="vHolder" xml:space="preserve"><value>יש להזין את שם בעל החשבון.</value></data>
+
+  <data name="viewReceipts" xml:space="preserve"><value>קבלות קשורות</value></data>
+  <data name="recTitle" xml:space="preserve"><value>קבלות קשורות</value></data>
+  <data name="recSub" xml:space="preserve"><value>מסמכים שנגבו מחשבון זה</value></data>
+  <data name="recLoading" xml:space="preserve"><value>טוען קבלות…</value></data>
+  <data name="recError" xml:space="preserve"><value>טעינת הקבלות נכשלה.</value></data>
+  <data name="recEmptyTitle" xml:space="preserve"><value>אין קבלות קשורות</value></data>
+  <data name="recEmptyBody" xml:space="preserve"><value>לא נמצאו מסמכים שנגבו מחשבון בנק זה.</value></data>
+  <data name="recCount" xml:space="preserve"><value>מספר מסמכים</value></data>
+  <data name="recTotal" xml:space="preserve"><value>סך נגבה</value></data>
+  <data name="recBack" xml:space="preserve"><value>חזרה</value></data>
+  <data name="recOpenExternal" xml:space="preserve"><value>פתח בכרטיסייה חדשה</value></data>
+  <data name="recNoPdf" xml:space="preserve"><value>אין תצוגה מקדימה זמינה למסמך זה.</value></data>
+</root>

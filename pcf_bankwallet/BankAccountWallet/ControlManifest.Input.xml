@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<manifest>
+  <control namespace="PayPlus" constructor="BankAccountWallet" version="1.0.3"
+           display-name-key="PayPlus_BankWallet_Display"
+           description-key="PayPlus_BankWallet_Desc"
+           control-type="standard" >
+    <external-service-usage enabled="false">
+    </external-service-usage>
+    <!-- Bound to a customer bank-account subgrid on Contact / Account. The control reads the
+         parent record from the page context and shows its bank accounts as an Apple-style wallet,
+         with an in-control panel to add new accounts (bank + branch pickers, standing order, etc). -->
+    <data-set name="accounts" display-name-key="PayPlus_BankWallet_Dataset">
+    </data-set>
+    <resources>
+      <code path="index.ts" order="1"/>
+      <css path="css/BankAccountWallet.css" order="1" />
+      <resx path="strings/BankAccountWallet.1033.resx" version="1.0.0" />
+      <resx path="strings/BankAccountWallet.1037.resx" version="1.0.0" />
+    </resources>
+    <feature-usage>
+      <uses-feature name="Utility" required="true" />
+      <uses-feature name="WebAPI" required="true" />
+    </feature-usage>
+  </control>
+</manifest>
