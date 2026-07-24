@@ -24,6 +24,46 @@ interface WalletCard {
     custUid: string;
 }
 
+/* A receipt / tax-invoice-receipt document that was settled with a given card. */
+interface ReceiptDoc {
+    id: string;
+    number: string;
+    name: string;
+    typeCode: string;
+    typeLabel: string;
+    amount: number;
+    amountText: string;
+    currency: string;
+    dateText: string;
+    statusText: string;
+    pdfUrl: string;
+    docUrl: string;
+    copyUrl: string;
+    sortKey: number;
+}
+
+/* Minimal Xrm shim for opening a document record / preview page from the side pane. */
+interface XrmNavLike {
+    Navigation?: {
+        navigateTo?: (pageInput: unknown, navigationOptions?: unknown) => unknown;
+    };
+}
+
+/* Existing DocumentPreview custom page (preview + quick actions), reused when opening a receipt. */
+const PREVIEW_CUSTOM_PAGE_NAME = "alex_payplusdocumentpreview_b4f29";
+
+/* Document action-request choice values (mirrors DocumentPreview / the action-request Flow). */
+const REQUESTED_ACTION_SEND = 100000000;
+const REQUESTED_ACTION_STATUS_PENDING = 100000000;
+const REQUESTED_LINK_TYPE_COPY = 100000001;
+const REQUESTED_LINK_TYPE_ORIGINAL = 100000000;
+const REQUESTED_CHANNEL: Record<SendChannel, number> = { email: 100000000, sms: 100000001, whatsapp: 100000002 };
+const DOC_BUSINESS_STATUS_ACTION_REQUESTED = 100000004;
+
+/* Per-document-type send permissions resolved from alex_payplusconfiguration billing policy. */
+type SendChannel = "email" | "sms" | "whatsapp";
+interface SendConfig { email: boolean; sms: boolean; whatsapp: boolean; }
+
 /* Minimal primaryControl shim so we can reuse the tested global PayPlus ribbon logic. */
 interface PayPlusApi {
     openCardPane: (pc: unknown) => void;
@@ -43,6 +83,21 @@ export class CreditCardWallet implements ComponentFramework.StandardControl<IInp
     private reloadTimers: number[] = [];
     private ppScriptPromise: Promise<void> | null = null;
     private outsideHandler = (e: MouseEvent): void => this.onOutsideClick(e);
+
+    // Receipts side pane (Apple-style drawer) — shows documents settled with one card.
+    private paneRoot: HTMLDivElement | null = null;
+    private paneBodyEl: HTMLDivElement | null = null;
+    private paneCardId = "";
+    private paneStatus: "loading" | "ready" | "error" = "loading";
+    private paneDocs: ReceiptDoc[] = [];
+    private paneView: "list" | "detail" = "list";
+    private paneDetailDoc: ReceiptDoc | null = null;
+    private sendConfigCache: Record<string, SendConfig> = {};
+    private paneKeyHandler = (e: KeyboardEvent): void => {
+        if (e.key !== "Escape") return;
+        if (this.paneView === "detail") this.showReceiptList();
+        else this.closePane();
+    };
 
     public init(
         context: ComponentFramework.Context<IInputs>,
@@ -90,7 +145,9 @@ export class CreditCardWallet implements ComponentFramework.StandardControl<IInp
 
     public destroy(): void {
         document.removeEventListener("click", this.outsideHandler, true);
+        document.removeEventListener("keydown", this.paneKeyHandler, true);
         this.reloadTimers.forEach((t) => window.clearTimeout(t));
+        if (this.paneRoot) { this.paneRoot.remove(); this.paneRoot = null; this.paneBodyEl = null; }
     }
 
     /* ---------------------------------------------------------------- data */
@@ -264,6 +321,7 @@ export class CreditCardWallet implements ComponentFramework.StandardControl<IInp
         badges.push(c.isActive
             ? '<span class="pp-badge pp-badge-active" role="button" tabindex="0" data-act="deactivate" title="' + this.esc(this.s("deactivateHint")) + '">' + this.esc(this.s("badgeActive")) + "</span>"
             : '<span class="pp-badge pp-badge-inactive" role="button" tabindex="0" data-act="reactivate" title="' + this.esc(this.s("reactivateHint")) + '">' + this.esc(this.s("badgeInactive")) + "</span>");
+        badges.push('<span class="pp-badge pp-badge-details" role="button" tabindex="0" data-details="1" title="' + this.esc(this.s("detailsHint")) + '">' + this.icon("receipt") + this.esc(this.s("detailsBtn")) + "</span>");
 
         const last4 = c.last4 || "----";
         const exp = c.expMonth && c.expYear ? c.expMonth + "/" + c.expYear : this.s("dash");
@@ -309,6 +367,15 @@ export class CreditCardWallet implements ComponentFramework.StandardControl<IInp
                     ev.stopPropagation();
                     run();
                 }
+            });
+        }
+
+        // The "Details" badge opens the receipts side pane without flipping the card.
+        const detailsBtn = card.querySelector("[data-details]") as HTMLElement | null;
+        if (detailsBtn) {
+            detailsBtn.addEventListener("click", (ev: Event) => { ev.stopPropagation(); this.openPane(c); });
+            detailsBtn.addEventListener("keydown", (ev: KeyboardEvent) => {
+                if (ev.key === "Enter" || ev.key === " ") { ev.preventDefault(); ev.stopPropagation(); this.openPane(c); }
             });
         }
 
@@ -528,6 +595,445 @@ export class CreditCardWallet implements ComponentFramework.StandardControl<IInp
         if (!this.root.contains(e.target as Node)) this.closeMenu();
     }
 
+    /* ------------------------------------------------------ receipts pane */
+
+    private openPane(c: WalletCard): void {
+        this.paneCardId = c.id;
+        this.paneStatus = "loading";
+        this.paneDocs = [];
+        this.paneView = "list";
+        this.paneDetailDoc = null;
+        this.buildPaneShell(c);
+        void this.loadReceipts(c);
+    }
+
+    private async loadReceipts(c: WalletCard): Promise<void> {
+        if (!c.id) { this.paneStatus = "ready"; this.renderPaneBody(); return; }
+        try {
+            // Step 1 — payment lines charged to this card that produced a receipt document.
+            const lq =
+                "?$select=_alex_receiptdocumentid_value" +
+                "&$filter=_alex_creditcardid_value eq " + c.id + " and _alex_receiptdocumentid_value ne null" +
+                "&$orderby=createdon desc";
+            const lines = await this.context.webAPI.retrieveMultipleRecords("alex_paypluspaymentline", lq);
+            const ids: string[] = [];
+            lines.entities.forEach((e) => {
+                const v = ((e["_alex_receiptdocumentid_value"] as string) || "").replace(/[{}]/g, "").toLowerCase();
+                if (v && ids.indexOf(v) < 0) ids.push(v);
+            });
+            if (this.paneCardId !== c.id) return; // pane switched/closed while loading
+            if (!ids.length) { this.paneDocs = []; this.paneStatus = "ready"; this.renderPaneBody(); return; }
+
+            // Step 2 — load the receipt / tax-invoice-receipt documents themselves.
+            const filter = ids.map((id) => "alex_payplusdocumentid eq " + id).join(" or ");
+            const dq =
+                "?$select=alex_payplusdocumentid,alex_name,alex_documentnumber,alex_documenttypecode," +
+                "alex_totalamount,alex_paidamount,alex_currencycode,alex_documentdate,alex_issuedon," +
+                "alex_pdfurl,alex_documenturl,alex_copypdfurl,alex_businessstatus,createdon" +
+                "&$filter=(" + filter + ")";
+            const docs = await this.context.webAPI.retrieveMultipleRecords("alex_payplusdocument", dq);
+            if (this.paneCardId !== c.id) return;
+            this.paneDocs = docs.entities.map((e) => this.parseDoc(e)).sort((a, b) => b.sortKey - a.sortKey);
+            this.paneStatus = "ready";
+        } catch {
+            if (this.paneCardId !== c.id) return;
+            this.paneStatus = "error";
+        }
+        this.renderPaneBody();
+    }
+
+    private parseDoc(e: ComponentFramework.WebApi.Entity): ReceiptDoc {
+        const fv = (k: string): string => (e[k + "@OData.Community.Display.V1.FormattedValue"] as string) || "";
+        const code = ((e["alex_documenttypecode"] as string) || "").toLowerCase();
+        const amount = e["alex_totalamount"] != null ? Number(e["alex_totalamount"]) : 0;
+        const currency = (e["alex_currencycode"] as string) || "ILS";
+        const dateIso = (e["alex_documentdate"] as string) || (e["alex_issuedon"] as string) || (e["createdon"] as string) || "";
+        return {
+            id: ((e["alex_payplusdocumentid"] as string) || "").replace(/[{}]/g, ""),
+            number: (e["alex_documentnumber"] as string) || "",
+            name: (e["alex_name"] as string) || "",
+            typeCode: code,
+            typeLabel: this.docTypeLabel(code),
+            amount,
+            amountText: fv("alex_totalamount") || this.formatMoney(amount, currency),
+            currency,
+            dateText: fv("alex_documentdate") || this.formatDate(dateIso),
+            statusText: fv("alex_businessstatus"),
+            pdfUrl: (e["alex_pdfurl"] as string) || "",
+            docUrl: (e["alex_documenturl"] as string) || "",
+            copyUrl: (e["alex_copypdfurl"] as string) || "",
+            sortKey: dateIso ? new Date(dateIso).getTime() : 0
+        };
+    }
+
+    private docTypeLabel(code: string): string {
+        const map: Record<string, [string, string]> = {
+            inv_receipt: ["קבלה", "Receipt"],
+            inv_tax_receipt: ["חשבונית מס קבלה", "Tax invoice receipt"],
+            inv_tax: ["חשבונית מס", "Tax invoice"],
+            inv_refund: ["חשבונית זיכוי", "Credit invoice"],
+            inv_proforma: ["חשבונית עסקה", "Proforma invoice"]
+        };
+        const t = map[code];
+        if (t) return this.isRtl ? t[0] : t[1];
+        return code || this.s("dash");
+    }
+
+    private formatMoney(value: number, currency: string): string {
+        try {
+            return new Intl.NumberFormat(this.isRtl ? "he-IL" : "en-US", {
+                style: "currency", currency: currency || "ILS", minimumFractionDigits: 2, maximumFractionDigits: 2
+            }).format(value || 0);
+        } catch {
+            return (value || 0).toFixed(2) + " " + (currency || "");
+        }
+    }
+
+    private formatDate(iso: string): string {
+        if (!iso) return this.s("dash");
+        const d = new Date(iso);
+        if (isNaN(d.getTime())) return this.s("dash");
+        return d.toLocaleDateString(this.isRtl ? "he-IL" : "en-US", { day: "2-digit", month: "2-digit", year: "numeric" });
+    }
+
+    private buildPaneShell(c: WalletCard): void {
+        if (!this.paneRoot) {
+            this.paneRoot = document.createElement("div");
+            this.paneRoot.className = "ppw-pane-root";
+            this.paneRoot.setAttribute("dir", this.isRtl ? "rtl" : "ltr");
+            document.body.appendChild(this.paneRoot);
+            document.addEventListener("keydown", this.paneKeyHandler, true);
+        }
+
+        const last4 = c.last4 || "----";
+        const holder = c.holder ? this.esc(c.holder) : this.s("dash");
+        const exp = c.expMonth && c.expYear ? c.expMonth + "/" + c.expYear : this.s("dash");
+
+        this.paneRoot.innerHTML =
+            '<div class="ppw-backdrop"></div>' +
+            '<aside class="ppw-drawer" role="dialog" aria-modal="true">' +
+                '<header class="ppw-head">' +
+                    '<div class="ppw-head-row">' +
+                        '<div class="ppw-head-titles">' +
+                            '<div class="ppw-title">' + this.icon("receipt") + "<span>" + this.esc(this.s("paneTitle")) + "</span></div>" +
+                            '<div class="ppw-sub">' + this.esc(this.s("paneSub")) + "</div>" +
+                        "</div>" +
+                        '<button class="ppw-close" type="button" aria-label="' + this.esc(this.s("paneClose")) + '">' + this.icon("close") + "</button>" +
+                    "</div>" +
+                    '<div class="ppw-cardchip">' +
+                        '<span class="ppw-cardchip-brand">PayPlus</span>' +
+                        '<span class="ppw-cardchip-num">&bull;&bull;&bull;&bull; ' + this.esc(last4) + "</span>" +
+                        '<span class="ppw-cardchip-meta">' + holder + " &middot; " + this.esc(exp) + "</span>" +
+                    "</div>" +
+                "</header>" +
+                '<div class="ppw-body"></div>' +
+            "</aside>";
+
+        this.paneBodyEl = this.paneRoot.querySelector(".ppw-body") as HTMLDivElement;
+
+        const backdrop = this.paneRoot.querySelector(".ppw-backdrop") as HTMLElement;
+        backdrop.addEventListener("click", () => this.closePane());
+        const close = this.paneRoot.querySelector(".ppw-close") as HTMLElement;
+        close.addEventListener("click", () => this.closePane());
+
+        this.renderPaneBody();
+        // trigger the slide-in transition on the next frame
+        window.requestAnimationFrame(() => this.paneRoot && this.paneRoot.classList.add("ppw-open"));
+    }
+
+    private renderPaneBody(): void {
+        const body = this.paneBodyEl;
+        if (!body) return;
+        body.innerHTML = "";
+
+        if (this.paneStatus === "loading") {
+            body.appendChild(this.paneState("spinner", this.s("paneLoading"), ""));
+            return;
+        }
+        if (this.paneStatus === "error") {
+            body.appendChild(this.paneState("alert", this.s("paneError"), ""));
+            return;
+        }
+        if (!this.paneDocs.length) {
+            body.appendChild(this.paneState("receipt", this.s("paneEmptyTitle"), this.s("paneEmptyBody")));
+            return;
+        }
+
+        // summary strip: count + total settled
+        const total = this.paneDocs.reduce((s, d) => s + (d.amount || 0), 0);
+        const cur = this.paneDocs[0]?.currency || "ILS";
+        const summary = document.createElement("div");
+        summary.className = "ppw-summary";
+        summary.innerHTML =
+            '<div class="ppw-sum-item"><span class="ppw-sum-k">' + this.esc(this.s("paneCount")) + '</span><span class="ppw-sum-v">' + this.paneDocs.length + "</span></div>" +
+            '<div class="ppw-sum-item"><span class="ppw-sum-k">' + this.esc(this.s("paneTotal")) + '</span><span class="ppw-sum-v">' + this.esc(this.formatMoney(total, cur)) + "</span></div>";
+        body.appendChild(summary);
+
+        const list = document.createElement("div");
+        list.className = "ppw-list";
+        this.paneDocs.forEach((d) => list.appendChild(this.buildReceiptRow(d)));
+        body.appendChild(list);
+    }
+
+    private buildReceiptRow(d: ReceiptDoc): HTMLElement {
+        const row = document.createElement("button");
+        row.className = "ppw-row";
+        row.type = "button";
+        const title = d.number ? d.typeLabel + " · " + d.number : d.typeLabel;
+        const subParts = [d.dateText, d.statusText].filter(Boolean).join(" · ");
+        row.innerHTML =
+            '<span class="ppw-row-ic">' + this.icon(d.typeCode === "inv_refund" ? "credit" : "receipt") + "</span>" +
+            '<span class="ppw-row-main">' +
+                '<span class="ppw-row-title">' + this.esc(title) + "</span>" +
+                '<span class="ppw-row-sub">' + this.esc(subParts || this.s("dash")) + "</span>" +
+            "</span>" +
+            '<span class="ppw-row-amt">' + this.esc(d.amountText) + "</span>" +
+            '<span class="ppw-row-chev">' + this.icon("chev") + "</span>";
+        row.addEventListener("click", () => this.showReceiptDetail(d));
+        return row;
+    }
+
+    /* Expand the drawer and render the receipt inline (Apple-style master → detail). */
+    private showReceiptDetail(d: ReceiptDoc): void {
+        this.paneView = "detail";
+        this.paneDetailDoc = d;
+        const drawer = this.paneRoot?.querySelector(".ppw-drawer");
+        if (drawer) drawer.classList.add("ppw-expanded");
+        this.renderPaneDetail(d);
+    }
+
+    /* Collapse back to the receipts list. */
+    private showReceiptList(): void {
+        this.paneView = "list";
+        this.paneDetailDoc = null;
+        const drawer = this.paneRoot?.querySelector(".ppw-drawer");
+        if (drawer) drawer.classList.remove("ppw-expanded");
+        this.renderPaneBody();
+    }
+
+    private renderPaneDetail(d: ReceiptDoc): void {
+        const body = this.paneBodyEl;
+        if (!body) return;
+        // Only http(s) URLs are embeddable; guard against javascript:/data: etc.
+        const raw = d.pdfUrl || d.docUrl;
+        const url = /^https?:\/\//i.test(raw) ? raw : "";
+        const title = d.number ? d.typeLabel + " · " + d.number : d.typeLabel;
+
+        const wrap = document.createElement("div");
+        wrap.className = "ppw-detail";
+        wrap.innerHTML =
+            '<div class="ppw-detail-bar">' +
+                '<button class="ppw-back" type="button">' + this.icon("back") + "<span>" + this.esc(this.s("paneBack")) + "</span></button>" +
+                '<div class="ppw-detail-title">' + this.esc(title) + "</div>" +
+                '<div class="ppw-detail-acts">' +
+                    '<span class="ppw-send-slot"></span>' +
+                    (url ? '<button class="ppw-iconbtn" data-ext type="button" title="' + this.esc(this.s("paneOpenExternal")) + '">' + this.icon("external") + "</button>" : "") +
+                "</div>" +
+            "</div>" +
+            (url
+                ? '<div class="ppw-frame-wrap"><iframe class="ppw-frame" src="' + this.esc(url) + '" title="' + this.esc(title) + '"></iframe></div>'
+                : '<div class="ppw-detail-empty">' + this.icon("receipt") + "<span>" + this.esc(this.s("paneNoPdf")) + "</span></div>");
+
+        body.innerHTML = "";
+        body.appendChild(wrap);
+
+        (wrap.querySelector(".ppw-back") as HTMLElement | null)?.addEventListener("click", () => this.showReceiptList());
+        (wrap.querySelector("[data-ext]") as HTMLElement | null)?.addEventListener("click", () => {
+            if (url) { try { this.context.navigation.openUrl(url); } catch { /* ignore */ } }
+        });
+
+        // Send buttons appear only for channels enabled in the billing config for this doc type.
+        void this.renderSendButtons(d, wrap.querySelector(".ppw-send-slot") as HTMLElement | null);
+    }
+
+    private async renderSendButtons(d: ReceiptDoc, slot: HTMLElement | null): Promise<void> {
+        if (!slot) return;
+        const cfg = await this.loadSendConfig(d.typeCode);
+        // Guard: the pane may have changed (back/close/other receipt) while awaiting.
+        if (this.paneView !== "detail" || this.paneDetailDoc?.id !== d.id || !slot.isConnected) return;
+
+        const channels: SendChannel[] = [];
+        if (cfg.email) channels.push("email");
+        if (cfg.sms) channels.push("sms");
+        if (cfg.whatsapp) channels.push("whatsapp");
+        if (!channels.length) return;
+
+        const labelKey: Record<SendChannel, string> = { email: "chEmail", sms: "chSms", whatsapp: "chWhatsapp" };
+        slot.innerHTML = channels.map((ch) =>
+            '<button class="ppw-sendbtn" type="button" data-send="' + ch + '" title="' + this.esc(this.s("sendLabel")) + '">' +
+                this.icon(ch) + "<span>" + this.esc(this.s(labelKey[ch])) + "</span>" +
+            "</button>"
+        ).join("");
+
+        slot.querySelectorAll("[data-send]").forEach((el) => {
+            el.addEventListener("click", () => {
+                const ch = (el as HTMLElement).getAttribute("data-send") as SendChannel;
+                void this.requestReceiptSend(d, ch, el as HTMLButtonElement);
+            });
+        });
+    }
+
+    /* Billing-policy prefix per document type (mirrors DocumentPreview.invoiceBillingPrefix). */
+    private billingPrefixFor(typeCode: string): string {
+        switch ((typeCode || "").toLowerCase()) {
+            case "inv_tax": return "alex_billing_doc_taxinvoice_";
+            case "inv_tax_receipt": return "alex_billing_doc_taxinvoicereceipt_";
+            case "inv_proforma": return "alex_billing_doc_paymentdemand_";
+            case "inv_pay_request": return "alex_billing_doc_paymentrequest_";
+            case "inv_receipt": return "alex_billing_doc_receipt_";
+            case "inv_refund": return "alex_billing_doc_credit_";
+            default: return "";
+        }
+    }
+
+    private async loadSendConfig(typeCode: string): Promise<SendConfig> {
+        const key = (typeCode || "").toLowerCase();
+        if (this.sendConfigCache[key]) return this.sendConfigCache[key];
+        const empty: SendConfig = { email: false, sms: false, whatsapp: false };
+        const prefix = this.billingPrefixFor(key);
+        if (!prefix) { this.sendConfigCache[key] = empty; return empty; }
+        try {
+            const sel = [
+                prefix + "enabled",
+                prefix + "send_email_allowed",
+                prefix + "send_sms_allowed",
+                prefix + "send_whatsapp_allowed"
+            ].join(",");
+            const res = await this.context.webAPI.retrieveMultipleRecords(
+                "alex_payplusconfiguration", "?$select=" + sel + "&$top=1"
+            );
+            const c = (res.entities && res.entities[0]) || {};
+            const enabled = c[prefix + "enabled"] === true;
+            const cfg: SendConfig = {
+                email: enabled && c[prefix + "send_email_allowed"] === true,
+                sms: enabled && c[prefix + "send_sms_allowed"] === true,
+                whatsapp: enabled && c[prefix + "send_whatsapp_allowed"] === true
+            };
+            this.sendConfigCache[key] = cfg;
+            return cfg;
+        } catch {
+            this.sendConfigCache[key] = empty;
+            return empty;
+        }
+    }
+
+    private async requestReceiptSend(d: ReceiptDoc, channel: SendChannel, btn?: HTMLButtonElement): Promise<void> {
+        if (!d.id) return;
+        if (btn) { btn.disabled = true; btn.classList.add("ppw-sending"); }
+        // Prefer the copy link if available (billing-policy default), else the original PDF.
+        const linkType = d.copyUrl ? REQUESTED_LINK_TYPE_COPY : REQUESTED_LINK_TYPE_ORIGINAL;
+        const link = d.copyUrl || d.pdfUrl || d.docUrl || "";
+        const userSettings = this.context.userSettings as unknown as { userId?: string; userName?: string };
+        const patch = {
+            alex_requestedaction: REQUESTED_ACTION_SEND,
+            alex_requestedchannel: REQUESTED_CHANNEL[channel],
+            alex_requestedlinktype: linkType,
+            alex_requestedactionstatus: REQUESTED_ACTION_STATUS_PENDING,
+            alex_businessstatus: DOC_BUSINESS_STATUS_ACTION_REQUESTED,
+            alex_requestedactionon: new Date().toISOString(),
+            alex_requestedactionby: userSettings.userName || userSettings.userId || "",
+            alex_requestedactionmessage: JSON.stringify({ source: "PayPlus.CreditCardWallet", action: "send", channel, linkType: d.copyUrl ? "copy" : "original", link })
+        };
+        try {
+            await this.context.webAPI.updateRecord("alex_payplusdocument", d.id, patch);
+            this.showPaneToast(this.s("sendDone"), "ok");
+        } catch (err) {
+            this.showPaneToast(err instanceof Error ? err.message : String(err), "err");
+        } finally {
+            if (btn) { btn.disabled = false; btn.classList.remove("ppw-sending"); }
+        }
+    }
+
+    /* In-drawer toast — the platform's alert/error dialogs render below our body-level
+       drawer (lower z-index) and would be hidden, so we show feedback inside the pane. */
+    private showPaneToast(message: string, kind: "ok" | "err"): void {
+        const root = this.paneRoot;
+        if (!root) return;
+        root.querySelector(".ppw-toast")?.remove();
+        const toast = document.createElement("div");
+        toast.className = "ppw-toast ppw-toast-" + kind;
+        toast.setAttribute("role", "status");
+        toast.innerHTML = '<span class="ppw-toast-ic">' + this.icon(kind === "ok" ? "send" : "alert") + "</span>" +
+            "<span>" + this.esc(message) + "</span>";
+        root.appendChild(toast);
+        requestAnimationFrame(() => toast.classList.add("ppw-toast-in"));
+        window.setTimeout(() => {
+            toast.classList.remove("ppw-toast-in");
+            window.setTimeout(() => toast.remove(), 260);
+        }, 3200);
+    }
+
+    private openReceipt(d: ReceiptDoc): void {
+        // Preferred: open the existing DocumentPreview custom page (preview + quick actions).
+        const xrm = this.getXrm();
+        const nav = xrm?.Navigation;
+        if (nav && typeof nav.navigateTo === "function" && d.id) {
+            const title = d.number || d.name || d.typeLabel;
+            try {
+                const res = nav.navigateTo(
+                    { pageType: "custom", name: PREVIEW_CUSTOM_PAGE_NAME, entityName: "alex_payplusdocument", recordId: d.id },
+                    { target: 2, position: 1, width: { value: 82, unit: "%" }, height: { value: 86, unit: "%" }, title }
+                ) as { catch?: (cb: (e?: unknown) => void) => void } | undefined;
+                if (res && typeof res.catch === "function") res.catch(() => this.openReceiptFallback(d));
+                return;
+            } catch {
+                this.openReceiptFallback(d);
+                return;
+            }
+        }
+        this.openReceiptFallback(d);
+    }
+
+    private openReceiptFallback(d: ReceiptDoc): void {
+        const url = d.pdfUrl || d.docUrl;
+        if (url) { try { this.context.navigation.openUrl(url); return; } catch { /* ignore */ } }
+        const xrm = this.getXrm();
+        const nav = xrm?.Navigation;
+        if (nav && typeof nav.navigateTo === "function" && d.id) {
+            try {
+                nav.navigateTo(
+                    { pageType: "entityrecord", entityName: "alex_payplusdocument", entityId: d.id },
+                    { target: 2, position: 1, width: { value: 82, unit: "%" }, height: { value: 86, unit: "%" } }
+                );
+            } catch { /* nothing else to do */ }
+        }
+    }
+
+    private getXrm(): XrmNavLike | null {
+        for (const candidate of [window, window.parent] as (Window | null)[]) {
+            try {
+                const xrm = (candidate as unknown as { Xrm?: XrmNavLike }).Xrm;
+                if (xrm) return xrm;
+            } catch { /* cross-origin guard */ }
+        }
+        return null;
+    }
+
+    private paneState(icon: string, title: string, body: string): HTMLElement {
+        const el = document.createElement("div");
+        el.className = "ppw-state";
+        const head = icon === "spinner"
+            ? '<div class="ppw-spinner"></div>'
+            : '<span class="ppw-state-ic">' + this.icon(icon) + "</span>";
+        el.innerHTML = head +
+            '<div class="ppw-state-title">' + this.esc(title) + "</div>" +
+            (body ? '<div class="ppw-state-body">' + this.esc(body) + "</div>" : "");
+        return el;
+    }
+
+    private closePane(): void {
+        if (!this.paneRoot) return;
+        const el = this.paneRoot;
+        el.classList.remove("ppw-open");
+        document.removeEventListener("keydown", this.paneKeyHandler, true);
+        this.paneRoot = null;
+        this.paneBodyEl = null;
+        this.paneCardId = "";
+        this.paneView = "list";
+        this.paneDetailDoc = null;
+        window.setTimeout(() => el.remove(), 280);
+    }
+
     /* --------------------------------------------------------------- helpers */
 
     private gradientFor(c: WalletCard, index: number): number {
@@ -556,7 +1062,14 @@ export class CreditCardWallet implements ComponentFramework.StandardControl<IInp
             clock: '<path d="M12 3a9 9 0 1 0 9 9 9 9 0 0 0-9-9Zm1 9V7h-2v6h5v-2h-3Z" fill="currentColor"/>',
             wallet: '<path d="M4 6h14a2 2 0 0 1 2 2v1h-3a3 3 0 0 0 0 6h3v1a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2Zm13 5a1.5 1.5 0 1 0 0 3h4v-3h-4Z" fill="currentColor"/>',
             flip: '<path d="M12 5V2L8 6l4 4V7a5 5 0 0 1 5 5h2a7 7 0 0 0-7-7Zm0 14v3l4-4-4-4v3a5 5 0 0 1-5-5H5a7 7 0 0 0 7 7Z" fill="currentColor"/>',
-            alert: '<path d="M12 2 1 21h22L12 2Zm1 14h-2v2h2v-2Zm0-6h-2v4h2v-4Z" fill="currentColor"/>'
+            alert: '<path d="M12 2 1 21h22L12 2Zm1 14h-2v2h2v-2Zm0-6h-2v4h2v-4Z" fill="currentColor"/>',
+            receipt: '<path d="M6 2h12a1 1 0 0 1 1 1v18l-2.5-1.5L14 21l-2-1.5L10 21l-2.5-1.5L5 21V3a1 1 0 0 1 1-1Zm2 5v2h8V7H8Zm0 4v2h8v-2H8Zm0 4v2h5v-2H8Z" fill="currentColor"/>',
+            credit: '<path d="M6 2h12a1 1 0 0 1 1 1v18l-2.5-1.5L14 21l-2-1.5L10 21l-2.5-1.5L5 21V3a1 1 0 0 1 1-1Zm2 8v2h8v-2H8Z" fill="currentColor"/>',
+            close: '<path d="M6.4 5 5 6.4 10.6 12 5 17.6 6.4 19 12 13.4 17.6 19 19 17.6 13.4 12 19 6.4 17.6 5 12 10.6 6.4 5Z" fill="currentColor"/>',
+            chev: '<path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>',
+            back: '<path d="M15 6l-6 6 6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>',
+            external: '<path d="M14 4h6v6h-2V7.4l-8.3 8.3-1.4-1.4L16.6 6H14V4ZM5 5h5v2H6v11h11v-4h2v6H4V6a1 1 0 0 1 1-1Z" fill="currentColor"/>',
+            expand: '<path d="M4 4h7v2H6v5H4V4Zm16 0v7h-2V6h-5V4h7ZM4 13h2v5h5v2H4v-7Zm16 0v7h-7v-2h5v-5h2Z" fill="currentColor"/>'
         };
         const path = p[name] || "";
         return '<svg class="pp-ic" viewBox="0 0 24 24" width="16" height="16" fill="none" xmlns="http://www.w3.org/2000/svg">' + path + "</svg>";

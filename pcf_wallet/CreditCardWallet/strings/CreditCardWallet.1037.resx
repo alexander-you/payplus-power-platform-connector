@@ -98,4 +98,22 @@
   <data name="loading" xml:space="preserve"><value>טוען כרטיסים…</value></data>
   <data name="loadError" xml:space="preserve"><value>טעינת הכרטיסים נכשלה.</value></data>
   <data name="dash" xml:space="preserve"><value>—</value></data>
+
+  <data name="detailsBtn" xml:space="preserve"><value>פרטים</value></data>
+  <data name="detailsHint" xml:space="preserve"><value>הצג את הקבלות ששולמו בכרטיס זה</value></data>
+  <data name="paneTitle" xml:space="preserve"><value>קבלות ששולמו בכרטיס</value></data>
+  <data name="paneSub" xml:space="preserve"><value>כל הקבלות וחשבוניות מס קבלה שהופקו עבור חיובי כרטיס זה</value></data>
+  <data name="paneClose" xml:space="preserve"><value>סגירה</value></data>
+  <data name="paneLoading" xml:space="preserve"><value>טוען קבלות…</value></data>
+  <data name="paneError" xml:space="preserve"><value>טעינת הקבלות נכשלה.</value></data>
+  <data name="paneEmptyTitle" xml:space="preserve"><value>אין קבלות לכרטיס זה</value></data>
+  <data name="paneEmptyBody" xml:space="preserve"><value>כאשר יבוצע חיוב בכרטיס זה ותופק קבלה, היא תופיע כאן.</value></data>
+  <data name="paneCount" xml:space="preserve"><value>מסמכים</value></data>
+  <data name="paneTotal" xml:space="preserve"><value>סה״כ שולם</value></data>
+  <data name="paneBack" xml:space="preserve"><value>חזרה לרשימה</value></data>
+  <data name="paneOpenExternal" xml:space="preserve"><value>פתח בכרטיסייה חדשה</value></data>
+  <data name="paneFullscreen" xml:space="preserve"><value>תצוגה מלאה</value></data>
+  <data name="paneNoPdf" xml:space="preserve"><value>אין קובץ PDF זמין למסמך זה.</value></data>
+  <data name="sendLabel" xml:space="preserve"><value>שלח ללקוח</value></data>
+  <data name="sendDone" xml:space="preserve"><value>בקשת השליחה נרשמה ותבוצע ברקע.</value></data>
 </root>

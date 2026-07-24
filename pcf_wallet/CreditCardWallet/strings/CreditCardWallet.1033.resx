@@ -98,4 +98,22 @@
   <data name="loading" xml:space="preserve"><value>Loading cards…</value></data>
   <data name="loadError" xml:space="preserve"><value>Could not load cards.</value></data>
   <data name="dash" xml:space="preserve"><value>—</value></data>
+
+  <data name="detailsBtn" xml:space="preserve"><value>Details</value></data>
+  <data name="detailsHint" xml:space="preserve"><value>View receipts settled with this card</value></data>
+  <data name="paneTitle" xml:space="preserve"><value>Receipts settled with this card</value></data>
+  <data name="paneSub" xml:space="preserve"><value>All receipts and tax-invoice receipts issued for this card's charges</value></data>
+  <data name="paneClose" xml:space="preserve"><value>Close</value></data>
+  <data name="paneLoading" xml:space="preserve"><value>Loading receipts…</value></data>
+  <data name="paneError" xml:space="preserve"><value>Could not load receipts.</value></data>
+  <data name="paneEmptyTitle" xml:space="preserve"><value>No receipts for this card</value></data>
+  <data name="paneEmptyBody" xml:space="preserve"><value>When this card is charged and a receipt is issued, it will appear here.</value></data>
+  <data name="paneCount" xml:space="preserve"><value>Documents</value></data>
+  <data name="paneTotal" xml:space="preserve"><value>Total settled</value></data>
+  <data name="paneBack" xml:space="preserve"><value>Back to list</value></data>
+  <data name="paneOpenExternal" xml:space="preserve"><value>Open in a new tab</value></data>
+  <data name="paneFullscreen" xml:space="preserve"><value>Full preview</value></data>
+  <data name="paneNoPdf" xml:space="preserve"><value>No PDF file is available for this document.</value></data>
+  <data name="sendLabel" xml:space="preserve"><value>Send to customer</value></data>
+  <data name="sendDone" xml:space="preserve"><value>The send request was recorded and will run in the background.</value></data>
 </root>

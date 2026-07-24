@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <manifest>
-  <control namespace="PayPlus" constructor="CreditCardWallet" version="1.0.3"
+  <control namespace="PayPlus" constructor="CreditCardWallet" version="1.0.8"
            display-name-key="PayPlus_Wallet_Display"
            description-key="PayPlus_Wallet_Desc"
            control-type="standard" >
@@ -27,8 +27,8 @@
     <resources>
       <code path="index.ts" order="1"/>
       <css path="css/CreditCardWallet.css" order="1" />
-      <resx path="strings/CreditCardWallet.1033.resx" version="1.0.0" />
-      <resx path="strings/CreditCardWallet.1037.resx" version="1.0.0" />
+      <resx path="strings/CreditCardWallet.1033.resx" version="1.0.1" />
+      <resx path="strings/CreditCardWallet.1037.resx" version="1.0.1" />
     </resources>
     <feature-usage>
       <uses-feature name="Utility" required="true" />
