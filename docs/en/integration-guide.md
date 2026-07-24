@@ -293,6 +293,7 @@ You are free to add your own tables, columns, forms, apps, and flows around this
 
 - [architecture.md](architecture.md) — solution architecture and components
 - [pcf-controls-guide.md](pcf-controls-guide.md) — binding the PCF controls, and standalone payment capture without Sales
+- [deployment-and-administration.md](deployment-and-administration.md) — installing the two solutions, connections, and the setup wizard
 - [data-model.md](data-model.md) — Dataverse tables
 - [custom-connector-design.md](custom-connector-design.md) — connector operations and inputs
 - [security-governance-and-compliance.md](security-governance-and-compliance.md) — governance and PCI posture

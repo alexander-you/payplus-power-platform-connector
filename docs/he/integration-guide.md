@@ -293,6 +293,7 @@ flowchart LR
 
 - [architecture.md](architecture.md) — ארכיטקטורת הפתרון והרכיבים
 - [pcf-controls-guide.md](pcf-controls-guide.md) — חיבור פקדי ה-PCF, וקליטת תשלום עצמאית ללא Sales
+- [deployment-and-administration.md](deployment-and-administration.md) — התקנת שני ה-Solutions, החיבורים ואשף ההתקנה
 - [data-model.md](data-model.md) — טבלאות Dataverse
 - [custom-connector-design.md](custom-connector-design.md) — פעולות המחבר וקלטים
 - [security-governance-and-compliance.md](security-governance-and-compliance.md) — ממשל ותאימות PCI
