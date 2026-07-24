@@ -10,13 +10,14 @@
 
 ## יכולות הפתרון
 
-הפתרון בנוי על ארבעה עמודי יכולת. ה-Custom Connector הוא הבסיס; שאר העמודים נבנים מעליו בתוך Dynamics 365 ו-Dataverse.
+הפתרון בנוי על חמישה עמודי יכולת. ה-Custom Connector הוא הבסיס; שאר העמודים נבנים מעליו בתוך Dynamics 365 ו-Dataverse.
 
 | עמוד | מטרה |
 | --- | --- |
 | מחבר ותשלום מתארח | עטיפה טיפוסית ל-API של PayPlus, ניהול מאובטח של פרטי גישה, ויצירת קישור תשלום מתארח. |
 | מנוע סנכרון רציף | סנכרון מבוסס-הגדרות ו-Outbox של רשומות Dataverse (לקוחות, מוצרים, קטגוריות) ל-PayPlus, עם מיפוי שדות, טרנספורמציות, מסננים ומיפויי ערכים. |
-| פקדי PCF | שני פקדי Power Apps Component Framework: Mapping Studio (מיפוי שדות ויזואלי והפעלת סנכרון) ו-Credit Card Wallet (ניהול כרטיסים מטוקנים). |
+| פקדי PCF | חמישה פקדי Power Apps Component Framework: Mapping Studio (מיפוי שדות ויזואלי והפעלת סנכרון), Credit Card Wallet ו-Bank Account Wallet (ניהול כרטיסים מטוקנים וחשבונות בנק), Payment Wizard (קליטת תשלום מודרכת בהקשר), ו-Document Ledger / Document Preview (יומן ותצוגה מקדימה של מסמכי Invoice+). |
+| קליטת תשלום בהקשר ומסמכי Invoice+ | אשף תשלום מודרך (Payment Wizard) וכפתורי תשלום בלחיצה אחת בהצעות מחיר, הזמנות מכירה וחשבוניות; תהליכי תצוגה מקדימה של תשלום מתארח; יצירת מסמכי PayPlus Invoice+, יומן ותצוגה מקדימה; וייבוא נתוני ייחוס של בנקים/סניפים וסוגי מסמכים. |
 | טוקניזציה ושירות עצמי | טוקניזציה ב-Hosted Fields, איסוף כרטיס בשירות עצמי באימייל, SMS ו-WhatsApp, וזיהוי טוקניזציה יוצא מבוסס-Polling. |
 
 שכבת המחבר אינה תלוית-סביבה וניתן לעשות בה שימוש חוזר בפני עצמה. שאר העמודים ממומשים כטבלאות Dataverse, פלאגינים, Custom APIs, תהליכי Flow ופקדי PCF בתוך פתרון ה-Dynamics 365.
@@ -35,7 +36,7 @@
 | לקוח | מקבל קישור ומשלם ב-PayPlus |
 | מנוע סנכרון (Dataverse) | פרופילי סנכרון, מיפויי טבלאות ושדות, כללי טרנספורמציה ומסננים, outbox, מצב סנכרון ולוגים |
 | פלאגינים ו-Custom APIs לסנכרון | הכנסת פריט ל-outbox בשינוי מקור, רישום צעדי פלאגין (reconcile), זריעת כללי טרנספורמציה |
-| פקדי PCF | Mapping Studio (ממשק מיפוי שדות) ו-Credit Card Wallet (הצגת כרטיסים מטוקנים ופעולות) |
+| פקדי PCF | Mapping Studio (מיפוי שדות), Credit Card Wallet ו-Bank Account Wallet (ארנקי כרטיסים מטוקנים וחשבונות בנק), Payment Wizard (קליטת תשלום מודרכת), Document Ledger ו-Document Preview (מסמכי Invoice+) |
 | מאגר כרטיסים מטוקנים | רשומות `alex_creditcard` המחזיקות מטא-דאטה לא רגיש של כרטיס וטוקנים של PayPlus |
 
 ## Custom Connector ב-Power Platform
@@ -65,6 +66,8 @@
 - `ChargeSavedCard` כאשר קיים טוקן שמור של PayPlus וקיים אישור להשתמש בו
 
 תהליך ייעודי להתקנה, `PayPlus - Import Terminals & Pages`, קורא את מסופי PayPlus (`MyTerminals`) ואת עמודי התשלום שלהם (`ListPaymentPages`) דרך המחבר, ומבצע upsert לשורות בטבלאות `alex_payplus_terminal` ו-`alex_payplus_paymentpage`, לפי מפתח סביבה + UID. רשומות חדשות מקבלות `alex_isdefault = false` בתחילה. התהליך רץ במהלך ההתקנה (שלב מסופים ועמודי תשלום) וניתן להריץ אותו שוב לרענון הקטלוג.
+
+תהליכים נוספים להתקנה ולתהליך מרחיבים את הפתרון: `PayPlus - Import Banks & Branches` ו-`PayPlus - Import Document Types` ממלאים טבלאות ייחוס; `PayPlus - Document Action Request` מטפל בפעולות שליחה, שליחה חוזרת וביטול של מסמכי Invoice+; ותהליכי תצוגה מקדימה של תשלום עבור הצעת מחיר, הזמנת מכירה וחשבונית יוצרים קישור תשלום מתארח של PayPlus בהקשר, מתוך שורת הפקודות של הרשומה.
 
 מומלץ להפעיל Secure Inputs ו-Secure Outputs לכל פעולה שעלולה להכיל ערכים רגישים כגון טוקנים או מזהי לקוח.
 

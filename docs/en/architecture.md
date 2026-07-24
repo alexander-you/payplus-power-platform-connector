@@ -10,13 +10,14 @@ The solution does not process cards inside Power Platform. It redirects the cust
 
 ## Solution Capabilities
 
-The solution is built on four capability pillars. The custom connector is the foundation; the other pillars build on it inside Dynamics 365 and Dataverse.
+The solution is built on five capability pillars. The custom connector is the foundation; the other pillars build on it inside Dynamics 365 and Dataverse.
 
 | Pillar | Purpose |
 | --- | --- |
 | Connector and hosted payment | Typed PayPlus API wrapper, secure credential handling, and hosted payment link generation. |
 | Continuous sync engine | Configuration-driven, outbox-based synchronization of Dataverse records (customers, products, categories) to PayPlus, with field mapping, transforms, filters, and value maps. |
-| PCF controls | Two Power Apps Component Framework controls: Mapping Studio (visual field mapping and sync activation) and Credit Card Wallet (tokenized card management). |
+| PCF controls | Five Power Apps Component Framework controls: Mapping Studio (visual field mapping and sync activation), Credit Card Wallet and Bank Account Wallet (tokenized card and bank-account wallets), Payment Wizard (guided in-context payment capture), and Document Ledger / Document Preview (Invoice+ document ledger and preview). |
+| In-context payment capture and Invoice+ documents | Guided Payment Wizard and one-click payment ribbons on quotes, sales orders, and invoices; hosted payment-preview flows; PayPlus Invoice+ document generation, ledger, and preview; and bank/branch and document-type reference imports. |
 | Card tokenization and self-service | Hosted-fields tokenization, self-service card collection over email, SMS, and WhatsApp, and outbound polling-based tokenization detection. |
 
 The connector layer is environment-agnostic and can be reused on its own. The remaining pillars are implemented as Dataverse tables, plugins, custom APIs, flows, and PCF controls inside the Dynamics 365 solution.
@@ -35,7 +36,7 @@ The connector layer is environment-agnostic and can be reused on its own. The re
 | Customer | Receives link and pays on PayPlus |
 | Sync Engine (Dataverse) | Sync profiles, entity and field mappings, transform and filter rules, outbox, sync state, and logs |
 | Sync Plugins and Custom APIs | Queue outbox on source change, reconcile plugin steps, seed transform rules |
-| PCF Controls | Mapping Studio (field-level mapping UI) and Credit Card Wallet (tokenized card display and actions) |
+| PCF Controls | Mapping Studio (field mapping), Credit Card Wallet and Bank Account Wallet (tokenized card and bank-account wallets), Payment Wizard (guided payment capture), Document Ledger and Document Preview (Invoice+ documents) |
 | Tokenized Card Store | `alex_creditcard` records holding non-sensitive card metadata and PayPlus tokens |
 
 ## Power Platform Custom Connector
@@ -65,6 +66,8 @@ Power Automate flows can call connector actions such as:
 - `ChargeSavedCard` when a saved PayPlus token is available and approved for use
 
 A dedicated setup flow, `PayPlus - Import Terminals & Pages`, reads the PayPlus terminals (`MyTerminals`) and their payment pages (`ListPaymentPages`) through the connector and upserts rows into the `alex_payplus_terminal` and `alex_payplus_paymentpage` tables, keyed by environment + UID. New records get `alex_isdefault = false` initially. It runs during setup (Terminals & pages step) and can be re-run to refresh the catalog.
+
+Additional setup and process flows extend the solution: `PayPlus - Import Banks & Branches` and `PayPlus - Import Document Types` populate reference tables; `PayPlus - Document Action Request` handles Invoice+ document send, resend, and cancel actions; and quote, sales order, and invoice payment-preview flows generate a hosted PayPlus payment link in context from the record's command bar.
 
 Flows should enable secure inputs and secure outputs for any action that might carry sensitive values such as tokens or customer identifiers.
 
