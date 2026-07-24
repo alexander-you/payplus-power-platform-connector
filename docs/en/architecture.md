@@ -182,7 +182,7 @@ Environment note: `alex_payplus_syncprofile.alex_environment` uses Sandbox = `10
 
 ## PCF Controls
 
-Two Power Apps Component Framework controls provide a low-friction experience inside model-driven forms. Language follows the Dynamics user setting (Hebrew RTL or English LTR); there is no manual language toggle.
+Five Power Apps Component Framework controls (namespace `PayPlus`) provide a low-friction experience inside model-driven forms and custom pages. Language follows the Dynamics user setting (Hebrew RTL or English LTR); there is no manual language toggle. For exact binding, properties, and standalone use, see the [PCF Controls Guide](pcf-controls-guide.md).
 
 ### Mapping Studio
 
@@ -191,6 +191,19 @@ A field-type control hosted on the sync profile form. An administrator chooses a
 ### Credit Card Wallet
 
 A dataset control that renders tokenized cards for the current account or contact in an Apple-wallet style. It supports a 3D flip for card details, activate and deactivate actions, default-card handling, and shortcuts to trigger manual card capture or self-service card collection. It reads `alex_creditcard` records related to the parent record.
+
+### Bank Account Wallet
+
+A dataset control that renders a customer's bank accounts as an Apple-style wallet with bank logos, and lets the user add an account through bank and branch pickers (including standing-order details). It reads the customer bank-account records related to the parent account or contact and uses the `alex_bank` and `alex_bankbranch` reference tables.
+
+### Payment Wizard
+
+A guided control that collects a payment and issues the accounting outcome. It is built around a **billing case** (`alex_payplusbillingcase`), not around an invoice: it resolves the source from its `sourceEntity`/`sourceId` inputs or from the current form/page context, finds or creates the matching billing case, and works from the case's payment lines and receipt allocations. It supports full or partial payment, hosted fields or a saved token, and issues receipts or tax-invoice-receipts. Because the billing case is the anchor, the wizard runs on **any** source table or on a **custom page** — it does **not** require a Dynamics 365 Sales invoice. When the source happens to be an invoice it also reads the invoice lines.
+
+### Document Ledger and Document Preview
+
+Two Invoice+ controls. **Document Ledger** is an accounting-aware ledger for a customer or record — total charges, total credits, final balance, and search across issued documents — scoped by its `scope`/`recordId`/`entityLogicalName` inputs or the current record. **Document Preview** renders a preview of a single `alex_payplusdocument`, identified by its `documentId` input or the hosting record. Both read `alex_payplusdocument`.
+
 
 ## Card Tokenization And Self-Service
 

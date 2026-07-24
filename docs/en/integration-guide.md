@@ -22,6 +22,34 @@ The core message is simple:
 
 For a customer **without** Dynamics 365 Sales, this means they do not start from zero. They build **only their own business objects and rules**, and reuse the payment, document, tokenization, and sync machinery as-is.
 
+## The Two Solutions and Their Dependencies
+
+The product ships as **two solutions**, and the split is exactly the with/without-Sales boundary. Knowing which one to import — and in which order — is the first integration decision.
+
+| Solution | Unique name | What it contains | Depends on |
+| --- | --- | --- | --- |
+| **Base (payment engine)** | `alex_d365_payplus` | ~28 PayPlus tables, the plugin assembly and its steps, the generic flows, all PCF controls, connection references and environment variables, web resources, and site map | **Nothing Sales-related.** Self-contained. |
+| **Sales extension** | `alex_d365_payplus_sales_extended_data_model` | Custom columns, forms, and views on the standard `quote`, `salesorder`, `invoice`, and `invoicedetail` tables, plus the *Preview Quote / Sales Order / Invoice Document* and *Poll Invoice Payments* flows | **The base solution _and_ Dynamics 365 Sales.** |
+
+### What this means in practice
+
+- **You do _not_ run Dynamics 365 Sales.** Import **only the base solution**. You get the full engine — connector, tables, flows, plugins, and PCF controls — with **zero Sales dependency**. You then place controls such as the Payment Wizard and Document Ledger on your own tables or on custom pages, and you drive the flows from your own records. Do **not** import the Sales extension; it references `invoice`/`quote`/`salesorder`, which you do not have.
+- **You run Dynamics 365 Sales.** Import the **base solution first**, then the **Sales extension**. The extension only adds the Sales-side placement (columns, forms, ribbons, and the three document-preview flows) on top of the engine. It cannot be imported on its own, because it depends on the base.
+
+### Dependency direction (one way only)
+
+```mermaid
+flowchart LR
+  Sales["Dynamics 365 Sales<br/>(quote / order / invoice)"]
+  Ext["Sales extension<br/>alex_d365_payplus_sales_extended_data_model"]
+  Base["Base engine<br/>alex_d365_payplus"]
+  Ext -->|depends on| Base
+  Ext -->|depends on| Sales
+  Base -.->|no dependency| Sales
+```
+
+The arrow never points the other way: **the base never depends on the extension or on Sales.** That is what makes the base a valid standalone product for a non-Sales customer, and it is the guarantee you rely on when you build your own front end.
+
 ## The Integration Surface (Reusable Regardless of Sales)
 
 Three layers are reusable by **any** consumer, with or without Sales.
@@ -264,6 +292,7 @@ You are free to add your own tables, columns, forms, apps, and flows around this
 ## Related Documents
 
 - [architecture.md](architecture.md) — solution architecture and components
+- [pcf-controls-guide.md](pcf-controls-guide.md) — binding the PCF controls, and standalone payment capture without Sales
 - [data-model.md](data-model.md) — Dataverse tables
 - [custom-connector-design.md](custom-connector-design.md) — connector operations and inputs
 - [security-governance-and-compliance.md](security-governance-and-compliance.md) — governance and PCI posture

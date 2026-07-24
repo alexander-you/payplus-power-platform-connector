@@ -22,6 +22,34 @@
 
 עבור לקוח **ללא** Dynamics 365 Sales, המשמעות היא שהוא לא מתחיל מאפס. הוא בונה **רק את האובייקטים והחוקים העסקיים שלו**, ועושה שימוש חוזר במנגנוני התשלום, המסמכים, הטוקניזציה והסנכרון כפי שהם.
 
+## שני ה-Solutions והתלויות ביניהם
+
+המוצר נמסר כ-**שני Solutions**, וההפרדה היא בדיוק על גבול "עם/בלי Sales". לדעת איזה מהם לייבא — ובאיזה סדר — היא החלטת האינטגרציה הראשונה.
+
+| Solution | שם ייחודי | מה הוא מכיל | תלוי ב |
+| --- | --- | --- | --- |
+| **בסיס (מנוע התשלום)** | `alex_d365_payplus` | ~28 טבלאות PayPlus, ה-plugin וה-steps שלו, הזרימות הגנריות, כל פקדי ה-PCF, connection references ו-environment variables, web resources, ו-site map | **דבר שאינו קשור ל-Sales.** עצמאי לחלוטין. |
+| **הרחבת Sales** | `alex_d365_payplus_sales_extended_data_model` | עמודות, טפסים ו-views מותאמים על הטבלאות הסטנדרטיות `quote`, `salesorder`, `invoice`, `invoicedetail`, בתוספת הזרימות *Preview Quote / Sales Order / Invoice Document* ו-*Poll Invoice Payments* | **ה-Solution הבסיס _וגם_ Dynamics 365 Sales.** |
+
+### מה זה אומר בפועל
+
+- **אין לך Dynamics 365 Sales.** ייבא **רק את ה-Solution הבסיס**. אתה מקבל את המנוע המלא — מחבר, טבלאות, זרימות, plugins ופקדי PCF — עם **אפס תלות ב-Sales**. לאחר מכן ממקמים פקדים כמו Payment Wizard ו-Document Ledger על הטבלאות שלך או על עמודים מותאמים, ומניעים את הזרימות מהרשומות שלך. **אל** תייבא את הרחבת ה-Sales; היא מפנה ל-`invoice`/`quote`/`salesorder`, שאין לך.
+- **יש לך Dynamics 365 Sales.** ייבא תחילה את **ה-Solution הבסיס**, ואז את **הרחבת ה-Sales**. ההרחבה רק מוסיפה את המיקום בצד Sales (עמודות, טפסים, ribbons, ושלוש זרימות תצוגת-המסמך) על גבי המנוע. לא ניתן לייבא אותה לבדה, כי היא תלויה בבסיס.
+
+### כיוון התלות (בכיוון אחד בלבד)
+
+```mermaid
+flowchart LR
+  Sales["Dynamics 365 Sales<br/>(quote / order / invoice)"]
+  Ext["Sales extension<br/>alex_d365_payplus_sales_extended_data_model"]
+  Base["Base engine<br/>alex_d365_payplus"]
+  Ext -->|depends on| Base
+  Ext -->|depends on| Sales
+  Base -.->|no dependency| Sales
+```
+
+החץ לעולם לא מצביע לכיוון ההפוך: **הבסיס לעולם אינו תלוי בהרחבה או ב-Sales.** זה מה שהופך את הבסיס למוצר עצמאי תקף עבור לקוח ללא Sales, וזו הערובה שעליה אתה נשען כשאתה בונה חזית משלך.
+
 ## משטח האינטגרציה (לשימוש חוזר ללא תלות ב-Sales)
 
 שלוש שכבות ניתנות לשימוש חוזר על ידי **כל** צרכן, עם או בלי Sales.
@@ -264,6 +292,7 @@ flowchart LR
 ## מסמכים קשורים
 
 - [architecture.md](architecture.md) — ארכיטקטורת הפתרון והרכיבים
+- [pcf-controls-guide.md](pcf-controls-guide.md) — חיבור פקדי ה-PCF, וקליטת תשלום עצמאית ללא Sales
 - [data-model.md](data-model.md) — טבלאות Dataverse
 - [custom-connector-design.md](custom-connector-design.md) — פעולות המחבר וקלטים
 - [security-governance-and-compliance.md](security-governance-and-compliance.md) — ממשל ותאימות PCI
