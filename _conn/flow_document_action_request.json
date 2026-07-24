@@ -1,0 +1,134 @@
+{
+  "schemaVersion": "1.0.0.0",
+  "properties": {
+    "connectionReferences": {
+      "alex_payplus_dataverse": {
+        "runtimeSource": "embedded",
+        "connection": { "connectionReferenceLogicalName": "alex_payplus_dataverse" },
+        "api": { "name": "shared_commondataserviceforapps" }
+      }
+    },
+    "definition": {
+      "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+      "contentVersion": "1.0.0.0",
+      "parameters": {
+        "$connections": { "defaultValue": {}, "type": "Object" },
+        "$authentication": { "defaultValue": {}, "type": "SecureObject" }
+      },
+      "triggers": {
+        "When_a_payplus_document_action_is_requested": {
+          "metadata": { "operationMetadataId": "d0000000-0000-4000-8000-000000000001" },
+          "type": "OpenApiConnectionWebhook",
+          "inputs": {
+            "host": {
+              "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps",
+              "operationId": "SubscribeWebhookTrigger",
+              "connectionName": "alex_payplus_dataverse"
+            },
+            "parameters": {
+              "subscriptionRequest/message": 4,
+              "subscriptionRequest/entityname": "alex_payplusdocument",
+              "subscriptionRequest/scope": 4,
+              "subscriptionRequest/filteringattributes": "alex_requestedaction,alex_requestedchannel,alex_requestedlinktype,alex_requestedactionstatus,alex_requestedactionon",
+              "subscriptionRequest/filterexpression": "alex_requestedactionstatus eq 100000000"
+            },
+            "authentication": "@parameters('$authentication')"
+          }
+        }
+      },
+      "actions": {
+        "Get_payplus_document": {
+          "runAfter": {},
+          "metadata": { "operationMetadataId": "d0000000-0000-4000-8000-000000000002" },
+          "type": "OpenApiConnection",
+          "inputs": {
+            "host": {
+              "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps",
+              "operationId": "GetItem",
+              "connectionName": "alex_payplus_dataverse"
+            },
+            "parameters": {
+              "entityName": "alex_payplusdocuments",
+              "recordId": "@triggerOutputs()?['body/alex_payplusdocumentid']",
+              "$select": "alex_payplusdocumentid,alex_name,alex_documenttypecode,alex_payplusdocumentuuid,alex_documentnumber,alex_requestedaction,alex_requestedchannel,alex_requestedlinktype,alex_requestedactionstatus,alex_requestedactionmessage,alex_documenturl,alex_pdfurl,alex_copypdfurl,alex_customername,alex_customeremail,alex_customerphone,alex_sourceentitylogicalname,alex_sourceentityid,alex_sourcedisplayname"
+            },
+            "authentication": "@parameters('$authentication')"
+          }
+        },
+        "Compose_document_action_payload": {
+          "runAfter": { "Get_payplus_document": ["Succeeded"] },
+          "metadata": { "operationMetadataId": "d0000000-0000-4000-8000-000000000003" },
+          "type": "Compose",
+          "inputs": {
+            "documentId": "@body('Get_payplus_document')?['alex_payplusdocumentid']",
+            "name": "@body('Get_payplus_document')?['alex_name']",
+            "documentTypeCode": "@body('Get_payplus_document')?['alex_documenttypecode']",
+            "payplusDocumentUuid": "@body('Get_payplus_document')?['alex_payplusdocumentuuid']",
+            "documentNumber": "@body('Get_payplus_document')?['alex_documentnumber']",
+            "requestedAction": "@body('Get_payplus_document')?['alex_requestedaction']",
+            "requestedChannel": "@body('Get_payplus_document')?['alex_requestedchannel']",
+            "requestedLinkType": "@body('Get_payplus_document')?['alex_requestedlinktype']",
+            "resolvedLink": "@if(equals(body('Get_payplus_document')?['alex_requestedlinktype'], 100000001), body('Get_payplus_document')?['alex_copypdfurl'], body('Get_payplus_document')?['alex_pdfurl'])",
+            "viewLink": "@body('Get_payplus_document')?['alex_documenturl']",
+            "originalPdfUrl": "@body('Get_payplus_document')?['alex_pdfurl']",
+            "copyPdfUrl": "@body('Get_payplus_document')?['alex_copypdfurl']",
+            "customerName": "@body('Get_payplus_document')?['alex_customername']",
+            "customerEmail": "@body('Get_payplus_document')?['alex_customeremail']",
+            "customerPhone": "@body('Get_payplus_document')?['alex_customerphone']",
+            "sourceTable": "@body('Get_payplus_document')?['alex_sourceentitylogicalname']",
+            "sourceId": "@body('Get_payplus_document')?['alex_sourceentityid']",
+            "sourceDisplayName": "@body('Get_payplus_document')?['alex_sourcedisplayname']",
+            "requestedActionMessage": "@body('Get_payplus_document')?['alex_requestedactionmessage']"
+          }
+        },
+        "Create_action_log": {
+          "runAfter": { "Compose_document_action_payload": ["Succeeded"] },
+          "metadata": { "operationMetadataId": "d0000000-0000-4000-8000-000000000004" },
+          "type": "OpenApiConnection",
+          "inputs": {
+            "host": {
+              "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps",
+              "operationId": "CreateRecord",
+              "connectionName": "alex_payplus_dataverse"
+            },
+            "parameters": {
+              "entityName": "alex_payplusdocumentactionlogs",
+              "item/alex_name": "@concat('PayPlus document action - ', coalesce(body('Get_payplus_document')?['alex_name'], body('Get_payplus_document')?['alex_payplusdocumentid']))",
+              "item/alex_payplusdocumentid@odata.bind": "@concat('/alex_payplusdocuments(', body('Get_payplus_document')?['alex_payplusdocumentid'], ')')",
+              "item/alex_action": "@body('Get_payplus_document')?['alex_requestedaction']",
+              "item/alex_channel": "@body('Get_payplus_document')?['alex_requestedchannel']",
+              "item/alex_linktype": "@body('Get_payplus_document')?['alex_requestedlinktype']",
+              "item/alex_status": 100000001,
+              "item/alex_requestedon": "@coalesce(triggerOutputs()?['body/alex_requestedactionon'], utcNow())",
+              "item/alex_requestedby": "@body('Get_payplus_document')?['alex_requestedactionby']",
+              "item/alex_resolvedlink": "@outputs('Compose_document_action_payload')?['resolvedLink']",
+              "item/alex_payloadjson": "@string(outputs('Compose_document_action_payload'))",
+              "item/alex_message": "Placeholder only: no delivery action and no PayPlus document lifecycle API call was executed."
+            },
+            "authentication": "@parameters('$authentication')"
+          }
+        },
+        "Update_document_action_status": {
+          "runAfter": { "Create_action_log": ["Succeeded"] },
+          "metadata": { "operationMetadataId": "d0000000-0000-4000-8000-000000000005" },
+          "type": "OpenApiConnection",
+          "inputs": {
+            "host": {
+              "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps",
+              "operationId": "UpdateRecord",
+              "connectionName": "alex_payplus_dataverse"
+            },
+            "parameters": {
+              "entityName": "alex_payplusdocuments",
+              "recordId": "@body('Get_payplus_document')?['alex_payplusdocumentid']",
+              "item/alex_requestedactionstatus": 100000001,
+              "item/alex_businessstatus": 100000005,
+              "item/alex_requestedactionmessage": "@string(outputs('Compose_document_action_payload'))"
+            },
+            "authentication": "@parameters('$authentication')"
+          }
+        }
+      }
+    }
+  }
+}

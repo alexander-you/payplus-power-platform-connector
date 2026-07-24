@@ -1,0 +1,543 @@
+{
+  "properties": {
+    "connectionReferences": {
+      "alex_payplus_dataverse": {
+        "runtimeSource": "embedded",
+        "connection": { "connectionReferenceLogicalName": "alex_payplus_dataverse" },
+        "api": { "name": "shared_commondataserviceforapps" }
+      },
+      "alex_payplussandbox": {
+        "runtimeSource": "embedded",
+        "connection": { "connectionReferenceLogicalName": "alex_payplussandbox" },
+        "api": { "name": "shared_alex-5fpayplus-20sandbox-5f5849d39a0feaf28d" }
+      },
+      "alex_payplusprod": {
+        "runtimeSource": "embedded",
+        "connection": { "connectionReferenceLogicalName": "alex_payplusprod" },
+        "api": { "name": "shared_alex-5fpayplus-5f5849d39a0feaf28d" }
+      }
+    },
+    "definition": {
+      "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+      "contentVersion": "1.0.0.0",
+      "parameters": {
+        "$connections": { "defaultValue": {}, "type": "Object" },
+        "$authentication": { "defaultValue": {}, "type": "SecureObject" }
+      },
+      "triggers": {
+        "When_bank_import_is_requested": {
+          "metadata": { "operationMetadataId": "e0000000-0000-4000-8000-000000000001" },
+          "type": "OpenApiConnectionWebhook",
+          "inputs": {
+            "host": {
+              "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps",
+              "operationId": "SubscribeWebhookTrigger",
+              "connectionName": "alex_payplus_dataverse"
+            },
+            "parameters": {
+              "subscriptionRequest/message": 4,
+              "subscriptionRequest/entityname": "alex_payplusconfiguration",
+              "subscriptionRequest/scope": 4,
+              "subscriptionRequest/filteringattributes": "alex_bank_import_enabled"
+            },
+            "authentication": "@parameters('$authentication')"
+          },
+          "conditions": [
+            { "expression": "@equals(triggerOutputs()?['body/alex_bank_import_enabled'], true)" }
+          ]
+        }
+      },
+      "actions": {
+        "Init_configId": {
+          "runAfter": {},
+          "type": "InitializeVariable",
+          "inputs": { "variables": [ { "name": "Var_configId", "type": "string", "value": "@{triggerOutputs()?['body/alex_payplusconfigurationid']}" } ] }
+        },
+        "Init_records": {
+          "runAfter": { "Init_configId": [ "Succeeded" ] },
+          "type": "InitializeVariable",
+          "inputs": { "variables": [ { "name": "Var_records", "type": "array", "value": [] } ] }
+        },
+        "Init_bankMap": {
+          "runAfter": { "Init_records": [ "Succeeded" ] },
+          "type": "InitializeVariable",
+          "inputs": { "variables": [ { "name": "Var_bankMap", "type": "array", "value": [] } ] }
+        },
+        "Init_created": {
+          "runAfter": { "Init_bankMap": [ "Succeeded" ] },
+          "type": "InitializeVariable",
+          "inputs": { "variables": [ { "name": "Var_created", "type": "integer", "value": 0 } ] }
+        },
+        "Init_updated": {
+          "runAfter": { "Init_created": [ "Succeeded" ] },
+          "type": "InitializeVariable",
+          "inputs": { "variables": [ { "name": "Var_updated", "type": "integer", "value": 0 } ] }
+        },
+        "Init_env": {
+          "runAfter": { "Init_updated": [ "Succeeded" ] },
+          "type": "InitializeVariable",
+          "inputs": { "variables": [ { "name": "Var_env", "type": "integer", "value": 100000001 } ] }
+        },
+        "Init_ppBanks": {
+          "runAfter": { "Init_env": [ "Succeeded" ] },
+          "type": "InitializeVariable",
+          "inputs": { "variables": [ { "name": "Var_ppBanks", "type": "array", "value": [] } ] }
+        },
+        "Init_enriched": {
+          "runAfter": { "Init_ppBanks": [ "Succeeded" ] },
+          "type": "InitializeVariable",
+          "inputs": { "variables": [ { "name": "Var_enriched", "type": "integer", "value": 0 } ] }
+        },
+        "Set_status_pending": {
+          "runAfter": { "Init_enriched": [ "Succeeded" ] },
+          "metadata": { "operationMetadataId": "e0000000-0000-4000-8000-000000000005" },
+          "type": "OpenApiConnection",
+          "inputs": {
+            "host": {
+              "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps",
+              "operationId": "UpdateRecord",
+              "connectionName": "alex_payplus_dataverse"
+            },
+            "parameters": {
+              "entityName": "alex_payplusconfigurations",
+              "recordId": "@variables('Var_configId')",
+              "item/alex_bank_import_status": 100000001,
+              "item/alex_bank_import_message": ""
+            },
+            "authentication": "@parameters('$authentication')"
+          }
+        },
+        "Do_import": {
+          "runAfter": { "Set_status_pending": [ "Succeeded" ] },
+          "type": "Scope",
+          "actions": {
+            "HTTP_get_branches": {
+              "runAfter": {},
+              "type": "Http",
+              "inputs": {
+                "method": "GET",
+                "uri": "https://data.gov.il/api/3/action/datastore_search?resource_id=2202bada-4baf-45f5-aa61-8c5bad9646d3&limit=32000"
+              }
+            },
+            "Set_records": {
+              "runAfter": { "HTTP_get_branches": [ "Succeeded" ] },
+              "type": "SetVariable",
+              "inputs": { "name": "Var_records", "value": "@coalesce(body('HTTP_get_branches')?['result']?['records'], json('[]'))" }
+            },
+            "List_existing_banks": {
+              "runAfter": { "Set_records": [ "Succeeded" ] },
+              "metadata": { "operationMetadataId": "e0000000-0000-4000-8000-000000000010" },
+              "type": "OpenApiConnection",
+              "inputs": {
+                "host": {
+                  "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps",
+                  "operationId": "ListRecords",
+                  "connectionName": "alex_payplus_dataverse"
+                },
+                "parameters": {
+                  "entityName": "alex_banks",
+                  "$select": "alex_bankid,alex_bankcode",
+                  "$top": 5000
+                },
+                "authentication": "@parameters('$authentication')"
+              }
+            },
+            "Select_source_banks": {
+              "runAfter": { "List_existing_banks": [ "Succeeded" ] },
+              "type": "Select",
+              "inputs": {
+                "from": "@variables('Var_records')",
+                "select": {
+                  "code": "@item()?['Bank_Code']",
+                  "name": "@item()?['Bank_Name']"
+                }
+              }
+            },
+            "Compose_distinct_banks": {
+              "runAfter": { "Select_source_banks": [ "Succeeded" ] },
+              "type": "Compose",
+              "inputs": "@union(body('Select_source_banks'), body('Select_source_banks'))"
+            },
+            "Foreach_bank": {
+              "runAfter": { "Compose_distinct_banks": [ "Succeeded" ] },
+              "type": "Foreach",
+              "foreach": "@outputs('Compose_distinct_banks')",
+              "runtimeConfiguration": { "concurrency": { "repetitions": 1 } },
+              "actions": {
+                "Filter_bank_existing": {
+                  "runAfter": {},
+                  "type": "Query",
+                  "inputs": {
+                    "from": "@body('List_existing_banks')?['value']",
+                    "where": "@equals(string(item()?['alex_bankcode']), string(items('Foreach_bank')?['code']))"
+                  }
+                },
+                "If_bank_exists": {
+                  "runAfter": { "Filter_bank_existing": [ "Succeeded" ] },
+                  "type": "If",
+                  "expression": { "greater": [ "@length(body('Filter_bank_existing'))", 0 ] },
+                  "actions": {
+                    "Append_existing_bank": {
+                      "runAfter": {},
+                      "type": "AppendToArrayVariable",
+                      "inputs": {
+                        "name": "Var_bankMap",
+                        "value": { "code": "@items('Foreach_bank')?['code']", "id": "@first(body('Filter_bank_existing'))?['alex_bankid']" }
+                      }
+                    }
+                  },
+                  "else": {
+                    "actions": {
+                      "Create_bank": {
+                        "runAfter": {},
+                        "metadata": { "operationMetadataId": "e0000000-0000-4000-8000-000000000020" },
+                        "type": "OpenApiConnection",
+                        "inputs": {
+                          "host": {
+                            "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps",
+                            "operationId": "CreateRecord",
+                            "connectionName": "alex_payplus_dataverse"
+                          },
+                          "parameters": {
+                            "entityName": "alex_banks",
+                            "item/alex_name": "@items('Foreach_bank')?['name']",
+                            "item/alex_bankcode": "@items('Foreach_bank')?['code']"
+                          },
+                          "authentication": "@parameters('$authentication')"
+                        }
+                      },
+                      "Append_new_bank": {
+                        "runAfter": { "Create_bank": [ "Succeeded" ] },
+                        "type": "AppendToArrayVariable",
+                        "inputs": {
+                          "name": "Var_bankMap",
+                          "value": { "code": "@items('Foreach_bank')?['code']", "id": "@body('Create_bank')?['alex_bankid']" }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "List_existing_branches": {
+              "runAfter": { "Foreach_bank": [ "Succeeded" ] },
+              "metadata": { "operationMetadataId": "e0000000-0000-4000-8000-000000000030" },
+              "type": "OpenApiConnection",
+              "inputs": {
+                "host": {
+                  "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps",
+                  "operationId": "ListRecords",
+                  "connectionName": "alex_payplus_dataverse"
+                },
+                "parameters": {
+                  "entityName": "alex_bankbranchs",
+                  "$select": "alex_bankbranchid,alex_branchcode,_alex_bankid_value",
+                  "$top": 5000
+                },
+                "authentication": "@parameters('$authentication')"
+              }
+            },
+            "Select_existing_branch_keys": {
+              "runAfter": { "List_existing_branches": [ "Succeeded" ] },
+              "type": "Select",
+              "inputs": {
+                "from": "@body('List_existing_branches')?['value']",
+                "select": {
+                  "key": "@concat(coalesce(item()?['_alex_bankid_value'],''), '|', string(item()?['alex_branchcode']))",
+                  "id": "@item()?['alex_bankbranchid']"
+                }
+              }
+            },
+            "Compose_existing_branch_map": {
+              "runAfter": { "Select_existing_branch_keys": [ "Succeeded" ] },
+              "type": "Compose",
+              "inputs": "@body('Select_existing_branch_keys')"
+            },
+            "Foreach_branch": {
+              "runAfter": { "Compose_existing_branch_map": [ "Succeeded" ] },
+              "type": "Foreach",
+              "foreach": "@variables('Var_records')",
+              "runtimeConfiguration": { "concurrency": { "repetitions": 1 } },
+              "actions": {
+                "Filter_bank_for_branch": {
+                  "runAfter": {},
+                  "type": "Query",
+                  "inputs": {
+                    "from": "@variables('Var_bankMap')",
+                    "where": "@equals(string(item()?['code']), string(items('Foreach_branch')?['Bank_Code']))"
+                  }
+                },
+                "Compose_bankGuid": {
+                  "runAfter": { "Filter_bank_for_branch": [ "Succeeded" ] },
+                  "type": "Compose",
+                  "inputs": "@first(body('Filter_bank_for_branch'))?['id']"
+                },
+                "Compose_branch_key": {
+                  "runAfter": { "Compose_bankGuid": [ "Succeeded" ] },
+                  "type": "Compose",
+                  "inputs": "@concat(coalesce(outputs('Compose_bankGuid'),''), '|', string(items('Foreach_branch')?['Branch_Code']))"
+                },
+                "Filter_branch_existing": {
+                  "runAfter": { "Compose_branch_key": [ "Succeeded" ] },
+                  "type": "Query",
+                  "inputs": {
+                    "from": "@outputs('Compose_existing_branch_map')",
+                    "where": "@equals(item()?['key'], outputs('Compose_branch_key'))"
+                  }
+                },
+                "If_branch_exists": {
+                  "runAfter": { "Filter_branch_existing": [ "Succeeded" ] },
+                  "type": "If",
+                  "expression": { "greater": [ "@length(body('Filter_branch_existing'))", 0 ] },
+                  "actions": {
+                    "Update_branch": {
+                      "runAfter": {},
+                      "metadata": { "operationMetadataId": "e0000000-0000-4000-8000-000000000040" },
+                      "type": "OpenApiConnection",
+                      "inputs": {
+                        "host": {
+                          "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps",
+                          "operationId": "UpdateRecord",
+                          "connectionName": "alex_payplus_dataverse"
+                        },
+                        "parameters": {
+                          "entityName": "alex_bankbranchs",
+                          "recordId": "@first(body('Filter_branch_existing'))?['id']",
+                          "item/alex_name": "@items('Foreach_branch')?['Branch_Name']",
+                          "item/alex_branchcode": "@items('Foreach_branch')?['Branch_Code']",
+                          "item/alex_branchaddress": "@items('Foreach_branch')?['Branch_Address']",
+                          "item/alex_city": "@items('Foreach_branch')?['City']",
+                          "item/alex_zipcode": "@string(coalesce(items('Foreach_branch')?['Zip_Code'],''))",
+                          "item/alex_telephone": "@items('Foreach_branch')?['Telephone']",
+                          "item/alex_ismerged": "@not(equals(string(coalesce(items('Foreach_branch')?['Merge_Branch'],'')),''))",
+                          "item/alex_BankId@odata.bind": "@if(empty(outputs('Compose_bankGuid')), null, concat('/alex_banks(', outputs('Compose_bankGuid'), ')'))"
+                        },
+                        "authentication": "@parameters('$authentication')"
+                      }
+                    },
+                    "Incr_updated": {
+                      "runAfter": { "Update_branch": [ "Succeeded" ] },
+                      "type": "IncrementVariable",
+                      "inputs": { "name": "Var_updated", "value": 1 }
+                    }
+                  },
+                  "else": {
+                    "actions": {
+                      "Create_branch": {
+                        "runAfter": {},
+                        "metadata": { "operationMetadataId": "e0000000-0000-4000-8000-000000000041" },
+                        "type": "OpenApiConnection",
+                        "inputs": {
+                          "host": {
+                            "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps",
+                            "operationId": "CreateRecord",
+                            "connectionName": "alex_payplus_dataverse"
+                          },
+                          "parameters": {
+                            "entityName": "alex_bankbranchs",
+                            "item/alex_name": "@items('Foreach_branch')?['Branch_Name']",
+                            "item/alex_branchcode": "@items('Foreach_branch')?['Branch_Code']",
+                            "item/alex_branchaddress": "@items('Foreach_branch')?['Branch_Address']",
+                            "item/alex_city": "@items('Foreach_branch')?['City']",
+                            "item/alex_zipcode": "@string(coalesce(items('Foreach_branch')?['Zip_Code'],''))",
+                            "item/alex_telephone": "@items('Foreach_branch')?['Telephone']",
+                            "item/alex_ismerged": "@not(equals(string(coalesce(items('Foreach_branch')?['Merge_Branch'],'')),''))",
+                            "item/alex_BankId@odata.bind": "@if(empty(outputs('Compose_bankGuid')), null, concat('/alex_banks(', outputs('Compose_bankGuid'), ')'))"
+                          },
+                          "authentication": "@parameters('$authentication')"
+                        }
+                      },
+                      "Incr_created": {
+                        "runAfter": { "Create_branch": [ "Succeeded" ] },
+                        "type": "IncrementVariable",
+                        "inputs": { "name": "Var_created", "value": 1 }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "Enrich_from_payplus": {
+          "runAfter": { "Do_import": [ "Succeeded" ] },
+          "type": "Scope",
+          "actions": {
+            "Get_config_env": {
+              "runAfter": {},
+              "metadata": { "operationMetadataId": "e0000000-0000-4000-8000-000000000050" },
+              "type": "OpenApiConnection",
+              "inputs": {
+                "host": {
+                  "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps",
+                  "operationId": "GetItem",
+                  "connectionName": "alex_payplus_dataverse"
+                },
+                "parameters": {
+                  "entityName": "alex_payplusconfigurations",
+                  "recordId": "@variables('Var_configId')",
+                  "$select": "alex_environment"
+                },
+                "authentication": "@parameters('$authentication')"
+              }
+            },
+            "Set_env": {
+              "runAfter": { "Get_config_env": [ "Succeeded" ] },
+              "type": "SetVariable",
+              "inputs": { "name": "Var_env", "value": "@coalesce(body('Get_config_env')?['alex_environment'], 100000001)" }
+            },
+            "Switch_env_pp": {
+              "runAfter": { "Set_env": [ "Succeeded" ] },
+              "type": "Switch",
+              "expression": "@variables('Var_env')",
+              "cases": {
+                "Case_Production": {
+                  "case": 100000000,
+                  "actions": {
+                    "Get_pp_banks_prod": {
+                      "runAfter": {},
+                      "metadata": { "operationMetadataId": "e0000000-0000-4000-8000-000000000051" },
+                      "type": "OpenApiConnection",
+                      "inputs": {
+                        "host": {
+                          "apiId": "/providers/Microsoft.PowerApps/apis/shared_alex-5fpayplus-5f5849d39a0feaf28d",
+                          "operationId": "BranchesList",
+                          "connectionName": "alex_payplusprod"
+                        },
+                        "parameters": {},
+                        "authentication": "@parameters('$authentication')",
+                        "retryPolicy": { "type": "none" }
+                      }
+                    },
+                    "Set_ppBanks_prod": {
+                      "runAfter": { "Get_pp_banks_prod": [ "Succeeded" ] },
+                      "type": "SetVariable",
+                      "inputs": { "name": "Var_ppBanks", "value": "@coalesce(body('Get_pp_banks_prod')?['data'], json('[]'))" }
+                    }
+                  }
+                },
+                "Case_Sandbox": {
+                  "case": 100000001,
+                  "actions": {
+                    "Get_pp_banks_sandbox": {
+                      "runAfter": {},
+                      "metadata": { "operationMetadataId": "e0000000-0000-4000-8000-000000000052" },
+                      "type": "OpenApiConnection",
+                      "inputs": {
+                        "host": {
+                          "apiId": "/providers/Microsoft.PowerApps/apis/shared_alex-5fpayplus-20sandbox-5f5849d39a0feaf28d",
+                          "operationId": "BranchesList",
+                          "connectionName": "alex_payplussandbox"
+                        },
+                        "parameters": {},
+                        "authentication": "@parameters('$authentication')",
+                        "retryPolicy": { "type": "none" }
+                      }
+                    },
+                    "Set_ppBanks_sandbox": {
+                      "runAfter": { "Get_pp_banks_sandbox": [ "Succeeded" ] },
+                      "type": "SetVariable",
+                      "inputs": { "name": "Var_ppBanks", "value": "@coalesce(body('Get_pp_banks_sandbox')?['data'], json('[]'))" }
+                    }
+                  }
+                }
+              },
+              "default": { "actions": {} }
+            },
+            "Foreach_pp_bank": {
+              "runAfter": { "Switch_env_pp": [ "Succeeded" ] },
+              "type": "Foreach",
+              "foreach": "@variables('Var_ppBanks')",
+              "runtimeConfiguration": { "concurrency": { "repetitions": 1 } },
+              "actions": {
+                "Filter_pp_match": {
+                  "runAfter": {},
+                  "type": "Query",
+                  "inputs": {
+                    "from": "@variables('Var_bankMap')",
+                    "where": "@equals(string(item()?['code']), string(items('Foreach_pp_bank')?['bank_code']))"
+                  }
+                },
+                "If_pp_match": {
+                  "runAfter": { "Filter_pp_match": [ "Succeeded" ] },
+                  "type": "If",
+                  "expression": { "greater": [ "@length(body('Filter_pp_match'))", 0 ] },
+                  "actions": {
+                    "Enrich_bank": {
+                      "runAfter": {},
+                      "metadata": { "operationMetadataId": "e0000000-0000-4000-8000-000000000053" },
+                      "type": "OpenApiConnection",
+                      "inputs": {
+                        "host": {
+                          "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps",
+                          "operationId": "UpdateRecord",
+                          "connectionName": "alex_payplus_dataverse"
+                        },
+                        "parameters": {
+                          "entityName": "alex_banks",
+                          "recordId": "@first(body('Filter_pp_match'))?['id']",
+                          "item/alex_ispayplussupported": true,
+                          "item/alex_payplusbankname": "@items('Foreach_pp_bank')?['bank_name']"
+                        },
+                        "authentication": "@parameters('$authentication')"
+                      }
+                    },
+                    "Incr_enriched": {
+                      "runAfter": { "Enrich_bank": [ "Succeeded" ] },
+                      "type": "IncrementVariable",
+                      "inputs": { "name": "Var_enriched", "value": 1 }
+                    }
+                  },
+                  "else": { "actions": {} }
+                }
+              }
+            }
+          }
+        },
+        "Update_config_success": {
+          "runAfter": { "Enrich_from_payplus": [ "Succeeded", "Failed", "TimedOut" ] },
+          "metadata": { "operationMetadataId": "e0000000-0000-4000-8000-000000000060" },
+          "type": "OpenApiConnection",
+          "inputs": {
+            "host": {
+              "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps",
+              "operationId": "UpdateRecord",
+              "connectionName": "alex_payplus_dataverse"
+            },
+            "parameters": {
+              "entityName": "alex_payplusconfigurations",
+              "recordId": "@variables('Var_configId')",
+              "item/alex_bank_import_status": 100000002,
+              "item/alex_bank_import_on": "@utcNow()",
+              "item/alex_bank_import_enabled": false,
+              "item/alex_bank_import_message": "@concat('Imported banks & branches: ', string(variables('Var_created')), ' created, ', string(variables('Var_updated')), ' updated; PayPlus enriched ', string(variables('Var_enriched')), ' banks, at ', utcNow(), '.')"
+            },
+            "authentication": "@parameters('$authentication')"
+          }
+        },
+        "Update_config_fail": {
+          "runAfter": { "Do_import": [ "Failed", "TimedOut", "Skipped" ] },
+          "metadata": { "operationMetadataId": "e0000000-0000-4000-8000-000000000061" },
+          "type": "OpenApiConnection",
+          "inputs": {
+            "host": {
+              "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps",
+              "operationId": "UpdateRecord",
+              "connectionName": "alex_payplus_dataverse"
+            },
+            "parameters": {
+              "entityName": "alex_payplusconfigurations",
+              "recordId": "@variables('Var_configId')",
+              "item/alex_bank_import_status": 100000003,
+              "item/alex_bank_import_on": "@utcNow()",
+              "item/alex_bank_import_enabled": false,
+              "item/alex_bank_import_message": "@concat('Bank import failed at ', utcNow(), '. See flow run history for details.')"
+            },
+            "authentication": "@parameters('$authentication')"
+          }
+        }
+      }
+    }
+  },
+  "schemaVersion": "1.0.0.0"
+}

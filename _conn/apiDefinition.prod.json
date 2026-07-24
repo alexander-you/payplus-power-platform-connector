@@ -3,7 +3,7 @@
   "info": {
     "title": "PayPlus",
     "description": "אינטגרציית PayPlus עבור Dynamics 365 — יצירת קישורי תשלום, חיוב, טוקניזציה, זיכויים והפקת מסמכי מס. סביבת ייצור (Production).\n\nPayPlus integration for Dynamics 365 — payment links, charging, tokenization, refunds and tax documents. Production environment.",
-    "version": "1.1"
+    "version": "1.4"
   },
   "host": "restapi.payplus.co.il",
   "basePath": "/api/v1.0",
@@ -71,6 +71,22 @@
           "200": {
             "description": "הצלחה | Success",
             "schema": { "$ref": "#/definitions/MyTerminalsResponse" }
+          }
+        }
+      }
+    },
+    "/Banks/BranchesList": {
+      "get": {
+        "operationId": "BranchesList",
+        "summary": "רשימת בנקים | Banks List",
+        "description": "שליפת מילון הבנקים שבהם PayPlus תומך (קוד ושם בנק). משמש להעשרת נתוני הבנקים בלבד — אינו מחליף ואינו מעדכן את מקור האמת.\n\nRetrieves the PayPlus-supported banks dictionary (bank code and name). Used to enrich bank reference data only — it does not replace or update the source of truth.",
+        "x-ms-visibility": "important",
+        "produces": [ "application/json" ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "הצלחה | Success",
+            "schema": { "$ref": "#/definitions/BranchesListResponse" }
           }
         }
       }
@@ -1279,7 +1295,7 @@
         "original_terminal_uid": { "type": "string", "x-ms-visibility": "advanced", "x-ms-summary": "מסוף מקורי (J5) | Original terminal UID (J5)" },
         "customer": { "$ref": "#/definitions/ChargeCustomer" },
         "products": { "type": "array", "x-ms-visibility": "advanced", "x-ms-summary": "פריטים | Products", "items": { "$ref": "#/definitions/ChargeProduct" } },
-        "payments": { "type": "object", "x-ms-visibility": "advanced", "x-ms-summary": "תשלומים | Payments", "properties": { "number": { "type": "integer", "x-ms-summary": "מספר תשלומים | Number of payments" }, "first_amount": { "type": "integer", "x-ms-summary": "תשלום ראשון | First payment" }, "nonfirst_amount": { "type": "integer", "x-ms-summary": "יתר התשלומים | Remaining payments" } } },
+        "payments": { "type": "object", "x-ms-visibility": "advanced", "x-ms-summary": "תשלומים | Payments", "properties": { "number": { "type": "integer", "x-ms-summary": "מספר תשלומים | Number of payments" }, "first_amount": { "type": "number", "x-ms-summary": "תשלום ראשון | First payment" }, "nonfirst_amount": { "type": "number", "x-ms-summary": "יתר התשלומים | Remaining payments" } } },
         "extra_info": { "type": "string", "x-ms-visibility": "advanced", "x-ms-summary": "מידע נוסף | Extra info" },
         "more_info_1": { "type": "string", "x-ms-visibility": "advanced", "x-ms-summary": "מידע נוסף 1 (מפתח D365) | More info 1 (D365 key)" },
         "more_info_2": { "type": "string", "x-ms-visibility": "advanced", "x-ms-summary": "מידע נוסף 2 | More info 2" },
@@ -1296,7 +1312,7 @@
         "quantity": { "type": "string", "x-ms-summary": "כמות | Quantity" },
         "price": { "type": "string", "x-ms-summary": "מחיר | Price" },
         "currency_code": { "type": "string", "x-ms-summary": "מטבע | Currency" },
-        "discount_type": { "type": "string", "default": "amount", "x-ms-summary": "סוג הנחה | Discount type", "enum": [ "percentage", "amount" ] },
+        "discount_type": { "type": "string", "x-ms-summary": "סוג הנחה | Discount type", "enum": [ "", "percentage", "amount" ], "x-ms-enum-values": [ { "value": "", "displayName": "ללא | None" }, { "value": "percentage", "displayName": "אחוזים | Percentage" }, { "value": "amount", "displayName": "סכום | Amount" } ] },
         "discount_value": { "type": "integer", "x-ms-summary": "ערך הנחה | Discount value" },
         "product_invoice_extra_details": { "type": "string", "x-ms-summary": "פרטי מוצר לחשבונית | Invoice extra details" },
         "vat_type": { "type": "integer", "x-ms-summary": "סוג מע\"מ | VAT type", "enum": [ 0, 1, 2 ], "x-ms-enum-values": [ { "value": 0, "displayName": "כולל מע\"מ | VAT included" }, { "value": 1, "displayName": "ללא מע\"מ | VAT excluded" }, { "value": 2, "displayName": "פטור ממע\"מ | VAT exempt" } ] }
@@ -1350,8 +1366,8 @@
                   "x-ms-summary": "תשלומים | Payments",
                   "properties": {
                     "number_of_payments": { "type": "integer", "x-ms-summary": "מספר תשלומים | Number of payments" },
-                    "first_payment_amount": { "type": "integer", "x-ms-summary": "תשלום ראשון | First payment" },
-                    "rest_payments_amount": { "type": "integer", "x-ms-summary": "יתר התשלומים | Remaining payments" }
+                    "first_payment_amount": { "type": "number", "x-ms-summary": "תשלום ראשון | First payment" },
+                    "rest_payments_amount": { "type": "number", "x-ms-summary": "יתר התשלומים | Remaining payments" }
                   }
                 },
                 "secure3D": {
@@ -1389,7 +1405,7 @@
                       "discount_amount": { "type": "number", "x-ms-summary": "סכום הנחה | Discount amount" },
                       "discount_type": { "type": "string", "x-ms-summary": "סוג הנחה | Discount type" },
                       "discount_value": { "type": "number", "x-ms-summary": "ערך הנחה | Discount value" },
-                      "quantity": { "type": "string", "x-ms-summary": "כמות | Quantity" },
+                      "quantity": { "type": "number", "x-ms-summary": "כמות | Quantity" },
                       "quantity_price": { "type": "number", "x-ms-summary": "מחיר ליחידה | Unit price" },
                       "product_uid": { "type": "string", "x-ms-summary": "מזהה מוצר | Product UID" },
                       "name": { "type": "string", "x-ms-summary": "שם | Name" }
@@ -1480,6 +1496,8 @@
         "autocalculate_rate": { "type": "boolean", "x-ms-visibility": "advanced", "x-ms-summary": "חישוב שער אוטומטי | Auto-calculate rate" },
         "prevent_email": { "type": "boolean", "x-ms-visibility": "advanced", "x-ms-summary": "מניעת שליחת דוא\"ל | Prevent email" },
         "totalAmount": { "type": "number", "x-ms-summary": "סכום כולל | Total amount" },
+        "discount_type": { "type": "string", "x-ms-summary": "סוג הנחת מסמך | Document discount type", "enum": [ "percentage", "amount" ], "x-ms-enum-values": [ { "value": "percentage", "displayName": "אחוזים | Percentage" }, { "value": "amount", "displayName": "סכום | Amount" } ] },
+        "discount_value": { "type": "number", "x-ms-summary": "ערך הנחת מסמך | Document discount value" },
         "customer": { "$ref": "#/definitions/DocumentCustomer" },
         "items": { "type": "array", "x-ms-summary": "שורות מסמך | Items", "items": { "$ref": "#/definitions/DocumentItem" } },
         "payments": { "type": "array", "x-ms-summary": "תשלומים | Payments", "items": { "$ref": "#/definitions/DocumentPayment" } },
@@ -1519,7 +1537,7 @@
     "DocumentPayment": {
       "type": "object",
       "properties": {
-        "payment_type": { "type": "string", "x-ms-summary": "סוג תשלום | Payment type", "description": "אמצעי התשלום (מזומן, כרטיס אשראי, המחאה, העברה בנקאית וכו')\n\nPayment method (cash, credit-card, cheque, bank-transfer, etc.)" },
+        "payment_type": { "type": "string", "x-ms-summary": "סוג תשלום | Payment type", "description": "אמצעי התשלום (מזומן, כרטיס אשראי, המחאה, העברה בנקאית וכו')\n\nPayment method (cash, credit-card, payment-check, bank-transfer, etc.)", "enum": [ "cash", "credit-card", "payment-check", "bank-transfer", "paypal", "other" ], "x-ms-enum-values": [ { "value": "cash", "displayName": "מזומן | Cash" }, { "value": "credit-card", "displayName": "כרטיס אשראי | Credit card" }, { "value": "payment-check", "displayName": "המחאה | Cheque" }, { "value": "bank-transfer", "displayName": "העברה בנקאית | Bank transfer" }, { "value": "paypal", "displayName": "PayPal" }, { "value": "other", "displayName": "אחר | Other" } ] },
         "amount": { "type": "number", "x-ms-summary": "סכום | Amount" },
         "date": { "type": "string", "x-ms-summary": "תאריך | Date (YYYY-MM-DD)" },
         "currency": { "type": "string", "x-ms-visibility": "advanced", "x-ms-summary": "מטבע | Currency" },
@@ -1528,7 +1546,9 @@
         "card_expiry": { "type": "string", "x-ms-visibility": "advanced", "x-ms-summary": "תוקף כרטיס | Card expiry (MM/YY)" },
         "number_of_payments": { "type": "integer", "x-ms-visibility": "advanced", "x-ms-summary": "מספר תשלומים | Number of payments" },
         "bank": { "type": "string", "x-ms-visibility": "advanced", "x-ms-summary": "בנק | Bank" },
+        "bank_number": { "type": "string", "x-ms-visibility": "advanced", "x-ms-summary": "מספר בנק | Bank number" },
         "branch": { "type": "string", "x-ms-visibility": "advanced", "x-ms-summary": "סניף | Branch" },
+        "branch_number": { "type": "string", "x-ms-visibility": "advanced", "x-ms-summary": "מספר סניף | Branch number" },
         "account_number": { "type": "string", "x-ms-visibility": "advanced", "x-ms-summary": "מספר חשבון | Account number" },
         "cheque_number": { "type": "string", "x-ms-visibility": "advanced", "x-ms-summary": "מספר המחאה | Cheque number" },
         "transaction_uid": { "type": "string", "x-ms-visibility": "advanced", "x-ms-summary": "מזהה עסקה | Transaction UID" }
@@ -1554,7 +1574,21 @@
             "description": { "type": "string", "x-ms-summary": "תיאור | Description" }
           }
         },
-        "data": { "x-ms-summary": "נתונים | Data" }
+        "data": {
+          "type": "object",
+          "x-ms-summary": "נתונים | Data",
+          "properties": {
+            "uuid": { "type": "string", "x-ms-summary": "מזהה מסמך | Document UID" },
+            "number": { "type": "string", "x-ms-summary": "מספר מסמך | Document number" },
+            "type": { "type": "string", "x-ms-summary": "סוג מסמך | Document type" },
+            "status": { "type": "string", "x-ms-summary": "סטטוס מסמך | Document status" },
+            "originalDocAddress": { "type": "string", "x-ms-summary": "קישור למסמך (PDF) | Document link (PDF)" },
+            "copyDocAddress": { "type": "string", "x-ms-summary": "קישור להעתק (PDF) | Copy link (PDF)" },
+            "qr_code_image": { "type": "string", "x-ms-visibility": "advanced", "x-ms-summary": "תמונת QR | QR code image" },
+            "transaction_uuid": { "type": "string", "x-ms-visibility": "advanced", "x-ms-summary": "מזהה עסקה | Transaction UUID" },
+            "customer_uuid": { "type": "string", "x-ms-visibility": "advanced", "x-ms-summary": "מזהה לקוח | Customer UUID" }
+          }
+        }
       }
     },
     "ApiResult": {
@@ -1624,6 +1658,31 @@
           "name_terminal": { "type": "string", "x-ms-summary": "שם מסוף | Terminal name" },
           "terminal_type_id": { "type": "integer", "x-ms-summary": "סוג מסוף | Terminal type" },
           "merchant_number": { "type": "string", "x-ms-summary": "מספר ספק | Merchant number" }
+        }
+      }
+    },
+    "BranchesListResponse": {
+      "type": "object",
+      "properties": {
+        "results": {
+          "type": "object",
+          "x-ms-summary": "תוצאה | Results",
+          "properties": {
+            "status": { "type": "string", "x-ms-summary": "סטטוס | Status" },
+            "code": { "type": "integer", "x-ms-summary": "קוד | Code" },
+            "description": { "type": "string", "x-ms-summary": "תיאור | Description" }
+          }
+        },
+        "data": {
+          "type": "array",
+          "x-ms-summary": "בנקים | Banks",
+          "items": {
+            "type": "object",
+            "properties": {
+              "bank_code": { "type": "integer", "x-ms-summary": "קוד בנק | Bank code" },
+              "bank_name": { "type": "string", "x-ms-summary": "שם בנק | Bank name" }
+            }
+          }
         }
       }
     }

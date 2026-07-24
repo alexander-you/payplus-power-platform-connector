@@ -168,12 +168,13 @@
                   "inputs": {
                     "parameters": {
                       "body/payment_page_uid": "@first(outputs('Get_config_row')?['body/value'])?['alex_paymentpageuidref']",
-                      "body/amount": "@int(coalesce(triggerOutputs()?['body/InputParameters/amount'],'1'))",
+                      "body/amount": "@float(coalesce(triggerOutputs()?['body/InputParameters/amount'],'1'))",
                       "body/currency_code": "ILS",
                       "body/refURL_origin": "@coalesce(triggerOutputs()?['body/InputParameters/origin'],'https://demo-contact-center-en.crm4.dynamics.com')",
                       "body/create_token": true,
                       "body/hosted_fields": true,
                       "body/terminal_uid": "@first(outputs('Get_config_row')?['body/value'])?['alex_terminaluidref']",
+                      "body/more_info": "@triggerOutputs()?['body/InputParameters/request_id']",
                       "body/charge_method": 1
                     },
                     "host": {
@@ -200,12 +201,13 @@
                   "inputs": {
                     "parameters": {
                       "body/payment_page_uid": "@first(outputs('Get_config_row')?['body/value'])?['alex_paymentpageuidref']",
-                      "body/amount": "@int(coalesce(triggerOutputs()?['body/InputParameters/amount'],'1'))",
+                      "body/amount": "@float(coalesce(triggerOutputs()?['body/InputParameters/amount'],'1'))",
                       "body/currency_code": "ILS",
                       "body/refURL_origin": "@coalesce(triggerOutputs()?['body/InputParameters/origin'],'https://demo-contact-center-en.crm4.dynamics.com')",
                       "body/create_token": true,
                       "body/hosted_fields": true,
                       "body/terminal_uid": "@first(outputs('Get_config_row')?['body/value'])?['alex_terminaluidref']",
+                      "body/more_info": "@triggerOutputs()?['body/InputParameters/request_id']",
                       "body/charge_method": 1
                     },
                     "host": {

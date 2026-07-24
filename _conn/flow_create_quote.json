@@ -73,7 +73,7 @@
             },
             "parameters": {
               "entityName": "alex_payplusconfigurations",
-              "$select": "alex_environment",
+              "$select": "alex_payplusconfigurationid,alex_environment,alex_document_vat_mode,alex_doc_quote_issue_send_email,alex_doc_quote_issue_send_sms",
               "$top": 1
             },
             "authentication": "@parameters('$authentication')"
@@ -92,14 +92,59 @@
             "parameters": {
               "entityName": "quotes",
               "recordId": "@triggerOutputs()?['body/quoteid']",
-              "$select": "name,quotenumber,emailaddress,totalamount,billto_name,billto_line1,billto_city,billto_postalcode,billto_country,billto_telephone,_customerid_value",
-              "$expand": "customerid_account,customerid_contact"
+              "$select": "name,quotenumber,description,emailaddress,totalamount,totallineitemamount,totallineitemdiscountamount,totaldiscountamount,discountamount,discountpercentage,totaltax,totalamountlessfreight,freightamount,billto_name,billto_line1,billto_city,billto_postalcode,billto_country,billto_telephone,_customerid_value",
+              "$expand": "customerid_account,customerid_contact,transactioncurrencyid($select=isocurrencycode,currencyname,currencysymbol,exchangerate)"
             },
             "authentication": "@parameters('$authentication')"
           }
         },
-        "Compose_source_table": {
+        "Compose_document_currency_code": {
           "runAfter": { "Get_quote": ["Succeeded"] },
+          "metadata": { "operationMetadataId": "b0000000-0000-4000-8000-000000000069" },
+          "type": "Compose",
+          "inputs": "@coalesce(body('Get_quote')?['transactioncurrencyid']?['isocurrencycode'], 'ILS')"
+        },
+        "Compose_document_more_info": {
+          "runAfter": { "Compose_document_currency_code": ["Succeeded"] },
+          "metadata": { "operationMetadataId": "b0000000-0000-4000-8000-000000000068" },
+          "type": "Compose",
+          "inputs": "@if(empty(body('Get_quote')?['description']), concat('Quote ', coalesce(body('Get_quote')?['quotenumber'], body('Get_quote')?['name'], '')), body('Get_quote')?['description'])"
+        },
+        "Compose_document_header_discount_amount": {
+          "runAfter": { "Compose_document_more_info": ["Succeeded"] },
+          "metadata": { "operationMetadataId": "b0000000-0000-4000-8000-000000000074" },
+          "type": "Compose",
+          "inputs": "@add(float(coalesce(body('Get_quote')?['discountamount'], 0)), if(greater(float(coalesce(body('Get_quote')?['discountpercentage'], 0)), 0), div(mul(float(coalesce(body('Get_quote')?['totallineitemamount'], 0)), float(coalesce(body('Get_quote')?['discountpercentage'], 0))), 100), 0))"
+        },
+        "Compose_document_header_discount_type": {
+          "runAfter": { "Compose_document_header_discount_amount": ["Succeeded"] },
+          "metadata": { "operationMetadataId": "b0000000-0000-4000-8000-000000000075" },
+          "type": "Compose",
+          "inputs": "@if(greater(float(coalesce(body('Get_quote')?['discountamount'], 0)), 0), 'amount', if(greater(float(coalesce(body('Get_quote')?['discountpercentage'], 0)), 0), 'percentage', null))"
+        },
+        "Compose_document_header_discount_value": {
+          "runAfter": { "Compose_document_header_discount_type": ["Succeeded"] },
+          "metadata": { "operationMetadataId": "b0000000-0000-4000-8000-000000000076" },
+          "type": "Compose",
+          "inputs": "@if(greater(float(coalesce(body('Get_quote')?['discountamount'], 0)), 0), outputs('Compose_document_header_discount_amount'), if(greater(float(coalesce(body('Get_quote')?['discountpercentage'], 0)), 0), float(coalesce(body('Get_quote')?['discountpercentage'], 0)), null))"
+        },
+        "Compose_document_vat_type": {
+          "runAfter": { "Compose_document_header_discount_value": ["Succeeded"] },
+          "type": "Compose",
+          "inputs": "@if(equals(first(outputs('Get_config_row')?['body/value'])?['alex_document_vat_mode'], 100000001), 'vat-type-included', if(equals(first(outputs('Get_config_row')?['body/value'])?['alex_document_vat_mode'], 100000002), 'vat-type-not-included', if(equals(first(outputs('Get_config_row')?['body/value'])?['alex_document_vat_mode'], 100000003), 'vat-type-exempt', null)))"
+        },
+        "Compose_document_send_email": {
+          "runAfter": { "Compose_document_vat_type": ["Succeeded"] },
+          "type": "Compose",
+          "inputs": "@and(or(empty(triggerOutputs()?['body/alex_lastoperation']), equals(triggerOutputs()?['body/alex_lastoperation'], 'Generate')), equals(first(outputs('Get_config_row')?['body/value'])?['alex_doc_quote_issue_send_email'], true))"
+        },
+        "Compose_document_send_sms": {
+          "runAfter": { "Compose_document_send_email": ["Succeeded"] },
+          "type": "Compose",
+          "inputs": "@and(or(empty(triggerOutputs()?['body/alex_lastoperation']), equals(triggerOutputs()?['body/alex_lastoperation'], 'Generate')), equals(first(outputs('Get_config_row')?['body/value'])?['alex_doc_quote_issue_send_sms'], true))"
+        },
+        "Compose_source_table": {
+          "runAfter": { "Compose_document_send_sms": ["Succeeded"] },
           "metadata": { "operationMetadataId": "b0000000-0000-4000-8000-000000000049" },
           "type": "Compose",
           "inputs": "@coalesce(body('Get_quote')?['_customerid_value@Microsoft.Dynamics.CRM.lookuplogicalname'], if(empty(body('Get_quote')?['customerid_contact']), 'account', 'contact'))"
@@ -319,7 +364,7 @@
             },
             "parameters": {
               "entityName": "quotedetails",
-              "$select": "productname,productdescription,productnumber,quantity,priceperunit,manualdiscountamount",
+              "$select": "productname,productdescription,productnumber,quantity,priceperunit,baseamount,extendedamount,manualdiscountamount,volumediscountamount,tax",
               "$filter": "_quoteid_value eq @{triggerOutputs()?['body/quoteid']}"
             },
             "authentication": "@parameters('$authentication')"
@@ -331,8 +376,28 @@
           "foreach": "@outputs('Get_quote_lines')?['body/value']",
           "runtimeConfiguration": { "concurrency": { "repetitions": 1 } },
           "actions": {
-            "Condition_has_barcode": {
+            "Compose_item_unit_price": {
               "runAfter": {},
+              "type": "Compose",
+              "inputs": "@if(equals(float(coalesce(items('For_each_line')?['quantity'], 0)), 0), coalesce(items('For_each_line')?['priceperunit'], 0), div(float(coalesce(items('For_each_line')?['baseamount'], mul(coalesce(items('For_each_line')?['priceperunit'], 0), coalesce(items('For_each_line')?['quantity'], 1)))), float(coalesce(items('For_each_line')?['quantity'], 1))))"
+            },
+            "Compose_item_net_line_amount": {
+              "runAfter": { "Compose_item_unit_price": ["Succeeded"] },
+              "type": "Compose",
+              "inputs": "@float(coalesce(items('For_each_line')?['extendedamount'], items('For_each_line')?['baseamount'], mul(coalesce(items('For_each_line')?['priceperunit'], 0), coalesce(items('For_each_line')?['quantity'], 1))))"
+            },
+            "Compose_item_discount_amount": {
+              "runAfter": { "Compose_item_net_line_amount": ["Succeeded"] },
+              "type": "Compose",
+              "inputs": "@if(lessOrEquals(sub(float(coalesce(items('For_each_line')?['baseamount'], mul(coalesce(items('For_each_line')?['priceperunit'], 0), coalesce(items('For_each_line')?['quantity'], 1)))), float(outputs('Compose_item_net_line_amount'))), 0), 0, sub(float(coalesce(items('For_each_line')?['baseamount'], mul(coalesce(items('For_each_line')?['priceperunit'], 0), coalesce(items('For_each_line')?['quantity'], 1)))), float(outputs('Compose_item_net_line_amount'))))"
+            },
+            "Compose_item_vat_type": {
+              "runAfter": { "Compose_item_discount_amount": ["Succeeded"] },
+              "type": "Compose",
+              "inputs": "@if(equals(first(outputs('Get_config_row')?['body/value'])?['alex_document_vat_mode'], 100000001), 0, if(equals(first(outputs('Get_config_row')?['body/value'])?['alex_document_vat_mode'], 100000002), 1, if(equals(first(outputs('Get_config_row')?['body/value'])?['alex_document_vat_mode'], 100000003), 2, null)))"
+            },
+            "Condition_has_barcode": {
+              "runAfter": { "Compose_item_vat_type": ["Succeeded"] },
               "type": "If",
               "expression": {
                 "and": [
@@ -423,7 +488,10 @@
                           "product_uid": "@first(outputs('Compose_product_result'))?['uid']",
                           "name": "@coalesce(items('For_each_line')?['productname'], items('For_each_line')?['productdescription'], first(outputs('Compose_product_result'))?['name'], '\u05e4\u05e8\u05d9\u05d8')",
                           "quantity": "@coalesce(items('For_each_line')?['quantity'], 1)",
-                          "price": "@coalesce(items('For_each_line')?['priceperunit'], 0)"
+                          "price": "@outputs('Compose_item_unit_price')",
+                          "vat_type": "@outputs('Compose_item_vat_type')",
+                          "discount_type": "amount",
+                          "discount_value": "@outputs('Compose_item_discount_amount')"
                         }
                       }
                     }
@@ -438,7 +506,10 @@
                           "value": {
                             "name": "@coalesce(items('For_each_line')?['productname'], items('For_each_line')?['productdescription'], '\u05e4\u05e8\u05d9\u05d8')",
                             "quantity": "@coalesce(items('For_each_line')?['quantity'], 1)",
-                            "price": "@coalesce(items('For_each_line')?['priceperunit'], 0)"
+                            "price": "@outputs('Compose_item_unit_price')",
+                            "vat_type": "@outputs('Compose_item_vat_type')",
+                            "discount_type": "amount",
+                            "discount_value": "@outputs('Compose_item_discount_amount')"
                           }
                         }
                       }
@@ -456,7 +527,10 @@
                       "value": {
                         "name": "@coalesce(items('For_each_line')?['productname'], items('For_each_line')?['productdescription'], '\u05e4\u05e8\u05d9\u05d8')",
                         "quantity": "@coalesce(items('For_each_line')?['quantity'], 1)",
-                        "price": "@coalesce(items('For_each_line')?['priceperunit'], 0)"
+                        "price": "@outputs('Compose_item_unit_price')",
+                        "vat_type": "@outputs('Compose_item_vat_type')",
+                        "discount_type": "amount",
+                        "discount_value": "@outputs('Compose_item_discount_amount')"
                       }
                     }
                   }
@@ -487,9 +561,15 @@
                       "body/unique_identifier": "@triggerOutputs()?['body/quoteid']",
                       "body/doc_date": "@formatDateTime(utcNow(),'yyyy-MM-dd')",
                       "body/language": "he",
-                      "body/currency_code": "ILS",
+                      "body/currency_code": "@outputs('Compose_document_currency_code')",
+                      "body/autocalculate_rate": "@not(equals(outputs('Compose_document_currency_code'), 'ILS'))",
                       "body/totalAmount": "@coalesce(body('Get_quote')?['totalamount'], 0)",
-                      "body/more_info": "@concat('Quote ', coalesce(body('Get_quote')?['quotenumber'], body('Get_quote')?['name'], ''))",
+                      "body/vatType": "@outputs('Compose_document_vat_type')",
+                      "body/send_document_email": "@outputs('Compose_document_send_email')",
+                      "body/send_document_sms": "@outputs('Compose_document_send_sms')",
+                      "body/discount_type": "@outputs('Compose_document_header_discount_type')",
+                      "body/discount_value": "@outputs('Compose_document_header_discount_value')",
+                      "body/more_info": "@outputs('Compose_document_more_info')",
                       "body/customer/customer_uid": "@if(empty(variables('varCustomerUid')), null, variables('varCustomerUid'))",
                       "body/customer/name": "@outputs('Compose_customer_keys')?['name']",
                       "body/customer/email": "@outputs('Compose_customer_keys')?['email']",
@@ -523,9 +603,15 @@
                       "body/unique_identifier": "@triggerOutputs()?['body/quoteid']",
                       "body/doc_date": "@formatDateTime(utcNow(),'yyyy-MM-dd')",
                       "body/language": "he",
-                      "body/currency_code": "ILS",
+                      "body/currency_code": "@outputs('Compose_document_currency_code')",
+                      "body/autocalculate_rate": "@not(equals(outputs('Compose_document_currency_code'), 'ILS'))",
                       "body/totalAmount": "@coalesce(body('Get_quote')?['totalamount'], 0)",
-                      "body/more_info": "@concat('Quote ', coalesce(body('Get_quote')?['quotenumber'], body('Get_quote')?['name'], ''))",
+                      "body/vatType": "@outputs('Compose_document_vat_type')",
+                      "body/send_document_email": "@outputs('Compose_document_send_email')",
+                      "body/send_document_sms": "@outputs('Compose_document_send_sms')",
+                      "body/discount_type": "@outputs('Compose_document_header_discount_type')",
+                      "body/discount_value": "@outputs('Compose_document_header_discount_value')",
+                      "body/more_info": "@outputs('Compose_document_more_info')",
                       "body/customer/customer_uid": "@if(empty(variables('varCustomerUid')), null, variables('varCustomerUid'))",
                       "body/customer/name": "@outputs('Compose_customer_keys')?['name']",
                       "body/customer/email": "@outputs('Compose_customer_keys')?['email']",
@@ -555,10 +641,249 @@
           }
         },
         "Compose_document_result": {
-          "runAfter": { "Create_quote_by_env": ["Succeeded"] },
+          "runAfter": { "Create_quote_by_env": ["Succeeded", "Failed"] },
           "metadata": { "operationMetadataId": "b0000000-0000-4000-8000-000000000011" },
           "type": "Compose",
           "inputs": "@coalesce(body('Create_quote_Production'), body('Create_quote_Sandbox'))"
+        },
+        "Compose_document_data": {
+          "runAfter": { "Compose_document_result": ["Succeeded"] },
+          "metadata": { "operationMetadataId": "b0000000-0000-4000-8000-000000000060" },
+          "type": "Compose",
+          "inputs": "@coalesce(outputs('Compose_document_result')?['data'], outputs('Compose_document_result')?['details'], json('{}'))"
+        },
+        "Compose_document_status": {
+          "runAfter": { "Compose_document_data": ["Succeeded"] },
+          "metadata": { "operationMetadataId": "b0000000-0000-4000-8000-000000000067" },
+          "type": "Compose",
+          "inputs": "@toLower(coalesce(outputs('Compose_document_result')?['results']?['status'], outputs('Compose_document_result')?['status'], outputs('Compose_document_data')?['status'], ''))"
+        },
+        "Compose_document_request_snapshot": {
+          "runAfter": { "Compose_document_status": ["Succeeded"] },
+          "metadata": { "operationMetadataId": "b0000000-0000-4000-8000-000000000061" },
+          "type": "Compose",
+          "inputs": {
+            "unique_identifier": "@triggerOutputs()?['body/quoteid']",
+            "doc_date": "@formatDateTime(utcNow(),'yyyy-MM-dd')",
+            "language": "he",
+            "currency_code": "@outputs('Compose_document_currency_code')",
+            "autocalculate_rate": "@not(equals(outputs('Compose_document_currency_code'), 'ILS'))",
+            "totalAmount": "@coalesce(body('Get_quote')?['totalamount'], 0)",
+            "vatType": "@outputs('Compose_document_vat_type')",
+            "send_document_email": "@outputs('Compose_document_send_email')",
+            "send_document_sms": "@outputs('Compose_document_send_sms')",
+            "discount_type": "@outputs('Compose_document_header_discount_type')",
+            "discount_value": "@outputs('Compose_document_header_discount_value')",
+            "more_info": "@outputs('Compose_document_more_info')",
+            "customer": {
+              "customer_uid": "@if(empty(variables('varCustomerUid')), null, variables('varCustomerUid'))",
+              "name": "@outputs('Compose_customer_keys')?['name']",
+              "email": "@outputs('Compose_customer_keys')?['email']",
+              "phone": "@outputs('Compose_customer_keys')?['phone']",
+              "vat_number": "@outputs('Compose_customer_keys')?['vat']",
+              "address": "@outputs('Compose_customer_keys')?['address']",
+              "city": "@outputs('Compose_customer_keys')?['city']",
+              "postal_code": "@outputs('Compose_customer_keys')?['postal_code']"
+            },
+            "items": "@variables('varItems')"
+          }
+        },
+        "List_document_type_dc_quote": {
+          "runAfter": { "Compose_document_request_snapshot": ["Succeeded"] },
+          "metadata": { "operationMetadataId": "b0000000-0000-4000-8000-000000000062" },
+          "type": "OpenApiConnection",
+          "inputs": {
+            "host": {
+              "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps",
+              "operationId": "ListRecords",
+              "connectionName": "alex_payplus_dataverse"
+            },
+            "parameters": {
+              "entityName": "alex_payplus_documenttypes",
+              "$select": "alex_payplus_documenttypeid,alex_code,alex_environment",
+              "$filter": "alex_environment eq @{first(outputs('Get_config_row')?['body/value'])?['alex_environment']} and alex_code eq 'dc_quote'",
+              "$top": 1
+            },
+            "authentication": "@parameters('$authentication')"
+          }
+        },
+        "List_existing_payplus_document": {
+          "runAfter": { "List_document_type_dc_quote": ["Succeeded"] },
+          "metadata": { "operationMetadataId": "b0000000-0000-4000-8000-000000000063" },
+          "type": "OpenApiConnection",
+          "inputs": {
+            "host": {
+              "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps",
+              "operationId": "ListRecords",
+              "connectionName": "alex_payplus_dataverse"
+            },
+            "parameters": {
+              "entityName": "alex_payplusdocuments",
+              "$select": "alex_payplusdocumentid",
+              "$filter": "alex_environment eq @{first(outputs('Get_config_row')?['body/value'])?['alex_environment']} and alex_documenttypecode eq 'dc_quote' and alex_uniqueidentifier eq '@{triggerOutputs()?['body/quoteid']}'",
+              "$top": 1
+            },
+            "authentication": "@parameters('$authentication')"
+          }
+        },
+        "Upsert_payplus_document_row": {
+          "runAfter": { "List_existing_payplus_document": ["Succeeded"] },
+          "metadata": { "operationMetadataId": "b0000000-0000-4000-8000-000000000064" },
+          "type": "If",
+          "expression": {
+            "greater": [ "@length(body('List_existing_payplus_document')?['value'])", 0 ]
+          },
+          "actions": {
+            "Update_payplus_document": {
+              "runAfter": {},
+              "metadata": { "operationMetadataId": "b0000000-0000-4000-8000-000000000065" },
+              "type": "OpenApiConnection",
+              "inputs": {
+                "host": {
+                  "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps",
+                  "operationId": "UpdateRecord",
+                  "connectionName": "alex_payplus_dataverse"
+                },
+                "parameters": {
+                  "entityName": "alex_payplusdocuments",
+                  "recordId": "@first(body('List_existing_payplus_document')?['value'])?['alex_payplusdocumentid']",
+                  "item/alex_name": "@concat('PayPlus Quote ', coalesce(outputs('Compose_document_data')?['number'], outputs('Compose_document_data')?['document_number'], body('Get_quote')?['quotenumber'], body('Get_quote')?['name'], triggerOutputs()?['body/quoteid']))",
+                  "item/alex_configurationid@odata.bind": "@concat('/alex_payplusconfigurations(', first(outputs('Get_config_row')?['body/value'])?['alex_payplusconfigurationid'], ')')",
+                  "item/alex_environment": "@first(outputs('Get_config_row')?['body/value'])?['alex_environment']",
+                  "item/alex_documenttypeid@odata.bind": "@if(empty(first(body('List_document_type_dc_quote')?['value'])?['alex_payplus_documenttypeid']), null, concat('/alex_payplus_documenttypes(', first(body('List_document_type_dc_quote')?['value'])?['alex_payplus_documenttypeid'], ')'))",
+                  "item/alex_documenttypecode": "dc_quote",
+                  "item/alex_payplusdocumentuuid": "@if(empty(coalesce(outputs('Compose_document_data')?['uuid'], outputs('Compose_document_data')?['document_uuid'], outputs('Compose_document_data')?['document_uid'], outputs('Compose_document_data')?['docUID'], outputs('Compose_document_data')?['doc_uid'], '')), null, coalesce(outputs('Compose_document_data')?['uuid'], outputs('Compose_document_data')?['document_uuid'], outputs('Compose_document_data')?['document_uid'], outputs('Compose_document_data')?['docUID'], outputs('Compose_document_data')?['doc_uid']))",
+                  "item/alex_uniqueidentifier": "@triggerOutputs()?['body/quoteid']",
+                  "item/alex_documentnumber": "@if(empty(coalesce(outputs('Compose_document_data')?['number'], outputs('Compose_document_data')?['document_number'], '')), null, coalesce(outputs('Compose_document_data')?['number'], outputs('Compose_document_data')?['document_number']))",
+                  "item/alex_series": "@if(empty(coalesce(outputs('Compose_document_data')?['series'], outputs('Compose_document_data')?['prefix'], '')), null, coalesce(outputs('Compose_document_data')?['series'], outputs('Compose_document_data')?['prefix']))",
+                  "item/alex_documentstatus": "@coalesce(outputs('Compose_document_data')?['status'], outputs('Compose_document_data')?['document_status'], outputs('Compose_document_status'), '')",
+                  "item/alex_documentdate": "@formatDateTime(utcNow(),'yyyy-MM-dd')",
+                  "item/alex_issuedon": "@utcNow()",
+                  "item/alex_lastoperationon": "@utcNow()",
+                  "item/alex_lastrefreshedon": "@utcNow()",
+                  "item/alex_currencycode": "@outputs('Compose_document_currency_code')",
+                  "item/alex_totalamount": "@coalesce(outputs('Compose_document_data')?['totalAmount'], outputs('Compose_document_data')?['total_amount'], outputs('Compose_document_data')?['amount'], body('Get_quote')?['totalamount'], 0)",
+                  "item/alex_paypluscustomeruid": "@if(empty(variables('varCustomerUid')), coalesce(outputs('Compose_document_data')?['customer_uuid'], outputs('Compose_document_data')?['customer_uid'], outputs('Compose_document_data')?['customer']?['customer_uid'], ''), variables('varCustomerUid'))",
+                  "item/alex_customername": "@outputs('Compose_customer_keys')?['name']",
+                  "item/alex_customeremail": "@outputs('Compose_customer_keys')?['email']",
+                  "item/alex_customerphone": "@outputs('Compose_customer_keys')?['phone']",
+                  "item/alex_customervatnumber": "@outputs('Compose_customer_keys')?['vat']",
+                  "item/alex_customeraddress": "@outputs('Compose_customer_keys')?['address']",
+                  "item/alex_customercity": "@outputs('Compose_customer_keys')?['city']",
+                  "item/alex_customerpostalcode": "@outputs('Compose_customer_keys')?['postal_code']",
+                  "item/alex_transactionuid": "@if(empty(coalesce(outputs('Compose_document_data')?['transaction_uuid'], outputs('Compose_document_data')?['transaction_uid'], '')), null, coalesce(outputs('Compose_document_data')?['transaction_uuid'], outputs('Compose_document_data')?['transaction_uid']))",
+                  "item/alex_paymentrequestuid": "@if(empty(coalesce(outputs('Compose_document_data')?['payment_request_uid'], outputs('Compose_document_data')?['page_request_uid'], '')), null, coalesce(outputs('Compose_document_data')?['payment_request_uid'], outputs('Compose_document_data')?['page_request_uid']))",
+                  "item/alex_branduuid": "@coalesce(outputs('Compose_document_data')?['brand']?['uuid'], outputs('Compose_document_data')?['brand_uuid'], '')",
+                  "item/alex_moreinfo": "@outputs('Compose_document_more_info')",
+                  "item/alex_documenturl": "@if(empty(coalesce(outputs('Compose_document_data')?['document_url'], outputs('Compose_document_data')?['url'], outputs('Compose_document_data')?['link'], outputs('Compose_document_data')?['docLink'], outputs('Compose_document_data')?['doc_link'], '')), null, coalesce(outputs('Compose_document_data')?['document_url'], outputs('Compose_document_data')?['url'], outputs('Compose_document_data')?['link'], outputs('Compose_document_data')?['docLink'], outputs('Compose_document_data')?['doc_link']))",
+                  "item/alex_pdfurl": "@if(empty(coalesce(outputs('Compose_document_data')?['originalDocAddress'], outputs('Compose_document_data')?['pdf_url'], outputs('Compose_document_data')?['pdf'], outputs('Compose_document_data')?['pdf_link'], outputs('Compose_document_data')?['download_url'], '')), null, coalesce(outputs('Compose_document_data')?['originalDocAddress'], outputs('Compose_document_data')?['pdf_url'], outputs('Compose_document_data')?['pdf'], outputs('Compose_document_data')?['pdf_link'], outputs('Compose_document_data')?['download_url']))",
+                  "item/alex_copypdfurl": "@if(empty(outputs('Compose_document_data')?['copyDocAddress']), null, outputs('Compose_document_data')?['copyDocAddress'])",
+                  "item/alex_sourcemodifiedon": "@triggerOutputs()?['body/alex_sourcemodifiedon']",
+                  "item/alex_sourceversionnumber": "@triggerOutputs()?['body/alex_sourceversionnumber']",
+                  "item/alex_sourcedetailmodifiedon": "@triggerOutputs()?['body/alex_sourcedetailmodifiedon']",
+                  "item/alex_sourcedetailversionnumber": "@triggerOutputs()?['body/alex_sourcedetailversionnumber']",
+                  "item/alex_sourcedetailcount": "@triggerOutputs()?['body/alex_sourcedetailcount']",
+                  "item/alex_sourcefingerprint": "@triggerOutputs()?['body/alex_sourcefingerprint']",
+                  "item/alex_sourceentitylogicalname": "quote",
+                  "item/alex_sourceentityid": "@triggerOutputs()?['body/quoteid']",
+                  "item/alex_sourcedisplayname": "@coalesce(body('Get_quote')?['quotenumber'], body('Get_quote')?['name'], triggerOutputs()?['body/quoteid'])",
+                  "item/alex_quoteid@odata.bind": "@concat('/quotes(', triggerOutputs()?['body/quoteid'], ')')",
+                  "item/alex_accountid@odata.bind": "@if(equals(outputs('Compose_source_table'), 'account'), concat('/accounts(', body('Get_quote')?['_customerid_value'], ')'), null)",
+                  "item/alex_contactid@odata.bind": "@if(equals(outputs('Compose_source_table'), 'contact'), concat('/contacts(', body('Get_quote')?['_customerid_value'], ')'), null)",
+                  "item/alex_payplusresultstatus": "@outputs('Compose_document_status')",
+                  "item/alex_payplusresultcode": "@coalesce(outputs('Compose_document_result')?['results']?['code'], outputs('Compose_document_result')?['code'], outputs('Compose_document_result')?['error_code'])",
+                  "item/alex_payplusresultdescription": "@coalesce(outputs('Compose_document_result')?['results']?['description'], outputs('Compose_document_result')?['description'], outputs('Compose_document_result')?['error'], outputs('Compose_document_result')?['message'], '')",
+                  "item/alex_lastoperation": "CreateQuote",
+                  "item/alex_lastsyncstatus": "@if(equals(outputs('Compose_document_status'), 'success'), 100000001, 100000002)",
+                  "item/alex_businessstatus": "@if(equals(outputs('Compose_document_status'), 'success'), if(equals(triggerOutputs()?['body/alex_lastoperation'], 'Generate'), 100000003, 100000001), 100000006)",
+                  "item/alex_origin": 100000000,
+                  "item/alex_rawrequest": "@string(outputs('Compose_document_request_snapshot'))",
+                  "item/alex_rawresponse": "@string(outputs('Compose_document_result'))",
+                  "item/alex_rawdocumentjson": "@string(outputs('Compose_document_data'))",
+                  "item/alex_itemsjson": "@string(variables('varItems'))",
+                  "item/alex_paymentsjson": "@string(coalesce(outputs('Compose_document_data')?['payments'], json('[]')))",
+                  "item/alex_tagsjson": "@string(coalesce(outputs('Compose_document_data')?['tags'], json('[]')))"
+                },
+                "authentication": "@parameters('$authentication')"
+              }
+            }
+          },
+          "else": {
+            "actions": {
+              "Create_payplus_document": {
+                "runAfter": {},
+                "metadata": { "operationMetadataId": "b0000000-0000-4000-8000-000000000066" },
+                "type": "OpenApiConnection",
+                "inputs": {
+                  "host": {
+                    "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps",
+                    "operationId": "CreateRecord",
+                    "connectionName": "alex_payplus_dataverse"
+                  },
+                  "parameters": {
+                    "entityName": "alex_payplusdocuments",
+                    "item/alex_name": "@concat('PayPlus Quote ', coalesce(outputs('Compose_document_data')?['number'], outputs('Compose_document_data')?['document_number'], body('Get_quote')?['quotenumber'], body('Get_quote')?['name'], triggerOutputs()?['body/quoteid']))",
+                    "item/alex_configurationid@odata.bind": "@concat('/alex_payplusconfigurations(', first(outputs('Get_config_row')?['body/value'])?['alex_payplusconfigurationid'], ')')",
+                    "item/alex_environment": "@first(outputs('Get_config_row')?['body/value'])?['alex_environment']",
+                    "item/alex_documenttypeid@odata.bind": "@if(empty(first(body('List_document_type_dc_quote')?['value'])?['alex_payplus_documenttypeid']), null, concat('/alex_payplus_documenttypes(', first(body('List_document_type_dc_quote')?['value'])?['alex_payplus_documenttypeid'], ')'))",
+                    "item/alex_documenttypecode": "dc_quote",
+                    "item/alex_payplusdocumentuuid": "@if(empty(coalesce(outputs('Compose_document_data')?['uuid'], outputs('Compose_document_data')?['document_uuid'], outputs('Compose_document_data')?['document_uid'], outputs('Compose_document_data')?['docUID'], outputs('Compose_document_data')?['doc_uid'], '')), null, coalesce(outputs('Compose_document_data')?['uuid'], outputs('Compose_document_data')?['document_uuid'], outputs('Compose_document_data')?['document_uid'], outputs('Compose_document_data')?['docUID'], outputs('Compose_document_data')?['doc_uid']))",
+                    "item/alex_uniqueidentifier": "@triggerOutputs()?['body/quoteid']",
+                    "item/alex_documentnumber": "@if(empty(coalesce(outputs('Compose_document_data')?['number'], outputs('Compose_document_data')?['document_number'], '')), null, coalesce(outputs('Compose_document_data')?['number'], outputs('Compose_document_data')?['document_number']))",
+                    "item/alex_series": "@if(empty(coalesce(outputs('Compose_document_data')?['series'], outputs('Compose_document_data')?['prefix'], '')), null, coalesce(outputs('Compose_document_data')?['series'], outputs('Compose_document_data')?['prefix']))",
+                    "item/alex_documentstatus": "@coalesce(outputs('Compose_document_data')?['status'], outputs('Compose_document_data')?['document_status'], outputs('Compose_document_status'), '')",
+                    "item/alex_documentdate": "@formatDateTime(utcNow(),'yyyy-MM-dd')",
+                    "item/alex_issuedon": "@utcNow()",
+                    "item/alex_lastoperationon": "@utcNow()",
+                    "item/alex_lastrefreshedon": "@utcNow()",
+                    "item/alex_currencycode": "@outputs('Compose_document_currency_code')",
+                    "item/alex_totalamount": "@coalesce(outputs('Compose_document_data')?['totalAmount'], outputs('Compose_document_data')?['total_amount'], outputs('Compose_document_data')?['amount'], body('Get_quote')?['totalamount'], 0)",
+                    "item/alex_paypluscustomeruid": "@if(empty(variables('varCustomerUid')), coalesce(outputs('Compose_document_data')?['customer_uuid'], outputs('Compose_document_data')?['customer_uid'], outputs('Compose_document_data')?['customer']?['customer_uid'], ''), variables('varCustomerUid'))",
+                    "item/alex_customername": "@outputs('Compose_customer_keys')?['name']",
+                    "item/alex_customeremail": "@outputs('Compose_customer_keys')?['email']",
+                    "item/alex_customerphone": "@outputs('Compose_customer_keys')?['phone']",
+                    "item/alex_customervatnumber": "@outputs('Compose_customer_keys')?['vat']",
+                    "item/alex_customeraddress": "@outputs('Compose_customer_keys')?['address']",
+                    "item/alex_customercity": "@outputs('Compose_customer_keys')?['city']",
+                    "item/alex_customerpostalcode": "@outputs('Compose_customer_keys')?['postal_code']",
+                    "item/alex_transactionuid": "@if(empty(coalesce(outputs('Compose_document_data')?['transaction_uuid'], outputs('Compose_document_data')?['transaction_uid'], '')), null, coalesce(outputs('Compose_document_data')?['transaction_uuid'], outputs('Compose_document_data')?['transaction_uid']))",
+                    "item/alex_paymentrequestuid": "@if(empty(coalesce(outputs('Compose_document_data')?['payment_request_uid'], outputs('Compose_document_data')?['page_request_uid'], '')), null, coalesce(outputs('Compose_document_data')?['payment_request_uid'], outputs('Compose_document_data')?['page_request_uid']))",
+                    "item/alex_branduuid": "@coalesce(outputs('Compose_document_data')?['brand']?['uuid'], outputs('Compose_document_data')?['brand_uuid'], '')",
+                    "item/alex_moreinfo": "@outputs('Compose_document_more_info')",
+                    "item/alex_documenturl": "@if(empty(coalesce(outputs('Compose_document_data')?['document_url'], outputs('Compose_document_data')?['url'], outputs('Compose_document_data')?['link'], outputs('Compose_document_data')?['docLink'], outputs('Compose_document_data')?['doc_link'], '')), null, coalesce(outputs('Compose_document_data')?['document_url'], outputs('Compose_document_data')?['url'], outputs('Compose_document_data')?['link'], outputs('Compose_document_data')?['docLink'], outputs('Compose_document_data')?['doc_link']))",
+                    "item/alex_pdfurl": "@if(empty(coalesce(outputs('Compose_document_data')?['originalDocAddress'], outputs('Compose_document_data')?['pdf_url'], outputs('Compose_document_data')?['pdf'], outputs('Compose_document_data')?['pdf_link'], outputs('Compose_document_data')?['download_url'], '')), null, coalesce(outputs('Compose_document_data')?['originalDocAddress'], outputs('Compose_document_data')?['pdf_url'], outputs('Compose_document_data')?['pdf'], outputs('Compose_document_data')?['pdf_link'], outputs('Compose_document_data')?['download_url']))",
+                    "item/alex_copypdfurl": "@if(empty(outputs('Compose_document_data')?['copyDocAddress']), null, outputs('Compose_document_data')?['copyDocAddress'])",
+                    "item/alex_sourcemodifiedon": "@triggerOutputs()?['body/alex_sourcemodifiedon']",
+                    "item/alex_sourceversionnumber": "@triggerOutputs()?['body/alex_sourceversionnumber']",
+                    "item/alex_sourcedetailmodifiedon": "@triggerOutputs()?['body/alex_sourcedetailmodifiedon']",
+                    "item/alex_sourcedetailversionnumber": "@triggerOutputs()?['body/alex_sourcedetailversionnumber']",
+                    "item/alex_sourcedetailcount": "@triggerOutputs()?['body/alex_sourcedetailcount']",
+                    "item/alex_sourcefingerprint": "@triggerOutputs()?['body/alex_sourcefingerprint']",
+                    "item/alex_sourceentitylogicalname": "quote",
+                    "item/alex_sourceentityid": "@triggerOutputs()?['body/quoteid']",
+                    "item/alex_sourcedisplayname": "@coalesce(body('Get_quote')?['quotenumber'], body('Get_quote')?['name'], triggerOutputs()?['body/quoteid'])",
+                    "item/alex_quoteid@odata.bind": "@concat('/quotes(', triggerOutputs()?['body/quoteid'], ')')",
+                    "item/alex_accountid@odata.bind": "@if(equals(outputs('Compose_source_table'), 'account'), concat('/accounts(', body('Get_quote')?['_customerid_value'], ')'), null)",
+                    "item/alex_contactid@odata.bind": "@if(equals(outputs('Compose_source_table'), 'contact'), concat('/contacts(', body('Get_quote')?['_customerid_value'], ')'), null)",
+                    "item/alex_payplusresultstatus": "@outputs('Compose_document_status')",
+                    "item/alex_payplusresultcode": "@coalesce(outputs('Compose_document_result')?['results']?['code'], outputs('Compose_document_result')?['code'], outputs('Compose_document_result')?['error_code'])",
+                    "item/alex_payplusresultdescription": "@coalesce(outputs('Compose_document_result')?['results']?['description'], outputs('Compose_document_result')?['description'], outputs('Compose_document_result')?['error'], outputs('Compose_document_result')?['message'], '')",
+                    "item/alex_lastoperation": "CreateQuote",
+                    "item/alex_lastsyncstatus": "@if(equals(outputs('Compose_document_status'), 'success'), 100000001, 100000002)",
+                    "item/alex_businessstatus": "@if(equals(outputs('Compose_document_status'), 'success'), if(equals(triggerOutputs()?['body/alex_lastoperation'], 'Generate'), 100000003, 100000001), 100000006)",
+                    "item/alex_origin": 100000000,
+                    "item/alex_rawrequest": "@string(outputs('Compose_document_request_snapshot'))",
+                    "item/alex_rawresponse": "@string(outputs('Compose_document_result'))",
+                    "item/alex_rawdocumentjson": "@string(outputs('Compose_document_data'))",
+                    "item/alex_itemsjson": "@string(variables('varItems'))",
+                    "item/alex_paymentsjson": "@string(coalesce(outputs('Compose_document_data')?['payments'], json('[]')))",
+                    "item/alex_tagsjson": "@string(coalesce(outputs('Compose_document_data')?['tags'], json('[]')))"
+                  },
+                  "authentication": "@parameters('$authentication')"
+                }
+              }
+            }
+          }
         }
       }
     }
