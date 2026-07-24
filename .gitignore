@@ -23,3 +23,7 @@ Desktop.ini
 # ---- local secrets / tokens ----
 *.env
 .env
+
+# ---- local scratch / temp working files (not for cloud) ----
+_tmp_*
+
