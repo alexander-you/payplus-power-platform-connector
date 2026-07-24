@@ -1,0 +1,268 @@
+.ppdp {
+  height: 100%;
+  min-height: 0;
+  color: #1d1d1f;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text",
+    "Segoe UI", "Assistant", "Rubik", "Helvetica Neue", Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  font-size: 13px;
+}
+
+.ppdp-shell {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  height: 100%;
+  background: #f5f5f7;
+  overflow: hidden;
+}
+
+/* ---------- Header ---------- */
+.ppdp-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 14px 20px;
+  background: rgba(255, 255, 255, 0.86);
+  backdrop-filter: saturate(180%) blur(20px);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+  border-bottom: 1px solid #e6e6ea;
+}
+
+.ppdp-identity {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  min-width: 0;
+}
+
+.ppdp-doc-title {
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: #1d1d1f;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ppdp-doc-meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.ppdp-amount {
+  font-size: 13px;
+  font-weight: 600;
+  color: #1d1d1f;
+  letter-spacing: -0.01em;
+}
+
+.ppdp-customer {
+  font-size: 12px;
+  color: #86868b;
+}
+
+/* ---------- Pills ---------- */
+.ppdp-pill {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 980px;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.45;
+  white-space: nowrap;
+}
+
+.ppdp-pill-type { background: #eef4ff; color: #0058b8; }
+.ppdp-pill-type.ppdp-t-refund { background: #eaf7ee; color: #1a7f37; }
+.ppdp-pill-type.ppdp-t-receipt { background: #f0eefb; color: #5b3fb5; }
+.ppdp-pill-type.ppdp-t-info { background: #f0f0f2; color: #6e6e73; }
+
+.ppdp-pill-status { background: #f0f0f2; color: #6e6e73; }
+.ppdp-pill-status.ppdp-s-issued { background: #eaf7ee; color: #1a7f37; }
+.ppdp-pill-status.ppdp-s-pending { background: #fff4e5; color: #a15c00; }
+.ppdp-pill-status.ppdp-s-failed { background: #fdeceb; color: #b3261e; }
+
+/* ---------- Actions ---------- */
+.ppdp-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.ppdp-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid #d2d2d7;
+  background: #ffffff;
+  color: #1d1d1f;
+  border-radius: 980px;
+  padding: 7px 14px;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease, box-shadow 0.15s ease, transform 0.06s ease;
+  white-space: nowrap;
+}
+
+.ppdp-btn:hover { background: #f5f5f7; border-color: #c7c7cc; }
+.ppdp-btn:active { transform: scale(0.97); }
+
+.ppdp-btn svg {
+  width: 15px;
+  height: 15px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  flex: none;
+}
+
+.ppdp-btn.ppdp-icon { padding: 7px; }
+
+.ppdp-primary {
+  border-color: #0071e3;
+  background: #0071e3;
+  color: #ffffff;
+}
+.ppdp-primary:hover { border-color: #0077ed; background: #0077ed; }
+
+.ppdp-accent {
+  border-color: #0071e3;
+  background: #ffffff;
+  color: #0071e3;
+}
+.ppdp-accent:hover { background: #eef6ff; border-color: #0071e3; }
+
+.ppdp-danger {
+  border-color: #e6c6c4;
+  background: #ffffff;
+  color: #b3261e;
+}
+.ppdp-danger:hover { background: #fdeceb; border-color: #e0b4b1; }
+
+/* ---------- Grouped select controls ---------- */
+.ppdp-group,
+.ppdp-field {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 6px 4px 8px;
+  background: #ffffff;
+  border: 1px solid #d2d2d7;
+  border-radius: 980px;
+}
+
+.ppdp-field span {
+  color: #86868b;
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.ppdp-group select,
+.ppdp-field select {
+  border: 0;
+  background: transparent;
+  color: #1d1d1f;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 500;
+  padding: 3px 4px;
+  border-radius: 8px;
+  outline: none;
+  cursor: pointer;
+  max-width: 150px;
+}
+
+.ppdp-group select:focus,
+.ppdp-field select:focus { background: #f0f6ff; }
+
+.ppdp-group .ppdp-btn { padding: 5px 12px; }
+
+/* ---------- Stage (document paper) ---------- */
+.ppdp-stage {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  justify-content: center;
+  overflow: auto;
+  padding: 18px 28px;
+}
+
+.ppdp-paper {
+  width: 100%;
+  max-width: 1180px;
+  background: #ffffff;
+  border-radius: 14px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 12px 34px rgba(0, 0, 0, 0.10);
+  overflow: hidden;
+  display: flex;
+}
+
+.ppdp-frame {
+  flex: 1;
+  width: 100%;
+  min-height: 640px;
+  border: 0;
+  background: #ffffff;
+}
+
+/* ---------- States ---------- */
+.ppdp-wait,
+.ppdp-error {
+  flex: 1;
+  align-self: center;
+  min-height: 320px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 40px;
+  text-align: center;
+}
+
+.ppdp-wait b,
+.ppdp-error b {
+  font-size: 15px;
+  font-weight: 600;
+  color: #1d1d1f;
+}
+
+.ppdp-wait span,
+.ppdp-error span {
+  max-width: 460px;
+  color: #86868b;
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.ppdp-spinner {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 3px solid #e3e3e8;
+  border-top-color: #0071e3;
+  animation: ppdp-spin 0.85s linear infinite;
+}
+
+.ppdp-error b { color: #b3261e; }
+
+@keyframes ppdp-spin {
+  to { transform: rotate(360deg); }
+}
+
+@media (max-width: 720px) {
+  .ppdp-header { padding: 12px 14px; }
+  .ppdp-stage { padding: 12px; }
+  .ppdp-actions { width: 100%; }
+}

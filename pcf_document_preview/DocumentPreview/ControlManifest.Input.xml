@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<manifest>
+  <control namespace="PayPlus" constructor="DocumentPreview" version="1.0.18" display-name-key="PayPlus_DocumentPreview_Display" description-key="PayPlus_DocumentPreview_Desc" control-type="standard" >
+    <external-service-usage enabled="true">
+      <domain>payments.payplus.co.il</domain>
+      <domain>paymentsdev.payplus.co.il</domain>
+      <domain>restapi.payplus.co.il</domain>
+      <domain>restapidev.payplus.co.il</domain>
+    </external-service-usage>
+    <property name="hostValue" display-name-key="PayPlus_DocumentPreview_Host_Display" description-key="PayPlus_DocumentPreview_Host_Desc" of-type="SingleLine.Text" usage="bound" required="true" />
+    <property name="documentId" display-name-key="PayPlus_DocumentPreview_DocumentId_Display" description-key="PayPlus_DocumentPreview_DocumentId_Desc" of-type="SingleLine.Text" usage="input" required="false" />
+    <resources>
+      <code path="index.ts" order="1" />
+      <css path="css/DocumentPreview.css" order="1" />
+      <resx path="strings/DocumentPreview.1033.resx" version="1.0.0" />
+      <resx path="strings/DocumentPreview.1037.resx" version="1.0.0" />
+    </resources>
+    <feature-usage>
+      <uses-feature name="Utility" required="true" />
+      <uses-feature name="WebAPI" required="true" />
+    </feature-usage>
+  </control>
+</manifest>

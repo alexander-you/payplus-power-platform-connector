@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <data name="PayPlus_DocumentPreview_Display" xml:space="preserve"><value>PayPlus Document Preview</value></data>
+  <data name="PayPlus_DocumentPreview_Desc" xml:space="preserve"><value>Displays a PayPlus document preview from a PayPlus document record.</value></data>
+  <data name="PayPlus_DocumentPreview_Host_Display" xml:space="preserve"><value>Preview host</value></data>
+  <data name="PayPlus_DocumentPreview_Host_Desc" xml:space="preserve"><value>Host field used to place the PayPlus document preview control on the form.</value></data>
+  <data name="PayPlus_DocumentPreview_DocumentId_Display" xml:space="preserve"><value>Document ID</value></data>
+  <data name="PayPlus_DocumentPreview_DocumentId_Desc" xml:space="preserve"><value>Optional PayPlus document row ID for custom pages. Bind to Param(&quot;recordId&quot;) when used in a custom page dialog.</value></data>
+</root>

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" msdata:Ordinal="1" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <data name="PayPlus_DocumentLedger_Display" xml:space="preserve"><value>ריכוז מסמכי PayPlus</value></data>
+  <data name="PayPlus_DocumentLedger_Desc" xml:space="preserve"><value>ריכוז חשבונאי של מסמכי PayPlus ברמת חשבונית, איש קשר או תיק לקוח.</value></data>
+  <data name="PayPlus_DocumentLedger_Host_Display" xml:space="preserve"><value>שדה מארח</value></data>
+  <data name="PayPlus_DocumentLedger_Host_Desc" xml:space="preserve"><value>שדה מארח לקישור פקד הריכוז אל הטופס.</value></data>
+  <data name="PayPlus_DocumentLedger_Scope_Display" xml:space="preserve"><value>היקף</value></data>
+  <data name="PayPlus_DocumentLedger_Scope_Desc" xml:space="preserve"><value>עקיפת היקף אופציונלית: auto, invoice, contact או account.</value></data>
+  <data name="PayPlus_DocumentLedger_RecordId_Display" xml:space="preserve"><value>מזהה רשומה</value></data>
+  <data name="PayPlus_DocumentLedger_RecordId_Desc" xml:space="preserve"><value>עקיפת מזהה רשומה אופציונלית עבור Custom Page.</value></data>
+  <data name="PayPlus_DocumentLedger_Entity_Display" xml:space="preserve"><value>שם לוגי של ישות</value></data>
+  <data name="PayPlus_DocumentLedger_Entity_Desc" xml:space="preserve"><value>עקיפת שם לוגי של ישות אופציונלית עבור Custom Page.</value></data>
+</root>
