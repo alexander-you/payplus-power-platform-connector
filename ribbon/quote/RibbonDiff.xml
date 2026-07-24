@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RibbonDiffXml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <CustomActions>
+    <CustomAction Id="alex.quote.form.PayPlus.CustomAction" Location="Mscrm.Form.quote.MainTab.Actions.Controls._children" Sequence="71">
+      <CommandUIDefinition>
+        <FlyoutAnchor Id="alex.quote.form.PayPlus.Flyout" Command="alex.quote.form.PayPlus.Command" Sequence="71" TemplateAlias="o1" LabelText="$LocLabels:alex.quote.PayPlus.Label" ToolTipTitle="$LocLabels:alex.quote.PayPlus.Label" ToolTipDescription="$LocLabels:alex.quote.PayPlus.Tooltip" ModernImage="$webresource:alex_payplus_quote_icon.svg" PopulateDynamically="false" PopulateOnlyOnce="true">
+          <Menu Id="alex.quote.form.PayPlus.Menu">
+            <MenuSection Id="alex.quote.form.PayPlus.Section" Sequence="10" DisplayMode="Menu16">
+              <Controls Id="alex.quote.form.PayPlus.Controls">
+                <Button Id="alex.quote.form.PayPlus.Preview.Button" Command="alex.quote.form.Preview.Command" Sequence="10" LabelText="$LocLabels:alex.quote.Preview.Label" ToolTipTitle="$LocLabels:alex.quote.Preview.Label" ToolTipDescription="$LocLabels:alex.quote.Preview.Tooltip" ModernImage="$webresource:alex_payplus_preview_icon.svg" TemplateAlias="o1" />
+                <Button Id="alex.quote.form.PayPlus.Generate.Button" Command="alex.quote.form.Generate.Command" Sequence="20" LabelText="$LocLabels:alex.quote.Generate.Label" ToolTipTitle="$LocLabels:alex.quote.Generate.Label" ToolTipDescription="$LocLabels:alex.quote.Generate.Tooltip" ModernImage="$webresource:alex_payplus_document_icon.svg" TemplateAlias="o1" />
+                <FlyoutAnchor Id="alex.quote.form.PayPlus.Send.Flyout" Command="alex.quote.form.Send.Command" Sequence="30" LabelText="$LocLabels:alex.quote.Send.Label" ToolTipTitle="$LocLabels:alex.quote.Send.Label" ToolTipDescription="$LocLabels:alex.quote.Send.Tooltip" ModernImage="$webresource:alex_payplus_send_icon.svg" TemplateAlias="o1" PopulateDynamically="false" PopulateOnlyOnce="true">
+                  <Menu Id="alex.quote.form.PayPlus.Send.Menu">
+                    <MenuSection Id="alex.quote.form.PayPlus.Send.Section" Sequence="10" DisplayMode="Menu16">
+                      <Controls Id="alex.quote.form.PayPlus.Send.Controls">
+                        <Button Id="alex.quote.form.PayPlus.Send.Email.Button" Command="alex.quote.form.SendEmail.Command" Sequence="10" LabelText="$LocLabels:alex.quote.Email.Label" ToolTipTitle="$LocLabels:alex.quote.Email.Label" ToolTipDescription="$LocLabels:alex.quote.Email.Tooltip" ModernImage="$webresource:alex_payplus_email_icon.svg" TemplateAlias="o1" />
+                        <Button Id="alex.quote.form.PayPlus.Send.Sms.Button" Command="alex.quote.form.SendSms.Command" Sequence="20" LabelText="$LocLabels:alex.quote.Sms.Label" ToolTipTitle="$LocLabels:alex.quote.Sms.Label" ToolTipDescription="$LocLabels:alex.quote.Sms.Tooltip" ModernImage="$webresource:alex_payplus_sms_icon.svg" TemplateAlias="o1" />
+                        <Button Id="alex.quote.form.PayPlus.Send.Whatsapp.Button" Command="alex.quote.form.SendWhatsapp.Command" Sequence="30" LabelText="$LocLabels:alex.quote.Whatsapp.Label" ToolTipTitle="$LocLabels:alex.quote.Whatsapp.Label" ToolTipDescription="$LocLabels:alex.quote.Whatsapp.Tooltip" ModernImage="$webresource:alex_payplus_whatsapp_icon.svg" TemplateAlias="o1" />
+                      </Controls>
+                    </MenuSection>
+                  </Menu>
+                </FlyoutAnchor>
+              </Controls>
+            </MenuSection>
+          </Menu>
+        </FlyoutAnchor>
+      </CommandUIDefinition>
+    </CustomAction>
+    <CustomAction Id="alex.quote.grid.PayPlus.CustomAction" Location="Mscrm.HomepageGrid.quote.MainTab.Management.Controls._children" Sequence="71">
+      <CommandUIDefinition>
+        <FlyoutAnchor Id="alex.quote.grid.PayPlus.Flyout" Command="alex.quote.grid.PayPlus.Command" Sequence="71" TemplateAlias="o1" LabelText="$LocLabels:alex.quote.PayPlus.Label" ToolTipTitle="$LocLabels:alex.quote.PayPlus.Label" ToolTipDescription="$LocLabels:alex.quote.PayPlus.GridTooltip" ModernImage="$webresource:alex_payplus_quote_icon.svg" PopulateDynamically="false" PopulateOnlyOnce="true">
+          <Menu Id="alex.quote.grid.PayPlus.Menu">
+            <MenuSection Id="alex.quote.grid.PayPlus.Section" Sequence="10" DisplayMode="Menu16">
+              <Controls Id="alex.quote.grid.PayPlus.Controls">
+                <Button Id="alex.quote.grid.PayPlus.Generate.Button" Command="alex.quote.grid.Generate.Command" Sequence="10" LabelText="$LocLabels:alex.quote.Generate.Label" ToolTipTitle="$LocLabels:alex.quote.Generate.Label" ToolTipDescription="$LocLabels:alex.quote.Generate.GridTooltip" ModernImage="$webresource:alex_payplus_document_icon.svg" TemplateAlias="o1" />
+                <FlyoutAnchor Id="alex.quote.grid.PayPlus.Send.Flyout" Command="alex.quote.grid.Send.Command" Sequence="20" LabelText="$LocLabels:alex.quote.Send.Label" ToolTipTitle="$LocLabels:alex.quote.Send.Label" ToolTipDescription="$LocLabels:alex.quote.Send.GridTooltip" ModernImage="$webresource:alex_payplus_send_icon.svg" TemplateAlias="o1" PopulateDynamically="false" PopulateOnlyOnce="true">
+                  <Menu Id="alex.quote.grid.PayPlus.Send.Menu">
+                    <MenuSection Id="alex.quote.grid.PayPlus.Send.Section" Sequence="10" DisplayMode="Menu16">
+                      <Controls Id="alex.quote.grid.PayPlus.Send.Controls">
+                        <Button Id="alex.quote.grid.PayPlus.Send.Email.Button" Command="alex.quote.grid.SendEmail.Command" Sequence="10" LabelText="$LocLabels:alex.quote.Email.Label" ToolTipTitle="$LocLabels:alex.quote.Email.Label" ToolTipDescription="$LocLabels:alex.quote.Email.GridTooltip" ModernImage="$webresource:alex_payplus_email_icon.svg" TemplateAlias="o1" />
+                        <Button Id="alex.quote.grid.PayPlus.Send.Sms.Button" Command="alex.quote.grid.SendSms.Command" Sequence="20" LabelText="$LocLabels:alex.quote.Sms.Label" ToolTipTitle="$LocLabels:alex.quote.Sms.Label" ToolTipDescription="$LocLabels:alex.quote.Sms.GridTooltip" ModernImage="$webresource:alex_payplus_sms_icon.svg" TemplateAlias="o1" />
+                        <Button Id="alex.quote.grid.PayPlus.Send.Whatsapp.Button" Command="alex.quote.grid.SendWhatsapp.Command" Sequence="30" LabelText="$LocLabels:alex.quote.Whatsapp.Label" ToolTipTitle="$LocLabels:alex.quote.Whatsapp.Label" ToolTipDescription="$LocLabels:alex.quote.Whatsapp.GridTooltip" ModernImage="$webresource:alex_payplus_whatsapp_icon.svg" TemplateAlias="o1" />
+                      </Controls>
+                    </MenuSection>
+                  </Menu>
+                </FlyoutAnchor>
+              </Controls>
+            </MenuSection>
+          </Menu>
+        </FlyoutAnchor>
+      </CommandUIDefinition>
+    </CustomAction>
+  </CustomActions>
+  <Templates>
+    <RibbonTemplates Id="Mscrm.Templates"></RibbonTemplates>
+  </Templates>
+  <CommandDefinitions>
+    <CommandDefinition Id="alex.quote.form.PayPlus.Command">
+      <EnableRules><EnableRule Id="alex.quote.form.Command.EnableRule" /></EnableRules>
+      <DisplayRules><DisplayRule Id="alex.quote.form.Show.DisplayRule" /></DisplayRules>
+      <Actions />
+    </CommandDefinition>
+    <CommandDefinition Id="alex.quote.form.Preview.Command">
+      <EnableRules><EnableRule Id="alex.quote.form.Command.EnableRule" /></EnableRules>
+      <DisplayRules><DisplayRule Id="alex.quote.form.Preview.DisplayRule" /></DisplayRules>
+      <Actions><JavaScriptFunction FunctionName="PayPlus.quoteCommand" Library="$webresource:alex_payplus_quote_commands.js"><CrmParameter Value="PrimaryControl" /><StringParameter Value="preview" /></JavaScriptFunction></Actions>
+    </CommandDefinition>
+    <CommandDefinition Id="alex.quote.form.Generate.Command">
+      <EnableRules><EnableRule Id="alex.quote.form.Command.EnableRule" /></EnableRules>
+      <DisplayRules><DisplayRule Id="alex.quote.form.Generate.DisplayRule" /></DisplayRules>
+      <Actions><JavaScriptFunction FunctionName="PayPlus.quoteCommand" Library="$webresource:alex_payplus_quote_commands.js"><CrmParameter Value="PrimaryControl" /><StringParameter Value="generate" /></JavaScriptFunction></Actions>
+    </CommandDefinition>
+    <CommandDefinition Id="alex.quote.form.Send.Command">
+      <EnableRules><EnableRule Id="alex.quote.form.Command.EnableRule" /></EnableRules>
+      <DisplayRules><DisplayRule Id="alex.quote.form.Send.DisplayRule" /></DisplayRules>
+      <Actions />
+    </CommandDefinition>
+    <CommandDefinition Id="alex.quote.form.SendEmail.Command">
+      <EnableRules><EnableRule Id="alex.quote.form.Command.EnableRule" /></EnableRules>
+      <DisplayRules><DisplayRule Id="alex.quote.form.SendEmail.DisplayRule" /></DisplayRules>
+      <Actions><JavaScriptFunction FunctionName="PayPlus.quoteCommand" Library="$webresource:alex_payplus_quote_commands.js"><CrmParameter Value="PrimaryControl" /><StringParameter Value="send-email" /></JavaScriptFunction></Actions>
+    </CommandDefinition>
+    <CommandDefinition Id="alex.quote.form.SendSms.Command">
+      <EnableRules><EnableRule Id="alex.quote.form.Command.EnableRule" /></EnableRules>
+      <DisplayRules><DisplayRule Id="alex.quote.form.SendSms.DisplayRule" /></DisplayRules>
+      <Actions><JavaScriptFunction FunctionName="PayPlus.quoteCommand" Library="$webresource:alex_payplus_quote_commands.js"><CrmParameter Value="PrimaryControl" /><StringParameter Value="send-sms" /></JavaScriptFunction></Actions>
+    </CommandDefinition>
+    <CommandDefinition Id="alex.quote.form.SendWhatsapp.Command">
+      <EnableRules><EnableRule Id="alex.quote.form.Command.EnableRule" /></EnableRules>
+      <DisplayRules><DisplayRule Id="alex.quote.form.SendWhatsapp.DisplayRule" /></DisplayRules>
+      <Actions><JavaScriptFunction FunctionName="PayPlus.quoteCommand" Library="$webresource:alex_payplus_quote_commands.js"><CrmParameter Value="PrimaryControl" /><StringParameter Value="send-whatsapp" /></JavaScriptFunction></Actions>
+    </CommandDefinition>
+    <CommandDefinition Id="alex.quote.grid.PayPlus.Command">
+      <EnableRules><EnableRule Id="alex.quote.grid.Selected.EnableRule" /></EnableRules>
+      <DisplayRules><DisplayRule Id="alex.quote.grid.Show.DisplayRule" /></DisplayRules>
+      <Actions />
+    </CommandDefinition>
+    <CommandDefinition Id="alex.quote.grid.Generate.Command">
+      <EnableRules><EnableRule Id="alex.quote.grid.Selected.EnableRule" /></EnableRules>
+      <DisplayRules><DisplayRule Id="alex.quote.grid.Generate.DisplayRule" /></DisplayRules>
+      <Actions><JavaScriptFunction FunctionName="PayPlus.quoteGridCommand" Library="$webresource:alex_payplus_quote_commands.js"><CrmParameter Value="SelectedControl" /><CrmParameter Value="SelectedControlSelectedItemIds" /><StringParameter Value="generate" /></JavaScriptFunction></Actions>
+    </CommandDefinition>
+    <CommandDefinition Id="alex.quote.grid.Send.Command">
+      <EnableRules><EnableRule Id="alex.quote.grid.Selected.EnableRule" /></EnableRules>
+      <DisplayRules><DisplayRule Id="alex.quote.grid.Send.DisplayRule" /></DisplayRules>
+      <Actions />
+    </CommandDefinition>
+    <CommandDefinition Id="alex.quote.grid.SendEmail.Command">
+      <EnableRules><EnableRule Id="alex.quote.grid.Selected.EnableRule" /></EnableRules>
+      <DisplayRules><DisplayRule Id="alex.quote.grid.SendEmail.DisplayRule" /></DisplayRules>
+      <Actions><JavaScriptFunction FunctionName="PayPlus.quoteGridCommand" Library="$webresource:alex_payplus_quote_commands.js"><CrmParameter Value="SelectedControl" /><CrmParameter Value="SelectedControlSelectedItemIds" /><StringParameter Value="send-email" /></JavaScriptFunction></Actions>
+    </CommandDefinition>
+    <CommandDefinition Id="alex.quote.grid.SendSms.Command">
+      <EnableRules><EnableRule Id="alex.quote.grid.Selected.EnableRule" /></EnableRules>
+      <DisplayRules><DisplayRule Id="alex.quote.grid.SendSms.DisplayRule" /></DisplayRules>
+      <Actions><JavaScriptFunction FunctionName="PayPlus.quoteGridCommand" Library="$webresource:alex_payplus_quote_commands.js"><CrmParameter Value="SelectedControl" /><CrmParameter Value="SelectedControlSelectedItemIds" /><StringParameter Value="send-sms" /></JavaScriptFunction></Actions>
+    </CommandDefinition>
+    <CommandDefinition Id="alex.quote.grid.SendWhatsapp.Command">
+      <EnableRules><EnableRule Id="alex.quote.grid.Selected.EnableRule" /></EnableRules>
+      <DisplayRules><DisplayRule Id="alex.quote.grid.SendWhatsapp.DisplayRule" /></DisplayRules>
+      <Actions><JavaScriptFunction FunctionName="PayPlus.quoteGridCommand" Library="$webresource:alex_payplus_quote_commands.js"><CrmParameter Value="SelectedControl" /><CrmParameter Value="SelectedControlSelectedItemIds" /><StringParameter Value="send-whatsapp" /></JavaScriptFunction></Actions>
+    </CommandDefinition>
+  </CommandDefinitions>
+  <RuleDefinitions>
+    <TabDisplayRules />
+    <DisplayRules>
+      <DisplayRule Id="alex.quote.form.Show.DisplayRule"><CustomRule FunctionName="PayPlus.quoteCanShow" Library="$webresource:alex_payplus_quote_commands.js" Default="false"><CrmParameter Value="PrimaryControl" /></CustomRule></DisplayRule>
+      <DisplayRule Id="alex.quote.form.Preview.DisplayRule"><CustomRule FunctionName="PayPlus.quoteCanPreview" Library="$webresource:alex_payplus_quote_commands.js" Default="false"><CrmParameter Value="PrimaryControl" /></CustomRule></DisplayRule>
+      <DisplayRule Id="alex.quote.form.Generate.DisplayRule"><CustomRule FunctionName="PayPlus.quoteCanGenerate" Library="$webresource:alex_payplus_quote_commands.js" Default="false"><CrmParameter Value="PrimaryControl" /></CustomRule></DisplayRule>
+      <DisplayRule Id="alex.quote.form.Send.DisplayRule"><CustomRule FunctionName="PayPlus.quoteCanAnySend" Library="$webresource:alex_payplus_quote_commands.js" Default="false"><CrmParameter Value="PrimaryControl" /></CustomRule></DisplayRule>
+      <DisplayRule Id="alex.quote.form.SendEmail.DisplayRule"><CustomRule FunctionName="PayPlus.quoteCanSendEmail" Library="$webresource:alex_payplus_quote_commands.js" Default="false"><CrmParameter Value="PrimaryControl" /></CustomRule></DisplayRule>
+      <DisplayRule Id="alex.quote.form.SendSms.DisplayRule"><CustomRule FunctionName="PayPlus.quoteCanSendSms" Library="$webresource:alex_payplus_quote_commands.js" Default="false"><CrmParameter Value="PrimaryControl" /></CustomRule></DisplayRule>
+      <DisplayRule Id="alex.quote.form.SendWhatsapp.DisplayRule"><CustomRule FunctionName="PayPlus.quoteCanSendWhatsapp" Library="$webresource:alex_payplus_quote_commands.js" Default="false"><CrmParameter Value="PrimaryControl" /></CustomRule></DisplayRule>
+      <DisplayRule Id="alex.quote.grid.Show.DisplayRule"><CustomRule FunctionName="PayPlus.quoteGridCanShow" Library="$webresource:alex_payplus_quote_commands.js" Default="false"><CrmParameter Value="SelectedControl" /></CustomRule></DisplayRule>
+      <DisplayRule Id="alex.quote.grid.Generate.DisplayRule"><CustomRule FunctionName="PayPlus.quoteGridCanGenerate" Library="$webresource:alex_payplus_quote_commands.js" Default="false"><CrmParameter Value="SelectedControl" /></CustomRule></DisplayRule>
+      <DisplayRule Id="alex.quote.grid.Send.DisplayRule"><CustomRule FunctionName="PayPlus.quoteGridCanAnySend" Library="$webresource:alex_payplus_quote_commands.js" Default="false"><CrmParameter Value="SelectedControl" /></CustomRule></DisplayRule>
+      <DisplayRule Id="alex.quote.grid.SendEmail.DisplayRule"><CustomRule FunctionName="PayPlus.quoteGridCanSendEmail" Library="$webresource:alex_payplus_quote_commands.js" Default="false"><CrmParameter Value="SelectedControl" /></CustomRule></DisplayRule>
+      <DisplayRule Id="alex.quote.grid.SendSms.DisplayRule"><CustomRule FunctionName="PayPlus.quoteGridCanSendSms" Library="$webresource:alex_payplus_quote_commands.js" Default="false"><CrmParameter Value="SelectedControl" /></CustomRule></DisplayRule>
+      <DisplayRule Id="alex.quote.grid.SendWhatsapp.DisplayRule"><CustomRule FunctionName="PayPlus.quoteGridCanSendWhatsapp" Library="$webresource:alex_payplus_quote_commands.js" Default="false"><CrmParameter Value="SelectedControl" /></CustomRule></DisplayRule>
+    </DisplayRules>
+    <EnableRules>
+      <EnableRule Id="alex.quote.form.Command.EnableRule"><CustomRule FunctionName="PayPlus.quoteFormCommandEnabled" Library="$webresource:alex_payplus_quote_commands.js" Default="true"><CrmParameter Value="PrimaryControl" /></CustomRule></EnableRule>
+      <EnableRule Id="alex.quote.form.Existing.EnableRule"><FormStateRule State="Existing" /></EnableRule>
+      <EnableRule Id="alex.quote.form.SavedOrReadOnly.EnableRule">
+        <OrRule>
+          <Or><FormStateRule State="Existing" /></Or>
+          <Or><FormStateRule State="ReadOnly" /></Or>
+        </OrRule>
+      </EnableRule>
+      <EnableRule Id="alex.quote.grid.Selected.EnableRule"><SelectionCountRule AppliesTo="SelectedEntity" Minimum="1" /></EnableRule>
+    </EnableRules>
+  </RuleDefinitions>
+  <LocLabels>
+    <LocLabel Id="alex.quote.PayPlus.Label"><Titles><Title languagecode="1033" description="PayPlus" /><Title languagecode="1037" description="PayPlus" /></Titles></LocLabel>
+    <LocLabel Id="alex.quote.PayPlus.Tooltip"><Titles><Title languagecode="1033" description="PayPlus quote document actions" /><Title languagecode="1037" description="פעולות מסמך PayPlus להצעת מחיר" /></Titles></LocLabel>
+    <LocLabel Id="alex.quote.PayPlus.GridTooltip"><Titles><Title languagecode="1033" description="PayPlus quote document actions for selected quotes" /><Title languagecode="1037" description="פעולות מסמך PayPlus להצעות המחיר שנבחרו" /></Titles></LocLabel>
+    <LocLabel Id="alex.quote.Preview.Label"><Titles><Title languagecode="1033" description="Preview" /><Title languagecode="1037" description="תצוגה מקדימה" /></Titles></LocLabel>
+    <LocLabel Id="alex.quote.Preview.Tooltip"><Titles><Title languagecode="1033" description="Preview the PayPlus draft document" /><Title languagecode="1037" description="הצג טיוטת מסמך PayPlus" /></Titles></LocLabel>
+    <LocLabel Id="alex.quote.Generate.Label"><Titles><Title languagecode="1033" description="Create document" /><Title languagecode="1037" description="הפק מסמך" /></Titles></LocLabel>
+    <LocLabel Id="alex.quote.Generate.Tooltip"><Titles><Title languagecode="1033" description="Create a PayPlus document for this quote" /><Title languagecode="1037" description="הפק מסמך PayPlus להצעת המחיר" /></Titles></LocLabel>
+    <LocLabel Id="alex.quote.Generate.GridTooltip"><Titles><Title languagecode="1033" description="Create PayPlus documents for selected quotes" /><Title languagecode="1037" description="הפק מסמכי PayPlus להצעות המחיר שנבחרו" /></Titles></LocLabel>
+    <LocLabel Id="alex.quote.Send.Label"><Titles><Title languagecode="1033" description="Send document" /><Title languagecode="1037" description="שלח מסמך" /></Titles></LocLabel>
+    <LocLabel Id="alex.quote.Send.Tooltip"><Titles><Title languagecode="1033" description="Send this PayPlus document" /><Title languagecode="1037" description="שלח את מסמך PayPlus" /></Titles></LocLabel>
+    <LocLabel Id="alex.quote.Send.GridTooltip"><Titles><Title languagecode="1033" description="Send PayPlus documents for selected quotes" /><Title languagecode="1037" description="שלח מסמכי PayPlus להצעות המחיר שנבחרו" /></Titles></LocLabel>
+    <LocLabel Id="alex.quote.Email.Label"><Titles><Title languagecode="1033" description="Email" /><Title languagecode="1037" description="דואר אלקטרוני" /></Titles></LocLabel>
+    <LocLabel Id="alex.quote.Email.Tooltip"><Titles><Title languagecode="1033" description="Send by email" /><Title languagecode="1037" description="שליחה בדואר אלקטרוני" /></Titles></LocLabel>
+    <LocLabel Id="alex.quote.Email.GridTooltip"><Titles><Title languagecode="1033" description="Send selected documents by email" /><Title languagecode="1037" description="שליחת המסמכים שנבחרו בדואר אלקטרוני" /></Titles></LocLabel>
+    <LocLabel Id="alex.quote.Sms.Label"><Titles><Title languagecode="1033" description="SMS" /><Title languagecode="1037" description="מסרון" /></Titles></LocLabel>
+    <LocLabel Id="alex.quote.Sms.Tooltip"><Titles><Title languagecode="1033" description="Send by SMS" /><Title languagecode="1037" description="שליחה במסרון" /></Titles></LocLabel>
+    <LocLabel Id="alex.quote.Sms.GridTooltip"><Titles><Title languagecode="1033" description="Send selected documents by SMS" /><Title languagecode="1037" description="שליחת המסמכים שנבחרו במסרון" /></Titles></LocLabel>
+    <LocLabel Id="alex.quote.Whatsapp.Label"><Titles><Title languagecode="1033" description="WhatsApp" /><Title languagecode="1037" description="WhatsApp" /></Titles></LocLabel>
+    <LocLabel Id="alex.quote.Whatsapp.Tooltip"><Titles><Title languagecode="1033" description="Send by WhatsApp" /><Title languagecode="1037" description="שליחה ב-WhatsApp" /></Titles></LocLabel>
+    <LocLabel Id="alex.quote.Whatsapp.GridTooltip"><Titles><Title languagecode="1033" description="Send selected documents by WhatsApp" /><Title languagecode="1037" description="שליחת המסמכים שנבחרו ב-WhatsApp" /></Titles></LocLabel>
+  </LocLabels>
+</RibbonDiffXml>

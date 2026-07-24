@@ -61,6 +61,7 @@
     /* ===== Management Center ===== */
     .mc{max-width:760px;margin:0 auto}
     .mc-title{font-size:26px;font-weight:800;margin:0 0 4px}
+    .mc-select{font-family:var(--font);font-size:13px;padding:6px 10px;border:1px solid var(--line);border-radius:8px;background:#fff;cursor:pointer;min-width:200px}
     .mc-sub{color:var(--muted);font-size:14px;margin:0 0 18px;line-height:1.55}
     /* compact install status line */
     .mc-status{display:flex;align-items:center;gap:9px;background:var(--ok-soft);border:1px solid var(--ok-border);border-radius:12px;padding:11px 15px;margin-bottom:16px;font-size:13.5px;flex-wrap:wrap}
@@ -96,17 +97,25 @@
     .switch input:checked ~ .track{background:var(--ok)}
     .switch input:checked ~ .knob{transform:translateX(20px)}
     html[dir="rtl"] .switch input:checked ~ .knob{transform:translateX(-20px)}
+    /* coming-soon (roadmap) rows */
+    .set-row.cs{opacity:.7}
+    .cs-badge{display:inline-block;font-size:10.5px;font-weight:700;color:var(--brand);background:var(--brand-soft);border-radius:10px;padding:1px 8px;margin-inline-start:7px;vertical-align:middle;letter-spacing:.3px}
+    .switch.dis{opacity:.45;pointer-events:none}
+    .mc-select:disabled{opacity:.55;cursor:not-allowed;background:#f4f5f8}
     /* expiry input (self-service) */
     .ss-exp{display:flex;align-items:center;gap:6px;color:var(--muted);font-size:12.5px;transition:opacity .15s}
     .ss-exp.off{opacity:.4}
     .ss-exp input{width:58px;padding:6px 8px;border:1px solid var(--line);border-radius:8px;font-size:13px;font-family:var(--font);text-align:center;color:var(--ink);background:#fff}
     .ss-exp input:focus{outline:none;border-color:var(--brand);box-shadow:0 0 0 3px var(--brand-soft)}
     .ss-exp input:disabled{background:#f4f5f8;color:var(--muted)}
-    /* distribution-method sub-block (under a channel row) */
-    .dist-sub{padding:0 0 6px;display:flex;flex-direction:column;gap:9px}
-    .dist-methodrow{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
-    .dist-lbl{font-size:12px;font-weight:600;color:var(--muted)}
+    /* per-channel distribution selector (None / PayPlus / Other) */
+    .dist-warn{margin:-2px 0 6px}
     .seg{display:inline-flex;border:1px solid var(--line);border-radius:9px;overflow:hidden;background:#fff}
+    .seg.seg3 button{min-width:62px;text-align:center}
+    .seg.seg4{flex-wrap:wrap;max-width:380px}
+    .seg.seg4 button{min-width:92px;text-align:center;flex:1}
+    .seg.doctabs{display:flex;width:100%;margin:2px 0 14px}
+    .seg.doctabs button{flex:1;text-align:center;padding:8px 6px}
     .seg button{border:none;background:none;padding:6px 15px;font-size:12.5px;font-family:var(--font);color:var(--muted);cursor:pointer;transition:background .15s}
     .seg button+button{border-inline-start:1px solid var(--line)}
     .seg button:hover{background:#fafbfe}
@@ -186,6 +195,7 @@ var App = (function(){
     syncprofile:{ table:"alex_payplus_syncprofile", nameCol:"alex_name", env:{ prod:100000001, sandbox:100000000 } },
     docImport:{ notstarted:100000000, pending:100000001, success:100000002, failed:100000003 },
     terminalsImport:{ notstarted:100000000, pending:100000001, success:100000002, failed:100000003 },
+    bankImport:{ notstarted:100000000, pending:100000001, success:100000002, failed:100000003 },
     // Imported terminal/page tables (used to mark the chosen default via alex_isdefault).
     defaults:{ terminalTable:"alex_payplus_terminal", terminalUidCol:"alex_terminaluid", terminalIdCol:"alex_payplus_terminalid",
                pageTable:"alex_payplus_paymentpage", pageUidCol:"alex_paymentpageuid", pageIdCol:"alex_payplus_paymentpageid" }
@@ -271,20 +281,46 @@ var App = (function(){
       ssAccSub:"{n} ערוצים פעילים",
       /* documents management */
       docTitle:"ניהול מסמכים",
-      docAccSub:"הפקה, טיוטה, הפצה ושליחה אוטומטית",
-      docIntro:"הגדירו לכל סוג מסמך מה מותר: הפקה, צפייה בטיוטה, ערוצי הפצה ושליחה אוטומטית. כרגע נתמך סוג המסמך ‘הצעת מחיר’; סוגים נוספים יתווספו בהמשך.",
+      docAccSub:"הפקה, טיוטה, שליחה בעת הפקה ושליחה חוזרת",
+      docIntro:"הגדירו לכל סוג מסמך מה מותר: הפקה, צפייה בטיוטה, שליחת דוא\"ל/SMS בזמן ההפקה והרשאות שליחה חוזרת לאחר ההפקה.",
+      docTypePick:"בחירת סוג מסמך",
       docQuote:"הצעת מחיר",
+      docInvoice:"חשבונית",
+      docSalesOrder:"הזמנה",
       docEnable:"אפשר הפקת מסמך",
       docEnableSub:"מאפשר להפיק את המסמך ב-PayPlus מתוך Dynamics.",
       docDraft:"אפשר צפייה בטיוטה",
       docDraftSub:"מאפשר להציג תצוגה מקדימה של המסמך לפני הפקה סופית.",
-      docDist:"אפשרויות הפצה",
+      docBulk:"אפשר יצירה מרובה",
+      docBulkSub:"אפשר יצירה מרובה מתוך תצוגת רשימה של הטבלה.",
+      docVatGroup:"מע\"מ",
+      docVatMode:"חישוב מע\"מ",
+      docVatDefault:"ברירת מחדל PayPlus",
+      docVatIncluded:"מחירים כוללים מע\"מ",
+      docVatExcluded:"מחירים לפני מע\"מ",
+      docVatExempt:"פטור ממע\"מ",
+      docVatDefaultSub:"לא שולחים vatType; PayPlus מחליט לפי ההגדרות שלו.",
+      docVatIncludedSub:"שולחים vat-type-included; המחירים כוללים מע\"מ.",
+      docVatExcludedSub:"שולחים vat-type-not-included; PayPlus מוסיף או מחשב מע\"מ.",
+      docVatExemptSub:"שולחים vat-type-exempt; אין תוספת ואין שורת מע\"מ.",
+      docDist:"שליחה בעת הפקה",
       docDistEmail:"דוא\"ל", docDistSms:"SMS", docDistWhatsapp:"WhatsApp",
-      docDistMethod:"שיטת הפצה:", docMethodPayPlus:"PayPlus", docMethodOther:"אחר",
-      docMethodOtherWarn:"בבחירת ‘אחר’ יש להקים זרימת עבודה מודרנית (Flow) או פלאגין על יישות מסמך PayPlus שיבצע את ההפצה בפועל.",
+      docIssueEmail:"שליחת דוא\"ל בעת הפקה",
+      docIssueEmailSub:"כאשר מופעל, PayPlus מתבקש לשלוח את המסמך בדוא\"ל כחלק מקריאת ההפקה הראשונית.",
+      docIssueSms:"שליחת SMS בעת הפקה",
+      docIssueSmsSub:"כאשר מופעל, PayPlus מתבקש לשלוח את המסמך ב-SMS כחלק מקריאת ההפקה הראשונית.",
+      docIssueNoneHint:"כדי לא לשלוח בזמן ההפקה, כבו גם דוא\"ל וגם SMS. ל-PayPlus אין שליחת WhatsApp בזמן הפקת מסמך.",
+      docResendGroup:"שליחה חוזרת לאחר הפקה",
+      docResendEmail:"אפשר שליחה חוזרת בדוא\"ל",
+      docResendEmailSub:"מתיר למשתמש או לאוטומציה של Dynamics לשלוח שוב בדוא\"ל לאחר שכבר נוצר מסמך PayPlus.",
+      docResendSms:"אפשר שליחה חוזרת ב-SMS",
+      docResendSmsSub:"מתיר למשתמש או לאוטומציה של Dynamics לשלוח שוב ב-SMS לאחר שכבר נוצר מסמך PayPlus.",
+      docResendWhatsapp:"אפשר שליחה חוזרת ב-WhatsApp",
+      docResendWhatsappSub:"מתיר שליחת WhatsApp מתוך Dynamics לאחר ההפקה. PayPlus עצמו לא שולח WhatsApp במסמך.",
+      docResendWarn:"שליחה חוזרת אינה API של PayPlus. אם מפעילים הרשאה כאן, יש לממש Flow או פלאגין על יישות מסמך PayPlus שיבצע את השליחה בפועל.",
       docAutoGroup:"אוטומציה",
       docAutoSend:"שליחה אוטומטית במצב הפעלה",
-      docAutoHint:"כאשר הצעת מחיר עוברת למצב ‘מתבצע — פעיל’, ההצעה תישלח אוטומטית דרך PayPlus. ניתן לעדכן אחרת ב-Flow.",
+      docAutoHint:"ההגדרות כאן הן הרשאות ומדיניות עסקית. השליחה בפועל תלויה בתהליך ההפקה או באוטומציה שתופעל על מסמך PayPlus.",
       spCreated:"רשומת פרופיל {n} נוצרה בהצלחה — ניתן להגדיר סנכרון.",
       /* document types import (last install step) */
       docImportOk:"סוגי המסמכים יובאו בהצלחה מ-PayPlus.",
@@ -307,9 +343,106 @@ var App = (function(){
       terminalsImportRowPending:"ייבוא מסופים ועמודי תשלום בתהליך…",
       terminalsImportRowNone:"ייבוא מסופים טרם בוצע",
       terminalsImportReimport:"ייבוא מחדש",
+      /* banks & branches import */
+      setupSectionTitle:"הגדרה והקמה",
+      setupSectionSub:"נתוני ייחוס וסטטוס התקנה",
+      bankImportOk:"הבנקים והסניפים יובאו בהצלחה מ-data.gov.il.",
+      bankImportPending:"ייבוא הבנקים ימשיך ברקע — ודאו שה-Flow ‘PayPlus - Import Banks & Branches’ מופעל.",
+      bankImportFail:"ייבוא הבנקים נכשל — בדקו את היסטוריית ה-Flow.",
+      bankImportRowOk:"ייבוא בנקים וסניפים הושלם",
+      bankImportRowFail:"ייבוא בנקים נכשל",
+      bankImportRowPending:"ייבוא בנקים וסניפים בתהליך…",
+      bankImportRowNone:"ייבוא בנקים טרם בוצע",
+      bankImportUpdate:"עדכון",
       /* per-page connection test (management center) */
       pagesTitle:"בדיקת עמודי תשלום",
       pagesAccSub:"בדיקת חיבור לכל עמוד תשלום בנפרד",
+      /* organization settings (VAT) */
+      orgTitle:"הגדרות ארגון",
+      orgAccSub:"מע\"מ והגדרות כלל-ארגוניות",
+      orgIntro:"הגדרות החלות על כל המסמכים בארגון.",
+      vatModeLabel:"מצב מע\"מ למסמך",
+      vatModeSub:"קובע כיצד יטופל המע\"מ בעת שליחת מסמכים ל-PayPlus.",
+      vatMode0:"ברירת מחדל של PayPlus",
+      vatMode1:"מחירים כוללים מע\"מ",
+      vatMode2:"מחירים ללא מע\"מ",
+      vatMode3:"פטור ממע\"מ",
+      vatModeHint:"‘ברירת מחדל של PayPlus’ — לא נשלח ערך מע\"מ; ‘פטור ממע\"מ’ — אין חישוב מע\"מ ואין שורת מע\"מ.",
+      billingPolicyGroup:"מדיניות גבייה",
+      billingDefaultFlowLabel:"סוג מסמך ברירת מחדל",
+      billingDefaultFlowSub:"קובע איזה סוג מסמך חשבונית יוצג בפועל בריבון כאשר לא מופעלת בחירה ידנית או אפשרות שינוי על ידי משתמש.",
+      billingFlowPaymentRequest:"חשבונית עסקה",
+      billingFlowPaymentRequestThenInvoice:"בקשת תשלום",
+      billingFlowTaxInvoice:"חשבונית מס",
+      billingFlowTaxInvoiceReceipt:"חשבונית מס קבלה",
+      billingFlowManual:"בחירה ידנית",
+      billingOverrideLabel:"אפשר שינוי על ידי משתמש",
+      billingOverrideSub:"כאשר מופעל, הריבון יכול להציג את כל סוגי המסמכים שהוגדרו כמותרים במקום להגביל לסוג המסמך של ברירת המחדל.",
+      billingReceiptCloseLabel:"נדרשת קבלה לסגירת חשבונית",
+      billingReceiptCloseSub:"חשבונית נשארת פתוחה עד שסך הקבלות המשויכות מכסה את הסכום שלה.",
+      billingAutoCloseMatchLabel:"סגור אוטומטית חשבונית כאשר סכום הקבלה תואם",
+      billingAutoCloseMatchSub:"כאשר סכום הקבלה, או סך כל הקבלות המשויכות, מכסה את סכום החשבונית — החשבונית תסומן כשולמה.",
+      billingAutoReceiptLabel:"הפק קבלה אוטומטית לאחר תשלום",
+      billingAutoReceiptSub:"מאפשר לאוטומציה ליצור קבלה לאחר תשלום מוצלח ב-PayPlus.",
+      billingCancellationPolicyLabel:"מדיניות ביטול",
+      billingCancellationPolicySub:"כאשר נבחרת יצירת מסמכי ביטול/זיכוי, ביטול חשבונית מס ייצור חשבונית זיכוי ב-PayPlus, חשבונית זיכוי ב-D365, חשבונית D365 חדשה, והמסמך החדש יופק עליה.",
+      billingD365ReversalLabel:"צור חשבונית נגדית ב-D365 בעת ביטול",
+      billingD365ReversalSub:"קובע האם ליצור גם מסמך נגד ב-Dynamics 365 כאשר מבטלים מסמך חשבונאי ב-PayPlus. דורש אימות תמיכה בשורות זיכוי/מינוס.",
+      billingCancelManual:"נדרשת בדיקה ידנית",
+      billingCancelReversal:"יצירת מסמכי ביטול/זיכוי",
+      billingCancelBlockAfterReceipt:"חסימה לאחר קבלה",
+      billingPaymentPagePolicyLabel:"מדיניות צירוף עמוד תשלום",
+      billingPaymentPagePolicySub:"קובע מתי לצרף למסמך קישור לעמוד תשלום PayPlus, למשל במסלול כרטיס אשראי.",
+      billingPageNever:"לא לצרף עמוד תשלום",
+      billingPageUserDecides:"להחלטת המשתמש",
+      billingPageOpenBalance:"לצרף למסמכים עם יתרה פתוחה",
+      billingCreatePageWithDocLabel:"חולל עמוד תשלום עם מסמך הגבייה",
+      billingCreatePageWithDocSub:"כאשר מופעל, תהליך ההפקה ייצור מיד גם עמוד/קישור תשלום המקושר למסמך הגבייה.",
+      billingDocsGroup:"מסמכי גבייה בריבון",
+      billingDocTaxInvoice:"חשבונית מס",
+      billingDocTaxInvoiceReceipt:"חשבונית מס קבלה",
+      billingDocPaymentDemand:"חשבונית עסקה",
+      billingDocPaymentRequest:"בקשת תשלום",
+      billingDocReceipt:"קבלה",
+      billingDocCredit:"חשבונית זיכוי",
+      billingDocEnabled:"הצג בתפריט",
+      billingDocEnabledSub:"מתיר להציג את סוג המסמך כאשר מסלול ברירת המחדל, בחירה ידנית או שינוי משתמש מאפשרים אותו.",
+      billingDocIssue:"אפשר הפקה",
+      billingDocIssueSub:"מציג פעולה להפקת המסמך ב-PayPlus.",
+      billingDocPreview:"אפשר תצוגה מקדימה",
+      billingDocPreviewSub:"מציג פעולה להכנת טיוטה לפני הפקה.",
+      billingDocSendEmail:"שליחה בדוא״ל",
+      billingDocSendSms:"שליחה ב-SMS",
+      billingDocSendWhatsapp:"שליחה ב-WhatsApp",
+      billingDocReceiptWizardHint:"חשבונית מס קבלה מופקת אך ורק דרך אשף קליטת התשלום (היא מאשרת כסף שהתקבל), ולכן אין לה תצוגה מקדימה, שליחה או יצירה מרובה.",
+      billingDocResendHint:"קבלה מופקת עם קליטת תשלום וחשבונית זיכוי מבטלת מסמך שהופק; לכן אין להן תצוגה מקדימה או יצירה מרובה, אך ניתן לשלוח אותן מחדש בערוצים שנבחרו.",
+      billingSavedTokenLabel:"מדיניות חיוב טוקן שמור",
+      billingSavedTokenSub:"קובע מתי להציע חיוב ישיר של כרטיס PayPlus שמור.",
+      billingTokenNever:"לא להשתמש בחיוב טוקן שמור",
+      billingTokenUserDecides:"להחלטת המשתמש",
+      billingTokenPrefer:"להעדיף טוקן שמור כאשר קיים",
+      billingTokenRequire:"לחייב בטוקן שמור כאשר קיים",
+      billingTokenConfirmLabel:"דרוש אישור לחיוב טוקן",
+      billingTokenConfirmSub:"מחייב אישור מפורש לפני חיוב ישיר של כרטיס שמור.",
+      billingTokenFallbackLabel:"חלופה כאשר אין טוקן",
+      billingTokenFallbackSub:"קובע מה להציע אם נבחר חיוב טוקן ואין כרטיס שמור זמין.",
+      billingTokenFallbackPaymentPage:"הצע עמוד תשלום",
+      billingTokenFallbackManual:"אפשר הזנת תשלום ידנית",
+      billingTokenFallbackBlock:"חסום חיוב טוקן",
+      billingCreateTokenLabel:"יצירת טוקן מעמוד תשלום",
+      billingCreateTokenSub:"כאשר משתמשים בעמוד תשלום, לבקש יצירת טוקן לשימוש בחיובים עתידיים.",
+      dcSectionTitle:"חיוב ישיר והוראות קבע",
+      dcSectionSub:"חיוב מבוסס טוקן (כרטיס שמור) לתשלומים חוזרים",
+      dcIntro:"אזור זה מרכז את מדיניות החיוב הישיר — חיוב הלקוח על בסיס כרטיס שמור (טוקן), למשל להוראות קבע ותשלומים חוזרים.",
+      dcDevNote:"מנוע החיוב הישיר בפיתוח. ההגדרות המסומנות ‘בקרוב’ נשמרות אך עדיין אינן מבצעות חיוב אוטומטי.",
+      dcLiveGroup:"פעיל היום",
+      dcSoonGroup:"בקרוב — מנוע חיוב טוקן",
+      comingSoon:"בקרוב",
+      billingRibbonManualHint:"כרגע הריבון יציג כל סוג מסמך שמסומן ‘הצג בתפריט’ ויש לו פעולה פעילה, כי המסלול הוא בחירה ידנית או שהופעל שינוי על ידי משתמש.",
+      billingRibbonRestrictedHint:"כרגע הריבון יציג רק {doc}. שאר סוגי המסמכים כאן הם הרשאות שמורות, ויופיעו רק אם עוברים לבחירה ידנית או מפעילים שינוי על ידי משתמש.",
+      billingDocVisibleNow:"יוצג כרגע בריבון אם ‘הצג בתפריט’ ולפחות פעולה אחת פעילה.",
+      billingDocHiddenByFlow:"לא יוצג כרגע בריבון בגלל מסלול ברירת המחדל. ההרשאות נשמרות וישמשו אם המסלול ישתנה או אם יאופשר שינוי משתמש.",
+      billingPolicyHint:"המדיניות היא ברירת מחדל ארגונית. מסלול ברירת המחדל קובע מה מוצג בפועל בריבון; שדות המסמך קובעים מה מותר כאשר אותו סוג מסמך זמין.",
       pagesIntro:"בדקו את החיבור לכל עמוד תשלום בנפרד (הפקת קישור לדוגמה). הבדיקה אינה משנה את סטטוס ההתקנה ואינה שולחת דבר ללקוח.",
       pagesLoad:"טעינת מסופים ועמודים",
       pagesLoading:"טוען מסופים ועמודי תשלום…",
@@ -397,20 +530,46 @@ var App = (function(){
       ssAccSub:"{n} channels enabled",
       /* documents management */
       docTitle:"Document management",
-      docAccSub:"Issuing, draft, distribution & auto-send",
-      docIntro:"For each document type, define what is allowed: issuing, draft preview, distribution channels and auto-send. The ‘Quote’ document type is supported now; more types will be added later.",
+      docAccSub:"Issuing, draft, issue-time send and resend",
+      docIntro:"For each document type, define what is allowed: issuing, draft preview, Email/SMS send during issue, and resend permissions after issue.",
+      docTypePick:"Select document type",
       docQuote:"Quote",
+      docInvoice:"Invoice",
+      docSalesOrder:"Sales order",
       docEnable:"Allow document issuing",
       docEnableSub:"Enables issuing the document in PayPlus from Dynamics.",
       docDraft:"Allow draft preview",
       docDraftSub:"Lets you preview the document before it is finally issued.",
-      docDist:"Distribution options",
+      docBulk:"Allow bulk creation",
+      docBulkSub:"Allow creating multiple documents from the table's list view.",
+      docVatGroup:"VAT",
+      docVatMode:"VAT calculation",
+      docVatDefault:"PayPlus default",
+      docVatIncluded:"Prices include VAT",
+      docVatExcluded:"Prices exclude VAT",
+      docVatExempt:"VAT exempt",
+      docVatDefaultSub:"Do not send vatType; PayPlus decides according to its settings.",
+      docVatIncludedSub:"Sends vat-type-included; prices already include VAT.",
+      docVatExcludedSub:"Sends vat-type-not-included; PayPlus adds or calculates VAT.",
+      docVatExemptSub:"Sends vat-type-exempt; no VAT is added and no VAT line is created.",
+      docDist:"Send during issue",
       docDistEmail:"Email", docDistSms:"SMS", docDistWhatsapp:"WhatsApp",
-      docDistMethod:"Distribution method:", docMethodPayPlus:"PayPlus", docMethodOther:"Other",
-      docMethodOtherWarn:"When ‘Other’ is selected, set up a modern workflow (Flow) or a plugin on the PayPlus document entity to perform the actual distribution.",
+      docIssueEmail:"Send email during issue",
+      docIssueEmailSub:"When enabled, the PayPlus create-document call asks PayPlus to send the document by email during initial issue.",
+      docIssueSms:"Send SMS during issue",
+      docIssueSmsSub:"When enabled, the PayPlus create-document call asks PayPlus to send the document by SMS during initial issue.",
+      docIssueNoneHint:"To send nothing during issue, turn both Email and SMS off. PayPlus has no WhatsApp send field during document issue.",
+      docResendGroup:"Resend after issue",
+      docResendEmail:"Allow email resend",
+      docResendEmailSub:"Allows a Dynamics user or automation to resend by email after the PayPlus document was already created.",
+      docResendSms:"Allow SMS resend",
+      docResendSmsSub:"Allows a Dynamics user or automation to resend by SMS after the PayPlus document was already created.",
+      docResendWhatsapp:"Allow WhatsApp resend",
+      docResendWhatsappSub:"Allows WhatsApp sending from Dynamics after issue. PayPlus itself does not send WhatsApp documents.",
+      docResendWarn:"Resend is not a PayPlus API operation. If you enable a permission here, implement a Flow or plugin on the PayPlus document entity to perform the actual send.",
       docAutoGroup:"Automation",
       docAutoSend:"Auto-send when active",
-      docAutoHint:"When a quote moves to the ‘In progress — active’ state, the quote is sent automatically through PayPlus. You can change this in the Flow.",
+      docAutoHint:"These settings define business permissions and policy. The actual send depends on the issue process or automation running on the PayPlus document.",
       spCreated:"Sync profile {n} created successfully — you can now configure sync.",
       /* document types import (last install step) */
       docImportOk:"Document types were imported from PayPlus.",
@@ -433,9 +592,106 @@ var App = (function(){
       terminalsImportRowPending:"Importing terminals & pages…",
       terminalsImportRowNone:"Terminals not imported yet",
       terminalsImportReimport:"Re-import",
+      /* banks & branches import */
+      setupSectionTitle:"Setup & installation",
+      setupSectionSub:"Reference data and installation status",
+      bankImportOk:"Banks & branches were imported from data.gov.il.",
+      bankImportPending:"Bank import will continue in the background — make sure the ‘PayPlus - Import Banks & Branches’ flow is on.",
+      bankImportFail:"Bank import failed — check the flow run history.",
+      bankImportRowOk:"Banks & branches imported",
+      bankImportRowFail:"Bank import failed",
+      bankImportRowPending:"Importing banks & branches…",
+      bankImportRowNone:"Banks not imported yet",
+      bankImportUpdate:"Update",
       /* per-page connection test (management center) */
       pagesTitle:"Payment page tests",
       pagesAccSub:"Test the connection for each payment page",
+      /* organization settings (VAT) */
+      orgTitle:"Organization settings",
+      orgAccSub:"VAT and organization-wide settings",
+      orgIntro:"Settings that apply to all documents in the organization.",
+      vatModeLabel:"Document VAT mode",
+      vatModeSub:"Controls how VAT is handled when documents are sent to PayPlus.",
+      vatMode0:"PayPlus default",
+      vatMode1:"Prices include VAT",
+      vatMode2:"Prices exclude VAT",
+      vatMode3:"VAT exempt",
+      vatModeHint:"‘PayPlus default’ — no VAT value is sent; ‘VAT exempt’ — no VAT calculation and no VAT line.",
+      billingPolicyGroup:"Billing policy",
+      billingDefaultFlowLabel:"Default invoice document type",
+      billingDefaultFlowSub:"Defines which invoice document type is actually shown in the ribbon when manual choice or user override is not enabled.",
+      billingFlowPaymentRequest:"Proforma invoice",
+      billingFlowPaymentRequestThenInvoice:"Payment request",
+      billingFlowTaxInvoice:"Tax invoice",
+      billingFlowTaxInvoiceReceipt:"Tax invoice receipt",
+      billingFlowManual:"Manual choice",
+      billingOverrideLabel:"Allow user override",
+      billingOverrideSub:"When enabled, the ribbon can show all document types configured as allowed instead of being limited to the default-flow document type.",
+      billingReceiptCloseLabel:"Require receipt to close invoice",
+      billingReceiptCloseSub:"An invoice stays open until allocated receipts cover its amount.",
+      billingAutoCloseMatchLabel:"Auto-close invoice when receipt amount matches",
+      billingAutoCloseMatchSub:"When the receipt amount, or total allocated receipts, covers the invoice amount, mark the invoice as paid.",
+      billingAutoReceiptLabel:"Auto receipt after payment",
+      billingAutoReceiptSub:"Allows automation to create a receipt after a successful PayPlus payment.",
+      billingCancellationPolicyLabel:"Cancellation policy",
+      billingCancellationPolicySub:"When reversal documents are selected, cancelling a tax invoice creates a PayPlus credit invoice, a D365 credit invoice, a new D365 invoice, and issues the new document from that new invoice.",
+      billingD365ReversalLabel:"Create D365 reversal invoice on cancellation",
+      billingD365ReversalSub:"Controls whether Dynamics 365 should also create a reversal document when cancelling an accounting document in PayPlus. Requires validation for credit/negative lines.",
+      billingCancelManual:"Manual review required",
+      billingCancelReversal:"Create reversal documents",
+      billingCancelBlockAfterReceipt:"Block after receipt",
+      billingPaymentPagePolicyLabel:"Payment page link policy",
+      billingPaymentPagePolicySub:"Controls when a PayPlus payment page link is included with a document, such as in credit-card flows.",
+      billingPageNever:"Do not include payment page",
+      billingPageUserDecides:"User decides",
+      billingPageOpenBalance:"Include for open-balance documents",
+      billingCreatePageWithDocLabel:"Create payment page with billing document",
+      billingCreatePageWithDocSub:"When enabled, the issue process also creates a payment page/link attached to the billing document.",
+      billingDocsGroup:"Billing documents in ribbon",
+      billingDocTaxInvoice:"Tax invoice",
+      billingDocTaxInvoiceReceipt:"Tax invoice receipt",
+      billingDocPaymentDemand:"Proforma invoice",
+      billingDocPaymentRequest:"Payment request",
+      billingDocReceipt:"Receipt",
+      billingDocCredit:"Credit invoice",
+      billingDocEnabled:"Show in menu",
+      billingDocEnabledSub:"Allows this document type to appear when the default flow, manual choice, or user override permits it.",
+      billingDocIssue:"Allow issue",
+      billingDocIssueSub:"Shows the action that issues this document in PayPlus.",
+      billingDocPreview:"Allow preview",
+      billingDocPreviewSub:"Shows the action that prepares a draft before issue.",
+      billingDocSendEmail:"Send by email",
+      billingDocSendSms:"Send by SMS",
+      billingDocSendWhatsapp:"Send by WhatsApp",
+      billingDocReceiptWizardHint:"A tax invoice receipt is issued only through the payment capture wizard (it acknowledges received money), so it has no standalone preview, send, or bulk actions.",
+      billingDocResendHint:"A receipt is produced on payment capture and a credit invoice reverses an issued document, so they have no preview or bulk creation, but they can be re-sent through the channels you select.",
+      billingSavedTokenLabel:"Saved token charge policy",
+      billingSavedTokenSub:"Controls when direct PayPlus saved-card token charge should be offered.",
+      billingTokenNever:"Do not use saved token charge",
+      billingTokenUserDecides:"User decides",
+      billingTokenPrefer:"Prefer saved token when available",
+      billingTokenRequire:"Require saved token when available",
+      billingTokenConfirmLabel:"Require confirmation for token charge",
+      billingTokenConfirmSub:"Requires explicit confirmation before charging a saved card directly.",
+      billingTokenFallbackLabel:"Missing token fallback",
+      billingTokenFallbackSub:"Controls what to offer when token charge is selected but no saved card is available.",
+      billingTokenFallbackPaymentPage:"Offer payment page",
+      billingTokenFallbackManual:"Allow manual payment entry",
+      billingTokenFallbackBlock:"Block token charge",
+      billingCreateTokenLabel:"Create token from payment page",
+      billingCreateTokenSub:"When payment page is used, request token creation for future charges.",
+      dcSectionTitle:"Direct charge & standing orders",
+      dcSectionSub:"Token-based charging (saved card) for recurring payments",
+      dcIntro:"This area groups direct-charge policy — charging the customer from a saved card token, e.g. for standing orders and recurring payments.",
+      dcDevNote:"The direct-charge engine is in development. Settings marked ‘Coming soon’ are saved but do not yet perform automatic charging.",
+      dcLiveGroup:"Live today",
+      dcSoonGroup:"Coming soon — token charge engine",
+      comingSoon:"Coming soon",
+      billingRibbonManualHint:"The ribbon currently shows every document type that has ‘Show in menu’ enabled and at least one active action, because the flow is manual choice or user override is enabled.",
+      billingRibbonRestrictedHint:"The ribbon currently shows only {doc}. The other document types below are saved permissions and appear only when the flow changes to manual choice or user override is enabled.",
+      billingDocVisibleNow:"Currently shown in the ribbon if ‘Show in menu’ and at least one action are enabled.",
+      billingDocHiddenByFlow:"Not currently shown in the ribbon because of the default billing flow. The permissions are saved and will apply if the flow changes or user override is enabled.",
+      billingPolicyHint:"The policy is the organization default. The default billing flow decides what is actually shown in the ribbon; the per-document fields decide what is allowed when that document type is available.",
       pagesIntro:"Test the connection for each payment page individually (generates a sample link). This does not change the install status and does not send anything to the customer.",
       pagesLoad:"Load terminals & pages",
       pagesLoading:"Loading terminals & payment pages…",
@@ -457,12 +713,16 @@ var App = (function(){
     conn:{ checked:false, configured:false, verified:false, tested:false, testing:false },
     stage:C.stage.connect,
     terminals:[], pages:[], preview:[],
-    busy:{ terminals:false, pages:false, preview:false, validating:false, importing:false, importingTerminals:false, testingAll:false },
+    busy:{ terminals:false, pages:false, preview:false, validating:false, importing:false, importingTerminals:false, importingBanks:false, testingAll:false },
     msg:null,
+    setupOpen:true,
     doneOpen:false,
     ssOpen:false,
     docOpen:false,
+    dcOpen:false,
+    docType:"quote",
     pagesOpen:false,
+    orgOpen:true,
     pageTests:{},
     testingPageUid:"",
     view:"loading"
@@ -487,10 +747,24 @@ var App = (function(){
       "alex_paymentpageuidref,alex_terminaluidref,alex_paymentpages,alex_validationrequestid,alex_lastvalidatedon,alex_lastvalidationstatus,alex_lastvalidationcode,alex_lastvalidationmessage,"+
       "alex_selfservice_sms_contact,alex_selfservice_email_contact,alex_selfservice_whatsapp_contact,alex_selfservice_sms_account,alex_selfservice_email_account,alex_selfservice_whatsapp_account,"+
       "alex_selfservice_sms_contact_expiry,alex_selfservice_email_contact_expiry,alex_selfservice_whatsapp_contact_expiry,alex_selfservice_sms_account_expiry,alex_selfservice_email_account_expiry,alex_selfservice_whatsapp_account_expiry,"+
-      "alex_doc_quote_enabled,alex_doc_quote_draftpreview,alex_doc_quote_dist_email,alex_doc_quote_dist_sms,alex_doc_quote_dist_whatsapp,alex_doc_quote_autosend,"+
-      "alex_doc_quote_dist_email_method,alex_doc_quote_dist_sms_method,alex_doc_quote_dist_whatsapp_method,"+
+      "alex_doc_quote_enabled,alex_doc_quote_draftpreview,alex_doc_quote_autosend,alex_doc_quote_bulkcreate,"+
+      "alex_doc_quote_issue_send_email,alex_doc_quote_issue_send_sms,alex_doc_quote_resend_email_allowed,alex_doc_quote_resend_sms_allowed,alex_doc_quote_resend_whatsapp_allowed,"+
+      "alex_doc_salesorder_enabled,alex_doc_salesorder_draftpreview,alex_doc_salesorder_autosend,alex_doc_salesorder_bulkcreate,"+
+      "alex_doc_salesorder_issue_send_email,alex_doc_salesorder_issue_send_sms,alex_doc_salesorder_resend_email_allowed,alex_doc_salesorder_resend_sms_allowed,alex_doc_salesorder_resend_whatsapp_allowed,"+
+      "alex_document_vat_mode,"+
+      "alex_billing_default_flow,alex_billing_allow_user_override,alex_billing_require_receipt_to_close_invoice,alex_billing_auto_close_invoice_when_receipts_match,"+
+      "alex_billing_auto_receipt_after_payment,"+
+      "alex_billing_cancellation_policy,alex_billing_create_d365_reversal_invoice,alex_billing_payment_page_policy,alex_billing_create_payment_page_with_document,alex_billing_saved_token_policy,"+
+      "alex_billing_token_charge_requires_confirm,alex_billing_token_missing_fallback,alex_billing_payment_page_create_token,"+
+      "alex_billing_doc_taxinvoice_enabled,alex_billing_doc_taxinvoice_issue_allowed,alex_billing_doc_taxinvoice_preview_allowed,alex_billing_doc_taxinvoice_bulkcreate,alex_billing_doc_taxinvoice_send_email_allowed,alex_billing_doc_taxinvoice_send_sms_allowed,alex_billing_doc_taxinvoice_send_whatsapp_allowed,"+
+      "alex_billing_doc_taxinvoicereceipt_enabled,alex_billing_doc_taxinvoicereceipt_issue_allowed,alex_billing_doc_taxinvoicereceipt_send_email_allowed,alex_billing_doc_taxinvoicereceipt_send_sms_allowed,alex_billing_doc_taxinvoicereceipt_send_whatsapp_allowed,"+
+      "alex_billing_doc_receipt_enabled,alex_billing_doc_receipt_issue_allowed,alex_billing_doc_receipt_send_email_allowed,alex_billing_doc_receipt_send_sms_allowed,alex_billing_doc_receipt_send_whatsapp_allowed,"+
+      "alex_billing_doc_credit_enabled,alex_billing_doc_credit_issue_allowed,alex_billing_doc_credit_send_email_allowed,alex_billing_doc_credit_send_sms_allowed,alex_billing_doc_credit_send_whatsapp_allowed,"+
+      "alex_billing_doc_paymentdemand_enabled,alex_billing_doc_paymentdemand_issue_allowed,alex_billing_doc_paymentdemand_preview_allowed,alex_billing_doc_paymentdemand_bulkcreate,alex_billing_doc_paymentdemand_send_email_allowed,alex_billing_doc_paymentdemand_send_sms_allowed,alex_billing_doc_paymentdemand_send_whatsapp_allowed,"+
+      "alex_billing_doc_paymentrequest_enabled,alex_billing_doc_paymentrequest_issue_allowed,alex_billing_doc_paymentrequest_preview_allowed,alex_billing_doc_paymentrequest_bulkcreate,alex_billing_doc_paymentrequest_send_email_allowed,alex_billing_doc_paymentrequest_send_sms_allowed,alex_billing_doc_paymentrequest_send_whatsapp_allowed,"+
       "alex_doc_import_enabled,alex_doc_import_status,alex_doc_import_on,alex_doc_import_message,"+
-      "alex_terminals_import_enabled,alex_terminals_import_status,alex_terminals_import_on,alex_terminals_import_message&$top=1"
+      "alex_terminals_import_enabled,alex_terminals_import_status,alex_terminals_import_on,alex_terminals_import_message,"+
+      "alex_bank_import_enabled,alex_bank_import_status,alex_bank_import_on,alex_bank_import_message&$top=1"
     ).then(function(res){ return res.entities&&res.entities.length?res.entities[0]:null; });
   }
   function checkConnRef(){
@@ -661,6 +935,47 @@ var App = (function(){
       S.msg={ kind:(imp&&imp.ok)?"ok":"warn", text:(imp&&imp.ok)?t("terminalsImportOk"):((imp&&imp.timeout)?t("terminalsImportPending"):t("terminalsImportFail")) };
       render();
     }).catch(function(){ S.busy.importingTerminals=false; S.msg={ kind:"warn", text:t("terminalsImportFail") }; render(); });
+  }
+
+  // Import Israeli banks & branches from data.gov.il into alex_bank / alex_bankbranch.
+  // Flips the alex_bank_import_enabled bit (triggers 'PayPlus - Import Banks & Branches'),
+  // then polls the config row until the flow reports Success/Failed. Reflects the result on S.record.
+  function importBanks(){
+    return patchRecord({ alex_bank_import_enabled:true, alex_bank_import_status:C.bankImport.pending, alex_bank_import_message:"" })
+      .then(function(){ return pollBankImport(); })
+      .then(function(res){
+        if(S.record){
+          S.record.alex_bank_import_status = res.ok?C.bankImport.success : (res.timeout?C.bankImport.pending : C.bankImport.failed);
+          if(res.on!=null){ S.record.alex_bank_import_on=res.on; }
+          if(res.message!=null){ S.record.alex_bank_import_message=res.message; }
+        }
+        return res;
+      });
+  }
+  function pollBankImport(){
+    var start=Date.now(), step=4000, id=S.record[C.idcol];
+    return new Promise(function(resolve){
+      function loop(){
+        if(Date.now()-start>=120000){ resolve({ timeout:true }); return; }
+        api().retrieveRecord(C.table,id,"?$select=alex_bank_import_status,alex_bank_import_on,alex_bank_import_message").then(function(rec){
+          var st=rec.alex_bank_import_status;
+          if(st===C.bankImport.success){ resolve({ ok:true, on:rec.alex_bank_import_on, message:rec.alex_bank_import_message }); return; }
+          if(st===C.bankImport.failed){ resolve({ ok:false, on:rec.alex_bank_import_on, message:rec.alex_bank_import_message }); return; }
+          setTimeout(loop,step);
+        }).catch(function(){ setTimeout(loop,step); });
+      }
+      setTimeout(loop,step);
+    });
+  }
+  // Management-center action: run/refresh the banks & branches import on demand ("Update" button).
+  function reimportBanks(){
+    if(S.busy.importingBanks) return;
+    S.busy.importingBanks=true; S.msg=null; render();
+    importBanks().then(function(imp){
+      S.busy.importingBanks=false;
+      S.msg={ kind:(imp&&imp.ok)?"ok":"warn", text:(imp&&imp.ok)?t("bankImportOk"):((imp&&imp.timeout)?t("bankImportPending"):t("bankImportFail")) };
+      render();
+    }).catch(function(){ S.busy.importingBanks=false; S.msg={ kind:"warn", text:t("bankImportFail") }; render(); });
   }
 
   /* ------------------------------------------------------------------ Custom API exec (unbound actions) */
@@ -877,10 +1192,17 @@ var App = (function(){
 
   /* ------------------------------------------------------------------ navigation */
   function toStage(stageVal){ S.msg=null; S.stage=stageVal; saveStage(stageVal); render(); }
+  function scrollToSection(key){ setTimeout(function(){ var el=document.querySelector('[data-sec="'+key+'"] .sec-head'); if(el&&el.scrollIntoView){ el.scrollIntoView({ block:"start", behavior:"smooth" }); } },0); }
   function toggleDone(){ S.doneOpen=!S.doneOpen; render(); }
-  function toggleSS(){ S.ssOpen=!S.ssOpen; render(); }
-  function toggleDoc(){ S.docOpen=!S.docOpen; render(); }
-  function togglePages(){ S.pagesOpen=!S.pagesOpen; render(); if(S.pagesOpen&&!S.preview.length&&!S.busy.preview){ loadPreview(); } }
+  function toggleSetup(){ S.setupOpen=!S.setupOpen; render(); if(S.setupOpen) scrollToSection("setup"); }
+  function toggleSS(){ S.ssOpen=!S.ssOpen; render(); if(S.ssOpen) scrollToSection("selfservice"); }
+  function toggleDoc(){ S.docOpen=!S.docOpen; render(); if(S.docOpen) scrollToSection("documents"); }
+  function toggleDirectCharge(){ S.dcOpen=!S.dcOpen; render(); if(S.dcOpen) scrollToSection("directcharge"); }
+  function setDocType(key){ S.docType=key; render(); }
+  function togglePages(){ S.pagesOpen=!S.pagesOpen; render(); if(S.pagesOpen) scrollToSection("pages"); if(S.pagesOpen&&!S.preview.length&&!S.busy.preview){ loadPreview(); } }
+  function toggleOrg(){ S.orgOpen=!S.orgOpen; render(); if(S.orgOpen) scrollToSection("org"); }
+  // Sets the org-wide Document VAT mode (choice). Empty clears it to null.
+  function setOrgVatMode(val){ var n=parseInt(val,10); var d={ alex_document_vat_mode:(isNaN(n)?null:n) }; if(S.record){ S.record.alex_document_vat_mode=d.alex_document_vat_mode; } patchRecord(d).then(render); }
   // Management-center: test the connection for a single payment page (generates a sample link).
   // Reuses the validate Custom API but does NOT touch alex_configvalidated / setup stage.
   function testPage(terminalUid,pageUid){
@@ -911,7 +1233,18 @@ var App = (function(){
   }
   function setSS(field,on){ var d={}; d[field]=!!on; if(S.record){ S.record[field]=!!on; } patchRecord(d).then(render); }
   function setSSExpiry(field,val){ var n=parseInt(val,10); if(isNaN(n)||n<1){ n=1; } if(n>3650){ n=3650; } var d={}; d[field]=n; if(S.record){ S.record[field]=n; } patchRecord(d); }
-  function setDistMethod(field,val){ var v=parseInt(val,10); var d={}; d[field]=v; if(S.record){ S.record[field]=v; } patchRecord(d).then(render); }
+  function setChoiceField(field,val){ var n=parseInt(val,10), d={}; d[field]=isNaN(n)?null:n; if(S.record){ S.record[field]=d[field]; } patchRecord(d).then(render); }
+  function setNumberField(field,val,min,max){ var n=parseInt(val,10); if(isNaN(n)){ n=min; } if(n<min){ n=min; } if(n>max){ n=max; } var d={}; d[field]=n; if(S.record){ S.record[field]=n; } patchRecord(d).then(render); }
+  // Sets a distribution channel from the 3-way selector. "none" disables the channel
+  // AND clears the method picklist; "payplus"/"other" enable it and set the method
+  // picklist (100000000/100000001). Always patches so the DV record reflects the choice.
+  function setDistChannel(enableField,methodField,choice){
+    var d={};
+    if(choice==="none"){ d[enableField]=false; d[methodField]=null; }
+    else { d[enableField]=true; d[methodField]=(choice==="other"?100000001:100000000); }
+    if(S.record){ Object.keys(d).forEach(function(k){ S.record[k]=d[k]; }); }
+    patchRecord(d).then(render);
+  }
   function goPages(){ S.msg=null; S.stage=C.stage.pages; saveStage(C.stage.pages); render(); if(!S.preview.length&&!S.busy.preview){ loadPreview(); } }
   function goValidate(){ S.msg=null; S.stage=C.stage.validate; saveStage(C.stage.validate,{ alex_paymentpageuidref:S.sel.pageUid, alex_terminaluidref:S.sel.terminalUid }); render(); }
   function restart(){ S.msg=null; S.terminals=[]; S.pages=[]; S.preview=[]; S.pageTests={}; S.testingPageUid=""; S.sel.terminalUid=""; S.sel.pageUid=""; S.stage=C.stage.connect;
@@ -1039,6 +1372,91 @@ var App = (function(){
   }
   // A plain on/off setting row.
   function toggleSetting(name,field,desc){ return setRow(name,desc,switchCtrl(field)); }
+  function choiceSetting(name,field,desc,options,fallback){
+    var r=S.record||{}; var v=(r[field]==null?fallback:r[field]);
+    var ctrl='<select class="mc-select" onchange="App.setChoiceField(\''+field+'\',this.value)" aria-label="'+esc(name)+'">';
+    options.forEach(function(o){ ctrl+='<option value="'+o[0]+'"'+(String(v)===String(o[0])?' selected':'')+'>'+esc(t(o[1]))+'</option>'; });
+    ctrl+='</select>';
+    return setRow(name,desc,ctrl);
+  }
+  function numberSetting(name,field,desc,min,max,fallback){
+    var r=S.record||{}; var v=(r[field]==null?fallback:r[field]);
+    var ctrl='<input class="mc-select" type="number" min="'+min+'" max="'+max+'" value="'+esc(v)+'" onchange="App.setNumberField(\''+field+'\',this.value,'+min+','+max+')" aria-label="'+esc(name)+'" />';
+    return setRow(name,desc,ctrl);
+  }
+  function billingFlowDocKey(flow){
+    if(flow===100000000) return "billingDocPaymentDemand";
+    if(flow===100000001) return "billingDocPaymentRequest";
+    if(flow===100000002) return "billingDocTaxInvoice";
+    if(flow===100000003) return "billingDocTaxInvoiceReceipt";
+    return null;
+  }
+  function billingFlowAllowsDoc(labelKey){
+    var r=S.record||{};
+    var flow=(r.alex_billing_default_flow==null?100000004:r.alex_billing_default_flow);
+    if(r.alex_billing_allow_user_override===true||flow===100000004) return true;
+    return billingFlowDocKey(flow)===labelKey;
+  }
+  function billingRibbonVisibilityNote(){
+    var r=S.record||{};
+    var flow=(r.alex_billing_default_flow==null?100000004:r.alex_billing_default_flow);
+    var docKey=billingFlowDocKey(flow);
+    if(r.alex_billing_allow_user_override===true||flow===100000004||!docKey){
+      return '<div class="note info" style="margin-top:10px">ℹ '+esc(t("billingRibbonManualHint"))+'</div>';
+    }
+    return '<div class="note warn" style="margin-top:10px">⚠ '+esc(t("billingRibbonRestrictedHint",{doc:t(docKey)}))+'</div>';
+  }
+  function billingDocumentPolicyBlock(labelKey,prefix){
+    var allowedByFlow=billingFlowAllowsDoc(labelKey);
+    var flowNote='<div class="note '+(allowedByFlow?'info':'warn')+'" style="margin:6px 0 2px">'+(allowedByFlow?'ℹ ':'⚠ ')+esc(t(allowedByFlow?"billingDocVisibleNow":"billingDocHiddenByFlow"))+'</div>';
+    var h=groupTitle(t(labelKey))+flowNote+
+      toggleSetting(t("billingDocEnabled"),prefix+"enabled",t("billingDocEnabledSub"))+
+      toggleSetting(t("billingDocIssue"),prefix+"issue_allowed",t("billingDocIssueSub"));
+    // Tax-invoice-receipt is issued exclusively through the payment capture wizard - it has no
+    // standalone preview, send, or bulk actions, so only enable + issue toggles are shown.
+    if(prefix.indexOf("taxinvoicereceipt")!==-1){
+      h+='<div class="note info" style="margin-top:10px">ℹ '+esc(t("billingDocReceiptWizardHint"))+'</div>';
+      return h;
+    }
+    // A receipt is produced on payment capture and a credit invoice reverses an issued document, so
+    // neither has a preview or bulk-create action - only enable, issue, and the resend channels.
+    if(prefix.indexOf("_receipt_")!==-1||prefix.indexOf("_credit_")!==-1){
+      h+='<div class="note info" style="margin-top:10px">ℹ '+esc(t("billingDocResendHint"))+'</div>';
+      return h+
+        toggleSetting(t("billingDocSendEmail"),prefix+"send_email_allowed")+
+        toggleSetting(t("billingDocSendSms"),prefix+"send_sms_allowed")+
+        toggleSetting(t("billingDocSendWhatsapp"),prefix+"send_whatsapp_allowed");
+    }
+    return h+
+      toggleSetting(t("billingDocPreview"),prefix+"preview_allowed",t("billingDocPreviewSub"))+
+      toggleSetting(t("docBulk"),prefix+"bulkcreate",t("docBulkSub"))+
+      toggleSetting(t("billingDocSendEmail"),prefix+"send_email_allowed")+
+      toggleSetting(t("billingDocSendSms"),prefix+"send_sms_allowed")+
+      toggleSetting(t("billingDocSendWhatsapp"),prefix+"send_whatsapp_allowed");
+  }
+  function invoiceBillingSettingsBlock(){
+    var billingFlowOpts=[[100000002,"billingFlowTaxInvoice"],[100000003,"billingFlowTaxInvoiceReceipt"],[100000000,"billingFlowPaymentRequest"],[100000001,"billingFlowPaymentRequestThenInvoice"],[100000004,"billingFlowManual"]];
+    var cancellationOpts=[[100000000,"billingCancelManual"],[100000001,"billingCancelReversal"],[100000002,"billingCancelBlockAfterReceipt"]];
+    var paymentPageOpts=[[100000000,"billingPageNever"],[100000001,"billingPageUserDecides"],[100000003,"billingPageOpenBalance"]];
+    var h=groupTitle(t("billingPolicyGroup"));    h+=choiceSetting(t("billingDefaultFlowLabel"),"alex_billing_default_flow",t("billingDefaultFlowSub"),billingFlowOpts,100000004);
+    h+=toggleSetting(t("billingOverrideLabel"),"alex_billing_allow_user_override",t("billingOverrideSub"));
+    h+=toggleSetting(t("billingReceiptCloseLabel"),"alex_billing_require_receipt_to_close_invoice",t("billingReceiptCloseSub"));
+    h+=toggleSetting(t("billingAutoCloseMatchLabel"),"alex_billing_auto_close_invoice_when_receipts_match",t("billingAutoCloseMatchSub"));
+    h+=toggleSetting(t("billingAutoReceiptLabel"),"alex_billing_auto_receipt_after_payment",t("billingAutoReceiptSub"));
+    h+=choiceSetting(t("billingCancellationPolicyLabel"),"alex_billing_cancellation_policy",t("billingCancellationPolicySub"),cancellationOpts,100000000);
+    h+=choiceSetting(t("billingPaymentPagePolicyLabel"),"alex_billing_payment_page_policy",t("billingPaymentPagePolicySub"),paymentPageOpts,100000001);
+    h+=toggleSetting(t("billingCreatePageWithDocLabel"),"alex_billing_create_payment_page_with_document",t("billingCreatePageWithDocSub"));
+    h+=groupTitle(t("billingDocsGroup"));
+    h+=billingRibbonVisibilityNote();
+    h+=billingDocumentPolicyBlock("billingDocTaxInvoice","alex_billing_doc_taxinvoice_");
+    h+=billingDocumentPolicyBlock("billingDocTaxInvoiceReceipt","alex_billing_doc_taxinvoicereceipt_");
+    h+=billingDocumentPolicyBlock("billingDocPaymentDemand","alex_billing_doc_paymentdemand_");
+    h+=billingDocumentPolicyBlock("billingDocPaymentRequest","alex_billing_doc_paymentrequest_");
+    h+=billingDocumentPolicyBlock("billingDocReceipt","alex_billing_doc_receipt_");
+    h+=billingDocumentPolicyBlock("billingDocCredit","alex_billing_doc_credit_");
+    h+='<div class="note info" style="margin-top:14px">ℹ '+esc(t("billingPolicyHint"))+'</div>';
+    return h;
+  }
   // A self-service setting row: expiry input + switch as the control.
   function ssSetting(name,desc,onField,expField){
     var r=S.record||{}; var on=!!r[onField]; var exp=(r[expField]==null?7:r[expField]);
@@ -1050,30 +1468,9 @@ var App = (function(){
     return setRow(name,desc,ctrl);
   }
   function groupTitle(txt){ return '<div class="set-grouptitle">'+esc(txt)+'</div>'; }
-  // A distribution-channel row: on/off toggle, and when ON, a PayPlus/Other method selector.
-  // methodField is a picklist (100000000=PayPlus, 100000001=Other). null is treated as PayPlus.
-  function distRow(name,enableField,methodField){
-    var r=S.record||{}; var on=!!r[enableField];
-    var h=toggleSetting(name,enableField);
-    if(on){
-      var m=(r[methodField]==null?100000000:r[methodField]);
-      var isOther=(m===100000001);
-      h+='<div class="dist-sub">'+
-        '<div class="dist-methodrow">'+
-          '<span class="dist-lbl">'+esc(t("docDistMethod"))+'</span>'+
-          '<div class="seg" role="group">'+
-            '<button type="button" class="'+(isOther?"":"on")+'" onclick="App.setDistMethod(\''+methodField+'\',100000000)">'+esc(t("docMethodPayPlus"))+'</button>'+
-            '<button type="button" class="'+(isOther?"on":"")+'" onclick="App.setDistMethod(\''+methodField+'\',100000001)">'+esc(t("docMethodOther"))+'</button>'+
-          '</div>'+
-        '</div>'+
-        (isOther?('<div class="note warn">⚠ '+esc(t("docMethodOtherWarn"))+'</div>'):'')+
-      '</div>';
-    }
-    return h;
-  }
   // Full-width collapsible section. opts:{open,icon,title,desc,toggle,body}
   function section(opts){
-    var h='<div class="sec'+(opts.open?" open":"")+'">';
+    var h='<div class="sec'+(opts.open?" open":"")+'"'+(opts.key?' data-sec="'+esc(opts.key)+'"':'')+'>';
     h+='<div class="sec-head" onclick="'+opts.toggle+'" role="button" tabindex="0">'+
        '<span class="sec-ic">'+opts.icon+'</span>'+
        '<span class="sec-tx"><span class="sec-title">'+esc(opts.title)+'</span>'+
@@ -1097,22 +1494,74 @@ var App = (function(){
       ssSetting(t("ssSms"),null,"alex_selfservice_sms_account","alex_selfservice_sms_account_expiry")+
       ssSetting(t("ssWhatsapp"),null,"alex_selfservice_whatsapp_account","alex_selfservice_whatsapp_account_expiry");
     body+='<div class="note warn" style="margin-top:14px">⚠ '+esc(t("ssWarn"))+'</div>';
-    return section({ open:S.ssOpen, icon:"👤", title:t("ssTitle"), desc:t("ssAccSub",{n:n}), toggle:"App.toggleSS()", body:body });
+    return section({ key:"selfservice", open:S.ssOpen, icon:"👤", title:t("ssTitle"), desc:t("ssAccSub",{n:n}), toggle:"App.toggleSS()", body:body });
   }
-  // Document management — modular per document type (currently: Quote). Add a type by adding fields + a group.
+  // Settings block for a single document type (prefix = e.g. "alex_doc_quote_").
+  function docTypeBlock(prefix){
+    var h=toggleSetting(t("docEnable"),prefix+"enabled",t("docEnableSub"))+
+      toggleSetting(t("docDraft"),prefix+"draftpreview",t("docDraftSub"))+
+      toggleSetting(t("docBulk"),prefix+"bulkcreate",t("docBulkSub"));
+    h+=groupTitle(t("docDist"))+
+      toggleSetting(t("docIssueEmail"),prefix+"issue_send_email",t("docIssueEmailSub"))+
+      toggleSetting(t("docIssueSms"),prefix+"issue_send_sms",t("docIssueSmsSub"));
+    h+='<div class="note info" style="margin-top:10px">ℹ '+esc(t("docIssueNoneHint"))+'</div>';
+    h+=groupTitle(t("docResendGroup"))+
+      toggleSetting(t("docResendEmail"),prefix+"resend_email_allowed",t("docResendEmailSub"))+
+      toggleSetting(t("docResendSms"),prefix+"resend_sms_allowed",t("docResendSmsSub"))+
+      toggleSetting(t("docResendWhatsapp"),prefix+"resend_whatsapp_allowed",t("docResendWhatsappSub"));
+    h+='<div class="note warn" style="margin-top:10px">⚠ '+esc(t("docResendWarn"))+'</div>';
+    h+=groupTitle(t("docAutoGroup"))+
+      toggleSetting(t("docAutoSend"),prefix+"autosend");
+    h+='<div class="note info" style="margin-top:14px">ℹ '+esc(t("docAutoHint"))+'</div>';
+    return h;
+  }
+  // Document management — modular per document type (Quote / Invoice / Sales order).
   function documentSection(){
+    var types=[["quote","docQuote","alex_doc_quote_"],["invoice","docInvoice",null],["salesorder","docSalesOrder","alex_doc_salesorder_"]];
+    var cur=S.docType||"quote";
     var body='<div class="sec-intro">'+esc(t("docIntro"))+'</div>';
-    body+=groupTitle(t("docQuote"))+
-      toggleSetting(t("docEnable"),"alex_doc_quote_enabled",t("docEnableSub"))+
-      toggleSetting(t("docDraft"),"alex_doc_quote_draftpreview",t("docDraftSub"));
-    body+=groupTitle(t("docDist"))+
-      distRow(t("docDistEmail"),"alex_doc_quote_dist_email","alex_doc_quote_dist_email_method")+
-      distRow(t("docDistSms"),"alex_doc_quote_dist_sms","alex_doc_quote_dist_sms_method")+
-      distRow(t("docDistWhatsapp"),"alex_doc_quote_dist_whatsapp","alex_doc_quote_dist_whatsapp_method");
-    body+=groupTitle(t("docAutoGroup"))+
-      toggleSetting(t("docAutoSend"),"alex_doc_quote_autosend");
-    body+='<div class="note info" style="margin-top:14px">ℹ '+esc(t("docAutoHint"))+'</div>';
-    return section({ open:S.docOpen, icon:"📄", title:t("docTitle"), desc:t("docAccSub"), toggle:"App.toggleDoc()", body:body });
+    var tabs='<div class="seg doctabs" role="group" aria-label="'+esc(t("docTypePick"))+'">';
+    var prefix="alex_doc_quote_";
+    types.forEach(function(ty){
+      if(ty[0]===cur){ prefix=ty[2]; }
+      tabs+='<button type="button" class="'+(ty[0]===cur?"on":"")+'" onclick="App.setDocType(\''+ty[0]+'\')">'+esc(t(ty[1]))+'</button>';
+    });
+    tabs+='</div>';
+    body+=tabs+(cur==="invoice"?invoiceBillingSettingsBlock():docTypeBlock(prefix));
+    return section({ key:"documents", open:S.docOpen, icon:"📄", title:t("docTitle"), desc:t("docAccSub"), toggle:"App.toggleDoc()", body:body });
+  }
+  // Read-only "coming soon" setting rows (roadmap features not yet wired to automation).
+  function csRow(name,desc,ctrl){
+    return '<div class="set-row cs"><div class="set-info"><div class="set-name">'+esc(name)+' <span class="cs-badge">'+esc(t("comingSoon"))+'</span></div>'+
+      (desc?('<div class="set-desc">'+esc(desc)+'</div>'):'')+'</div>'+
+      '<div class="set-ctrl">'+ctrl+'</div></div>';
+  }
+  function csToggle(name,field,desc){
+    var r=S.record||{}; var on=!!r[field];
+    var ctrl='<label class="switch dis"><input type="checkbox" '+(on?"checked":"")+' disabled><span class="track"></span><span class="knob"></span></label>';
+    return csRow(name,desc,ctrl);
+  }
+  function csChoice(name,field,desc,options,fallback){
+    var r=S.record||{}; var v=(r[field]==null?fallback:r[field]);
+    var ctrl='<select class="mc-select" disabled aria-label="'+esc(name)+'">';
+    options.forEach(function(o){ ctrl+='<option value="'+o[0]+'"'+(String(v)===String(o[0])?' selected':'')+'>'+esc(t(o[1]))+'</option>'; });
+    ctrl+='</select>';
+    return csRow(name,desc,ctrl);
+  }
+  // Direct charge & standing orders. Token collection from the payment page is live today;
+  // the token-charge policy settings are roadmap ("coming soon") until the charge engine is built.
+  function directChargeSection(){
+    var savedTokenOpts=[[100000000,"billingTokenNever"],[100000001,"billingTokenUserDecides"],[100000002,"billingTokenPrefer"],[100000003,"billingTokenRequire"]];
+    var tokenFallbackOpts=[[100000000,"billingTokenFallbackPaymentPage"],[100000001,"billingTokenFallbackManual"],[100000002,"billingTokenFallbackBlock"]];
+    var body='<div class="sec-intro">'+esc(t("dcIntro"))+'</div>';
+    body+='<div class="note info" style="margin-top:10px">ℹ '+esc(t("dcDevNote"))+'</div>';
+    body+=groupTitle(t("dcLiveGroup"));
+    body+=toggleSetting(t("billingCreateTokenLabel"),"alex_billing_payment_page_create_token",t("billingCreateTokenSub"));
+    body+=groupTitle(t("dcSoonGroup"));
+    body+=csChoice(t("billingSavedTokenLabel"),"alex_billing_saved_token_policy",t("billingSavedTokenSub"),savedTokenOpts,100000001);
+    body+=csToggle(t("billingTokenConfirmLabel"),"alex_billing_token_charge_requires_confirm",t("billingTokenConfirmSub"));
+    body+=csChoice(t("billingTokenFallbackLabel"),"alex_billing_token_missing_fallback",t("billingTokenFallbackSub"),tokenFallbackOpts,100000000);
+    return section({ key:"directcharge", open:S.dcOpen, icon:"🔁", title:t("dcSectionTitle"), desc:t("dcSectionSub"), toggle:"App.toggleDirectCharge()", body:body });
   }
   // Expanded installation details (inside the management center).
   function installDetails(r,lastVal){
@@ -1157,6 +1606,21 @@ var App = (function(){
     return '<div class="mc-status"><span class="ic">'+ic+'</span>'+
            '<span class="st-txt">'+esc(txt)+'</span>'+when+link+'</div>';
   }
+  // Banks & branches import status (data.gov.il) shown in the management center.
+  function bankImportStatusRow(r){
+    var st=r.alex_bank_import_status;
+    var on=r.alex_bank_import_on?new Date(r.alex_bank_import_on).toLocaleString(S.lang==="he"?"he-IL":"en-GB"):"—";
+    var ic, txt;
+    if(S.busy.importingBanks||st===C.bankImport.pending){ ic="⏳"; txt=t("bankImportRowPending"); }
+    else if(st===C.bankImport.success){ ic="✓"; txt=t("bankImportRowOk"); }
+    else if(st===C.bankImport.failed){ ic="✗"; txt=t("bankImportRowFail"); }
+    else { ic="•"; txt=t("bankImportRowNone"); }
+    var showWhen=(st===C.bankImport.success||st===C.bankImport.failed);
+    var link=S.busy.importingBanks?"":('<a href="#" class="st-link" onclick="App.reimportBanks();return false;">'+esc(t("bankImportUpdate"))+'</a>');
+    var when=showWhen?('<span class="st-when">· '+esc(on)+'</span>'):"";
+    return '<div class="mc-status"><span class="ic">'+ic+'</span>'+
+           '<span class="st-txt">'+esc(txt)+'</span>'+when+link+'</div>';
+  }
   // A small pass/fail/pending chip for a single page test.
   function pageTestChip(pageUid){
     var st=S.pageTests[pageUid];
@@ -1197,7 +1661,20 @@ var App = (function(){
       body+='<div class="actions" style="margin-top:8px"><div class="right"><button class="btn primary" '+(busy?"disabled":"")+' onclick="App.testAllPages()">'+
         (S.busy.testingAll?('<span class="spinner"></span> '+t("testingLbl")):t("testAllBtn"))+'</button></div></div>';
     }
-    return section({ open:S.pagesOpen, icon:"🖥️", title:t("pagesTitle"), desc:t("pagesAccSub"), toggle:"App.togglePages()", body:body });
+    return section({ key:"pages", open:S.pagesOpen, icon:"🖥️", title:t("pagesTitle"), desc:t("pagesAccSub"), toggle:"App.togglePages()", body:body });
+  }
+  // Organization settings (management center) — org-wide document options such as VAT mode.
+  function orgSettingsSection(){
+    var r=S.record||{};
+    var v=(r.alex_document_vat_mode==null?100000000:r.alex_document_vat_mode);
+    var opts=[[100000000,"vatMode0"],[100000001,"vatMode1"],[100000002,"vatMode2"],[100000003,"vatMode3"]];
+    var sel='<select class="mc-select" onchange="App.setOrgVatMode(this.value)" aria-label="'+esc(t("vatModeLabel"))+'">';
+    opts.forEach(function(o){ sel+='<option value="'+o[0]+'"'+(String(v)===String(o[0])?" selected":"")+'>'+esc(t(o[1]))+'</option>'; });
+    sel+='</select>';
+    var body='<div class="sec-intro">'+esc(t("orgIntro"))+'</div>';
+    body+=setRow(t("vatModeLabel"),t("vatModeSub"),sel);
+    body+='<div class="note info" style="margin-top:14px">ℹ '+esc(t("vatModeHint"))+'</div>';
+    return section({ key:"org", open:S.orgOpen, icon:"🧾", title:t("orgTitle"), desc:t("orgAccSub"), toggle:"App.toggleOrg()", body:body });
   }
   function stageDone(){
     var r=S.record||{};
@@ -1220,16 +1697,20 @@ var App = (function(){
     var h='<div class="mc">';
     h+='<div class="mc-title">'+esc(t("mgmtTitle"))+'</div><p class="mc-sub">'+esc(t("mgmtSub"))+'</p>';
     h+=noteHtml();
-    h+='<div class="mc-status"><span class="ic">✓</span>'+
+    var setupBody='<div class="mc-status"><span class="ic">✓</span>'+
        '<span class="st-txt">'+esc(t("doneSectionTitle"))+'</span>'+
        '<span class="st-when">· '+esc(lastVal)+'</span>'+
        '<a href="#" class="st-link" onclick="App.toggleDone();return false;">'+esc(S.doneOpen?t("hideDetails"):t("showDetails"))+'</a></div>';
-    if(S.doneOpen){ h+=installDetails(r,lastVal); }
-    h+=docImportStatusRow(r);
-    h+=terminalsImportStatusRow(r);
+    if(S.doneOpen){ setupBody+=installDetails(r,lastVal); }
+    setupBody+=docImportStatusRow(r);
+    setupBody+=terminalsImportStatusRow(r);
+    setupBody+=bankImportStatusRow(r);
+    h+=section({ key:"setup", open:S.setupOpen, icon:"🏗️", title:t("setupSectionTitle"), desc:t("setupSectionSub"), toggle:"App.toggleSetup()", body:setupBody });
     h+=pagesSection();
+    h+=orgSettingsSection();
     h+=selfServiceSection();
     h+=documentSection();
+    h+=directChargeSection();
     h+='</div>';
     return h;
   }
@@ -1251,12 +1732,13 @@ var App = (function(){
 
   return {
     reload:reload, setEnv:setEnv, goPages:goPages, goValidate:goValidate, toStage:toStage,
-    testConnection:testConnection, toggleDone:toggleDone, toggleSS:toggleSS, toggleDoc:toggleDoc,
+    testConnection:testConnection, toggleDone:toggleDone, toggleSetup:toggleSetup, toggleSS:toggleSS, toggleDoc:toggleDoc, toggleDirectCharge:toggleDirectCharge,
     fetchTerminals:fetchTerminals, fetchPages:fetchPages, setTerminal:setTerminal, setPage:setPage,
     loadPreview:loadPreview, confirmImport:confirmImport,
     togglePages:togglePages, testPage:testPage, testAllPages:testAllPages,
+    toggleOrg:toggleOrg, setOrgVatMode:setOrgVatMode,
     selDefaultTerminal:selDefaultTerminal, selDefaultPage:selDefaultPage,
-    validate:validate, restart:restart, setSS:setSS, setSSExpiry:setSSExpiry, setDistMethod:setDistMethod, reimportDocs:reimportDocs, reimportTerminals:reimportTerminals
+    validate:validate, restart:restart, setSS:setSS, setSSExpiry:setSSExpiry, setChoiceField:setChoiceField, setNumberField:setNumberField, setDistChannel:setDistChannel, setDocType:setDocType, reimportDocs:reimportDocs, reimportTerminals:reimportTerminals, reimportBanks:reimportBanks
   };
 })();
 </script>
