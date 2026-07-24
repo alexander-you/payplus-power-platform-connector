@@ -271,3 +271,53 @@ Request inspection שימושי להוכחת הזרקת policy, אך אין לה
 5. למחוק את Connection הבדיקה ואת נתוני endpoint הבדיקה.
 
 לעולם אין לשלוח פרטי PayPlus Production ל-request inspector.
+
+## Payment Wizard לא מציג סכום או "תיק גבייה לא נמצא"
+
+ה-Payment Wizard מעוגן לתיק גבייה, לא לחשבונית.
+
+פעולות:
+
+- ודאו שהפקד מקבל מקור: או ה-input properties `sourceEntity`/`sourceId` (בעמוד מותאם) או הקשר הטופס/עמוד המארח.
+- בדקו שקיים `alex_payplusbillingcase` תואם (או שניתן ליצור אותו) עם `alex_sourceentitylogicalname` + `alex_sourceentityid` השווים למקור. אי-התאמה באותיות רישיות או GUID עטוף ב-`{}` מונע התאמה.
+- ודאו שלתיק יש יתרה/סכום; `alex_amountdue` אפס לא מציג מה לגבות.
+- זה בלתי תלוי ב-Dynamics 365 Sales — **אין** צורך בחשבונית כדי שהאשף יעבוד.
+
+## מסמך לא הופק (זרימת Preview)
+
+רשומת `alex_payplusdocument` ממתינה אמורה להפעיל את זרימת ההפקה התואמת.
+
+פעולות:
+
+- ודאו שהזרימה הרלוונטית **מופעלת**: `PayPlus - Preview Invoice Document`, `PayPlus - Preview Quote Document`, או `PayPlus - Preview Sales Order Document`.
+- בדקו את היסטוריית ההרצה של הזרימה עבור הרשומה הממתינה; בדקו `alex_documentstatus`, `alex_lasterror`, ו-`alex_payplusresultdescription` על המסמך.
+- ודאו שההגדרה **מאומתת** ושמסוף/עמוד התשלום מוגדרים, כי ההפקה משתמשת בהם.
+- לפעולות שליחה, בדקו את `alex_payplusdocumentactionlog` עבור הערוץ המבוקש והסטטוס שלו.
+
+## תשלום לא הותאם
+
+תשלומים חיצוניים מותאמים ע"י זרימת ההתאמה.
+
+פעולות:
+
+- ודאו ש-`PayPlus - Poll Invoice Payments` מופעלת ורצה לפי לוח הזמנים; בדקו את היסטוריית ההרצה.
+- בדקו את `alex_clearingstatus` / `alex_bankverificationstatus` של שורת התשלום ואת `alex_processingamount` / `alex_pendingverificationamount` של התיק.
+- ודאו שהעסקה קיימת ב-PayPlus עבור המסוף והסביבה המוגדרים (`alex_environment` חייב להתאים לחיבור שבשימוש).
+
+## Bank Account Wallet ללא בנקים או סניפים
+
+הבוררים קוראים טבלאות ייחוס המאוכלסות ע"י זרימת ייבוא.
+
+פעולות:
+
+- הריצו `PayPlus - Import Banks & Branches` וודאו שקיימות שורות ב-`alex_bank` וב-`alex_bankbranch`.
+- ודאו ש-`alex_bankbranch.alex_bankid` מקשר כל סניף לבנק שלו.
+- הריצו ייבוא מחדש אם רשימת הבנקים השתנתה ב-PayPlus.
+
+## פקד PCF לא מוצג
+
+פעולות:
+
+- ודאו שהפקד מחובר נכון: פקדי dataset (Credit Card Wallet, Bank Account Wallet) חייבים לשבת על subgrid של הטבלה הנכונה; פקדי שדה (Payment Wizard, Document Ledger, Document Preview, Mapping Studio) צריכים את `hostValue` מחובר, ובעמודים מותאמים את ה-input properties מוגדרים.
+- ודאו ש-Solution של PayPlus מיובא ושגרסת הפקד פורסמה.
+- בדקו את ה-console של הדפדפן לשגיאות וודאו שלמשתמש יש הרשאת קריאה לטבלאות שהפקד קורא.

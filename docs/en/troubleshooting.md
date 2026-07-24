@@ -271,3 +271,53 @@ Safe method:
 5. Delete the test connection and test endpoint data.
 
 Never send production PayPlus credentials to a request inspector.
+
+## Payment Wizard Shows No Amount Or "Billing Case Not Found"
+
+The Payment Wizard is anchored to a billing case, not to an invoice.
+
+Actions:
+
+- Confirm the control receives a source: either the `sourceEntity`/`sourceId` input properties (on a custom page) or a hosting form/page context.
+- Check that a matching `alex_payplusbillingcase` exists (or can be created) with `alex_sourceentitylogicalname` + `alex_sourceentityid` equal to the source. A mismatch in casing or a `{}`-wrapped GUID prevents the match.
+- Confirm the case has a total/open balance; a zero `alex_amountdue` shows nothing to collect.
+- This is independent of Dynamics 365 Sales — you do **not** need an invoice for the wizard to work.
+
+## Document Not Issued (Preview Flow)
+
+A pending `alex_payplusdocument` row should trigger the matching issuance flow.
+
+Actions:
+
+- Confirm the relevant flow is **on**: `PayPlus - Preview Invoice Document`, `PayPlus - Preview Quote Document`, or `PayPlus - Preview Sales Order Document`.
+- Inspect the flow run history for the pending row; check `alex_documentstatus`, `alex_lasterror`, and `alex_payplusresultdescription` on the document.
+- Verify the configuration is **Validated** and the terminal/payment page are set, since issuance uses them.
+- For send actions, check `alex_payplusdocumentactionlog` for the requested channel and its status.
+
+## Payment Not Reconciled
+
+External payments are matched by the reconciliation flow.
+
+Actions:
+
+- Confirm `PayPlus - Poll Invoice Payments` is on and running on schedule; review its run history.
+- Check the payment line `alex_clearingstatus` / `alex_bankverificationstatus` and the case `alex_processingamount` / `alex_pendingverificationamount`.
+- Confirm the transaction exists in PayPlus for the configured terminal and environment (`alex_environment` must match the connection used).
+
+## Bank Account Wallet Has No Banks Or Branches
+
+The pickers read reference tables populated by an import flow.
+
+Actions:
+
+- Run `PayPlus - Import Banks & Branches` and confirm rows exist in `alex_bank` and `alex_bankbranch`.
+- Confirm `alex_bankbranch.alex_bankid` links each branch to its bank.
+- Re-run the import if the bank list changed in PayPlus.
+
+## PCF Control Not Rendering
+
+Actions:
+
+- Confirm the control is bound correctly: dataset controls (Credit Card Wallet, Bank Account Wallet) must sit on a subgrid of the right table; field-bound controls (Payment Wizard, Document Ledger, Document Preview, Mapping Studio) need their `hostValue` bound and, on custom pages, the input properties set.
+- Confirm the PayPlus solution is imported and the control version is published.
+- Check the browser console for errors and confirm the user has read access to the tables the control reads.

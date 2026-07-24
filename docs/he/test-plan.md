@@ -152,6 +152,40 @@ Production:
 - `x-ms-dynamic-list` פתר את דפוס בחירת דף התשלום התלויה בסביבה שנבדקה.
 - Action nodes קיימים ב-Designer עשויים לדרוש מחיקה והוספה מחדש לאחר עדכון מחבר.
 
+## בדיקות קליטת תשלום ומסמכים
+
+בדיקות אלו מכסות את מנוע החיוב, הפקת המסמכים והתאמת התשלומים. הן חלות **עם או בלי** Dynamics 365 Sales — רוב הבדיקות משתמשות בתיק גבייה המעוגן לכל רשומת מקור.
+
+### Payment Wizard (תיק גבייה)
+
+- **עצמאי, ללא חשבונית Sales.** מקמו את Payment Wizard על עמוד מותאם (או טופס של טבלה מותאמת), העבירו `sourceEntity`/`sourceId` שאינם חשבונית, וודאו שהוא יוצר `alex_payplusbillingcase` לפי `alex_sourceentitylogicalname` + `alex_sourceentityid` ומציג את יתרת החוב הנכונה ללא שום רשומת Sales.
+- **מקור חשבונית Sales.** פתחו את האשף על חשבונית וודאו שהוא מקשר את תיק הגבייה לחשבונית וטוען שורות `invoicedetail`.
+- **תשלום מלא.** גבו את מלוא הסכום וודאו ששורת תשלום (`alex_paypluspaymentline`) נוצרת, ש-`alex_paidamount`/`alex_openbalance` של התיק מתעדכנים, ושזרימת המסמך המבוקשת מפיקה קבלה / חשבונית-מס-קבלה.
+- **תשלום חלקי.** עם `alex_allowpartialreceipts = true`, גבו סכום חלקי וודאו שיתרת החוב משקפת את היתרה ושהתיק נשאר פתוח.
+- **טוקן שמור.** חייבו בכרטיס שמור (`alex_creditcard`) וודאו שהאשף אינו מטפל בנתוני כרטיס גולמיים.
+- **Idempotency.** חזרו על חיוב עם אותו `alex_idempotencykey` וודאו שאין שורת תשלום כפולה או חיוב כפול.
+
+### שיוך קבלה
+
+- ודאו ששורת תשלום מייצרת שורות `alex_payplusreceiptallocation` שסכומן שווה לסכום המשויך.
+- עבור מקור Sales, ודאו שהשיוכים מכוונים ל-`alex_invoiceid` / `alex_invoicedetailid`; עבור מקור לא-Sales, ודאו ששדות המקור הגנריים `alex_sourcelineid` בשימוש במקום זאת.
+
+### הפקת מסמכים (זרימות Preview)
+
+- צרו רשומת `alex_payplusdocument` ממתינה וודאו שהזרימה התואמת (`PayPlus - Preview Invoice/Quote/Sales Order Document`) קולטת אותה, קוראת ל-PayPlus, וכותבת בחזרה `alex_documentnumber`, `alex_pdfurl` וסטטוס.
+- ודאו שפקד Document Preview מציג את המסמך שהופק ו-Document Ledger מציג את היתרה המעודכנת.
+- שלחו את המסמך במייל/SMS/WhatsApp וודאו ששורת `alex_payplusdocumentactionlog` מתעדת את הפעולה והערוץ.
+
+### התאמת תשלומים
+
+- הריצו `PayPlus - Poll Invoice Payments` וודאו שתשלומים חיצוניים מותאמים לתיק הגבייה, שורות התשלום מתעדכנות, וסטטוסי הסליקה/האימות עוברים.
+
+### בדיקות smoke לפקדי PCF
+
+- Credit Card Wallet ו-Bank Account Wallet נטענים, מוסיפים ומגדירים ברירת מחדל כראוי על Account/Contact.
+- בוררי הבנק/סניף ב-Bank Account Wallet מאוכלסים מ-`alex_bank` / `alex_bankbranch`.
+- השפה נגזרת מהגדרת המשתמש ב-Dynamics (עברית RTL / אנגלית LTR) ללא מתג ידני.
+
 ## Exit criteria
 
 - יצירת קישור תשלום ב-Sandbox מצליחה.

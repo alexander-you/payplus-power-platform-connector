@@ -130,8 +130,11 @@ Both connector definitions use the PayPlus API base path `/api/v1.0`.
 | Topic | English | Hebrew |
 | --- | --- | --- |
 | Architecture | [docs/en/architecture.md](docs/en/architecture.md) | [docs/he/architecture.md](docs/he/architecture.md) |
+| Integration guide (with/without Sales) | [docs/en/integration-guide.md](docs/en/integration-guide.md) | [docs/he/integration-guide.md](docs/he/integration-guide.md) |
+| Deployment and administration | [docs/en/deployment-and-administration.md](docs/en/deployment-and-administration.md) | [docs/he/deployment-and-administration.md](docs/he/deployment-and-administration.md) |
 | Continuous sync solution | [docs/en/sync/README.md](docs/en/sync/README.md) | [docs/he/sync/README.md](docs/he/sync/README.md) |
 | Data model | [docs/en/data-model.md](docs/en/data-model.md) | [docs/he/data-model.md](docs/he/data-model.md) |
+| PCF controls guide | [docs/en/pcf-controls-guide.md](docs/en/pcf-controls-guide.md) | [docs/he/pcf-controls-guide.md](docs/he/pcf-controls-guide.md) |
 | Business user guide | [docs/en/business-user-guide.md](docs/en/business-user-guide.md) | [docs/he/business-user-guide.md](docs/he/business-user-guide.md) |
 | Security and compliance | [docs/en/security-governance-and-compliance.md](docs/en/security-governance-and-compliance.md) | [docs/he/security-governance-and-compliance.md](docs/he/security-governance-and-compliance.md) |
 | PCI considerations | [docs/en/pci-considerations.md](docs/en/pci-considerations.md) | [docs/he/pci-considerations.md](docs/he/pci-considerations.md) |
@@ -287,8 +290,11 @@ This repository intentionally contains no real secrets, no real API keys, no rea
 | נושא | אנגלית | עברית |
 | --- | --- | --- |
 | ארכיטקטורה | [docs/en/architecture.md](docs/en/architecture.md) | [docs/he/architecture.md](docs/he/architecture.md) |
+| מדריך אינטגרציה (עם/בלי Sales) | [docs/en/integration-guide.md](docs/en/integration-guide.md) | [docs/he/integration-guide.md](docs/he/integration-guide.md) |
+| פריסה וניהול | [docs/en/deployment-and-administration.md](docs/en/deployment-and-administration.md) | [docs/he/deployment-and-administration.md](docs/he/deployment-and-administration.md) |
 | פתרון סנכרון רציף | [docs/en/sync/README.md](docs/en/sync/README.md) | [docs/he/sync/README.md](docs/he/sync/README.md) |
 | מודל נתונים | [docs/en/data-model.md](docs/en/data-model.md) | [docs/he/data-model.md](docs/he/data-model.md) |
+| מדריך פקדי PCF | [docs/en/pcf-controls-guide.md](docs/en/pcf-controls-guide.md) | [docs/he/pcf-controls-guide.md](docs/he/pcf-controls-guide.md) |
 | מדריך משתמש עסקי | [docs/en/business-user-guide.md](docs/en/business-user-guide.md) | [docs/he/business-user-guide.md](docs/he/business-user-guide.md) |
 | אבטחה ותאימות | [docs/en/security-governance-and-compliance.md](docs/en/security-governance-and-compliance.md) | [docs/he/security-governance-and-compliance.md](docs/he/security-governance-and-compliance.md) |
 | שיקולי PCI | [docs/en/pci-considerations.md](docs/en/pci-considerations.md) | [docs/he/pci-considerations.md](docs/he/pci-considerations.md) |

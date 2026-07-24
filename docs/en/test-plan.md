@@ -152,6 +152,40 @@ Production:
 - `x-ms-dynamic-list` resolved the dependent payment page picker pattern in the tested environment.
 - Existing designer action nodes may need deletion and recreation after connector updates.
 
+## Payment Capture And Document Tests
+
+These cover the billing engine, document issuance, and reconciliation. They apply **with or without** Dynamics 365 Sales — most tests use a billing case anchored to any source record.
+
+### Payment Wizard (billing case)
+
+- **Standalone, no Sales invoice.** Place the Payment Wizard on a custom page (or a custom table form), pass a `sourceEntity`/`sourceId` that is **not** an invoice, and confirm it creates an `alex_payplusbillingcase` keyed by `alex_sourceentitylogicalname` + `alex_sourceentityid` and shows the correct amount due with no Sales record involved.
+- **Sales invoice source.** Open the wizard on an invoice and confirm it links the billing case to the invoice and loads `invoicedetail` lines.
+- **Full payment.** Collect the full amount and confirm a payment line (`alex_paypluspaymentline`) is created, the case `alex_paidamount`/`alex_openbalance` update, and the requested document flow issues a receipt / tax-invoice-receipt.
+- **Partial payment.** With `alex_allowpartialreceipts = true`, collect a partial amount and confirm the open balance reflects the remainder and the case stays open.
+- **Saved token.** Charge using a saved card (`alex_creditcard`) and confirm no raw card data is handled by the wizard.
+- **Idempotency.** Repeat a charge with the same `alex_idempotencykey` and confirm no duplicate payment line or double charge.
+
+### Receipt allocation
+
+- Confirm a payment line produces `alex_payplusreceiptallocation` rows that sum to the allocated amount.
+- For a Sales source, confirm allocations target `alex_invoiceid` / `alex_invoicedetailid`; for a non-Sales source, confirm the generic `alex_sourcelineid` fields are used instead.
+
+### Document issuance (Preview flows)
+
+- Create a pending `alex_payplusdocument` row and confirm the matching flow (`PayPlus - Preview Invoice/Quote/Sales Order Document`) picks it up, calls PayPlus, and writes back `alex_documentnumber`, `alex_pdfurl`, and status.
+- Confirm the Document Preview control renders the issued document and the Document Ledger shows the updated balance.
+- Send the document by email/SMS/WhatsApp and confirm an `alex_payplusdocumentactionlog` row records the action and channel.
+
+### Reconciliation
+
+- Run `PayPlus - Poll Invoice Payments` and confirm external payments are matched to the billing case, payment lines are updated, and clearing/verification statuses transition.
+
+### PCF control smoke tests
+
+- Credit Card Wallet and Bank Account Wallet load, add, and set-default correctly on Account/Contact.
+- Bank Account Wallet bank/branch pickers are populated from `alex_bank` / `alex_bankbranch`.
+- Language follows the Dynamics user setting (Hebrew RTL / English LTR) with no manual toggle.
+
 ## Exit Criteria
 
 - Sandbox payment link generation succeeds.
