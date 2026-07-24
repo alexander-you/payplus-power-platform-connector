@@ -38,13 +38,14 @@ This repository is intended for:
 
 ## Capabilities
 
-The full Dynamics 365 solution is built on four capability pillars. This repository focuses on the connector and its documentation; the sync engine, plugins, and PCF controls are delivered as part of the broader Dynamics 365 solution.
+The full Dynamics 365 solution is built on five capability pillars. This repository focuses on the connector and its documentation; the sync engine, plugins, and PCF controls are delivered as part of the broader Dynamics 365 solution.
 
 - **Connector and hosted payment**: typed PayPlus actions and hosted payment link generation.
 - **Continuous sync engine**: configuration-driven, outbox-based synchronization of Dataverse records (customers, products, categories) to PayPlus, with field mapping, transforms, filters, and value maps.
-- **PCF controls**: Mapping Studio (visual field mapping and sync activation) and Credit Card Wallet (tokenized card management).
+- **PCF controls**: Mapping Studio (visual field mapping and sync activation), Credit Card Wallet and Bank Account Wallet (tokenized card and bank-account wallets), Payment Wizard (guided in-context payment capture), and Document Ledger / Document Preview (Invoice+ document ledger and preview).
+- **In-context payment capture**: guided Payment Wizard and one-click payment ribbons on quotes, sales orders, and invoices, backed by hosted payment-preview flows.
 - **Card tokenization and self-service**: hosted-fields tokenization, self-service card collection over email, SMS, and WhatsApp, and polling-based tokenization detection.
-- **Document generation**: PayPlus Invoice+ / Books actions for tax documents such as invoices, receipts, and credit documents.
+- **Document generation**: PayPlus Invoice+ / Books actions for tax documents such as invoices, receipts, and credit documents, with document ledger, preview, and send/resend/cancel actions.
 
 See [docs/en/architecture.md](docs/en/architecture.md) for the full architecture, tables, and diagrams.
 
@@ -189,13 +190,14 @@ This repository intentionally contains no real secrets, no real API keys, no rea
 
 ## יכולות
 
-הפתרון המלא ב-Dynamics 365 בנוי על ארבעה עמודי יכולת. ריפו זה מתמקד במחבר ובתיעוד שלו; מנוע הסנכרון, הפלאגינים ופקדי ה-PCF מסופקים כחלק מפתרון ה-Dynamics 365 הרחב.
+הפתרון המלא ב-Dynamics 365 בנוי על חמישה עמודי יכולת. ריפו זה מתמקד במחבר ובתיעוד שלו; מנוע הסנכרון, הפלאגינים ופקדי ה-PCF מסופקים כחלק מפתרון ה-Dynamics 365 הרחב.
 
 - **מחבר ותשלום מתארח**: פעולות PayPlus טיפוסיות ויצירת קישור תשלום מתארח.
 - **מנוע סנכרון רציף**: סנכרון מבוסס-הגדרות ו-Outbox של רשומות Dataverse (לקוחות, מוצרים, קטגוריות) ל-PayPlus, עם מיפוי שדות, טרנספורמציות, מסננים ומיפויי ערכים.
-- **פקדי PCF**: Mapping Studio (מיפוי שדות ויזואלי והפעלת סנכרון) ו-Credit Card Wallet (ניהול כרטיסים מטוקנים).
+- **פקדי PCF**: Mapping Studio (מיפוי שדות ויזואלי והפעלת סנכרון), Credit Card Wallet ו-Bank Account Wallet (ארנקי כרטיסים מטוקנים וחשבונות בנק), Payment Wizard (קליטת תשלום מודרכת בהקשר), ו-Document Ledger / Document Preview (יומן ותצוגה מקדימה של מסמכי Invoice+).
+- **קליטת תשלום בהקשר**: אשף תשלום מודרך (Payment Wizard) וכפתורי תשלום בלחיצה אחת בהצעות מחיר, הזמנות מכירה וחשבוניות, נתמכים בתהליכי תצוגה מקדימה של תשלום מתארח.
 - **טוקניזציה ושירות עצמי**: טוקניזציה ב-Hosted Fields, איסוף כרטיס בשירות עצמי באימייל, SMS ו-WhatsApp, וזיהוי טוקניזציה מבוסס-Polling.
-- **הפקת מסמכים**: פעולות PayPlus Invoice+ / Books למסמכי מס כגון חשבוניות, קבלות ומסמכי זיכוי.
+- **הפקת מסמכים**: פעולות PayPlus Invoice+ / Books למסמכי מס כגון חשבוניות, קבלות ומסמכי זיכוי, עם יומן מסמכים, תצוגה מקדימה ופעולות שליחה/שליחה חוזרת/ביטול.
 
 ראו [docs/he/architecture.md](docs/he/architecture.md) לארכיטקטורה המלאה, הטבלאות והדיאגרמות.
 
