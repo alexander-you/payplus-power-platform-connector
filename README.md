@@ -1,5 +1,11 @@
 # PayPlus Custom Connector for Microsoft Power Platform and Dynamics 365
 
+<div align="center">
+
+[![התחל כאן — מדריך הגדרה והפעלה](https://img.shields.io/badge/%F0%9F%9A%80_%D7%94%D7%AA%D7%97%D7%9C_%D7%9B%D7%90%D7%9F-%D7%9E%D7%93%D7%A8%D7%99%D7%9A_%D7%94%D7%92%D7%93%D7%A8%D7%94_%D7%95%D7%94%D7%A4%D7%A2%D7%9C%D7%94-3b4aa0?style=for-the-badge)](docs/he/setup-guide.md)
+
+</div>
+
 **Language / שפה:** [English](#english) | [עברית](#hebrew)
 
 <a id="english"></a>
