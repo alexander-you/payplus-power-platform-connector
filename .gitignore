@@ -27,3 +27,13 @@ Desktop.ini
 # ---- local scratch / temp working files (not for cloud) ----
 _tmp_*
 
+# ---- local PoC / scaffolding scripts (not for cloud) ----
+_poc_*
+
+# ---- design mockups (not part of the shipped solution) ----
+*mockup*
+mockups/
+
+# ---- bank logos (deployed as web resources, not source) ----
+bank logo/
+
