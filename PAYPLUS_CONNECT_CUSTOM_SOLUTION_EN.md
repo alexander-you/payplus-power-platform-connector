@@ -4,8 +4,8 @@ A customer-facing, step-by-step guide for connecting **your own tables and proce
 to **PayPlus** in an environment that has **no** Dynamics 365 Sales. Everything you need ships in the
 **Base solution** (`alex_d365_payplus`) — a fully self-contained package with **zero** Sales dependency.
 
-> **Version:** v1.0.0 · **Publisher:** AlexanderYurpolsky (prefix `alex`)
-> **Download:** <https://github.com/alexander-you/payplus-power-platform-connector/releases/tag/v1.0.0>
+> **Version:** v1.1.0 · **Publisher:** AlexanderYurpolsky (prefix `alex`)
+> **Download:** <https://github.com/alexander-you/payplus-power-platform-connector/releases/tag/v1.1.0>
 > Companion guide: [PAYPLUS_SETUP_GUIDE_HE.md](PAYPLUS_SETUP_GUIDE_HE.md) (initial install & API keys).
 
 ---
@@ -46,7 +46,7 @@ Your source table  ──►  Entity Mapping + Field Mapping  ──►  Sync Ou
 
 ## Step 1 — Install the Base only
 
-1. Import **`alex_d365_payplus_1_0_0_0_managed.zip`** only (do **not** import the Sales extension).
+1. Import **`alex_d365_payplus_1_1_0_0_managed.zip`** only (do **not** import the Sales extension).
 2. Create a **Connection** to PayPlus (Prod / SandBox) and bind the connection references, as described in the setup guide.
 3. Complete the setup wizard (API keys, terminal).
 
@@ -144,6 +144,62 @@ Each new source is just another **Entity Mapping + Field Mapping** — **no flow
 | Duplicates created in PayPlus | Missing Sync State / correlation | Ensure the UID is saved; use `alex_correlationkey`. |
 | A PayPlus required field is empty | Not fully mapped | Complete the Field Mapping for all required fields. |
 | A Choice value is rejected by PayPlus | Missing Value Mapping | Define a Value Mapping for the choice values. |
+
+---
+
+## Launching the Payment Workbench window (Sales-less environments)
+
+The Base solution includes the **Payment Workbench** page and all its PCF controls, ready to use. However, the **ribbon buttons** that open this window ship only on **Sales entities** (`invoice` / `quote` / `salesorder`) as part of the optional Sales extension. In a Sales-less environment there is therefore **no launch button** wired to your tables — **you add the launch point yourself** on the table you use.
+
+The Base already ships everything the window needs: the page, the controls, and the JavaScript opener `PayPlus._openPaymentWorkbench(billingCaseId)` (loaded via the `alex_payplus_quote_commands.js` web resource). You only add a trigger (ribbon button / command) that calls it, bound to an `alex_payplusbillingcase` record.
+
+### Verify it works FIRST — browser console smoke test
+
+Before investing in building a ribbon, confirm the window actually pops. Open a model-driven app, press **F12**, and paste into the **Console**:
+
+**Test A — page exists and opens (no record needed):**
+```js
+Xrm.WebApi.retrieveMultipleRecords("canvasapp",
+  "?$select=name,displayname&$filter=contains(name,'paymentworkbench')&$top=1")
+ .then(function (r) {
+   var name = r.entities[0] && r.entities[0].name;
+   if (!name) { console.error("FAIL: Payment Workbench page NOT found in this environment"); return; }
+   console.log("OK: Found page:", name);
+   return Xrm.Navigation.navigateTo(
+     { pageType: "custom", name: name },
+     { target: 2, position: 1, width: { value: 92, unit: "%" }, height: { value: 88, unit: "%" }, title: "Payment Workbench (test)" }
+   );
+ })
+ .then(function () { console.log("OK: navigateTo resolved — the window should be open"); })
+ .catch(function (e) { console.error("FAIL:", e); });
+```
+If a dialog opens, the page and its controls are correctly installed in your environment.
+
+**Test B — open bound to a real Billing Case (full test):**
+Once you have created an `alex_payplusbillingcase` record, replace the GUID and run:
+```js
+var billingCaseId = "00000000-0000-0000-0000-000000000000"; // your alex_payplusbillingcase id
+Xrm.WebApi.retrieveMultipleRecords("canvasapp",
+  "?$select=name&$filter=contains(name,'paymentworkbench')&$top=1")
+ .then(function (r) {
+   var name = r.entities[0] && r.entities[0].name;
+   if (!name) throw new Error("Payment Workbench page not found");
+   return Xrm.Navigation.navigateTo(
+     { pageType: "custom", name: name, entityName: "alex_payplusbillingcase", recordId: billingCaseId },
+     { target: 2, position: 1, width: { value: 92, unit: "%" }, height: { value: 88, unit: "%" }, title: "Payment Workbench" }
+   );
+ })
+ .then(function () { console.log("OK: Opened for billing case", billingCaseId); })
+ .catch(function (e) { console.error("FAIL:", e); });
+```
+If the Base web resource is already loaded on the current form, you can equivalently call the built-in helper directly:
+```js
+PayPlus._openPaymentWorkbench("00000000-0000-0000-0000-000000000000");
+```
+
+### Then wire your own ribbon button
+
+Once the console test succeeds, add a ribbon **Command** on your table that calls the same opener (for example, a small web resource that invokes `PayPlus._openPaymentWorkbench(billingCaseId)` using the billing case related to the current record). The Base ships the page + controls + opener; only the entity-bound button is yours to build.
 
 ---
 

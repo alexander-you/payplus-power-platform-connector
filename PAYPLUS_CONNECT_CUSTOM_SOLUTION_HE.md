@@ -4,8 +4,8 @@
 בסביבה שבה **אין** Dynamics 365 Sales. כל מה שצריך נמצא ב‑**פתרון הבסיס** (`alex_d365_payplus`) —
 פתרון עצמאי לחלוטין שאינו תלוי ב‑Sales.
 
-> **גרסה:** v1.0.0 · **מפרסם:** AlexanderYurpolsky (קידומת `alex`)
-> **הורדת הפתרון:** <https://github.com/alexander-you/payplus-power-platform-connector/releases/tag/v1.0.0>
+> **גרסה:** v1.1.0 · **מפרסם:** AlexanderYurpolsky (קידומת `alex`)
+> **הורדת הפתרון:** <https://github.com/alexander-you/payplus-power-platform-connector/releases/tag/v1.1.0>
 > מדריך משלים: [PAYPLUS_SETUP_GUIDE_HE.md](PAYPLUS_SETUP_GUIDE_HE.md) (התקנה ראשונית והפקת מפתחות API).
 
 ---
@@ -45,7 +45,7 @@
 
 ## שלב 1 — התקנת הבסיס בלבד
 
-1. ייבאו את **`alex_d365_payplus_1_0_0_0_managed.zip`** בלבד (אל תייבאו את הרחבת ה‑Sales).
+1. ייבאו את **`alex_d365_payplus_1_1_0_0_managed.zip`** בלבד (אל תייבאו את הרחבת ה‑Sales).
 2. צרו **Connection** ל‑PayPlus (Prod / SandBox) וקשרו את ה‑Connection References, כמתואר במדריך ההתקנה.
 3. השלימו את אשף ההגדרה (מפתחות API, מסוף).
 
@@ -143,6 +143,62 @@
 | נוצרות כפילויות ב‑PayPlus | חסר Sync State / קורלציה | ודאו שה‑UID נשמר; השתמשו ב‑`alex_correlationkey`. |
 | שדה חובה של PayPlus ריק | לא מופה במלואו | השלימו את ה‑Field Mapping לכל שדות החובה. |
 | ערך Choice לא מתקבל ב‑PayPlus | חסר Value Mapping | הגדירו Value Mapping לערכי הבחירה. |
+
+---
+
+## הפעלת חלון ה‑Payment Workbench (בסביבה ללא Sales)
+
+פתרון הבסיס כולל את דף ה‑**Payment Workbench** ואת כל פקדי ה‑PCF שלו — מוכן לשימוש. אבל **כפתורי הריבון** שפותחים את החלון קיימים רק על **ישויות Sales** (`invoice` / `quote` / `salesorder`), כחלק מהרחבת ה‑Sales האופציונלית. לכן בסביבה ללא Sales **אין כפתור הפעלה** מקושר לטבלאות שלך — **אתה מוסיף את נקודת ההפעלה בעצמך** על הטבלה שבה אתה משתמש.
+
+הבסיס כבר כולל את כל מה שהחלון צריך: הדף, הפקדים, ופונקציית הפתיחה `PayPlus._openPaymentWorkbench(billingCaseId)` (נטענת דרך ה‑web resource בשם `alex_payplus_quote_commands.js`). כל מה שנותר הוא להוסיף טריגר (כפתור/פקודת ריבון) שקורא לה, מקושר לרשומת `alex_payplusbillingcase`.
+
+### קודם כול — ודא שזה עובד בעזרת בדיקת קונסולה
+
+לפני שאתה משקיע בבניית ריבון, ודא שהחלון באמת קופץ. פתח אפליקציה מודל‑מבוססת, הקש **F12**, והדבק ל‑**Console**:
+
+**בדיקה א' — הדף קיים ונפתח (ללא רשומה):**
+```js
+Xrm.WebApi.retrieveMultipleRecords("canvasapp",
+  "?$select=name,displayname&$filter=contains(name,'paymentworkbench')&$top=1")
+ .then(function (r) {
+   var name = r.entities[0] && r.entities[0].name;
+   if (!name) { console.error("FAIL: דף ה‑Payment Workbench לא נמצא בסביבה הזו"); return; }
+   console.log("OK: נמצא דף:", name);
+   return Xrm.Navigation.navigateTo(
+     { pageType: "custom", name: name },
+     { target: 2, position: 1, width: { value: 92, unit: "%" }, height: { value: 88, unit: "%" }, title: "Payment Workbench (test)" }
+   );
+ })
+ .then(function () { console.log("OK: navigateTo הסתיים — החלון אמור להיפתח"); })
+ .catch(function (e) { console.error("FAIL:", e); });
+```
+אם נפתח חלון — הדף והפקדים מותקנים אצלך כראוי.
+
+**בדיקה ב' — פתיחה מקושרת ל‑Billing Case אמיתי (בדיקה מלאה):**
+לאחר שיצרת רשומת `alex_payplusbillingcase`, החלף את ה‑GUID והרץ:
+```js
+var billingCaseId = "00000000-0000-0000-0000-000000000000"; // ה‑id של רשומת alex_payplusbillingcase שלך
+Xrm.WebApi.retrieveMultipleRecords("canvasapp",
+  "?$select=name&$filter=contains(name,'paymentworkbench')&$top=1")
+ .then(function (r) {
+   var name = r.entities[0] && r.entities[0].name;
+   if (!name) throw new Error("Payment Workbench page not found");
+   return Xrm.Navigation.navigateTo(
+     { pageType: "custom", name: name, entityName: "alex_payplusbillingcase", recordId: billingCaseId },
+     { target: 2, position: 1, width: { value: 92, unit: "%" }, height: { value: 88, unit: "%" }, title: "Payment Workbench" }
+   );
+ })
+ .then(function () { console.log("OK: נפתח עבור billing case", billingCaseId); })
+ .catch(function (e) { console.error("FAIL:", e); });
+```
+אם ה‑web resource של הבסיס כבר טעון בטופס הנוכחי, אפשר לקרוא ישירות לפונקציה המובנית:
+```js
+PayPlus._openPaymentWorkbench("00000000-0000-0000-0000-000000000000");
+```
+
+### ואז — בנה את כפתור הריבון שלך
+
+אחרי שבדיקת הקונסולה מצליחה, הוסף **Command** בריבון על הטבלה שלך שקורא לאותה פונקציית פתיחה (למשל web resource קטן שמפעיל את `PayPlus._openPaymentWorkbench(billingCaseId)` עם ה‑billing case המקושר לרשומה הנוכחית). הבסיס מספק את הדף + הפקדים + פונקציית הפתיחה; רק הכפתור המקושר לישות באחריותך.
 
 ---
 
