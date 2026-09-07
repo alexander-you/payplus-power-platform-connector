@@ -153,6 +153,8 @@ The Base solution includes the **Payment Workbench** page and all its PCF contro
 
 The Base already ships everything the window needs: the page, the controls, and the JavaScript opener `PayPlus._openPaymentWorkbench(billingCaseId)` (loaded via the `alex_payplus_quote_commands.js` web resource). You only add a trigger (ribbon button / command) that calls it, bound to an `alex_payplusbillingcase` record.
 
+> **Related — where does the Billing Case come from?** You connect your custom tables to PayPlus through the sync engine and the Mapping Studio control — see [Step 3 — Map your table (Mapping Studio)](#step-3--map-your-table-mapping-studio). The Payment Workbench itself operates on an `alex_payplusbillingcase` record, which you create/populate from your own source record (just like wiring the ribbon button below).
+
 ### Verify it works FIRST — browser console smoke test
 
 Before investing in building a ribbon, confirm the window actually pops. Open a model-driven app, press **F12**, and paste into the **Console**:
