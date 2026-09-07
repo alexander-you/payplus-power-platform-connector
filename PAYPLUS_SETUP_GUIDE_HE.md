@@ -1,4 +1,4 @@
-# מדריך הגדרה והפעלה — PayPlus ל‑Dynamics 365 / Dataverse 🇮🇱
+# מדריך הגדרה והפעלה — PayPlus ל‑Dynamics 365 / Dataverse
 
 מדריך צעד‑אחר‑צעד להתקנה, חיבור והפעלה של אינטגרציית **PayPlus ⇄ Microsoft Dynamics 365**,
 כולל **איתור והפקת מפתחות ה‑API בצד PayPlus**.

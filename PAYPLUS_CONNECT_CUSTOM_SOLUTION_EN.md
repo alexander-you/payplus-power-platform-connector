@@ -1,4 +1,4 @@
-# Connecting Your Custom Solution to PayPlus — without Dynamics 365 Sales 🇬🇧
+# Connecting Your Custom Solution to PayPlus — without Dynamics 365 Sales
 
 A customer-facing, step-by-step guide for connecting **your own tables and processes** (custom tables)
 to **PayPlus** in an environment that has **no** Dynamics 365 Sales. Everything you need ships in the
