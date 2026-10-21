@@ -70,6 +70,41 @@ interface InvoiceLine {
     _productid_value?: string;
     _uomid_value?: string;
     isproductoverridden?: boolean;
+    [key: string]: unknown;
+}
+interface BillingHeaderMapping {
+    logicalName: string;
+    entitySetName: string;
+    idField: string;
+    numberField: string;
+    nameField: string;
+    customerField: string;
+    totalField: string;
+    paidField: string;
+    openBalanceField: string;
+    currencyField: string;
+    currencyFieldType?: "lookup" | "value";
+}
+interface BillingLineMapping {
+    logicalName: string;
+    entitySetName: string;
+    relationshipSchemaName: string;
+    parentLookupField: string;
+    idField: string;
+    nameField: string;
+    descriptionField: string;
+    quantityField: string;
+    unitPriceField: string;
+    amountField: string;
+    productField: string;
+    uomField: string;
+}
+interface BillingSourceMapping {
+    version: 1;
+    mode: "sales" | "manual";
+    header: BillingHeaderMapping;
+    lines: BillingLineMapping;
+    updatedOn?: string;
 }
 interface PaymentLine {
     alex_paypluspaymentlineid?: string;
@@ -157,6 +192,21 @@ const MONEY_FORMAT = { minimumFractionDigits: 2, maximumFractionDigits: 2 };
 const POLL_MS = 1800;
 const POLL_MAX = 36;
 const FINALIZATION_POLL_MAX = 60;
+const DEFAULT_BILLING_MAPPING: BillingSourceMapping = {
+    version: 1,
+    mode: "sales",
+    header: {
+        logicalName: "invoice", entitySetName: "invoices", idField: "invoiceid",
+        numberField: "invoicenumber", nameField: "name", customerField: "customerid",
+        totalField: "totalamount", paidField: "", openBalanceField: "", currencyField: "transactioncurrencyid", currencyFieldType: "lookup"
+    },
+    lines: {
+        logicalName: "invoicedetail", entitySetName: "invoicedetails", relationshipSchemaName: "invoice_details",
+        parentLookupField: "invoiceid", idField: "invoicedetailid", nameField: "productname",
+        descriptionField: "productdescription", quantityField: "quantity", unitPriceField: "priceperunit",
+        amountField: "extendedamount", productField: "productid", uomField: "uomid"
+    }
+};
 
 export class PaymentWizard implements ComponentFramework.StandardControl<IInputs, IOutputs> {
     private context!: ComponentFramework.Context<IInputs>;
@@ -176,6 +226,8 @@ export class PaymentWizard implements ComponentFramework.StandardControl<IInputs
     private loadError = "";
     private configEnvironment = 100000001;
     private allowDocOverride = false;
+    private allowPartialReceipts = true;
+    private billingMapping: BillingSourceMapping = DEFAULT_BILLING_MAPPING;
     private hasTaxInvoice = false;
     private requestedDocFlow = 100000000;
 
@@ -314,16 +366,94 @@ export class PaymentWizard implements ComponentFramework.StandardControl<IInputs
     }
 
     private async loadConfigEnvironment(): Promise<void> {
-        const result = await this.api().retrieveMultipleRecords("alex_payplusconfiguration", "?$select=alex_environment,alex_billing_allow_user_override&$top=1");
-        const row = result.entities[0] as { alex_environment?: number; alex_billing_allow_user_override?: boolean } | undefined;
+        const result = await this.api().retrieveMultipleRecords("alex_payplusconfiguration", "?$select=alex_environment,alex_billing_allow_user_override,alex_billing_allow_partial_receipts,alex_billingmappingjson&$top=1");
+        const row = result.entities[0] as { alex_environment?: number; alex_billing_allow_user_override?: boolean; alex_billing_allow_partial_receipts?: boolean; alex_billingmappingjson?: string } | undefined;
         this.configEnvironment = row?.alex_environment || 100000001;
         this.allowDocOverride = !!row?.alex_billing_allow_user_override;
+        this.allowPartialReceipts = row?.alex_billing_allow_partial_receipts !== false;
+        this.billingMapping = this.parseBillingMapping(row?.alex_billingmappingjson);
+    }
+
+    private parseBillingMapping(raw?: string): BillingSourceMapping {
+        if (!raw) return DEFAULT_BILLING_MAPPING;
+        try {
+            const value = JSON.parse(raw) as Partial<BillingSourceMapping>;
+            const header = value.header as Partial<BillingHeaderMapping> | undefined;
+            const lines = value.lines as Partial<BillingLineMapping> | undefined;
+            if (value.version !== 1 || !header?.logicalName || !header.idField || !header.customerField || !header.totalField ||
+                !lines?.logicalName || !lines.idField || !lines.parentLookupField || !lines.nameField || !lines.quantityField || !lines.amountField) {
+                return DEFAULT_BILLING_MAPPING;
+            }
+            if (!header.currencyFieldType) header.currencyFieldType = value.mode === "sales" ? "lookup" : "value";
+            return value as BillingSourceMapping;
+        } catch {
+            return DEFAULT_BILLING_MAPPING;
+        }
+    }
+
+    private isSalesSource(): boolean {
+        return this.billingMapping.header.logicalName === "invoice" &&
+            this.billingMapping.lines.logicalName === "invoicedetail" &&
+            (this.billingCase?.alex_sourceentitylogicalname || this.sourceEntity) === "invoice";
+    }
+
+    // Partial receipts require the Sales invoice schema and the config toggle; custom sources are full-payment only.
+    private canPartial(): boolean {
+        return this.isSalesSource() && this.allowPartialReceipts;
+    }
+
+    // A Sales invoice supports partial but the admin policy turned it off - distinct from a non-Sales source that is inherently full-only.
+    private partialDisabledReason(): string {
+        return this.isSalesSource() && !this.allowPartialReceipts
+            ? this.t("קבלת תשלום חלקי כבויה בהגדרות התצורה", "Partial receipts are turned off in the configuration")
+            : this.t("תרחיש זה תומך בתשלום מלא בלבד", "This scenario supports full payment only");
+    }
+
+    private mappedLookupProperty(field: string): string {
+        return field ? `_${field}_value` : "";
+    }
+
+    private mappedSelect(fields: string[]): string {
+        return Array.from(new Set(fields.filter((field) => /^[a-z][a-z0-9_]*$/i.test(field)))).join(",");
+    }
+
+    private mappedValue(row: Record<string, unknown>, field: string): unknown {
+        return field ? row[field] : undefined;
+    }
+
+    private mappedLookupValue(row: Record<string, unknown>, field: string): string {
+        return String(this.mappedValue(row, this.mappedLookupProperty(field)) || "");
+    }
+
+    private async loadMappedHeader(sourceId: string): Promise<InvoiceRow | null> {
+        const map = this.billingMapping.header;
+        const currencyProperty = map.currencyFieldType === "lookup" ? this.mappedLookupProperty(map.currencyField) : map.currencyField;
+        const fields = [map.idField, map.numberField, map.nameField, this.mappedLookupProperty(map.customerField), map.totalField,
+            map.paidField, map.openBalanceField, currencyProperty];
+        if (this.isSalesSource()) fields.push("totaltax", "totaldiscountamount", "discountamount", "ispricelocked", "_pricelevelid_value");
+        const query = `?$select=${this.mappedSelect(fields)}&$filter=${map.idField} eq ${sourceId}&$top=1`;
+        const result = await this.api().retrieveMultipleRecords(map.logicalName, query);
+        const row = result.entities[0] as Record<string, unknown> | undefined;
+        if (!row) return null;
+        const customerProperty = this.mappedLookupProperty(map.customerField);
+        const normalized: InvoiceRow = {
+            ...row,
+            invoiceid: String(this.mappedValue(row, map.idField) || sourceId),
+            invoicenumber: String(this.mappedValue(row, map.numberField) || ""),
+            name: String(this.mappedValue(row, map.nameField) || ""),
+            totalamount: Number(this.mappedValue(row, map.totalField) || 0),
+            _customerid_value: this.mappedLookupValue(row, map.customerField),
+            _transactioncurrencyid_value: map.currencyFieldType === "lookup" ? this.mappedLookupValue(row, map.currencyField) : undefined
+        };
+        normalized["_customerid_value@OData.Community.Display.V1.FormattedValue"] = row[`${customerProperty}@OData.Community.Display.V1.FormattedValue`];
+        normalized["_customerid_value@Microsoft.Dynamics.CRM.lookuplogicalname"] = row[`${customerProperty}@Microsoft.Dynamics.CRM.lookuplogicalname`];
+        return normalized;
     }
 
     private async loadExistingTaxInvoice(): Promise<void> {
         this.hasTaxInvoice = false;
         const billingCaseId = this.billingCase?.alex_payplusbillingcaseid;
-        const invoiceId = this.invoice?.invoiceid || (this.billingCase?.alex_sourceentitylogicalname === "invoice" ? this.billingCase.alex_sourceentityid : "");
+        const invoiceId = this.isSalesSource() ? this.invoice?.invoiceid || this.billingCase?.alex_sourceentityid || "" : "";
         const scope: string[] = [];
         if (billingCaseId) scope.push(`_alex_billingcaseid_value eq ${billingCaseId}`);
         if (invoiceId) scope.push(`_alex_invoiceid_value eq ${invoiceId}`);
@@ -336,26 +466,32 @@ export class PaymentWizard implements ComponentFramework.StandardControl<IInputs
     }
 
     private async loadBillingContext(): Promise<void> {
+        this.billingCase = null;
+        this.invoice = null;
         if (this.sourceEntity === "alex_payplusbillingcase") {
             this.billingCase = await this.api().retrieveRecord("alex_payplusbillingcase", this.sourceId, "?$select=alex_payplusbillingcaseid,alex_name,alex_defaultflow,alex_sourceentitylogicalname,alex_sourceentityid,alex_sourcedisplayname,alex_customername,alex_totalamount,alex_paidamount,alex_openbalance,alex_currencycode,_alex_accountid_value,_alex_contactid_value") as BillingCase;
-        } else if (this.sourceEntity === "invoice") {
-            this.invoice = await this.api().retrieveRecord("invoice", this.sourceId, "?$select=invoiceid,invoicenumber,name,totalamount,totaltax,totaldiscountamount,discountamount,ispricelocked,_customerid_value,_pricelevelid_value,_transactioncurrencyid_value") as InvoiceRow;
-            const caseResult = await this.api().retrieveMultipleRecords("alex_payplusbillingcase", `?$select=alex_payplusbillingcaseid,alex_name,alex_defaultflow,alex_sourceentitylogicalname,alex_sourceentityid,alex_sourcedisplayname,alex_customername,alex_totalamount,alex_paidamount,alex_openbalance,alex_currencycode,_alex_accountid_value,_alex_contactid_value&$filter=alex_sourceentitylogicalname eq 'invoice' and alex_sourceentityid eq '${this.sourceId.replace(/'/g, "''")}'&$orderby=modifiedon desc&$top=1`);
+        } else if (this.sourceEntity === this.billingMapping.header.logicalName) {
+            const caseResult = await this.api().retrieveMultipleRecords("alex_payplusbillingcase", `?$select=alex_payplusbillingcaseid,alex_name,alex_defaultflow,alex_sourceentitylogicalname,alex_sourceentityid,alex_sourcedisplayname,alex_customername,alex_totalamount,alex_paidamount,alex_openbalance,alex_currencycode,_alex_accountid_value,_alex_contactid_value&$filter=alex_sourceentitylogicalname eq '${this.sourceEntity.replace(/'/g, "''")}' and alex_sourceentityid eq '${this.sourceId.replace(/'/g, "''")}'&$orderby=modifiedon desc&$top=1`);
             this.billingCase = caseResult.entities[0] as BillingCase | undefined || null;
         }
-        if (this.billingCase?.alex_sourceentitylogicalname === "invoice" && this.billingCase.alex_sourceentityid && !this.invoice) {
-            this.invoice = await this.api().retrieveRecord("invoice", this.billingCase.alex_sourceentityid, "?$select=invoiceid,invoicenumber,name,totalamount,totaltax,totaldiscountamount,discountamount,ispricelocked,_customerid_value,_pricelevelid_value,_transactioncurrencyid_value") as InvoiceRow;
+        const mappedSourceEntity = this.billingCase?.alex_sourceentitylogicalname || this.sourceEntity;
+        const mappedSourceId = this.billingCase?.alex_sourceentityid || this.sourceId;
+        if (mappedSourceEntity === this.billingMapping.header.logicalName && mappedSourceId) {
+            this.invoice = await this.loadMappedHeader(mappedSourceId);
         }
         if (!this.billingCase && this.invoice) {
+            const map = this.billingMapping.header;
+            const raw = this.invoice as Record<string, unknown>;
+            const currency = map.currencyFieldType === "value" ? String(this.mappedValue(raw, map.currencyField) || "") : "ILS";
             this.billingCase = {
-                alex_sourceentitylogicalname: "invoice",
+                alex_sourceentitylogicalname: map.logicalName,
                 alex_sourceentityid: this.invoice.invoiceid || this.sourceId,
                 alex_sourcedisplayname: this.invoice.invoicenumber || this.invoice.name,
                 alex_customername: this.invoice["_customerid_value@OData.Community.Display.V1.FormattedValue" as keyof InvoiceRow] as string || "",
                 alex_totalamount: this.invoice.totalamount || 0,
-                alex_paidamount: 0,
-                alex_openbalance: this.invoice.totalamount || 0,
-                alex_currencycode: "ILS"
+                alex_paidamount: Number(this.mappedValue(raw, map.paidField) || 0),
+                alex_openbalance: Number(this.mappedValue(raw, map.openBalanceField) ?? this.invoice.totalamount ?? 0),
+                alex_currencycode: currency || "ILS"
             };
         }
         if (!this.billingCase) throw new Error(this.t("לא נמצא תיק גבייה למקור שנבחר.", "No billing case was found for the selected source."));
@@ -375,10 +511,26 @@ export class PaymentWizard implements ComponentFramework.StandardControl<IInputs
     }
 
     private async loadInvoiceLines(): Promise<void> {
-        const invoiceId = this.invoice?.invoiceid || (this.billingCase?.alex_sourceentitylogicalname === "invoice" ? this.billingCase.alex_sourceentityid : "");
-        if (!invoiceId) { this.lines = []; return; }
-        const result = await this.api().retrieveMultipleRecords("invoicedetail", `?$select=invoicedetailid,productname,productdescription,quantity,priceperunit,extendedamount,_productid_value,_uomid_value,isproductoverridden&$filter=_invoiceid_value eq ${invoiceId}&$orderby=createdon asc`);
-        this.lines = this.normalizeInvoiceLines(result.entities as InvoiceLine[]);
+        const sourceEntity = this.billingCase?.alex_sourceentitylogicalname || this.sourceEntity;
+        if (sourceEntity !== this.billingMapping.header.logicalName) { this.lines = []; return; }
+        const sourceId = this.invoice?.invoiceid || this.billingCase?.alex_sourceentityid || "";
+        if (!sourceId) { this.lines = []; return; }
+        const map = this.billingMapping.lines;
+        const fields = [map.idField, map.nameField, map.descriptionField, map.quantityField, map.unitPriceField, map.amountField];
+        if (this.isSalesSource()) fields.push("_productid_value", "_uomid_value", "isproductoverridden");
+        const parentLookup = this.mappedLookupProperty(map.parentLookupField);
+        const query = `?$select=${this.mappedSelect(fields)}&$filter=${parentLookup} eq ${sourceId}&$orderby=createdon asc`;
+        const result = await this.api().retrieveMultipleRecords(map.logicalName, query);
+        const normalized = (result.entities as Record<string, unknown>[]).map((row): InvoiceLine => ({
+            ...row,
+            invoicedetailid: String(this.mappedValue(row, map.idField) || ""),
+            productname: String(this.mappedValue(row, map.nameField) || ""),
+            productdescription: String(this.mappedValue(row, map.descriptionField) || ""),
+            quantity: Number(this.mappedValue(row, map.quantityField) || 0),
+            priceperunit: Number(this.mappedValue(row, map.unitPriceField) || 0),
+            extendedamount: Number(this.mappedValue(row, map.amountField) || 0)
+        }));
+        this.lines = this.normalizeInvoiceLines(normalized);
     }
 
     private normalizeInvoiceLines(lines: InvoiceLine[]): InvoiceLine[] {
@@ -666,7 +818,7 @@ export class PaymentWizard implements ComponentFramework.StandardControl<IInputs
                 alex_actualallocatedamount: 0,
                 alex_currencycode: this.billingCase.alex_currencycode || "ILS",
                 alex_status: status,
-                alex_sourceentitylogicalname: this.invoice?.invoiceid ? "invoice" : this.billingCase.alex_sourceentitylogicalname || "",
+                alex_sourceentitylogicalname: this.billingCase.alex_sourceentitylogicalname || this.billingMapping.header.logicalName,
                 alex_sourcerecordid: this.invoice?.invoiceid || this.billingCase.alex_sourceentityid || "",
                 alex_sourcelineid: sourceLineId,
                 alex_sourceitemname: sourceName,
@@ -681,8 +833,8 @@ export class PaymentWizard implements ComponentFramework.StandardControl<IInputs
                 "alex_billingcaseid@odata.bind": `/alex_payplusbillingcases(${this.billingCase.alex_payplusbillingcaseid})`,
                 "alex_paymentlineid@odata.bind": `/alex_paypluspaymentlines(${paymentLineId})`
             };
-            if (this.invoice?.invoiceid) body["alex_invoiceid@odata.bind"] = `/invoices(${this.invoice.invoiceid})`;
-            if (sourceLineId) body["alex_invoicedetailid@odata.bind"] = `/invoicedetails(${sourceLineId})`;
+            if (this.isSalesSource() && this.invoice?.invoiceid) body["alex_invoiceid@odata.bind"] = `/invoices(${this.invoice.invoiceid})`;
+            if (this.isSalesSource() && sourceLineId) body["alex_invoicedetailid@odata.bind"] = `/invoicedetails(${sourceLineId})`;
             await this.api().createRecord("alex_payplusreceiptallocation", body);
         }
     }
@@ -956,6 +1108,7 @@ export class PaymentWizard implements ComponentFramework.StandardControl<IInputs
 
     private async maybeCloseInvoice(): Promise<void> {
         this.invoiceClosed = false;
+        if (!this.isSalesSource()) return;
         await this.applyInvoiceSplit();
         if (this.paymentTotals().currentBalance > 0) return;
         const invoiceId = this.invoice?.invoiceid || (this.billingCase?.alex_sourceentitylogicalname === "invoice" ? this.billingCase.alex_sourceentityid : "");
@@ -999,6 +1152,7 @@ export class PaymentWizard implements ComponentFramework.StandardControl<IInputs
      * Guarded to run only in partial mode with at least one paid and one unpaid item.
      */
     private async applyInvoiceSplit(): Promise<void> {
+        if (!this.isSalesSource()) return;
         if (!this.splitRemainder || this.payMode !== "partial") return;
         const invoiceId = this.invoice?.invoiceid || (this.billingCase?.alex_sourceentitylogicalname === "invoice" ? this.billingCase.alex_sourceentityid : "");
         if (!invoiceId || !this.lines.length) return;
@@ -1378,6 +1532,7 @@ export class PaymentWizard implements ComponentFramework.StandardControl<IInputs
     }
 
     private setPayMode(mode: PayMode): void {
+        if (mode === "partial" && !this.canPartial()) return;
         this.payMode = mode;
         if (mode === "full") {
             this.splitRemainder = false;
@@ -1906,10 +2061,13 @@ export class PaymentWizard implements ComponentFramework.StandardControl<IInputs
                     <div class="ct"><span class="radio"></span>${this.e(this.t("תשלום מלא", "Full payment"))}</div>
                     <div class="cs">${this.e(this.t(`גביית מלוא היתרה — ${this.formatMoney(this.openBalance())}`, `Collect the full balance — ${this.formatMoney(this.openBalance())}`))}</div>
                 </div>
-                <div class="ppw-choice ${full ? "" : "sel"}" data-scope="partial">
+                ${this.canPartial() ? `<div class="ppw-choice ${full ? "" : "sel"}" data-scope="partial">
                     <div class="ct"><span class="radio"></span>${this.e(this.t("תשלום חלקי", "Partial payment"))}</div>
                     <div class="cs">${this.e(this.t("בחירת פריטים וסכומים לקבלה", "Choose items and amounts for the receipt"))}</div>
-                </div>
+                </div>` : `<div class="ppw-choice off" aria-disabled="true">
+                    <div class="ct"><span class="radio"></span>${this.e(this.t("תשלום חלקי", "Partial payment"))}</div>
+                    <div class="cs">${this.e(this.partialDisabledReason())}</div>
+                </div>`}
             </div>
             ${summary}
             ${this.docChoiceHtml()}
@@ -1941,10 +2099,10 @@ export class PaymentWizard implements ComponentFramework.StandardControl<IInputs
         const splitHint = this.splitRemainder
             ? this.t(`${unpaidCount} פריטים שלא סומנו יעברו לחשבונית D365 חדשה ופתוחה. חשבונית זו תיסגר כ״שולם״.`, `${unpaidCount} unselected items will move to a new open D365 invoice. This invoice will close as \u201cPaid\u201d.`)
             : this.t("סמן כדי לפצל את הפריטים שלא שולמו לחשבונית נפרדת במקום להשאיר את החשבונית פתוחה.", "Select to split the unpaid items into a separate invoice instead of leaving this invoice open.");
-        const splitOpt = `<label class="ppw-split-opt ${this.splitRemainder ? "on" : ""}">
+        const splitOpt = this.isSalesSource() ? `<label class="ppw-split-opt ${this.splitRemainder ? "on" : ""}">
             <input type="checkbox" data-split-remainder ${this.splitRemainder ? "checked" : ""} />
             <span class="txt"><strong>${this.e(this.t("פצל את היתרה לחשבונית D365 חדשה", "Split the balance into a new D365 invoice"))}</strong><small>${this.e(splitHint)}</small></span>
-        </label>`;
+        </label>` : "";
         return `<div class="ppw-items">
             <div class="ppw-items-head">
                 <span class="ppw-chk ${headChk}" data-action="toggleAll">${this.checkIcon()}</span>

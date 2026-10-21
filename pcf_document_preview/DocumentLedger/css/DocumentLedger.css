@@ -177,14 +177,54 @@
   font-feature-settings: "tnum";
 }
 
+.ppl-doc-cell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
 .ppl-doc-main {
   display: flex;
   flex-direction: column;
   gap: 2px;
+  min-width: 0;
 }
 
 .ppl-doc-number { font-weight: 600; font-size: 13px; }
 .ppl-doc-sub { color: #86868b; font-size: 11px; }
+
+/* ---------- Payment link (copy) ---------- */
+.ppl-paylink {
+  margin-inline-start: auto;
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  border: none;
+  border-radius: 7px;
+  background: transparent;
+  color: #86868b;
+  cursor: pointer;
+  transition: background-color 0.12s ease, color 0.12s ease;
+}
+.ppl-paylink:hover {
+  background: #eef4ff;
+  color: #0058b8;
+}
+.ppl-paylink:focus-visible {
+  outline: 2px solid #0058b8;
+  outline-offset: 1px;
+}
+.ppl-paylink svg { display: block; }
+.ppl-paylink-done,
+.ppl-paylink-done:hover {
+  background: #eaf7ee;
+  color: #1a7f37;
+}
+.ppl-row-cancelled .ppl-paylink { opacity: 0.5; }
 
 .ppl-amt-total { font-weight: 600; }
 .ppl-amt-credit { color: #1a7f37; }
@@ -205,9 +245,15 @@
   white-space: nowrap;
 }
 
-.ppl-pill-type { background: #eef4ff; color: #0058b8; }
-.ppl-pill-type.ppl-t-refund { background: #eaf7ee; color: #1a7f37; }
-.ppl-pill-type.ppl-t-receipt { background: #f0eefb; color: #5b3fb5; }
+/* Type pills — soft tint + colored text, one restrained hue per document class */
+.ppl-pill-type { background: #f5f5f7; color: #6e6e73; }
+.ppl-pill-type.ppl-t-charge { background: #eef4ff; color: #0058b8; }
+.ppl-pill-type.ppl-t-receipt { background: #eaf7ee; color: #1a7f37; }
+.ppl-pill-type.ppl-t-credit { background: #fdeceb; color: #b3261e; }
+.ppl-pill-type.ppl-t-quote { background: #fff4e5; color: #a15c00; }
+.ppl-pill-type.ppl-t-order { background: #f0eefb; color: #5b3fb5; }
+.ppl-pill-type.ppl-t-proforma { background: #e5f6f8; color: #0b7a86; }
+.ppl-pill-type.ppl-t-payrequest { background: #fbeef7; color: #a3298a; }
 .ppl-pill-type.ppl-t-info { background: #f5f5f7; color: #6e6e73; }
 
 .ppl-pill-status { background: #f5f5f7; color: #6e6e73; }

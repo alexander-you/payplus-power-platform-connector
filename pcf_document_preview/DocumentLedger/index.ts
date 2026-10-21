@@ -27,11 +27,12 @@ interface LedgerDocument {
     _alex_invoiceid_value?: string;
     _alex_contactid_value?: string;
     _alex_accountid_value?: string;
+    alex_paymentpagelink?: string;
 }
 
 type LoadState = "loading" | "ready" | "empty" | "waiting" | "error";
 type Scope = "invoice" | "contact" | "account";
-type TypeClass = "charge" | "credit" | "receipt" | "info";
+type TypeClass = "charge" | "credit" | "receipt" | "quote" | "order" | "proforma" | "payrequest" | "info";
 type StatusGroup = "issued" | "pending" | "failed" | "cancelled";
 
 interface TypeMeta {
@@ -53,15 +54,22 @@ const CANCELLED = 100000007;
 // Existing DocumentPreview custom page (preview + quick actions), reused for the side pane.
 const PREVIEW_CUSTOM_PAGE_NAME = "alex_payplusdocumentpreview_b4f29";
 
+const LINK_ICON = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 15l6-6"/><path d="M10.5 6.5l1-1a4 4 0 0 1 6 6l-1 1"/><path d="M13.5 17.5l-1 1a4 4 0 0 1-6-6l1-1"/></svg>`;
+const CHECK_ICON = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l4 4 10-10"/></svg>`;
+
 const TYPE_MAP: Record<string, TypeMeta> = {
     inv_tax: { he: "חשבונית מס", en: "Tax invoice", cls: "charge", sign: 1 },
     inv_tax_receipt: { he: "חשבונית מס קבלה", en: "Tax invoice receipt", cls: "receipt", sign: 1, usesPaid: true },
     inv_receipt: { he: "קבלה", en: "Receipt", cls: "receipt", sign: -1, usesPaid: true },
+    inv_don_receipt: { he: "קבלה על תרומה", en: "Donation receipt", cls: "receipt", sign: -1, usesPaid: true },
     inv_refund: { he: "חשבונית זיכוי", en: "Credit invoice", cls: "credit", sign: -1 },
-    inv_proforma: { he: "חשבונית עסקה", en: "Proforma invoice", cls: "info", sign: 0 },
-    inv_pay_request: { he: "בקשת תשלום", en: "Payment request", cls: "info", sign: 0 },
-    dc_quote: { he: "הצעת מחיר", en: "Quote", cls: "info", sign: 0 },
-    purchase: { he: "מסמך רכש", en: "Purchase", cls: "info", sign: 0 }
+    inv_proforma: { he: "חשבונית עסקה", en: "Proforma invoice", cls: "proforma", sign: 0 },
+    inv_pay_request: { he: "בקשת תשלום", en: "Payment request", cls: "payrequest", sign: 0 },
+    dc_quote: { he: "הצעת מחיר", en: "Quote", cls: "quote", sign: 0 },
+    purchase: { he: "הזמנה", en: "Order", cls: "order", sign: 0 },
+    order_purchase: { he: "הזמנת רכש", en: "Purchase order", cls: "order", sign: 0 },
+    crt_delivery: { he: "תעודת משלוח", en: "Delivery note", cls: "info", sign: 0 },
+    crt_return: { he: "תעודת החזרה", en: "Return note", cls: "info", sign: 0 }
 };
 
 const STATUS_MAP: Record<number, StatusMeta> = {
@@ -97,7 +105,8 @@ const SELECT_FIELDS = [
     "_alex_reversesdocumentid_value",
     "_alex_invoiceid_value",
     "_alex_contactid_value",
-    "_alex_accountid_value"
+    "_alex_accountid_value",
+    "alex_paymentpagelink"
 ].join(",");
 
 const SCOPE_FILTER_FIELD: Record<Scope, string> = {
@@ -499,10 +508,13 @@ export class DocumentLedger implements ComponentFramework.StandardControl<IInput
 
         // doc column
         const docTd = document.createElement("td");
+        docTd.className = "ppl-doc-cell";
         const main = this.el("div", "ppl-doc-main");
         main.appendChild(this.el("div", "ppl-doc-number", doc.alex_documentnumber || doc.alex_name || "—"));
         if (this.scope === "account" && doc.alex_customername) main.appendChild(this.el("div", "ppl-doc-sub", doc.alex_customername));
         docTd.appendChild(main);
+        const payLink = this.paymentLinkButton(doc);
+        if (payLink) docTd.appendChild(payLink);
         tr.appendChild(docTd);
 
         // type pill
@@ -535,6 +547,58 @@ export class DocumentLedger implements ComponentFramework.StandardControl<IInput
         tr.appendChild(statusTd);
 
         return tr;
+    }
+
+    private paymentLinkButton(doc: LedgerDocument): HTMLElement | null {
+        const link = (doc.alex_paymentpagelink || "").trim();
+        if (!link) return null;
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "ppl-paylink";
+        btn.title = `${this.t("copyLink")}\n${link}`;
+        btn.setAttribute("aria-label", this.t("copyLink"));
+        btn.innerHTML = LINK_ICON;
+        btn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            this.copyPaymentLink(link, btn);
+        });
+        return btn;
+    }
+
+    private copyPaymentLink(link: string, btn: HTMLButtonElement): void {
+        const original = LINK_ICON;
+        const done = () => {
+            btn.classList.add("ppl-paylink-done");
+            btn.innerHTML = CHECK_ICON;
+            btn.title = this.t("copied");
+            window.setTimeout(() => {
+                btn.classList.remove("ppl-paylink-done");
+                btn.innerHTML = original;
+                btn.title = `${this.t("copyLink")}\n${link}`;
+            }, 1400);
+        };
+        try {
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(link).then(done).catch(() => this.fallbackCopy(link, done));
+                return;
+            }
+            this.fallbackCopy(link, done);
+        } catch {
+            this.fallbackCopy(link, done);
+        }
+    }
+
+    private fallbackCopy(text: string, done: () => void): void {
+        const ta = document.createElement("textarea");
+        ta.value = text;
+        ta.style.position = "fixed";
+        ta.style.top = "-1000px";
+        ta.style.opacity = "0";
+        document.body.appendChild(ta);
+        ta.focus();
+        ta.select();
+        try { document.execCommand("copy"); done(); } catch { /* clipboard unavailable */ }
+        document.body.removeChild(ta);
     }
 
     private tdText(text: string): HTMLElement {
@@ -675,7 +739,9 @@ export class DocumentLedger implements ComponentFramework.StandardControl<IInput
             colTotal: "כולל",
             colStatus: "מצב",
             paid: "נפרע",
-            open: "לתשלום"
+            open: "לתשלום",
+            copyLink: "העתק קישור לעמוד תשלום",
+            copied: "הקישור הועתק"
         };
         const en: Record<string, string> = {
             loading: "Loading documents...",
@@ -703,7 +769,9 @@ export class DocumentLedger implements ComponentFramework.StandardControl<IInput
             colTotal: "Total",
             colStatus: "Status",
             paid: "Paid",
-            open: "Open"
+            open: "Open",
+            copyLink: "Copy payment page link",
+            copied: "Link copied"
         };
         const table = this.isRtl ? he : en;
         return table[key] ?? key;

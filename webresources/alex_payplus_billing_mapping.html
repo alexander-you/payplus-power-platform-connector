@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>PayPlus Billing Mapping</title>
+  <style>
+    :root{--ink:#182033;--muted:#687087;--line:#dfe3ec;--surface:#fff;--soft:#f5f7fb;--brand:#15345f;--accent:#248767;--danger:#b42318;--shadow:0 10px 30px rgba(25,42,70,.08)}
+    *{box-sizing:border-box}body{margin:0;background:linear-gradient(180deg,#f3f6fb 0,#fff 48%);color:var(--ink);font:14px/1.45 "Segoe UI",Tahoma,sans-serif;letter-spacing:0}
+    button,input,select{font:inherit}.shell{max-width:1040px;margin:0 auto;padding:24px}.head{display:flex;align-items:flex-start;justify-content:space-between;gap:18px;margin-bottom:18px}.head h1{font-size:24px;margin:0 0 5px}.head p{color:var(--muted);margin:0}.status{min-height:22px;color:var(--muted)}
+    .panel{background:var(--surface);border:1px solid var(--line);border-radius:8px;box-shadow:var(--shadow);margin:12px 0;overflow:hidden}.panel-head{display:flex;align-items:center;gap:10px;padding:14px 18px;border-bottom:1px solid var(--line)}.step{display:grid;place-items:center;width:25px;height:25px;border-radius:50%;background:var(--brand);color:#fff;font-weight:700}.panel-body{padding:18px}
+    .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px}.field{min-width:0}.field label{display:block;font-weight:600;margin-bottom:6px}.field small{display:block;color:var(--muted);margin-top:4px}.select{width:100%;height:38px;border:1px solid #bfc7d6;border-radius:6px;background:#fff;color:var(--ink);padding:0 10px}.select:focus{outline:2px solid rgba(21,52,95,.2);border-color:var(--brand)}
+    .actions{display:flex;align-items:center;justify-content:flex-end;gap:10px;margin-top:18px}.btn{border:1px solid var(--line);border-radius:6px;background:#fff;color:var(--ink);padding:9px 15px;cursor:pointer;font-weight:600}.btn:hover{background:var(--soft)}.btn.primary{background:var(--brand);border-color:var(--brand);color:#fff}.btn.auto{background:var(--accent);border-color:var(--accent);color:#fff}.btn:disabled{opacity:.5;cursor:not-allowed}.notice{padding:11px 13px;border-radius:6px;background:#edf8f4;color:#17644e;margin-bottom:14px}.notice.warn{background:#fff4e5;color:#874d00}.notice.err{background:#fff0ef;color:var(--danger)}.hidden{display:none!important}.spinner{width:17px;height:17px;border:2px solid #cbd2df;border-top-color:var(--brand);border-radius:50%;animation:spin .8s linear infinite;display:inline-block;vertical-align:-3px}@keyframes spin{to{transform:rotate(360deg)}}
+    @media(max-width:720px){.shell{padding:14px}.head{display:block}.actions{align-items:stretch;flex-direction:column}.btn{width:100%}.grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+<main class="shell">
+  <header class="head">
+    <div><h1 id="title"></h1><p id="subtitle"></p></div>
+    <div class="status" id="status"></div>
+  </header>
+  <div id="message" class="notice hidden"></div>
+  <section class="panel">
+    <div class="panel-head"><span class="step">1</span><strong id="sourceTitle"></strong></div>
+    <div class="panel-body grid">
+      <div class="field"><label id="headerTableLabel" for="headerTable"></label><select class="select" id="headerTable"></select></div>
+      <div class="field"><label id="lineTableLabel" for="lineTable"></label><select class="select" id="lineTable"></select></div>
+      <div class="field"><label id="relationshipLabel" for="relationship"></label><select class="select" id="relationship"></select><small id="relationshipHint"></small></div>
+    </div>
+  </section>
+  <section class="panel">
+    <div class="panel-head"><span class="step">2</span><strong id="headerFieldsTitle"></strong></div>
+    <div class="panel-body grid" id="headerFields"></div>
+  </section>
+  <section class="panel">
+    <div class="panel-head"><span class="step">3</span><strong id="lineFieldsTitle"></strong></div>
+    <div class="panel-body grid" id="lineFields"></div>
+  </section>
+  <div class="actions">
+    <button class="btn auto" id="autoButton" type="button"></button>
+    <button class="btn primary" id="saveButton" type="button"></button>
+  </div>
+</main>
+<script>
+(function(){
+  "use strict";
+  var T={
+    en:{title:"Billing table mapping",subtitle:"Choose the source tables and fields used by PaymentWizard.",sourceTitle:"Source tables and relationship",headerTable:"Billing document table",lineTable:"Billing line table",relationship:"Document to lines relationship",relationshipHint:"Only one-to-many relationships from the selected document table are shown.",headerFields:"Billing document fields",lineFields:"Billing line fields",auto:"Auto-map Dynamics 365 Sales",save:"Review and save",loading:"Loading Dataverse metadata...",saved:"Mapping saved.",noSales:"Dynamics 365 Sales invoice tables were not found in this environment.",confirmAuto:"Apply the standard Dynamics 365 Sales invoice mapping? You can review it before saving.",confirmSave:"Save this billing mapping? PaymentWizard will use it for new sessions.",loadError:"Could not load Dataverse metadata.",saveError:"Could not save the mapping.",choose:"Choose...",required:"Complete all required selections before saving."},
+    he:{title:"מיפוי טבלאות גבייה",subtitle:"בחרו את טבלאות ושדות המקור שבהם ישתמש פקד קליטת התשלום.",sourceTitle:"טבלאות מקור וקשר",headerTable:"מסמך חיוב (למשל חשבונית)",lineTable:"שורת חיוב (למשל מוצר בחשבונית או בדרישת תשלום)",relationship:"קשר בין הטבלאות",relationshipHint:"מוצגים רק קשרי אחד-לרבים היוצאים מטבלת המסמך שנבחרה.",headerFields:"שדות במסמך חיוב",lineFields:"שדות בשורת חיוב (פריטים בחשבונית)",auto:"מיפוי אוטומטי לטבלאות Dynamics 365 Sales",save:"בדיקה ושמירה",loading:"טוען מטא-דאטה של Dataverse...",saved:"המיפוי נשמר.",noSales:"טבלאות החשבונית של Dynamics 365 Sales לא נמצאו בסביבה זו.",confirmAuto:"להחיל את מיפוי החשבוניות הסטנדרטי של Dynamics 365 Sales? ניתן לבדוק אותו לפני השמירה.",confirmSave:"לשמור את מיפוי הגבייה? PaymentWizard ישתמש בו בהפעלות חדשות.",loadError:"טעינת המטא-דאטה של Dataverse נכשלה.",saveError:"שמירת המיפוי נכשלה.",choose:"בחירה...",required:"יש להשלים את כל שדות החובה לפני השמירה."}
+  };
+  var HEADER_FIELDS=[
+    ["idField","Record ID","מזהה רשומה",["uniqueidentifier"]],["numberField","Document number","מספר מסמך",["string"]],["nameField","Document name","שם מסמך",["string"]],
+    ["customerField","Customer","לקוח",["customer","lookup"]],["totalField","Total amount","סכום כולל",["money","decimal","double"]],["paidField","Paid amount (optional)","סכום ששולם (רשות)",["money","decimal","double"]],
+    ["openBalanceField","Open balance (optional)","יתרה פתוחה (רשות)",["money","decimal","double"]],["currencyField","Currency (optional)","מטבע (רשות)",["lookup","string"]]
+  ];
+  var LINE_FIELDS=[
+    ["idField","Line ID","מזהה שורה",["uniqueidentifier"]],["nameField","Item name","שם פריט",["string"]],["descriptionField","Description (optional)","תיאור (רשות)",["string","memo"]],
+    ["quantityField","Quantity","כמות",["decimal","double","integer"]],["unitPriceField","Unit price","מחיר יחידה",["money","decimal","double"]],["amountField","Line amount","סכום שורה",["money","decimal","double"]],
+    ["productField","Product (optional)","מוצר (רשות)",["lookup"]],["uomField","Unit (optional)","יחידת מידה (רשות)",["lookup"]]
+  ];
+  var REQUIRED=["idField","customerField","totalField"];
+  var state={xrm:null,lang:"en",tables:[],tableMap:{},fields:{},relationships:[],mapping:null,configId:"",busy:false};
+  function tr(k){return (T[state.lang]&&T[state.lang][k])||k} function el(id){return document.getElementById(id)}
+  function xrm(){try{return window.parent&&window.parent.Xrm?window.parent.Xrm:window.Xrm}catch(e){return window.Xrm}}
+  function clientUrl(){return state.xrm.Utility.getGlobalContext().getClientUrl().replace(/\/$/,"")}
+  function params(){var q=new URLSearchParams(location.search),data=q.get("data");if(data){new URLSearchParams(decodeURIComponent(data)).forEach(function(v,k){q.set(k,v)})}return q}
+  function label(obj){var labels=obj&&obj.LocalizedLabels||[],lcid=state.lang==="he"?1037:1033,hit=labels.find(function(x){return x.LanguageCode===lcid});return (hit&&hit.Label)||(obj&&obj.UserLocalizedLabel&&obj.UserLocalizedLabel.Label)||""}
+  function meta(path){return fetch(clientUrl()+"/api/data/v9.2/"+path,{credentials:"same-origin",headers:{Accept:"application/json","OData-MaxVersion":"4.0","OData-Version":"4.0"}}).then(function(r){if(!r.ok)throw new Error(String(r.status));return r.json()}).then(function(b){return b.value||[]})}
+  function setBusy(on,text){state.busy=on;el("status").innerHTML=on?'<span class="spinner"></span> '+(text||tr("loading")):"";el("autoButton").disabled=on;el("saveButton").disabled=on}
+  function message(text,kind){var n=el("message");n.textContent=text;n.className="notice"+(kind?" "+kind:"")}
+  function clearMessage(){el("message").className="notice hidden"}
+  function option(value,text,selected){return '<option value="'+escapeHtml(value)+'"'+(selected?' selected':'')+'>'+escapeHtml(text)+'</option>'}
+  function escapeHtml(value){return String(value==null?"":value).replace(/[&<>"']/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})}
+  function tableLabel(t){return (state.lang==="he"?t.he:t.en)||t.logical}
+  function fieldLabel(f){return (state.lang==="he"?f.he:f.en)||f.logical}
+  function parseTable(r){return{logical:String(r.LogicalName||""),entitySet:String(r.EntitySetName||""),en:label(r.DisplayName)||String(r.LogicalName||""),he:(r.DisplayName&&label(r.DisplayName))||String(r.LogicalName||"")}}
+  function parseField(r){var type=String((r.AttributeTypeName&&r.AttributeTypeName.Value)||r.AttributeType||"").replace(/Type$/i,"").toLowerCase();return{logical:String(r.LogicalName||""),type:type,primary:!!r.IsPrimaryId,en:label(r.DisplayName)||String(r.LogicalName||""),he:label(r.DisplayName)||String(r.LogicalName||"")}}
+  function loadTables(){return meta("EntityDefinitions?$select=LogicalName,EntitySetName,DisplayName,IsIntersect&$filter=IsIntersect eq false").then(function(rows){state.tables=rows.map(parseTable).filter(function(t){return t.logical&&t.entitySet}).sort(function(a,b){return tableLabel(a).localeCompare(tableLabel(b),state.lang)});state.tables.forEach(function(t){state.tableMap[t.logical]=t})})}
+  function loadFields(table){if(!table)return Promise.resolve([]);if(state.fields[table])return Promise.resolve(state.fields[table]);return meta("EntityDefinitions(LogicalName='"+table.replace(/'/g,"''")+"')/Attributes?$select=LogicalName,DisplayName,AttributeType,AttributeTypeName,IsValidForRead,IsPrimaryId&$filter=IsValidForRead eq true").then(function(rows){state.fields[table]=rows.map(parseField).filter(function(f){return f.logical}).sort(function(a,b){return fieldLabel(a).localeCompare(fieldLabel(b),state.lang)});return state.fields[table]})}
+  function loadRelationships(table){if(!table){state.relationships=[];return Promise.resolve([])}return meta("EntityDefinitions(LogicalName='"+table.replace(/'/g,"''")+"')/OneToManyRelationships?$select=SchemaName,ReferencedEntity,ReferencingEntity,ReferencingAttribute").then(function(rows){state.relationships=rows.map(function(r){return{schema:String(r.SchemaName||""),header:String(r.ReferencedEntity||""),line:String(r.ReferencingEntity||""),parentField:String(r.ReferencingAttribute||"")}}).filter(function(r){return r.line&&r.parentField});return state.relationships})}
+  function emptyMapping(){return{version:1,mode:"manual",header:{logicalName:"",entitySetName:"",idField:"",numberField:"",nameField:"",customerField:"",totalField:"",paidField:"",openBalanceField:"",currencyField:"",currencyFieldType:"value"},lines:{logicalName:"",entitySetName:"",relationshipSchemaName:"",parentLookupField:"",idField:"",nameField:"",descriptionField:"",quantityField:"",unitPriceField:"",amountField:"",productField:"",uomField:""},updatedOn:""}}
+  function salesMapping(){return{version:1,mode:"sales",header:{logicalName:"invoice",entitySetName:"invoices",idField:"invoiceid",numberField:"invoicenumber",nameField:"name",customerField:"customerid",totalField:"totalamount",paidField:"",openBalanceField:"",currencyField:"transactioncurrencyid",currencyFieldType:"lookup"},lines:{logicalName:"invoicedetail",entitySetName:"invoicedetails",relationshipSchemaName:"invoice_details",parentLookupField:"invoiceid",idField:"invoicedetailid",nameField:"productname",descriptionField:"productdescription",quantityField:"quantity",unitPriceField:"priceperunit",amountField:"extendedamount",productField:"productid",uomField:"uomid"},updatedOn:""}}
+  function loadConfig(){var select="?$select=alex_payplusconfigurationid,alex_billingmappingjson";var p=state.configId?state.xrm.WebApi.retrieveRecord("alex_payplusconfiguration",state.configId,select):state.xrm.WebApi.retrieveMultipleRecords("alex_payplusconfiguration",select+"&$top=1").then(function(r){return r.entities[0]||null});return p.then(function(row){if(!row)return;state.configId=row.alex_payplusconfigurationid||state.configId;try{state.mapping=JSON.parse(row.alex_billingmappingjson||"")}catch(e){state.mapping=null}})}
+  function fillTableSelect(id,value){el(id).innerHTML=option("",tr("choose"),!value)+state.tables.map(function(t){return option(t.logical,tableLabel(t),t.logical===value)}).join("")}
+  function fieldSelectHtml(def,value,fields){var optional=/optional|רשות/i.test(def[1]+def[2]),types=def[3];var candidates=fields.filter(function(f){return types.indexOf(f.type)>=0&&(def[0]!=="idField"||f.primary)});return '<div class="field"><label for="map_'+def[0]+'">'+escapeHtml(state.lang==="he"?def[2]:def[1])+'</label><select class="select map-field" id="map_'+def[0]+'" data-key="'+def[0]+'">'+option("",optional?"—":tr("choose"),!value)+candidates.map(function(f){return option(f.logical,fieldLabel(f),f.logical===value)}).join("")+'</select></div>'}
+  function renderFields(){var m=state.mapping||emptyMapping(),hf=state.fields[m.header.logicalName]||[],lf=state.fields[m.lines.logicalName]||[];el("headerFields").innerHTML=HEADER_FIELDS.map(function(d){return fieldSelectHtml(d,m.header[d[0]],hf)}).join("");el("lineFields").innerHTML=LINE_FIELDS.map(function(d){return fieldSelectHtml(d,m.lines[d[0]],lf)}).join("");Array.prototype.forEach.call(document.querySelectorAll(".map-field"),function(n){n.onchange=function(){var isHeader=!!n.closest("#headerFields"),target=isHeader?m.header:m.lines,key=n.getAttribute("data-key");target[key]=n.value;if(isHeader&&key==="currencyField"){var field=hf.find(function(f){return f.logical===n.value});target.currencyFieldType=field&&field.type==="lookup"?"lookup":"value"}}})}
+  function renderRelationship(){var m=state.mapping||emptyMapping(),rels=state.relationships.filter(function(r){return !m.lines.logicalName||r.line===m.lines.logicalName});el("relationship").innerHTML=option("",tr("choose"),!m.lines.relationshipSchemaName)+rels.map(function(r){var table=state.tableMap[r.line];return option(r.schema,table?tableLabel(table):r.schema,r.schema===m.lines.relationshipSchemaName)}).join("")}
+  function render(){var m=state.mapping||emptyMapping();fillTableSelect("headerTable",m.header.logicalName);fillTableSelect("lineTable",m.lines.logicalName);renderRelationship();renderFields();el("autoButton").classList.toggle("hidden",!(state.tableMap.invoice&&state.tableMap.invoicedetail))}
+  function hydrate(){var m=state.mapping||emptyMapping();return Promise.all([loadFields(m.header.logicalName),loadFields(m.lines.logicalName),loadRelationships(m.header.logicalName)]).then(render)}
+  function setTable(kind,logical){var m=state.mapping||(state.mapping=emptyMapping()),t=state.tableMap[logical];if(kind==="header"){m.header.logicalName=logical;m.header.entitySetName=t?t.entitySet:"";m.header.idField="";m.lines.relationshipSchemaName="";m.lines.parentLookupField=""}else{m.lines.logicalName=logical;m.lines.entitySetName=t?t.entitySet:"";Object.keys(m.lines).forEach(function(k){if(!["logicalName","entitySetName"].includes(k))m.lines[k]=""})}setBusy(true);hydrate().then(function(){setBusy(false)}).catch(function(){setBusy(false);message(tr("loadError"),"err")})}
+  function applySales(){clearMessage();if(!(state.tableMap.invoice&&state.tableMap.invoicedetail)){message(tr("noSales"),"warn");return}if(!window.confirm(tr("confirmAuto")))return;state.mapping=salesMapping();setBusy(true);hydrate().then(function(){setBusy(false)}).catch(function(){setBusy(false);message(tr("loadError"),"err")})}
+  function collect(){var m=state.mapping,rel=state.relationships.find(function(r){return r.schema===el("relationship").value});if(rel){m.lines.relationshipSchemaName=rel.schema;m.lines.parentLookupField=rel.parentField}m.updatedOn=new Date().toISOString();return m}
+  function valid(m){return !!(m.header.logicalName&&m.lines.logicalName&&m.lines.relationshipSchemaName&&REQUIRED.every(function(k){return !!m.header[k]})&&m.lines.idField&&m.lines.nameField&&m.lines.quantityField&&m.lines.amountField)}
+  function save(){clearMessage();var m=collect();if(!valid(m)){message(tr("required"),"warn");return}if(!window.confirm(tr("confirmSave")))return;setBusy(true);state.xrm.WebApi.updateRecord("alex_payplusconfiguration",state.configId,{alex_billingmappingjson:JSON.stringify(m)}).then(function(){setBusy(false);message(tr("saved"),"")}).catch(function(){setBusy(false);message(tr("saveError"),"err")})}
+  function initText(){
+    var textTargets={title:"title",subtitle:"subtitle",sourceTitle:"sourceTitle",headerTable:"headerTableLabel",lineTable:"lineTableLabel",relationship:"relationshipLabel",relationshipHint:"relationshipHint",headerFields:"headerFieldsTitle",lineFields:"lineFieldsTitle"};
+    Object.keys(textTargets).forEach(function(k){el(textTargets[k]).textContent=tr(k)});
+    el("autoButton").textContent=tr("auto");el("saveButton").textContent=tr("save")
+  }
+  function init(){state.xrm=xrm();if(!state.xrm){message(tr("loadError"),"err");return}var lcid=state.xrm.Utility.getGlobalContext().userSettings.languageId;state.lang=lcid===1037?"he":"en";document.documentElement.lang=state.lang;document.documentElement.dir=state.lang==="he"?"rtl":"ltr";state.configId=(params().get("configId")||params().get("id")||"").replace(/[{}]/g,"");initText();setBusy(true);Promise.all([loadTables(),loadConfig()]).then(function(){state.mapping=state.mapping||emptyMapping();return hydrate()}).then(function(){setBusy(false);if(params().get("mode")==="auto")applySales()}).catch(function(){setBusy(false);message(tr("loadError"),"err")})}
+  el("headerTable").onchange=function(){setTable("header",this.value)};el("lineTable").onchange=function(){setTable("lines",this.value)};el("relationship").onchange=function(){var m=state.mapping,rel=state.relationships.find(function(r){return r.schema===el("relationship").value});m.lines.relationshipSchemaName=rel?rel.schema:"";m.lines.parentLookupField=rel?rel.parentField:""};el("autoButton").onclick=applySales;el("saveButton").onclick=save;document.addEventListener("DOMContentLoaded",init);
+})();
+</script>
+</body>
+</html>

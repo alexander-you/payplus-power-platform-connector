@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RibbonDiffXml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <CustomActions>
+    <CustomAction Id="alex.payplusconfiguration.form.BillingMapping.CustomAction" Location="Mscrm.Form.alex_payplusconfiguration.MainTab.Actions.Controls._children" Sequence="72">
+      <CommandUIDefinition>
+        <Button Id="alex.payplusconfiguration.form.BillingMapping.Button" Command="alex.payplusconfiguration.form.BillingMapping.Command" Sequence="72" LabelText="$LocLabels:alex.payplusconfiguration.BillingMapping.Label" ToolTipTitle="$LocLabels:alex.payplusconfiguration.BillingMapping.Label" ToolTipDescription="$LocLabels:alex.payplusconfiguration.BillingMapping.Tooltip" ModernImage="$webresource:alex_payplus_mapping_icon.svg" TemplateAlias="o1" />
+      </CommandUIDefinition>
+    </CustomAction>
+  </CustomActions>
+  <Templates><RibbonTemplates Id="Mscrm.Templates" /></Templates>
+  <CommandDefinitions>
+    <CommandDefinition Id="alex.payplusconfiguration.form.BillingMapping.Command">
+      <EnableRules><EnableRule Id="alex.payplusconfiguration.form.BillingMapping.EnableRule" /></EnableRules>
+      <DisplayRules><DisplayRule Id="alex.payplusconfiguration.form.BillingMapping.DisplayRule" /></DisplayRules>
+      <Actions>
+        <JavaScriptFunction FunctionName="PayPlus.BillingMapping.openAutoMapping" Library="$webresource:alex_payplus_billing_mapping_commands.js">
+          <CrmParameter Value="PrimaryControl" />
+        </JavaScriptFunction>
+      </Actions>
+    </CommandDefinition>
+  </CommandDefinitions>
+  <RuleDefinitions>
+    <TabDisplayRules />
+    <DisplayRules>
+      <DisplayRule Id="alex.payplusconfiguration.form.BillingMapping.DisplayRule">
+        <CustomRule FunctionName="PayPlus.BillingMapping.canShowSalesAutoMap" Library="$webresource:alex_payplus_billing_mapping_commands.js" Default="false">
+          <CrmParameter Value="PrimaryControl" />
+        </CustomRule>
+      </DisplayRule>
+    </DisplayRules>
+    <EnableRules>
+      <EnableRule Id="alex.payplusconfiguration.form.BillingMapping.EnableRule">
+        <CustomRule FunctionName="PayPlus.BillingMapping.hasSavedRecord" Library="$webresource:alex_payplus_billing_mapping_commands.js" Default="false">
+          <CrmParameter Value="PrimaryControl" />
+        </CustomRule>
+      </EnableRule>
+    </EnableRules>
+  </RuleDefinitions>
+  <LocLabels>
+    <LocLabel Id="alex.payplusconfiguration.BillingMapping.Label"><Titles><Title languagecode="1033" description="Auto-map D365 Sales tables" /><Title languagecode="1037" description="מיפוי אוטומטי לטבלאות D365 Sales" /></Titles></LocLabel>
+    <LocLabel Id="alex.payplusconfiguration.BillingMapping.Tooltip"><Titles><Title languagecode="1033" description="Review and save the standard Dynamics 365 Sales billing mapping" /><Title languagecode="1037" description="בדיקה ושמירה של מיפוי הגבייה הסטנדרטי ל-Dynamics 365 Sales" /></Titles></LocLabel>
+  </LocLabels>
+</RibbonDiffXml>

@@ -354,6 +354,11 @@ var App = (function(){
       bankImportRowPending:"ייבוא בנקים וסניפים בתהליך…",
       bankImportRowNone:"ייבוא בנקים טרם בוצע",
       bankImportUpdate:"עדכון",
+      billingMappingTitle:"מיפוי והתאמה",
+      billingMappingConfigured:"מיפוי מקור הגבייה מוגדר",
+      billingMappingMissing:"מיפוי מקור הגבייה משתמש בברירת המחדל",
+      billingMappingManual:"הגדרת מיפוי",
+      billingMappingAuto:"מיפוי אוטומטי לטבלאות D365 Sales",
       /* per-page connection test (management center) */
       pagesTitle:"בדיקת עמודי תשלום",
       pagesAccSub:"בדיקת חיבור לכל עמוד תשלום בנפרד",
@@ -378,6 +383,8 @@ var App = (function(){
       billingFlowManual:"בחירה ידנית",
       billingOverrideLabel:"אפשר שינוי על ידי משתמש",
       billingOverrideSub:"כאשר מופעל, הריבון יכול להציג את כל סוגי המסמכים שהוגדרו כמותרים במקום להגביל לסוג המסמך של ברירת המחדל.",
+      billingPartialReceiptsLabel:"אפשר קבלות חלקיות",
+      billingPartialReceiptsSub:"כאשר מופעל, ניתן לגבות תשלום חלקי ולבחור פריטים בחשבונית. חל על ישויות D365 Sales בלבד.",
       billingReceiptCloseLabel:"נדרשת קבלה לסגירת חשבונית",
       billingReceiptCloseSub:"חשבונית נשארת פתוחה עד שסך הקבלות המשויכות מכסה את הסכום שלה.",
       billingAutoCloseMatchLabel:"סגור אוטומטית חשבונית כאשר סכום הקבלה תואם",
@@ -603,6 +610,11 @@ var App = (function(){
       bankImportRowPending:"Importing banks & branches…",
       bankImportRowNone:"Banks not imported yet",
       bankImportUpdate:"Update",
+      billingMappingTitle:"Mapping & compatibility",
+      billingMappingConfigured:"Billing source mapping is configured",
+      billingMappingMissing:"Billing source mapping uses the default",
+      billingMappingManual:"Configure mapping",
+      billingMappingAuto:"Auto-map Dynamics 365 Sales tables",
       /* per-page connection test (management center) */
       pagesTitle:"Payment page tests",
       pagesAccSub:"Test the connection for each payment page",
@@ -627,6 +639,8 @@ var App = (function(){
       billingFlowManual:"Manual choice",
       billingOverrideLabel:"Allow user override",
       billingOverrideSub:"When enabled, the ribbon can show all document types configured as allowed instead of being limited to the default-flow document type.",
+      billingPartialReceiptsLabel:"Allow partial receipts",
+      billingPartialReceiptsSub:"When enabled, a partial amount can be collected and invoice items selected. Applies to D365 Sales entities only.",
       billingReceiptCloseLabel:"Require receipt to close invoice",
       billingReceiptCloseSub:"An invoice stays open until allocated receipts cover its amount.",
       billingAutoCloseMatchLabel:"Auto-close invoice when receipt amount matches",
@@ -716,6 +730,7 @@ var App = (function(){
     busy:{ terminals:false, pages:false, preview:false, validating:false, importing:false, importingTerminals:false, importingBanks:false, testingAll:false },
     msg:null,
     setupOpen:true,
+    salesAvailable:null,
     doneOpen:false,
     ssOpen:false,
     docOpen:false,
@@ -741,6 +756,13 @@ var App = (function(){
   function getXrm(){ try{ if(window.parent&&window.parent.Xrm) return window.parent.Xrm; }catch(e){} return window.Xrm||null; }
   function api(){ return S.xrm.WebApi; }
 
+  function checkSalesMetadata(){
+    var url=S.xrm.Utility.getGlobalContext().getClientUrl().replace(/\/$/,"")+"/api/data/v9.2/EntityDefinitions(LogicalName='invoice')?$select=MetadataId";
+    return fetch(url,{credentials:"same-origin",headers:{Accept:"application/json","OData-MaxVersion":"4.0","OData-Version":"4.0"}})
+      .then(function(res){ S.salesAvailable=res.ok; })
+      .catch(function(){ S.salesAvailable=false; });
+  }
+
   function loadRecord(){
     return api().retrieveMultipleRecords(C.table,
       "?$select="+C.idcol+",alex_name,alex_setupcompleted,alex_configvalidated,alex_environment,alex_setupstage,"+
@@ -753,9 +775,9 @@ var App = (function(){
       "alex_doc_salesorder_issue_send_email,alex_doc_salesorder_issue_send_sms,alex_doc_salesorder_resend_email_allowed,alex_doc_salesorder_resend_sms_allowed,alex_doc_salesorder_resend_whatsapp_allowed,"+
       "alex_document_vat_mode,"+
       "alex_billing_default_flow,alex_billing_allow_user_override,alex_billing_require_receipt_to_close_invoice,alex_billing_auto_close_invoice_when_receipts_match,"+
-      "alex_billing_auto_receipt_after_payment,"+
+      "alex_billing_auto_receipt_after_payment,alex_billing_allow_partial_receipts,"+
       "alex_billing_cancellation_policy,alex_billing_create_d365_reversal_invoice,alex_billing_payment_page_policy,alex_billing_create_payment_page_with_document,alex_billing_saved_token_policy,"+
-      "alex_billing_token_charge_requires_confirm,alex_billing_token_missing_fallback,alex_billing_payment_page_create_token,"+
+      "alex_billing_token_charge_requires_confirm,alex_billing_token_missing_fallback,alex_billing_payment_page_create_token,alex_billingmappingjson,"+
       "alex_billing_doc_taxinvoice_enabled,alex_billing_doc_taxinvoice_issue_allowed,alex_billing_doc_taxinvoice_preview_allowed,alex_billing_doc_taxinvoice_bulkcreate,alex_billing_doc_taxinvoice_send_email_allowed,alex_billing_doc_taxinvoice_send_sms_allowed,alex_billing_doc_taxinvoice_send_whatsapp_allowed,"+
       "alex_billing_doc_taxinvoicereceipt_enabled,alex_billing_doc_taxinvoicereceipt_issue_allowed,alex_billing_doc_taxinvoicereceipt_send_email_allowed,alex_billing_doc_taxinvoicereceipt_send_sms_allowed,alex_billing_doc_taxinvoicereceipt_send_whatsapp_allowed,"+
       "alex_billing_doc_receipt_enabled,alex_billing_doc_receipt_issue_allowed,alex_billing_doc_receipt_send_email_allowed,alex_billing_doc_receipt_send_sms_allowed,alex_billing_doc_receipt_send_whatsapp_allowed,"+
@@ -795,6 +817,7 @@ var App = (function(){
     if(!S.xrm){ return renderRaw(errorView(t("errNoXrm"))); }
     try{ var lcid=S.xrm.Utility.getGlobalContext().userSettings.languageId; S.lang=(lcid===1037)?"he":"en"; }catch(e){ S.lang="he"; }
     setDir(); applyStaticI18n();
+    checkSalesMetadata().then(render);
     loadRecord().then(function(rec){
       S.record=rec;
       if(rec){
@@ -1440,6 +1463,7 @@ var App = (function(){
     var paymentPageOpts=[[100000000,"billingPageNever"],[100000001,"billingPageUserDecides"],[100000003,"billingPageOpenBalance"]];
     var h=groupTitle(t("billingPolicyGroup"));    h+=choiceSetting(t("billingDefaultFlowLabel"),"alex_billing_default_flow",t("billingDefaultFlowSub"),billingFlowOpts,100000004);
     h+=toggleSetting(t("billingOverrideLabel"),"alex_billing_allow_user_override",t("billingOverrideSub"));
+    h+=toggleSetting(t("billingPartialReceiptsLabel"),"alex_billing_allow_partial_receipts",t("billingPartialReceiptsSub"));
     h+=toggleSetting(t("billingReceiptCloseLabel"),"alex_billing_require_receipt_to_close_invoice",t("billingReceiptCloseSub"));
     h+=toggleSetting(t("billingAutoCloseMatchLabel"),"alex_billing_auto_close_invoice_when_receipts_match",t("billingAutoCloseMatchSub"));
     h+=toggleSetting(t("billingAutoReceiptLabel"),"alex_billing_auto_receipt_after_payment",t("billingAutoReceiptSub"));
@@ -1621,6 +1645,16 @@ var App = (function(){
     return '<div class="mc-status"><span class="ic">'+ic+'</span>'+
            '<span class="st-txt">'+esc(txt)+'</span>'+when+link+'</div>';
   }
+  function openBillingMapping(mode){
+    var id=S.record&&S.record[C.idcol];
+    var data="configId="+encodeURIComponent(id||"")+"&mode="+encodeURIComponent(mode||"manual");
+    S.xrm.Navigation.navigateTo({pageType:"webresource",webresourceName:"alex_payplus_billing_mapping.html",data:data},{target:2,width:{value:85,unit:"%"},height:{value:85,unit:"%"},position:1});
+  }
+  function billingMappingStatusRow(r){
+    var configured=!!r.alex_billingmappingjson;
+    var auto=S.salesAvailable===true?'<button class="btn ghost" onclick="App.openBillingMapping(\'auto\')">'+esc(t("billingMappingAuto"))+'</button>':"";
+    return '<div class="mc-status"><span class="ic">'+(configured?"✓":"•")+'</span><span class="st-txt"><strong>'+esc(t("billingMappingTitle"))+'</strong> · '+esc(t(configured?"billingMappingConfigured":"billingMappingMissing"))+'</span><span class="right" style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn ghost" onclick="App.openBillingMapping(\'manual\')">'+esc(t("billingMappingManual"))+'</button>'+auto+'</span></div>';
+  }
   // A small pass/fail/pending chip for a single page test.
   function pageTestChip(pageUid){
     var st=S.pageTests[pageUid];
@@ -1705,6 +1739,7 @@ var App = (function(){
     setupBody+=docImportStatusRow(r);
     setupBody+=terminalsImportStatusRow(r);
     setupBody+=bankImportStatusRow(r);
+    setupBody+=billingMappingStatusRow(r);
     h+=section({ key:"setup", open:S.setupOpen, icon:"🏗️", title:t("setupSectionTitle"), desc:t("setupSectionSub"), toggle:"App.toggleSetup()", body:setupBody });
     h+=pagesSection();
     h+=orgSettingsSection();
@@ -1738,7 +1773,7 @@ var App = (function(){
     togglePages:togglePages, testPage:testPage, testAllPages:testAllPages,
     toggleOrg:toggleOrg, setOrgVatMode:setOrgVatMode,
     selDefaultTerminal:selDefaultTerminal, selDefaultPage:selDefaultPage,
-    validate:validate, restart:restart, setSS:setSS, setSSExpiry:setSSExpiry, setChoiceField:setChoiceField, setNumberField:setNumberField, setDistChannel:setDistChannel, setDocType:setDocType, reimportDocs:reimportDocs, reimportTerminals:reimportTerminals, reimportBanks:reimportBanks
+    validate:validate, restart:restart, setSS:setSS, setSSExpiry:setSSExpiry, setChoiceField:setChoiceField, setNumberField:setNumberField, setDistChannel:setDistChannel, setDocType:setDocType, reimportDocs:reimportDocs, reimportTerminals:reimportTerminals, reimportBanks:reimportBanks, openBillingMapping:openBillingMapping
   };
 })();
 </script>
