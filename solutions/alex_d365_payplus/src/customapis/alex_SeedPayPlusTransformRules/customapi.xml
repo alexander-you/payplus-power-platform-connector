@@ -1,0 +1,18 @@
+<customapi uniquename="alex_SeedPayPlusTransformRules">
+  <allowedcustomprocessingsteptype>0</allowedcustomprocessingsteptype>
+  <bindingtype>0</bindingtype>
+  <description default="Creates or updates built-in PayPlus transform rules.">
+    <label description="Creates or updates built-in PayPlus transform rules." languagecode="1033" />
+  </description>
+  <displayname default="Seed PayPlus Transform Rules">
+    <label description="Seed PayPlus Transform Rules" languagecode="1033" />
+  </displayname>
+  <iscustomizable>1</iscustomizable>
+  <isfunction>0</isfunction>
+  <isprivate>0</isprivate>
+  <name>Seed PayPlus Transform Rules</name>
+  <plugintypeid>
+    <plugintypeexportkey>0c154742-447d-f111-ab0e-7ced8d726840</plugintypeexportkey>
+  </plugintypeid>
+  <workflowsdkstepenabled>0</workflowsdkstepenabled>
+</customapi>

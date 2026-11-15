@@ -1,0 +1,30 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<PluginAssembly FullName="PayPlus.Plugins, Version=1.0.0.0, Culture=neutral, PublicKeyToken=b13e12cc408cfc14" PluginAssemblyId="f782997f-297c-f111-ab0e-7ced8d726840" CustomizationLevel="1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <IsolationMode>2</IsolationMode>
+  <SourceType>0</SourceType>
+  <IntroducedVersion>1.0.0.0</IntroducedVersion>
+  <FileName>/PluginAssemblies/PayPlusPlugins-F782997F-297C-F111-AB0E-7CED8D726840/PayPlusPlugins.dll</FileName>
+  <PluginTypes>
+    <PluginType AssemblyQualifiedName="PayPlus.Plugins.EnforceSingleDefaultCard, PayPlus.Plugins, Version=1.0.0.0, Culture=neutral, PublicKeyToken=b13e12cc408cfc14" PluginTypeId="fa82997f-297c-f111-ab0e-7ced8d726840" Name="PayPlus.Plugins.EnforceSingleDefaultCard">
+      <FriendlyName>PayPlus.Plugins.EnforceSingleDefaultCard</FriendlyName>
+    </PluginType>
+    <PluginType AssemblyQualifiedName="PayPlus.Plugins.EnforceSingleDefaultPage, PayPlus.Plugins, Version=1.0.0.0, Culture=neutral, PublicKeyToken=b13e12cc408cfc14" PluginTypeId="ec5f5caf-cc7e-f111-ab0e-7ced8d726840" Name="PayPlus.Plugins.EnforceSingleDefaultPage">
+      <FriendlyName>Enforce Single Default Page</FriendlyName>
+    </PluginType>
+    <PluginType AssemblyQualifiedName="PayPlus.Plugins.EnforceSingleDefaultTerminal, PayPlus.Plugins, Version=1.0.0.0, Culture=neutral, PublicKeyToken=b13e12cc408cfc14" PluginTypeId="e55f5caf-cc7e-f111-ab0e-7ced8d726840" Name="PayPlus.Plugins.EnforceSingleDefaultTerminal">
+      <FriendlyName>Enforce Single Default Terminal</FriendlyName>
+    </PluginType>
+    <PluginType AssemblyQualifiedName="PayPlus.Plugins.QueueSyncOutboxOnSourceChange, PayPlus.Plugins, Version=1.0.0.0, Culture=neutral, PublicKeyToken=b13e12cc408cfc14" PluginTypeId="3ab78e90-497d-f111-ab0e-7ced8d726840" Name="PayPlus.Plugins.QueueSyncOutboxOnSourceChange">
+      <Description>Queues PayPlus sync outbox jobs for active entity mappings when source rows change.</Description>
+      <FriendlyName>PayPlus.Plugins.QueueSyncOutboxOnSourceChange</FriendlyName>
+    </PluginType>
+    <PluginType AssemblyQualifiedName="PayPlus.Plugins.ReconcileSyncSteps, PayPlus.Plugins, Version=1.0.0.0, Culture=neutral, PublicKeyToken=b13e12cc408cfc14" PluginTypeId="0d8c2b31-527d-f111-ab0e-7ced8d726840" Name="PayPlus.Plugins.ReconcileSyncSteps">
+      <Description>Creates or updates PayPlus sync plugin steps for configured source tables.</Description>
+      <FriendlyName>PayPlus.Plugins.ReconcileSyncSteps</FriendlyName>
+    </PluginType>
+    <PluginType AssemblyQualifiedName="PayPlus.Plugins.SeedTransformRules, PayPlus.Plugins, Version=1.0.0.0, Culture=neutral, PublicKeyToken=b13e12cc408cfc14" PluginTypeId="0c154742-447d-f111-ab0e-7ced8d726840" Name="PayPlus.Plugins.SeedTransformRules">
+      <Description>Seeds built-in PayPlus transform rules.</Description>
+      <FriendlyName>PayPlus.Plugins.SeedTransformRules</FriendlyName>
+    </PluginType>
+  </PluginTypes>
+</PluginAssembly>

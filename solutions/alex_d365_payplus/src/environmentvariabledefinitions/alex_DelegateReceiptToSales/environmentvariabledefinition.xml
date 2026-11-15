@@ -1,0 +1,14 @@
+<environmentvariabledefinition schemaname="alex_DelegateReceiptToSales">
+  <defaultvalue>no</defaultvalue>
+  <description default="When Yes, the Sales extension flow handles Workbench receipt/close; the base flow yields. Set automatically by the Sales extension.">
+    <label description="When Yes, the Sales extension flow handles Workbench receipt/close; the base flow yields. Set automatically by the Sales extension." languagecode="1033" />
+  </description>
+  <displayname default="Delegate Receipt To Sales">
+    <label description="Delegate Receipt To Sales" languagecode="1033" />
+  </displayname>
+  <introducedversion>1.0</introducedversion>
+  <iscustomizable>1</iscustomizable>
+  <isrequired>0</isrequired>
+  <secretstore>0</secretstore>
+  <type>100000002</type>
+</environmentvariabledefinition>

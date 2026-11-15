@@ -1,0 +1,15 @@
+<customapi uniquename="alex_FetchPayPlusOptions">
+  <allowedcustomprocessingsteptype>1</allowedcustomprocessingsteptype>
+  <bindingtype>0</bindingtype>
+  <description default="Fetch PayPlus terminals or payment pages through the connection (setup wizard step 2).">
+    <label description="Fetch PayPlus terminals or payment pages through the connection (setup wizard step 2)." languagecode="1033" />
+  </description>
+  <displayname default="PayPlus - Fetch Options">
+    <label description="PayPlus - Fetch Options" languagecode="1033" />
+  </displayname>
+  <iscustomizable>1</iscustomizable>
+  <isfunction>0</isfunction>
+  <isprivate>0</isprivate>
+  <name>alex_FetchPayPlusOptions</name>
+  <workflowsdkstepenabled>0</workflowsdkstepenabled>
+</customapi>

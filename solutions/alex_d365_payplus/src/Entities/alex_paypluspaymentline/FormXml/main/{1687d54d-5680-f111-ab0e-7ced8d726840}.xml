@@ -1,0 +1,226 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<forms xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <systemform>
+    <formid>{1687d54d-5680-f111-ab0e-7ced8d726840}</formid>
+    <IntroducedVersion>1.0.0.0</IntroducedVersion>
+    <FormPresentation>0</FormPresentation>
+    <FormActivationState>1</FormActivationState>
+    <form>
+      <tabs>
+        <tab name="tab_information" verticallayout="true" id="{A973C6A8-E182-4F97-A68E-F2FF5C305E33}" IsUserDefined="1">
+          <labels>
+            <label description="Information" languagecode="1033" />
+          </labels>
+          <columns>
+            <column width="100%">
+              <sections>
+                <section name="sec_general" showlabel="true" showbar="false" IsUserDefined="1" id="{FE119CE5-4D9E-4954-8A54-EAB20C14E36D}">
+                  <labels>
+                    <label description="General" languagecode="1033" />
+                  </labels>
+                  <rows>
+                    <row>
+                      <cell id="{6C23DE12-64C0-4D9E-BA0A-F8A7290E8D58}" showlabel="true">
+                        <labels>
+                          <label description="Name" languagecode="1033" />
+                        </labels>
+                        <control id="alex_name" classid="{4273EDBD-AC1D-40d3-9FB2-095C621B552D}" datafieldname="alex_name" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{A1BA902C-BDCA-4EC4-9CEE-60276FA235DA}" showlabel="true">
+                        <labels>
+                          <label description="Billing Case" languagecode="1033" />
+                        </labels>
+                        <control id="alex_billingcaseid" classid="{270BD3DB-D9AF-4782-9025-509E298DEC0A}" datafieldname="alex_billingcaseid" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{2EE38BA6-0646-4BB4-A056-8A9937AB973C}" showlabel="true">
+                        <labels>
+                          <label description="Receipt Document" languagecode="1033" />
+                        </labels>
+                        <control id="alex_receiptdocumentid" classid="{270BD3DB-D9AF-4782-9025-509E298DEC0A}" datafieldname="alex_receiptdocumentid" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{D4410F12-FE05-45C0-AF0F-06223BA1321C}" showlabel="true">
+                        <labels>
+                          <label description="Sequence" languagecode="1033" />
+                        </labels>
+                        <control id="alex_sequence" classid="{C6D124CA-7EDA-4A60-AEA9-7FB8D318B68F}" datafieldname="alex_sequence" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{1EF34EA6-DBA3-48BF-A4FF-A6B4AF5DE476}" showlabel="true">
+                        <labels>
+                          <label description="Charge mode" languagecode="1033" />
+                        </labels>
+                        <control id="alex_chargemode" classid="{3EF39988-22BB-4f0b-BBBE-64B5A3748AEE}" datafieldname="alex_chargemode" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{BB74408E-7CFA-48FF-A977-59A8F15036BE}" showlabel="true">
+                        <labels>
+                          <label description="Payment method" languagecode="1033" />
+                        </labels>
+                        <control id="alex_paymentmethod" classid="{3EF39988-22BB-4f0b-BBBE-64B5A3748AEE}" datafieldname="alex_paymentmethod" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{17B7F17F-C5DE-4BA2-BE41-33386EE3F805}" showlabel="true">
+                        <labels>
+                          <label description="Payment status" languagecode="1033" />
+                        </labels>
+                        <control id="alex_status" classid="{3EF39988-22BB-4f0b-BBBE-64B5A3748AEE}" datafieldname="alex_status" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{8D2D4E2F-CB69-4A49-85DD-34DA159EF4D5}" showlabel="true">
+                        <labels>
+                          <label description="Amount" languagecode="1033" />
+                        </labels>
+                        <control id="alex_amount" classid="{C3EFE0C3-0EC6-42be-8349-CBD9079DFD8E}" datafieldname="alex_amount" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{2AADABE3-2A8C-4B7F-A895-C022515D54B2}" showlabel="true">
+                        <labels>
+                          <label description="Due date" languagecode="1033" />
+                        </labels>
+                        <control id="alex_duedate" classid="{5B773807-9FB2-42db-97C3-7A91EFF8ADFF}" datafieldname="alex_duedate" />
+                      </cell>
+                    </row>
+                  </rows>
+                </section>
+                <section name="sec_check" showlabel="true" showbar="false" IsUserDefined="1" id="{7F72BBE5-E2E3-4EC7-987B-31FA2FB4560F}">
+                  <labels>
+                    <label description="Check details" languagecode="1033" />
+                  </labels>
+                  <rows>
+                    <row>
+                      <cell id="{BC35FCD7-C090-4823-9DE3-2A25454FEAE3}" showlabel="true">
+                        <labels>
+                          <label description="Check number" languagecode="1033" />
+                        </labels>
+                        <control id="alex_checknumber" classid="{4273EDBD-AC1D-40d3-9FB2-095C621B552D}" datafieldname="alex_checknumber" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{89452124-FD24-4D88-867D-F60BD00C14B5}" showlabel="true">
+                        <labels>
+                          <label description="Bank number" languagecode="1033" />
+                        </labels>
+                        <control id="alex_banknumber" classid="{4273EDBD-AC1D-40d3-9FB2-095C621B552D}" datafieldname="alex_banknumber" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{9024B8A0-6ED3-4A71-A832-3A37D7BC6AB9}" showlabel="true">
+                        <labels>
+                          <label description="Branch number" languagecode="1033" />
+                        </labels>
+                        <control id="alex_branchnumber" classid="{4273EDBD-AC1D-40d3-9FB2-095C621B552D}" datafieldname="alex_branchnumber" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{02CAE06C-9C38-453A-BD1E-1E8CD0642917}" showlabel="true">
+                        <labels>
+                          <label description="Bank account number" languagecode="1033" />
+                        </labels>
+                        <control id="alex_accountnumber" classid="{4273EDBD-AC1D-40d3-9FB2-095C621B552D}" datafieldname="alex_accountnumber" />
+                      </cell>
+                    </row>
+                  </rows>
+                </section>
+                <section name="sec_card" showlabel="true" showbar="false" IsUserDefined="1" id="{BEAAC2E2-858B-450E-B7EE-FD5A45623D75}">
+                  <labels>
+                    <label description="Card / transfer" languagecode="1033" />
+                  </labels>
+                  <rows>
+                    <row>
+                      <cell id="{8B106CC8-24A8-4178-A69D-1535F5A440C3}" showlabel="true">
+                        <labels>
+                          <label description="Card last 4" languagecode="1033" />
+                        </labels>
+                        <control id="alex_cardlast4" classid="{4273EDBD-AC1D-40d3-9FB2-095C621B552D}" datafieldname="alex_cardlast4" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{491C49C6-4B7E-4C84-A440-5DE25D36F156}" showlabel="true">
+                        <labels>
+                          <label description="Saved Card" languagecode="1033" />
+                        </labels>
+                        <control id="alex_creditcardid" classid="{270BD3DB-D9AF-4782-9025-509E298DEC0A}" datafieldname="alex_creditcardid" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{8C0FF394-B488-4991-8C7D-6005D99B2C48}" showlabel="true">
+                        <labels>
+                          <label description="Card brand" languagecode="1033" />
+                        </labels>
+                        <control id="alex_cardbrand" classid="{4273EDBD-AC1D-40d3-9FB2-095C621B552D}" datafieldname="alex_cardbrand" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{55E8088B-24A4-4F24-AF59-F48C877DD8F5}" showlabel="true">
+                        <labels>
+                          <label description="Approval number" languagecode="1033" />
+                        </labels>
+                        <control id="alex_approvalnumber" classid="{4273EDBD-AC1D-40d3-9FB2-095C621B552D}" datafieldname="alex_approvalnumber" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{235FC2A0-B42B-4FEB-BC99-46D9280379EF}" showlabel="true">
+                        <labels>
+                          <label description="Installments" languagecode="1033" />
+                        </labels>
+                        <control id="alex_installments" classid="{C6D124CA-7EDA-4A60-AEA9-7FB8D318B68F}" datafieldname="alex_installments" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{78EB5751-5E19-45EF-A65A-26A05CE54DF3}" showlabel="true">
+                        <labels>
+                          <label description="Token charge confirmed" languagecode="1033" />
+                        </labels>
+                        <control id="alex_tokenchargeconfirmed" classid="{67FAC785-CD58-4f9f-ABB3-4B7DDC6ED5ED}" datafieldname="alex_tokenchargeconfirmed" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{0C572869-C4A7-429C-9BE5-07D8163F072B}" showlabel="true">
+                        <labels>
+                          <label description="Token charge confirmed on" languagecode="1033" />
+                        </labels>
+                        <control id="alex_tokenchargeconfirmedon" classid="{5B773807-9FB2-42db-97C3-7A91EFF8ADFF}" datafieldname="alex_tokenchargeconfirmedon" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{658AB6F7-3BCB-40E7-898D-2ACC371DFAA3}" showlabel="true">
+                        <labels>
+                          <label description="Token charge confirmed by" languagecode="1033" />
+                        </labels>
+                        <control id="alex_tokenchargeconfirmedby" classid="{4273EDBD-AC1D-40d3-9FB2-095C621B552D}" datafieldname="alex_tokenchargeconfirmedby" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{03C0B537-8A58-46EF-BFFF-BBEEAA0E0109}" showlabel="true">
+                        <labels>
+                          <label description="Bank transfer reference" languagecode="1033" />
+                        </labels>
+                        <control id="alex_banktransferreference" classid="{4273EDBD-AC1D-40d3-9FB2-095C621B552D}" datafieldname="alex_banktransferreference" />
+                      </cell>
+                    </row>
+                  </rows>
+                </section>
+              </sections>
+            </column>
+          </columns>
+        </tab>
+      </tabs>
+    </form>
+    <IsCustomizable>1</IsCustomizable>
+    <CanBeDeleted>1</CanBeDeleted>
+    <LocalizedNames>
+      <LocalizedName description="מידע" languagecode="1033" />
+    </LocalizedNames>
+  </systemform>
+</forms>

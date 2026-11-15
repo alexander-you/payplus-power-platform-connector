@@ -1,0 +1,223 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<forms xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <systemform>
+    <formid>{7dfec453-b8b9-46e2-821a-5d9bef1ac2c1}</formid>
+    <IntroducedVersion>1.0.0.0</IntroducedVersion>
+    <FormPresentation>1</FormPresentation>
+    <FormActivationState>1</FormActivationState>
+    <form>
+      <tabs>
+        <tab verticallayout="true" id="{54d84033-2d9d-402b-bf60-8cdf3d4a8144}" IsUserDefined="1">
+          <labels>
+            <label description="General" languagecode="1033" />
+          </labels>
+          <columns>
+            <column width="100%">
+              <sections>
+                <section showlabel="true" showbar="false" IsUserDefined="1" id="{2c718a3f-ab32-41fb-afab-24acec26410d}">
+                  <labels>
+                    <label description="General" languagecode="1033" />
+                  </labels>
+                  <rows>
+                    <row>
+                      <cell id="{da8df7df-d59c-4df8-a1d3-c6670d13ca55}" showlabel="true">
+                        <labels>
+                          <label description="שם" languagecode="1033" />
+                        </labels>
+                        <control id="alex_name" classid="{4273EDBD-AC1D-40d3-9FB2-095C621B552D}" datafieldname="alex_name" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{a158d1e2-faf9-4304-a29b-95cfbd01f655}" showlabel="true">
+                        <labels>
+                          <label description="Sync Profile" languagecode="1033" />
+                        </labels>
+                        <control id="alex_syncprofileid" classid="{270BD3DB-D9AF-4782-9025-509E298DEC0A}" datafieldname="alex_syncprofileid" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{cafa6cec-236e-431d-ba1f-dab4fe2fcdc9}" showlabel="true">
+                        <labels>
+                          <label description="Entity Mapping" languagecode="1033" />
+                        </labels>
+                        <control id="alex_entitymappingid" classid="{270BD3DB-D9AF-4782-9025-509E298DEC0A}" datafieldname="alex_entitymappingid" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{42dc2c9e-5222-424f-aa59-b70b4f87d939}" showlabel="true">
+                        <labels>
+                          <label description="Sync State" languagecode="1033" />
+                        </labels>
+                        <control id="alex_syncstateid" classid="{270BD3DB-D9AF-4782-9025-509E298DEC0A}" datafieldname="alex_syncstateid" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{3e009679-f906-4c77-af25-19cf4ec707f8}" showlabel="true">
+                        <labels>
+                          <label description="Source Table Logical Name" languagecode="1033" />
+                        </labels>
+                        <control id="alex_sourcetablelogicalname" classid="{4273EDBD-AC1D-40d3-9FB2-095C621B552D}" datafieldname="alex_sourcetablelogicalname" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{63267d1e-111a-44a7-b55c-bda604ac0ebf}" showlabel="true">
+                        <labels>
+                          <label description="Source Row ID" languagecode="1033" />
+                        </labels>
+                        <control id="alex_sourcerowid" classid="{4273EDBD-AC1D-40d3-9FB2-095C621B552D}" datafieldname="alex_sourcerowid" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{487078a8-88fb-4678-a714-3841fed2dff8}" showlabel="true">
+                        <labels>
+                          <label description="Target Object" languagecode="1033" />
+                        </labels>
+                        <control id="alex_targetobject" classid="{3EF39988-22BB-4f0b-BBBE-64B5A3748AEE}" datafieldname="alex_targetobject" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{0ec83de6-46ae-4426-b86e-5ab59a5339f0}" showlabel="true">
+                        <labels>
+                          <label description="Operation" languagecode="1033" />
+                        </labels>
+                        <control id="alex_operation" classid="{3EF39988-22BB-4f0b-BBBE-64B5A3748AEE}" datafieldname="alex_operation" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{aac18758-b218-4c05-b2eb-1927e1b22201}" showlabel="true">
+                        <labels>
+                          <label description="Status" languagecode="1033" />
+                        </labels>
+                        <control id="alex_status" classid="{3EF39988-22BB-4f0b-BBBE-64B5A3748AEE}" datafieldname="alex_status" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{d4305c7c-15a1-4894-a2e3-8bed4d358879}" showlabel="true">
+                        <labels>
+                          <label description="Correlation Key" languagecode="1033" />
+                        </labels>
+                        <control id="alex_correlationkey" classid="{4273EDBD-AC1D-40d3-9FB2-095C621B552D}" datafieldname="alex_correlationkey" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{ae4fdf5f-aa6c-4995-a192-2c432e0004c4}" showlabel="true">
+                        <labels>
+                          <label description="Source Version Number" languagecode="1033" />
+                        </labels>
+                        <control id="alex_sourceversionnumber" classid="{4273EDBD-AC1D-40d3-9FB2-095C621B552D}" datafieldname="alex_sourceversionnumber" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{0c52bef3-5be1-4472-a318-7068be58e96b}" showlabel="true">
+                        <labels>
+                          <label description="Source Modified On" languagecode="1033" />
+                        </labels>
+                        <control id="alex_sourcemodifiedon" classid="{5B773807-9FB2-42db-97C3-7A91EFF8ADFF}" datafieldname="alex_sourcemodifiedon" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{c13955c6-4951-4f67-b823-0bacc60a64ba}" showlabel="true">
+                        <labels>
+                          <label description="Last Detected On" languagecode="1033" />
+                        </labels>
+                        <control id="alex_lastdetectedon" classid="{5B773807-9FB2-42db-97C3-7A91EFF8ADFF}" datafieldname="alex_lastdetectedon" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{893f9fc3-585d-41ab-9f30-b005aaf1ba47}" showlabel="true">
+                        <labels>
+                          <label description="Attempt Count" languagecode="1033" />
+                        </labels>
+                        <control id="alex_attemptcount" classid="{C6D124CA-7EDA-4A60-AEA9-7FB8D318B68F}" datafieldname="alex_attemptcount" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{fde98af8-8bbb-4ee5-ae9e-c154afd447c1}" showlabel="true">
+                        <labels>
+                          <label description="Maximum Attempts" languagecode="1033" />
+                        </labels>
+                        <control id="alex_maxattempts" classid="{C6D124CA-7EDA-4A60-AEA9-7FB8D318B68F}" datafieldname="alex_maxattempts" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{faa7f0a6-9d47-4a15-a4ba-4f0987e7d28c}" showlabel="true">
+                        <labels>
+                          <label description="Next Retry On" languagecode="1033" />
+                        </labels>
+                        <control id="alex_nextretryon" classid="{5B773807-9FB2-42db-97C3-7A91EFF8ADFF}" datafieldname="alex_nextretryon" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{8c48c1d7-b55b-42f8-a2ed-f2181687eeba}" showlabel="true">
+                        <labels>
+                          <label description="Locked Until" languagecode="1033" />
+                        </labels>
+                        <control id="alex_lockeduntil" classid="{5B773807-9FB2-42db-97C3-7A91EFF8ADFF}" datafieldname="alex_lockeduntil" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{1126fa12-de2e-4a84-9bec-9c44a5b2ba49}" showlabel="true">
+                        <labels>
+                          <label description="Processing Started On" languagecode="1033" />
+                        </labels>
+                        <control id="alex_processingstartedon" classid="{5B773807-9FB2-42db-97C3-7A91EFF8ADFF}" datafieldname="alex_processingstartedon" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{a5fadac0-e321-4527-a843-c9b201b9f49f}" showlabel="true">
+                        <labels>
+                          <label description="Processed On" languagecode="1033" />
+                        </labels>
+                        <control id="alex_processedon" classid="{5B773807-9FB2-42db-97C3-7A91EFF8ADFF}" datafieldname="alex_processedon" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{6c55659c-ddb7-43e6-af37-6cb6988eba1b}" showlabel="true">
+                        <labels>
+                          <label description="Payload Snapshot" languagecode="1033" />
+                        </labels>
+                        <control id="alex_payloadsnapshot" classid="{E0DECE4B-6FC8-4a8f-A065-082708572369}" datafieldname="alex_payloadsnapshot" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{d03af881-3ce3-4b57-9e69-4beed7306c87}" showlabel="true">
+                        <labels>
+                          <label description="Response Snapshot" languagecode="1033" />
+                        </labels>
+                        <control id="alex_responsesnapshot" classid="{E0DECE4B-6FC8-4a8f-A065-082708572369}" datafieldname="alex_responsesnapshot" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{5e1bd13b-e3f2-4304-8b7f-d3801f3fe084}" showlabel="true">
+                        <labels>
+                          <label description="Last Error" languagecode="1033" />
+                        </labels>
+                        <control id="alex_lasterror" classid="{E0DECE4B-6FC8-4a8f-A065-082708572369}" datafieldname="alex_lasterror" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{b2b0d57a-09b4-4f8d-bfcf-d9b474471d93}" showlabel="true">
+                        <labels>
+                          <label description="Superseded By" languagecode="1033" />
+                        </labels>
+                        <control id="alex_supersededbyid" classid="{270BD3DB-D9AF-4782-9025-509E298DEC0A}" datafieldname="alex_supersededbyid" />
+                      </cell>
+                    </row>
+                  </rows>
+                </section>
+              </sections>
+            </column>
+          </columns>
+        </tab>
+      </tabs>
+    </form>
+    <IsCustomizable>1</IsCustomizable>
+    <CanBeDeleted>1</CanBeDeleted>
+    <LocalizedNames>
+      <LocalizedName description="Information" languagecode="1033" />
+    </LocalizedNames>
+    <Descriptions>
+      <Description description="PayPlus Sync Outbox main form." languagecode="1033" />
+    </Descriptions>
+  </systemform>
+</forms>

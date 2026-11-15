@@ -1,0 +1,11 @@
+<customapiresponseproperty uniquename="CreatedCount">
+  <description default="Number of plugin steps created.">
+    <label description="Number of plugin steps created." languagecode="1033" />
+  </description>
+  <displayname default="CreatedCount">
+    <label description="CreatedCount" languagecode="1033" />
+  </displayname>
+  <iscustomizable>1</iscustomizable>
+  <name>CreatedCount</name>
+  <type>7</type>
+</customapiresponseproperty>

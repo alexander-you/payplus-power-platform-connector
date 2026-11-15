@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<WebResource xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <WebResourceId>{3bc844a6-447d-f111-ab0e-7ced8d726840}</WebResourceId>
+  <Name>alex_payplus_seed_transform_rules.js</Name>
+  <DisplayName>PayPlus Seed Transform Rules</DisplayName>
+  <Description>Ribbon command library for seeding PayPlus transform rules.</Description>
+  <WebResourceType>3</WebResourceType>
+  <IntroducedVersion>1.0.0.0</IntroducedVersion>
+  <IsEnabledForMobileClient>0</IsEnabledForMobileClient>
+  <IsAvailableForMobileOffline>0</IsAvailableForMobileOffline>
+  <IsCustomizable>1</IsCustomizable>
+  <CanBeDeleted>1</CanBeDeleted>
+  <IsHidden>0</IsHidden>
+  <FileName>/WebResources/alex_payplus_seed_transform_rulesjs3BC844A6-447D-F111-AB0E-7CED8D726840</FileName>
+</WebResource>

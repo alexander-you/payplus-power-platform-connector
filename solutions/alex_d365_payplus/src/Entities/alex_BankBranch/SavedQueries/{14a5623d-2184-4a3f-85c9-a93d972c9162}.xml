@@ -1,0 +1,43 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<savedqueries xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <savedquery>
+    <IsCustomizable>1</IsCustomizable>
+    <CanBeDeleted>0</CanBeDeleted>
+    <isquickfindquery>0</isquickfindquery>
+    <isprivate>0</isprivate>
+    <isdefault>1</isdefault>
+    <savedqueryid>{14a5623d-2184-4a3f-85c9-a93d972c9162}</savedqueryid>
+    <layoutxml>
+      <grid name="resultset" jump="alex_name" select="1" icon="1" preview="1">
+        <row name="result" id="alex_bankbranchid">
+          <cell name="alex_branchcode" width="110" />
+          <cell name="alex_name" width="240" />
+          <cell name="alex_bankid" width="200" />
+          <cell name="alex_city" width="150" />
+          <cell name="alex_telephone" width="130" />
+        </row>
+      </grid>
+    </layoutxml>
+    <querytype>0</querytype>
+    <fetchxml>
+      <fetch version="1.0" mapping="logical">
+        <entity name="alex_bankbranch">
+          <attribute name="alex_bankbranchid" />
+          <attribute name="alex_branchcode" />
+          <attribute name="alex_name" />
+          <attribute name="alex_bankid" />
+          <attribute name="alex_city" />
+          <attribute name="alex_telephone" />
+          <order attribute="alex_name" descending="false" />
+          <filter type="and">
+            <condition attribute="statecode" operator="eq" value="0" />
+          </filter>
+        </entity>
+      </fetch>
+    </fetchxml>
+    <IntroducedVersion>1.0.0.0</IntroducedVersion>
+    <LocalizedNames>
+      <LocalizedName description="Active Bank Branches" languagecode="1033" />
+    </LocalizedNames>
+  </savedquery>
+</savedqueries>

@@ -1,0 +1,159 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<forms xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <systemform>
+    <formid>{99f77530-a66c-46bd-ac9b-63ba051b64d7}</formid>
+    <IntroducedVersion>1.0.0.0</IntroducedVersion>
+    <FormPresentation>1</FormPresentation>
+    <FormActivationState>1</FormActivationState>
+    <form>
+      <tabs>
+        <tab verticallayout="true" id="{92709865-9403-4ac0-a2cc-bcfbee4bfc72}" IsUserDefined="1">
+          <labels>
+            <label description="General" languagecode="1033" />
+          </labels>
+          <columns>
+            <column width="100%">
+              <sections>
+                <section showlabel="true" showbar="false" IsUserDefined="1" id="{6a17a224-11ea-4f0c-82dd-ebd4145f8a37}">
+                  <labels>
+                    <label description="General" languagecode="1033" />
+                  </labels>
+                  <rows>
+                    <row>
+                      <cell id="{0c6cb0d7-d002-4dbe-8fb5-64d434e7d452}" showlabel="true">
+                        <labels>
+                          <label description="Name" languagecode="1033" />
+                        </labels>
+                        <control id="alex_name" classid="{4273EDBD-AC1D-40d3-9FB2-095C621B552D}" datafieldname="alex_name" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{b8de80c0-f5cf-4f9e-bb1d-1abb4f801362}" showlabel="true">
+                        <labels>
+                          <label description="Sync Profile" languagecode="1033" />
+                        </labels>
+                        <control id="alex_syncprofileid" classid="{270BD3DB-D9AF-4782-9025-509E298DEC0A}" datafieldname="alex_syncprofileid" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{44039807-d227-4fe1-a748-16b56f9011f5}" showlabel="true">
+                        <labels>
+                          <label description="Entity Mapping" languagecode="1033" />
+                        </labels>
+                        <control id="alex_entitymappingid" classid="{270BD3DB-D9AF-4782-9025-509E298DEC0A}" datafieldname="alex_entitymappingid" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{0fa97b07-98f1-49d4-a105-43f043838753}" showlabel="true">
+                        <labels>
+                          <label description="Source Table Logical Name" languagecode="1033" />
+                        </labels>
+                        <control id="alex_sourcetablelogicalname" classid="{4273EDBD-AC1D-40d3-9FB2-095C621B552D}" datafieldname="alex_sourcetablelogicalname" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{ab0ca06a-f0ef-45f1-a590-d8eb524783f9}" showlabel="true">
+                        <labels>
+                          <label description="Source Row ID" languagecode="1033" />
+                        </labels>
+                        <control id="alex_sourcerowid" classid="{4273EDBD-AC1D-40d3-9FB2-095C621B552D}" datafieldname="alex_sourcerowid" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{f1fa452c-811b-4242-835e-455a8b50dbc0}" showlabel="true">
+                        <labels>
+                          <label description="Target Object" languagecode="1033" />
+                        </labels>
+                        <control id="alex_targetobject" classid="{3EF39988-22BB-4f0b-BBBE-64B5A3748AEE}" datafieldname="alex_targetobject" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{eb596104-0cfa-4551-a1c9-87cdd9474e54}" showlabel="true">
+                        <labels>
+                          <label description="PayPlus UID" languagecode="1033" />
+                        </labels>
+                        <control id="alex_payplusuid" classid="{4273EDBD-AC1D-40d3-9FB2-095C621B552D}" datafieldname="alex_payplusuid" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{7e205645-9c91-4b89-a6e5-3be5a97e51f3}" showlabel="true">
+                        <labels>
+                          <label description="PayPlus External Number" languagecode="1033" />
+                        </labels>
+                        <control id="alex_payplusexternalnumber" classid="{4273EDBD-AC1D-40d3-9FB2-095C621B552D}" datafieldname="alex_payplusexternalnumber" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{34056199-eb08-4f92-8d87-1c028269d067}" showlabel="true">
+                        <labels>
+                          <label description="Correlation Key" languagecode="1033" />
+                        </labels>
+                        <control id="alex_correlationkey" classid="{4273EDBD-AC1D-40d3-9FB2-095C621B552D}" datafieldname="alex_correlationkey" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{ece62b83-b680-40ff-b167-44231c392bf1}" showlabel="true">
+                        <labels>
+                          <label description="Last Operation" languagecode="1033" />
+                        </labels>
+                        <control id="alex_lastoperation" classid="{3EF39988-22BB-4f0b-BBBE-64B5A3748AEE}" datafieldname="alex_lastoperation" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{888d68fb-e163-4672-b7b3-507ca816ab78}" showlabel="true">
+                        <labels>
+                          <label description="Last Status" languagecode="1033" />
+                        </labels>
+                        <control id="alex_laststatus" classid="{3EF39988-22BB-4f0b-BBBE-64B5A3748AEE}" datafieldname="alex_laststatus" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{5f07ec4d-9936-4e45-b5b4-5402a3d224fd}" showlabel="true">
+                        <labels>
+                          <label description="Last Synced On" languagecode="1033" />
+                        </labels>
+                        <control id="alex_lastsyncedon" classid="{5B773807-9FB2-42db-97C3-7A91EFF8ADFF}" datafieldname="alex_lastsyncedon" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{f5095bcb-ece3-4acc-8d39-8f2a868dc04f}" showlabel="true">
+                        <labels>
+                          <label description="Last Payload Hash" languagecode="1033" />
+                        </labels>
+                        <control id="alex_lastpayloadhash" classid="{4273EDBD-AC1D-40d3-9FB2-095C621B552D}" datafieldname="alex_lastpayloadhash" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{d4665a48-86bb-456b-b366-bbea53e531d1}" showlabel="true">
+                        <labels>
+                          <label description="Last Source Version Number" languagecode="1033" />
+                        </labels>
+                        <control id="alex_lastsourceversionnumber" classid="{4273EDBD-AC1D-40d3-9FB2-095C621B552D}" datafieldname="alex_lastsourceversionnumber" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{f09383da-69f4-4f76-bcce-5392290198fa}" showlabel="true">
+                        <labels>
+                          <label description="Is Active" languagecode="1033" />
+                        </labels>
+                        <control id="alex_isactive" classid="{67FAC785-CD58-4f9f-ABB3-4B7DDC6ED5ED}" datafieldname="alex_isactive" />
+                      </cell>
+                    </row>
+                  </rows>
+                </section>
+              </sections>
+            </column>
+          </columns>
+        </tab>
+      </tabs>
+    </form>
+    <IsCustomizable>1</IsCustomizable>
+    <CanBeDeleted>1</CanBeDeleted>
+    <LocalizedNames>
+      <LocalizedName description="Information" languagecode="1033" />
+    </LocalizedNames>
+    <Descriptions>
+      <Description description="PayPlus Sync State main form." languagecode="1033" />
+    </Descriptions>
+  </systemform>
+</forms>

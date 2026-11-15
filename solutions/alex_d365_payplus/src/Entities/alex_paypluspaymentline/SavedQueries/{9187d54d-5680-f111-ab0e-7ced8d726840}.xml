@@ -1,0 +1,42 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<savedqueries xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <savedquery>
+    <IsCustomizable>1</IsCustomizable>
+    <CanBeDeleted>1</CanBeDeleted>
+    <isquickfindquery>0</isquickfindquery>
+    <isprivate>0</isprivate>
+    <isdefault>0</isdefault>
+    <savedqueryid>{9187d54d-5680-f111-ab0e-7ced8d726840}</savedqueryid>
+    <layoutxml>
+      <grid name="resultset" jump="alex_name" select="1" icon="1" preview="1">
+        <row name="result" id="alex_paypluspaymentlineid">
+          <cell name="alex_billingcaseid" width="180" />
+          <cell name="alex_sequence" width="80" />
+          <cell name="alex_paymentmethod" width="140" />
+          <cell name="alex_amount" width="120" />
+          <cell name="alex_duedate" width="120" />
+          <cell name="alex_status" width="120" />
+        </row>
+      </grid>
+    </layoutxml>
+    <querytype>0</querytype>
+    <fetchxml>
+      <fetch>
+        <entity name="alex_paypluspaymentline">
+          <attribute name="alex_name" />
+          <attribute name="alex_billingcaseid" />
+          <attribute name="alex_sequence" />
+          <attribute name="alex_paymentmethod" />
+          <attribute name="alex_amount" />
+          <attribute name="alex_duedate" />
+          <attribute name="alex_status" />
+          <order attribute="createdon" descending="true" />
+        </entity>
+      </fetch>
+    </fetchxml>
+    <IntroducedVersion>1.0.0.0</IntroducedVersion>
+    <LocalizedNames>
+      <LocalizedName description="שורות תשלום פעילות" languagecode="1033" />
+    </LocalizedNames>
+  </savedquery>
+</savedqueries>

@@ -1,0 +1,11 @@
+<customapiresponseproperty uniquename="FailedCount">
+  <description default="Number of mappings that failed reconciliation.">
+    <label description="Number of mappings that failed reconciliation." languagecode="1033" />
+  </description>
+  <displayname default="FailedCount">
+    <label description="FailedCount" languagecode="1033" />
+  </displayname>
+  <iscustomizable>1</iscustomizable>
+  <name>FailedCount</name>
+  <type>7</type>
+</customapiresponseproperty>

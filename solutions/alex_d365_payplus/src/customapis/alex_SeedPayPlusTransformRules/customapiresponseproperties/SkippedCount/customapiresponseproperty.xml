@@ -1,0 +1,11 @@
+<customapiresponseproperty uniquename="SkippedCount">
+  <description default="Number of transform rules already up to date.">
+    <label description="Number of transform rules already up to date." languagecode="1033" />
+  </description>
+  <displayname default="SkippedCount">
+    <label description="SkippedCount" languagecode="1033" />
+  </displayname>
+  <iscustomizable>1</iscustomizable>
+  <name>SkippedCount</name>
+  <type>7</type>
+</customapiresponseproperty>

@@ -1,0 +1,55 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<forms xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <systemform>
+    <formid>{b3abe9a1-0cf5-4c26-a8c1-23aebdb1a328}</formid>
+    <IntroducedVersion>1.0.0.0</IntroducedVersion>
+    <FormPresentation>1</FormPresentation>
+    <FormActivationState>1</FormActivationState>
+    <form>
+      <tabs>
+        <tab verticallayout="true" id="{ed5da133-037e-41ff-b02a-9fdf06d0f36d}" IsUserDefined="0" name="tab_general">
+          <labels>
+            <label description="General" languagecode="1033" />
+          </labels>
+          <columns>
+            <column width="100%">
+              <sections>
+                <section name="sec_5b4c8d6c79334100bc0e7106ebb7c67f" showlabel="true" showbar="true" IsUserDefined="0" id="{d73e00fa-5990-437b-ac2f-4bf1536ce255}" columns="1" labelwidth="140" celllabelalignment="Left" celllabelposition="Left">
+                  <labels>
+                    <label description="General" languagecode="1033" />
+                  </labels>
+                  <rows>
+                    <row>
+                      <cell id="{30379a5d-c13b-4d52-8b17-92b9f2dedca3}">
+                        <labels>
+                          <label description="Bank Code" languagecode="1033" />
+                        </labels>
+                        <control id="alex_bankcode" classid="{C6D124CA-7EDA-4a60-AEA9-7FB8D318B68F}" datafieldname="alex_bankcode" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{c73902af-c379-4761-94e9-f07c6fb6042d}">
+                        <labels>
+                          <label description="Bank Name" languagecode="1033" />
+                        </labels>
+                        <control id="alex_name" classid="{4273EDBD-AC1D-40d3-9FB2-095C621B552D}" datafieldname="alex_name" />
+                      </cell>
+                    </row>
+                  </rows>
+                </section>
+              </sections>
+            </column>
+          </columns>
+        </tab>
+      </tabs>
+    </form>
+    <IsCustomizable>1</IsCustomizable>
+    <CanBeDeleted>1</CanBeDeleted>
+    <LocalizedNames>
+      <LocalizedName description="Information" languagecode="1033" />
+    </LocalizedNames>
+    <Descriptions>
+      <Description description="A form for this entity." languagecode="1033" />
+    </Descriptions>
+  </systemform>
+</forms>

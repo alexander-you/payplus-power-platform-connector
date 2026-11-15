@@ -1,0 +1,15 @@
+<customapi uniquename="alex_ValidatePayPlusConnection">
+  <allowedcustomprocessingsteptype>1</allowedcustomprocessingsteptype>
+  <bindingtype>0</bindingtype>
+  <description default="Triggers the PayPlus connection test flow (via custom connector). No plugin; used as a flow trigger.">
+    <label description="Triggers the PayPlus connection test flow (via custom connector). No plugin; used as a flow trigger." languagecode="1033" />
+  </description>
+  <displayname default="Validate PayPlus Connection">
+    <label description="Validate PayPlus Connection" languagecode="1033" />
+  </displayname>
+  <iscustomizable>1</iscustomizable>
+  <isfunction>0</isfunction>
+  <isprivate>0</isprivate>
+  <name>Validate PayPlus Connection</name>
+  <workflowsdkstepenabled>0</workflowsdkstepenabled>
+</customapi>

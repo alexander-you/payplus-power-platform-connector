@@ -1,0 +1,390 @@
+/* ==========================================================================
+   PayPlus Bank Accounts — Apple-style PCF control
+   Full RTL (he) + LTR (en) support. Self-themed.
+   ========================================================================== */
+
+.ppb-wallet {
+  --ppb-radius: 16px;
+  --ppb-gap: 14px;
+  --ppb-fg: #1d1d1f;
+  --ppb-fg-soft: #6e6e73;
+  --ppb-line: rgba(0, 0, 0, 0.08);
+  --ppb-surface: #ffffff;
+  --ppb-surface-2: #f5f5f7;
+  --ppb-primary: #0071e3;
+  --ppb-primary-ink: #ffffff;
+  --ppb-chip: #e8e8ed;
+  --ppb-chip-ink: #1d1d1f;
+  box-sizing: border-box;
+  width: 100%;
+  padding: 4px 2px 10px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  color: var(--ppb-fg);
+  -webkit-font-smoothing: antialiased;
+}
+.ppb-wallet *, .ppb-wallet *::before, .ppb-wallet *::after { box-sizing: border-box; }
+
+@media (prefers-color-scheme: dark) {
+  .ppb-wallet {
+    --ppb-fg: #f5f5f7;
+    --ppb-fg-soft: #a1a1a6;
+    --ppb-line: rgba(255, 255, 255, 0.12);
+    --ppb-surface: #1c1c1e;
+    --ppb-surface-2: #2c2c2e;
+    --ppb-chip: #2c2c2e;
+    --ppb-chip-ink: #f5f5f7;
+  }
+}
+
+/* ---- header / toolbar ---- */
+.ppb-head {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 12px; flex-wrap: wrap; margin: 2px 4px 14px;
+}
+.ppb-head-titles { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.ppb-title {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 17px; font-weight: 700; letter-spacing: -0.01em; line-height: 1.1;
+}
+.ppb-logo {
+  width: 22px; height: 22px; border-radius: 7px; flex: 0 0 auto;
+  background: linear-gradient(135deg, #34c759, #248a3d);
+  display: inline-flex; align-items: center; justify-content: center;
+  color: #fff; font-size: 13px; font-weight: 800;
+}
+.ppb-sub { font-size: 12.5px; color: var(--ppb-fg-soft); }
+.ppb-actions { display: flex; align-items: center; gap: 8px; }
+
+/* ---- buttons ---- */
+.ppb-btn {
+  appearance: none; border: 0; cursor: pointer; font: inherit;
+  font-size: 13px; font-weight: 600; padding: 8px 14px; border-radius: 980px;
+  display: inline-flex; align-items: center; gap: 6px; white-space: nowrap;
+  transition: transform .12s ease, box-shadow .2s ease, background .2s ease, opacity .2s;
+}
+.ppb-btn:active { transform: scale(0.97); }
+.ppb-btn:disabled { opacity: .45; cursor: default; }
+.ppb-btn:focus-visible { outline: 2px solid var(--ppb-primary); outline-offset: 2px; }
+.ppb-btn-primary { background: var(--ppb-primary); color: var(--ppb-primary-ink); }
+.ppb-btn-primary:not(:disabled):hover { box-shadow: 0 6px 18px rgba(0, 113, 227, .35); }
+.ppb-btn-ghost { background: var(--ppb-chip); color: var(--ppb-chip-ink); }
+.ppb-btn-ghost:hover { box-shadow: 0 4px 12px rgba(0, 0, 0, .12); }
+.ppb-btn .pp-ic { width: 15px; height: 15px; }
+
+/* ---- states ---- */
+.ppb-note { padding: 22px 8px; color: var(--ppb-fg-soft); font-size: 13.5px; }
+.ppb-note-err { color: #c0362c; }
+.ppb-empty {
+  display: flex; flex-direction: column; align-items: center; text-align: center;
+  gap: 6px; padding: 34px 18px; color: var(--ppb-fg-soft);
+  border: 1px dashed var(--ppb-line); border-radius: var(--ppb-radius);
+  background: var(--ppb-surface-2);
+}
+.ppb-empty-ic { font-size: 30px; }
+.ppb-empty-title { font-size: 15px; font-weight: 700; color: var(--ppb-fg); }
+.ppb-empty-body { font-size: 13px; max-width: 340px; line-height: 1.45; }
+
+/* ---- card grid ---- */
+.ppb-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: var(--ppb-gap);
+}
+
+/* ---- bank account card ---- */
+.ppb-card {
+  position: relative;
+  border-radius: var(--ppb-radius);
+  background: var(--ppb-surface);
+  border: 1px solid var(--ppb-line);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, .07);
+  padding: 16px 16px 14px;
+  display: flex; flex-direction: column; gap: 8px;
+  transition: transform .18s ease, box-shadow .22s ease;
+}
+.ppb-card:hover { transform: translateY(-3px); box-shadow: 0 12px 30px rgba(0, 0, 0, .12); }
+.ppb-card.ppb-inactive { opacity: .68; }
+
+.ppb-card-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
+.ppb-logo-wrap {
+  width: 54px; height: 54px; border-radius: 12px;
+  background: #fff; border: 1px solid var(--ppb-line);
+  display: inline-flex; align-items: center; justify-content: center; overflow: hidden;
+  flex: 0 0 auto;
+}
+.ppb-bank-img { max-width: 46px; max-height: 46px; object-fit: contain; display: block; }
+.ppb-logo-fallback {
+  width: 100%; height: 100%; display: inline-flex; align-items: center; justify-content: center;
+  font-size: 18px; font-weight: 800; color: #fff;
+  background: linear-gradient(135deg, #0a84ff, #0040a0);
+}
+
+.ppb-badges { display: flex; flex-wrap: wrap; gap: 6px; justify-content: flex-end; }
+.ppb-badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-size: 11px; font-weight: 700; letter-spacing: .01em;
+  padding: 4px 9px; border-radius: 980px; white-space: nowrap;
+}
+.ppb-badge .pp-ic { width: 12px; height: 12px; }
+.ppb-badge-default { background: rgba(0, 113, 227, .12); color: #0071e3; }
+.ppb-badge-standing { background: rgba(52, 199, 89, .16); color: #248a3d; }
+.ppb-badge-off { background: var(--ppb-chip); color: var(--ppb-fg-soft); }
+
+.ppb-bankname { font-size: 15.5px; font-weight: 700; letter-spacing: -0.01em; line-height: 1.2; }
+.ppb-acct { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.ppb-acct-num {
+  font-size: 15px; font-weight: 600; font-variant-numeric: tabular-nums;
+  letter-spacing: .04em; direction: ltr; unicode-bidi: isolate;
+}
+.ppb-acct-branch { font-size: 12.5px; color: var(--ppb-fg-soft); font-variant-numeric: tabular-nums; }
+.ppb-holder {
+  display: flex; align-items: baseline; gap: 8px;
+  padding-top: 8px; margin-top: 2px; border-top: 1px solid var(--ppb-line);
+}
+.ppb-holder-lbl { font-size: 11.5px; color: var(--ppb-fg-soft); }
+.ppb-holder-val { font-size: 13.5px; font-weight: 600; }
+
+/* ==========================================================================
+   Add panel (Apple-style slide-in drawer) — attached to <body>.
+   ========================================================================== */
+.ppb-pane-root {
+  --ppb-fg: #1d1d1f;
+  --ppb-fg-soft: #6e6e73;
+  --ppb-line: rgba(0, 0, 0, 0.08);
+  --ppb-surface: #ffffff;
+  --ppb-surface-2: #f5f5f7;
+  --ppb-primary: #0071e3;
+  --ppb-chip: #e8e8ed;
+  position: fixed; inset: 0; z-index: 2147483000;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  color: var(--ppb-fg); -webkit-font-smoothing: antialiased;
+}
+.ppb-pane-root *, .ppb-pane-root *::before, .ppb-pane-root *::after { box-sizing: border-box; }
+
+@media (prefers-color-scheme: dark) {
+  .ppb-pane-root {
+    --ppb-fg: #f5f5f7;
+    --ppb-fg-soft: #a1a1a6;
+    --ppb-line: rgba(255, 255, 255, 0.12);
+    --ppb-surface: #1c1c1e;
+    --ppb-surface-2: #2c2c2e;
+    --ppb-chip: #2c2c2e;
+  }
+}
+
+.ppb-backdrop {
+  position: absolute; inset: 0;
+  background: rgba(0, 0, 0, .28);
+  backdrop-filter: blur(2px); -webkit-backdrop-filter: blur(2px);
+  opacity: 0; transition: opacity .28s ease;
+}
+.ppb-pane-root.ppb-open .ppb-backdrop { opacity: 1; }
+
+.ppb-drawer {
+  position: absolute; top: 0; bottom: 0; inset-inline-end: 0;
+  width: min(440px, 94vw);
+  background: var(--ppb-surface);
+  box-shadow: 0 0 60px rgba(0, 0, 0, .32);
+  display: flex; flex-direction: column;
+  transform: translateX(100%);
+  transition: transform .32s cubic-bezier(.2,.8,.2,1);
+}
+.ppb-pane-root[dir="rtl"] .ppb-drawer { transform: translateX(-100%); }
+.ppb-pane-root.ppb-open .ppb-drawer { transform: none; }
+
+.ppb-pane-head {
+  padding: 18px 20px 14px; border-bottom: 1px solid var(--ppb-line);
+  display: flex; align-items: flex-start; justify-content: space-between; gap: 12px;
+}
+.ppb-pane-title { font-size: 17px; font-weight: 700; letter-spacing: -0.01em; }
+.ppb-pane-sub { font-size: 12.5px; color: var(--ppb-fg-soft); margin-top: 3px; }
+.ppb-pane-close {
+  appearance: none; border: 0; cursor: pointer; flex: 0 0 auto;
+  width: 30px; height: 30px; border-radius: 50%;
+  background: var(--ppb-chip); color: var(--ppb-fg);
+  font-size: 14px; line-height: 1; display: inline-flex; align-items: center; justify-content: center;
+}
+.ppb-pane-close:hover { box-shadow: 0 3px 10px rgba(0, 0, 0, .16); }
+
+.ppb-pane-body {
+  flex: 1 1 auto; overflow-y: auto; padding: 16px 20px;
+  display: flex; flex-direction: column; gap: 14px;
+}
+
+.ppb-field { display: flex; flex-direction: column; gap: 6px; }
+.ppb-field-lbl { font-size: 12.5px; font-weight: 600; color: var(--ppb-fg-soft); }
+.ppb-input {
+  appearance: none; width: 100%; font: inherit; font-size: 14px;
+  padding: 10px 12px; border-radius: 11px;
+  border: 1px solid var(--ppb-line); background: var(--ppb-surface-2); color: var(--ppb-fg);
+  transition: border-color .16s ease, box-shadow .16s ease;
+}
+.ppb-input:focus {
+  outline: none; border-color: var(--ppb-primary);
+  box-shadow: 0 0 0 3px rgba(0, 113, 227, .18); background: var(--ppb-surface);
+}
+select.ppb-input { cursor: pointer; }
+.ppb-linkbtn {
+  appearance: none; border: 0; background: transparent; cursor: pointer;
+  font: inherit; font-size: 12px; font-weight: 600; color: var(--ppb-primary);
+  padding: 2px 0; text-align: start; align-self: flex-start;
+}
+.ppb-linkbtn:hover { text-decoration: underline; }
+
+.ppb-so-extra {
+  display: flex; flex-direction: column; gap: 14px;
+  padding: 12px; border-radius: 12px; background: var(--ppb-surface-2);
+  border: 1px solid var(--ppb-line);
+}
+
+/* ---- toggle switch ---- */
+.ppb-toggle-row {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  cursor: pointer; padding: 6px 0;
+}
+.ppb-toggle-texts { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.ppb-toggle-lbl { font-size: 14px; font-weight: 600; }
+.ppb-toggle-hint { font-size: 12px; color: var(--ppb-fg-soft); }
+.ppb-switch { position: relative; width: 46px; height: 28px; flex: 0 0 auto; }
+.ppb-switch-in { position: absolute; opacity: 0; width: 0; height: 0; }
+.ppb-switch-slider {
+  position: absolute; inset: 0; border-radius: 980px;
+  background: #c7c7cc; transition: background .2s ease;
+}
+.ppb-switch-slider::before {
+  content: ""; position: absolute; top: 3px; inset-inline-start: 3px;
+  width: 22px; height: 22px; border-radius: 50%;
+  background: #fff; box-shadow: 0 1px 3px rgba(0, 0, 0, .3);
+  transition: transform .2s cubic-bezier(.2,.8,.2,1);
+}
+.ppb-switch-in:checked + .ppb-switch-slider { background: #34c759; }
+.ppb-switch-in:checked + .ppb-switch-slider::before { transform: translateX(18px); }
+.ppb-pane-root[dir="rtl"] .ppb-switch-in:checked + .ppb-switch-slider::before { transform: translateX(-18px); }
+.ppb-switch-in:focus-visible + .ppb-switch-slider { outline: 2px solid var(--ppb-primary); outline-offset: 2px; }
+
+.ppb-pane-foot {
+  padding: 14px 20px; border-top: 1px solid var(--ppb-line);
+  display: flex; gap: 10px; justify-content: flex-end;
+  background: var(--ppb-surface);
+}
+
+/* ---- toast ---- */
+.ppb-toast {
+  position: fixed; bottom: 26px; left: 50%;
+  transform: translate(-50%, 16px); opacity: 0;
+  z-index: 2147483600;
+  max-width: min(440px, 92vw);
+  padding: 12px 18px; border-radius: 12px;
+  color: #fff; font-size: 13.5px; font-weight: 600; line-height: 1.4;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, .34);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  transition: transform .26s cubic-bezier(.2,.8,.2,1), opacity .26s ease;
+  pointer-events: none;
+}
+.ppb-toast.ppb-toast-in { transform: translate(-50%, 0); opacity: 1; }
+.ppb-toast-ok  { background: #1d1d1f; }
+.ppb-toast-err { background: #b3261e; }
+
+/* ==========================================================================
+   Clickable card footer + related-receipts drawer.
+   ========================================================================== */
+.ppb-card-click { cursor: pointer; }
+.ppb-card-click:focus-visible { outline: 2px solid var(--ppb-primary); outline-offset: 2px; }
+/* keep the receipt icon in the drawer header at a sane size */
+.ppb-pane-title { display: inline-flex; align-items: center; gap: 8px; }
+.ppb-pane-title .pp-ic { width: 19px; height: 19px; flex: 0 0 auto; }
+.ppb-card-foot {
+  display: flex; align-items: center; justify-content: space-between; gap: 6px;
+  margin-top: 4px; padding-top: 10px; border-top: 1px solid var(--ppb-line);
+  color: var(--ppb-primary); font-size: 12.5px; font-weight: 600;
+}
+.ppb-card-foot .pp-ic { width: 15px; height: 15px; opacity: .85; }
+.ppb-wallet[dir="rtl"] .ppb-ic-dir { transform: scaleX(-1); }
+.ppb-pane-root[dir="rtl"] .ppb-ic-dir { transform: scaleX(-1); }
+
+/* wider drawer when previewing a document */
+.ppb-rec-drawer { transition: transform .32s cubic-bezier(.2,.8,.2,1), width .3s ease; }
+.ppb-rec-drawer.ppb-rec-expanded { width: min(760px, 96vw); }
+
+/* account chip under the header */
+.ppb-rec-chip {
+  display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap;
+  padding: 12px 20px; border-bottom: 1px solid var(--ppb-line);
+  background: var(--ppb-surface-2);
+}
+.ppb-rec-chip-bank { font-size: 14px; font-weight: 700; }
+.ppb-rec-chip-acct {
+  font-size: 13px; font-weight: 600; color: var(--ppb-fg-soft);
+  font-variant-numeric: tabular-nums; letter-spacing: .04em; direction: ltr; unicode-bidi: isolate;
+}
+
+.ppb-rec-body { gap: 12px; }
+
+/* summary strip */
+.ppb-rec-summary { display: flex; gap: 10px; }
+.ppb-rec-sum-item {
+  flex: 1 1 0; display: flex; flex-direction: column; gap: 3px;
+  padding: 12px 14px; border-radius: 12px;
+  background: var(--ppb-surface-2); border: 1px solid var(--ppb-line);
+}
+.ppb-rec-sum-k { font-size: 11.5px; color: var(--ppb-fg-soft); }
+.ppb-rec-sum-v { font-size: 16px; font-weight: 700; font-variant-numeric: tabular-nums; }
+
+/* receipt list */
+.ppb-rec-list { display: flex; flex-direction: column; gap: 8px; }
+.ppb-rec-row {
+  appearance: none; border: 1px solid var(--ppb-line); cursor: pointer; font: inherit;
+  background: var(--ppb-surface); color: var(--ppb-fg);
+  display: flex; align-items: center; gap: 12px; width: 100%; text-align: start;
+  padding: 12px 14px; border-radius: 12px;
+  transition: transform .12s ease, box-shadow .2s ease, background .18s ease;
+}
+.ppb-rec-row:hover { box-shadow: 0 6px 18px rgba(0, 0, 0, .1); transform: translateY(-1px); }
+.ppb-rec-row:active { transform: scale(.99); }
+.ppb-rec-row:focus-visible { outline: 2px solid var(--ppb-primary); outline-offset: 2px; }
+.ppb-rec-row-ic {
+  width: 34px; height: 34px; flex: 0 0 auto; border-radius: 9px;
+  display: inline-flex; align-items: center; justify-content: center;
+  background: rgba(0, 113, 227, .12); color: var(--ppb-primary);
+}
+.ppb-rec-row-ic .pp-ic { width: 18px; height: 18px; }
+.ppb-rec-row-main { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.ppb-rec-row-title { font-size: 13.5px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ppb-rec-row-sub { font-size: 12px; color: var(--ppb-fg-soft); }
+.ppb-rec-row-amt { font-size: 14px; font-weight: 700; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.ppb-rec-row-chev { color: var(--ppb-fg-soft); display: inline-flex; flex: 0 0 auto; }
+.ppb-rec-row-chev .pp-ic { width: 16px; height: 16px; }
+
+/* detail view */
+.ppb-rec-detail-bar {
+  display: flex; align-items: center; gap: 10px;
+  padding-bottom: 10px; border-bottom: 1px solid var(--ppb-line);
+}
+.ppb-rec-back {
+  appearance: none; border: 0; background: transparent; cursor: pointer; font: inherit;
+  display: inline-flex; align-items: center; gap: 4px;
+  font-size: 13px; font-weight: 600; color: var(--ppb-primary); flex: 0 0 auto;
+}
+.ppb-rec-back .pp-ic { width: 16px; height: 16px; }
+.ppb-rec-detail-title {
+  flex: 1 1 auto; min-width: 0; font-size: 14px; font-weight: 700;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-align: center;
+}
+.ppb-rec-iconbtn {
+  appearance: none; border: 0; cursor: pointer; flex: 0 0 auto;
+  width: 32px; height: 32px; border-radius: 9px;
+  background: var(--ppb-chip); color: var(--ppb-fg);
+  display: inline-flex; align-items: center; justify-content: center;
+}
+.ppb-rec-iconbtn .pp-ic { width: 16px; height: 16px; }
+.ppb-rec-iconbtn:hover { box-shadow: 0 3px 10px rgba(0, 0, 0, .16); }
+.ppb-rec-frame-wrap {
+  flex: 1 1 auto; margin-top: 12px; border-radius: 12px; overflow: hidden;
+  border: 1px solid var(--ppb-line); background: var(--ppb-surface-2); min-height: 60vh;
+}
+.ppb-rec-frame { width: 100%; height: 100%; min-height: 60vh; border: 0; display: block; }
+.ppb-rec-detail-empty {
+  flex: 1 1 auto; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 10px; padding: 40px 18px; color: var(--ppb-fg-soft); text-align: center;
+}
+.ppb-rec-detail-empty .pp-ic { width: 34px; height: 34px; opacity: .5; }

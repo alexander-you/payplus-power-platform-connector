@@ -1,0 +1,222 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ImportExportXml version="9.2.26103.165" SolutionPackageVersion="9.2" languagecode="1033" generatedBy="CrmLive" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" OrganizationVersion="9.2.26103.165" OrganizationSchemaType="Full" CRMServerServiceabilityVersion="9.2.26103.00165">
+  <SolutionManifest>
+    <UniqueName>alex_d365_payplus</UniqueName>
+    <LocalizedNames>
+      <LocalizedName description="PayPlus" languagecode="1033" />
+    </LocalizedNames>
+    <Descriptions>
+      <Description description="D365 x PayPlus low-code billing &amp; collection integration." languagecode="1033" />
+    </Descriptions>
+    <Version>1.2.2.0</Version>
+    <Managed>2</Managed>
+    <Publisher>
+      <UniqueName>AlexanderYurpolsky</UniqueName>
+      <LocalizedNames>
+        <LocalizedName description="AlexanderYurpolsky" languagecode="1033" />
+      </LocalizedNames>
+      <Descriptions>
+        <Description description="AlexanderYurpolsky" languagecode="1033" />
+      </Descriptions>
+      <EMailAddress xsi:nil="true"></EMailAddress>
+      <SupportingWebsiteUrl xsi:nil="true"></SupportingWebsiteUrl>
+      <CustomizationPrefix>alex</CustomizationPrefix>
+      <CustomizationOptionValuePrefix>62621</CustomizationOptionValuePrefix>
+      <Addresses>
+        <Address>
+          <AddressNumber>1</AddressNumber>
+          <AddressTypeCode>1</AddressTypeCode>
+          <City xsi:nil="true"></City>
+          <County xsi:nil="true"></County>
+          <Country xsi:nil="true"></Country>
+          <Fax xsi:nil="true"></Fax>
+          <FreightTermsCode xsi:nil="true"></FreightTermsCode>
+          <ImportSequenceNumber xsi:nil="true"></ImportSequenceNumber>
+          <Latitude xsi:nil="true"></Latitude>
+          <Line1 xsi:nil="true"></Line1>
+          <Line2 xsi:nil="true"></Line2>
+          <Line3 xsi:nil="true"></Line3>
+          <Longitude xsi:nil="true"></Longitude>
+          <Name xsi:nil="true"></Name>
+          <PostalCode xsi:nil="true"></PostalCode>
+          <PostOfficeBox xsi:nil="true"></PostOfficeBox>
+          <PrimaryContactName xsi:nil="true"></PrimaryContactName>
+          <ShippingMethodCode>1</ShippingMethodCode>
+          <StateOrProvince xsi:nil="true"></StateOrProvince>
+          <Telephone1 xsi:nil="true"></Telephone1>
+          <Telephone2 xsi:nil="true"></Telephone2>
+          <Telephone3 xsi:nil="true"></Telephone3>
+          <TimeZoneRuleVersionNumber xsi:nil="true"></TimeZoneRuleVersionNumber>
+          <UPSZone xsi:nil="true"></UPSZone>
+          <UTCOffset xsi:nil="true"></UTCOffset>
+          <UTCConversionTimeZoneCode xsi:nil="true"></UTCConversionTimeZoneCode>
+        </Address>
+        <Address>
+          <AddressNumber>2</AddressNumber>
+          <AddressTypeCode>1</AddressTypeCode>
+          <City xsi:nil="true"></City>
+          <County xsi:nil="true"></County>
+          <Country xsi:nil="true"></Country>
+          <Fax xsi:nil="true"></Fax>
+          <FreightTermsCode xsi:nil="true"></FreightTermsCode>
+          <ImportSequenceNumber xsi:nil="true"></ImportSequenceNumber>
+          <Latitude xsi:nil="true"></Latitude>
+          <Line1 xsi:nil="true"></Line1>
+          <Line2 xsi:nil="true"></Line2>
+          <Line3 xsi:nil="true"></Line3>
+          <Longitude xsi:nil="true"></Longitude>
+          <Name xsi:nil="true"></Name>
+          <PostalCode xsi:nil="true"></PostalCode>
+          <PostOfficeBox xsi:nil="true"></PostOfficeBox>
+          <PrimaryContactName xsi:nil="true"></PrimaryContactName>
+          <ShippingMethodCode>1</ShippingMethodCode>
+          <StateOrProvince xsi:nil="true"></StateOrProvince>
+          <Telephone1 xsi:nil="true"></Telephone1>
+          <Telephone2 xsi:nil="true"></Telephone2>
+          <Telephone3 xsi:nil="true"></Telephone3>
+          <TimeZoneRuleVersionNumber xsi:nil="true"></TimeZoneRuleVersionNumber>
+          <UPSZone xsi:nil="true"></UPSZone>
+          <UTCOffset xsi:nil="true"></UTCOffset>
+          <UTCConversionTimeZoneCode xsi:nil="true"></UTCConversionTimeZoneCode>
+        </Address>
+      </Addresses>
+    </Publisher>
+    <RootComponents>
+      <RootComponent type="1" schemaName="account" behavior="1" />
+      <RootComponent type="1" schemaName="alex_bank" behavior="0" />
+      <RootComponent type="1" schemaName="alex_bankbranch" behavior="0" />
+      <RootComponent type="1" schemaName="alex_companybankaccount" behavior="0" />
+      <RootComponent type="1" schemaName="alex_creditcard" behavior="0" />
+      <RootComponent type="1" schemaName="alex_customerbankaccount" behavior="0" />
+      <RootComponent type="1" schemaName="alex_payplus_documenttype" behavior="0" />
+      <RootComponent type="1" schemaName="alex_payplus_entitymapping" behavior="0" />
+      <RootComponent type="1" schemaName="alex_payplus_fieldmapping" behavior="0" />
+      <RootComponent type="1" schemaName="alex_payplus_filterrule" behavior="0" />
+      <RootComponent type="1" schemaName="alex_payplus_paymentpage" behavior="0" />
+      <RootComponent type="1" schemaName="alex_payplus_synclog" behavior="0" />
+      <RootComponent type="1" schemaName="alex_payplus_syncoutbox" behavior="0" />
+      <RootComponent type="1" schemaName="alex_payplus_syncprofile" behavior="0" />
+      <RootComponent type="1" schemaName="alex_payplus_syncstate" behavior="0" />
+      <RootComponent type="1" schemaName="alex_payplus_terminal" behavior="0" />
+      <RootComponent type="1" schemaName="alex_payplus_transformrule" behavior="0" />
+      <RootComponent type="1" schemaName="alex_payplus_valuemapping" behavior="0" />
+      <RootComponent type="1" schemaName="alex_payplusbillingcase" behavior="0" />
+      <RootComponent type="1" schemaName="alex_payplusconfiguration" behavior="0" />
+      <RootComponent type="1" schemaName="alex_payplusdocument" behavior="0" />
+      <RootComponent type="1" schemaName="alex_payplusdocumentactionlog" behavior="0" />
+      <RootComponent type="1" schemaName="alex_paypluspaymentline" behavior="0" />
+      <RootComponent type="1" schemaName="alex_payplusreceiptallocation" behavior="0" />
+      <RootComponent type="1" schemaName="alex_pp_hfsession" behavior="0" />
+      <RootComponent type="1" schemaName="annotation" behavior="2" />
+      <RootComponent type="1" schemaName="asyncoperation" behavior="2" />
+      <RootComponent type="1" schemaName="contact" behavior="1" />
+      <RootComponent type="1" schemaName="processsession" behavior="2" />
+      <RootComponent type="1" schemaName="syncerror" behavior="2" />
+      <RootComponent type="1" schemaName="systemuser" behavior="1" />
+      <RootComponent type="29" id="{0430672c-547d-f111-ab0e-7ced8d726840}" behavior="0" />
+      <RootComponent type="29" id="{0d15e104-707c-f111-ab0e-7ced8d726840}" behavior="0" />
+      <RootComponent type="29" id="{2a9e931c-347e-f111-ab0e-7ced8d726840}" behavior="0" />
+      <RootComponent type="29" id="{3fc7e972-6b7c-f111-ab0e-7ced8d726840}" behavior="0" />
+      <RootComponent type="29" id="{53c1c7b2-317c-f111-ab0e-7ced8d726840}" behavior="0" />
+      <RootComponent type="29" id="{84bee1c4-c17e-f111-ab0e-7ced8d726840}" behavior="0" />
+      <RootComponent type="29" id="{89fc0181-f67a-f111-ab0e-7ced8d726840}" behavior="0" />
+      <RootComponent type="29" id="{8ad7d63b-f681-f111-ab0f-7ced8d726840}" behavior="0" />
+      <RootComponent type="29" id="{b4d61528-c782-f111-ab0f-7ced8d726840}" behavior="0" />
+      <RootComponent type="29" id="{b57158e0-b87b-f111-ab0e-7ced8d726840}" behavior="0" />
+      <RootComponent type="29" id="{b7fcbb7d-7d7c-f111-ab0e-7ced8d726840}" behavior="0" />
+      <RootComponent type="29" id="{dd14e104-707c-f111-ab0e-7ced8d726840}" behavior="0" />
+      <RootComponent type="29" id="{e9eb3488-2280-f111-ab0e-7ced8d726840}" behavior="0" />
+      <RootComponent type="29" id="{f814e104-707c-f111-ab0e-7ced8d726840}" behavior="0" />
+      <RootComponent type="300" schemaName="alex_payplusdocumentpreview_b4f29" behavior="0" />
+      <RootComponent type="300" schemaName="alex_paypluspaymentworkbench_49c56" behavior="0" />
+      <RootComponent type="372" id="{66e6832f-9776-4285-a07b-84b069d02015}" schemaName="alex_5Fpayplus" behavior="0" />
+      <RootComponent type="372" id="{79337094-f90a-4117-8d95-7fcef4ee4f84}" schemaName="alex_5Fpayplus-20sandbox" behavior="0" />
+      <RootComponent type="61" schemaName="alex_/banklogos/bank_10.png" behavior="0" />
+      <RootComponent type="61" schemaName="alex_/banklogos/bank_11.png" behavior="0" />
+      <RootComponent type="61" schemaName="alex_/banklogos/bank_12.png" behavior="0" />
+      <RootComponent type="61" schemaName="alex_/banklogos/bank_17.png" behavior="0" />
+      <RootComponent type="61" schemaName="alex_/banklogos/bank_18.png" behavior="0" />
+      <RootComponent type="61" schemaName="alex_/banklogos/bank_20.svg" behavior="0" />
+      <RootComponent type="61" schemaName="alex_/banklogos/bank_31.png" behavior="0" />
+      <RootComponent type="61" schemaName="alex_/banklogos/bank_4.png" behavior="0" />
+      <RootComponent type="61" schemaName="alex_/banklogos/bank_46.png" behavior="0" />
+      <RootComponent type="61" schemaName="alex_/banklogos/bank_54.png" behavior="0" />
+      <RootComponent type="61" schemaName="alex_auditing" behavior="0" />
+      <RootComponent type="61" schemaName="alex_bank" behavior="0" />
+      <RootComponent type="61" schemaName="alex_bank_account" behavior="0" />
+      <RootComponent type="61" schemaName="alex_branch" behavior="0" />
+      <RootComponent type="61" schemaName="alex_creditcard" behavior="0" />
+      <RootComponent type="61" schemaName="alex_data" behavior="0" />
+      <RootComponent type="61" schemaName="alex_documenttype" behavior="0" />
+      <RootComponent type="61" schemaName="alex_filter" behavior="0" />
+      <RootComponent type="61" schemaName="alex_invoice_bill" behavior="0" />
+      <RootComponent type="61" schemaName="alex_line" behavior="0" />
+      <RootComponent type="61" schemaName="alex_page" behavior="0" />
+      <RootComponent type="61" schemaName="alex_paymentmethod" behavior="0" />
+      <RootComponent type="61" schemaName="alex_payplus_add_icon.svg" behavior="0" />
+      <RootComponent type="61" schemaName="alex_payplus_billing_mapping.html" behavior="0" />
+      <RootComponent type="61" schemaName="alex_payplus_billing_mapping_commands.js" behavior="0" />
+      <RootComponent type="61" schemaName="alex_payplus_card_icon.svg" behavior="0" />
+      <RootComponent type="61" schemaName="alex_payplus_cardpane.html" behavior="0" />
+      <RootComponent type="61" schemaName="alex_payplus_email_icon.svg" behavior="0" />
+      <RootComponent type="61" schemaName="alex_payplus_logo_vector_white_bg" behavior="0" />
+      <RootComponent type="61" schemaName="alex_payplus_mapping_icon.svg" behavior="0" />
+      <RootComponent type="61" schemaName="alex_payplus_opencardpane.js" behavior="0" />
+      <RootComponent type="61" schemaName="alex_payplus_quote_commands.js" behavior="0" />
+      <RootComponent type="61" schemaName="alex_payplus_seed_transform_rules.js" behavior="0" />
+      <RootComponent type="61" schemaName="alex_payplus_selfservice_icon.svg" behavior="0" />
+      <RootComponent type="61" schemaName="alex_payplus_setup.html" behavior="0" />
+      <RootComponent type="61" schemaName="alex_payplus_sms_icon.svg" behavior="0" />
+      <RootComponent type="61" schemaName="alex_payplus_whatsapp_icon.svg" behavior="0" />
+      <RootComponent type="61" schemaName="alex_profile" behavior="0" />
+      <RootComponent type="61" schemaName="alex_queue" behavior="0" />
+      <RootComponent type="61" schemaName="alex_receipt" behavior="0" />
+      <RootComponent type="61" schemaName="alex_session" behavior="0" />
+      <RootComponent type="61" schemaName="alex_source_table" behavior="0" />
+      <RootComponent type="61" schemaName="alex_status" behavior="0" />
+      <RootComponent type="61" schemaName="alex_sync" behavior="0" />
+      <RootComponent type="61" schemaName="alex_terminal" behavior="0" />
+      <RootComponent type="61" schemaName="alex_transformation" behavior="0" />
+      <RootComponent type="61" schemaName="alex_value" behavior="0" />
+      <RootComponent type="62" schemaName="alex_PayPlusConfiguration" behavior="0" />
+      <RootComponent type="66" schemaName="alex_PayPlus.BankAccountWallet" behavior="0" />
+      <RootComponent type="66" schemaName="alex_PayPlus.CreditCardWallet" behavior="0" />
+      <RootComponent type="66" schemaName="alex_PayPlus.DocumentLedger" behavior="0" />
+      <RootComponent type="66" schemaName="alex_PayPlus.DocumentPreview" behavior="0" />
+      <RootComponent type="66" schemaName="alex_PayPlus.MappingStudio" behavior="0" />
+      <RootComponent type="66" schemaName="alex_PayPlus.PaymentWizard" behavior="0" />
+      <RootComponent type="80" schemaName="alex_PayPlusConfiguration" behavior="0" />
+      <RootComponent type="91" id="{f782997f-297c-f111-ab0e-7ced8d726840}" schemaName="PayPlus.Plugins, Version=1.0.0.0, Culture=neutral, PublicKeyToken=b13e12cc408cfc14" behavior="0" />
+      <RootComponent type="92" id="{0683997f-297c-f111-ab0e-7ced8d726840}" behavior="0" />
+      <RootComponent type="92" id="{374ecc96-497d-f111-ab0e-7ced8d726840}" behavior="0" />
+      <RootComponent type="92" id="{3fb78e90-497d-f111-ab0e-7ced8d726840}" behavior="0" />
+      <RootComponent type="92" id="{404ecc96-497d-f111-ab0e-7ced8d726840}" behavior="0" />
+      <RootComponent type="92" id="{454ecc96-497d-f111-ab0e-7ced8d726840}" behavior="0" />
+      <RootComponent type="92" id="{e65f5caf-cc7e-f111-ab0e-7ced8d726840}" behavior="0" />
+      <RootComponent type="92" id="{e95f5caf-cc7e-f111-ab0e-7ced8d726840}" behavior="0" />
+      <RootComponent type="92" id="{ed5f5caf-cc7e-f111-ab0e-7ced8d726840}" behavior="0" />
+      <RootComponent type="92" id="{f05f5caf-cc7e-f111-ab0e-7ced8d726840}" behavior="0" />
+      <RootComponent type="92" id="{fb82997f-297c-f111-ab0e-7ced8d726840}" behavior="0" />
+    </RootComponents>
+    <MissingDependencies>
+      <MissingDependency>
+        <Required type="1" schemaName="environmentvariabledefinition" displayName="Environment Variable Definition" solution="EnvironmentVariables (1.0.2406.4)">
+          <package appName="EnvironmentVariables" version="1.0.2406.4">EnvironmentVariablesSolutionAnchor (1.0.2406.4)</package>
+        </Required>
+        <Dependent type="29" displayName="PayPlus - Process Workbench Payment" id="{8ad7d63b-f681-f111-ab0f-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="61" schemaName="msdyn_/Images/AppModule_Default_Icon.png" displayName="msdyn_/Images/AppModule_Default_Icon.png" solution="AppModuleWebResources (2.5)">
+          <package appName="AppModule Web Resources Package" version="2.5">AppModuleWebResources (2.5)</package>
+        </Required>
+        <Dependent type="80" schemaName="alex_PayPlusConfiguration" displayName="PayPlus Configuration" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="SettingDefinition" displayName="AppChannel" solution="msdyn_AppFrameworkInfraExtensions (1.0.0.28)" id.uniquename="AppChannel">
+          <package appName="PowerAppsAppFramework Package" version="1.0.0.30">PowerAppsAppFramework_Anchor (1.0.0.30)</package>
+        </Required>
+        <Dependent type="AppSetting" displayName="parentappmoduleid.uniquename=alex_PayPlusConfiguration,settingdefinitionid.uniquename=AppChannel" id.parentappmoduleid.uniquename="alex_PayPlusConfiguration" id.settingdefinitionid.uniquename="AppChannel" />
+      </MissingDependency>
+    </MissingDependencies>
+  </SolutionManifest>
+</ImportExportXml>

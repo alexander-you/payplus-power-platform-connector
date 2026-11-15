@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<WebResource xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <WebResourceId>{e5db5c24-35cd-f111-a05c-e4fb1ef6b819}</WebResourceId>
+  <Name>alex_payplus_mapping_icon.svg</Name>
+  <DisplayName>PayPlus Billing Mapping Icon</DisplayName>
+  <Description>Generic PayPlus billing source mapping resource.</Description>
+  <WebResourceType>11</WebResourceType>
+  <IntroducedVersion>1.1.0.0</IntroducedVersion>
+  <IsEnabledForMobileClient>0</IsEnabledForMobileClient>
+  <IsAvailableForMobileOffline>0</IsAvailableForMobileOffline>
+  <IsCustomizable>1</IsCustomizable>
+  <CanBeDeleted>1</CanBeDeleted>
+  <IsHidden>0</IsHidden>
+  <FileName>/WebResources/alex_payplus_mapping_iconsvgE5DB5C24-35CD-F111-A05C-E4FB1EF6B819</FileName>
+</WebResource>

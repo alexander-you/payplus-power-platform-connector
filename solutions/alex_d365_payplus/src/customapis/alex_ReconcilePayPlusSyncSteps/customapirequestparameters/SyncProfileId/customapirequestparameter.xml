@@ -1,0 +1,12 @@
+<customapirequestparameter uniquename="SyncProfileId">
+  <description default="Optional PayPlus sync profile id to reconcile.">
+    <label description="Optional PayPlus sync profile id to reconcile." languagecode="1033" />
+  </description>
+  <displayname default="SyncProfileId">
+    <label description="SyncProfileId" languagecode="1033" />
+  </displayname>
+  <iscustomizable>1</iscustomizable>
+  <isoptional>1</isoptional>
+  <name>SyncProfileId</name>
+  <type>10</type>
+</customapirequestparameter>

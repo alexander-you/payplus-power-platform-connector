@@ -1,0 +1,913 @@
+{
+  "properties": {
+    "connectionReferences": {
+      "alex_payplus_dataverse": {
+        "runtimeSource": "embedded",
+        "connection": {
+          "connectionReferenceLogicalName": "alex_payplus_dataverse"
+        },
+        "api": {
+          "name": "shared_commondataserviceforapps"
+        }
+      },
+      "alex_payplusprod": {
+        "runtimeSource": "embedded",
+        "connection": {
+          "connectionReferenceLogicalName": "alex_payplusprod"
+        },
+        "api": {
+          "name": "shared_alex-5fpayplus-5fb5fb64f550912d55",
+          "logicalName": "alex_5Fpayplus"
+        }
+      },
+      "alex_payplussandbox": {
+        "runtimeSource": "embedded",
+        "connection": {
+          "connectionReferenceLogicalName": "alex_payplussandbox"
+        },
+        "api": {
+          "name": "shared_alex-5fpayplus-20sandbox-5fb5fb64f550912d55",
+          "logicalName": "alex_5Fpayplus-20sandbox"
+        }
+      }
+    },
+    "definition": {
+      "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+      "contentVersion": "1.0.0.0",
+      "parameters": {
+        "$connections": {
+          "defaultValue": {},
+          "type": "Object"
+        },
+        "$authentication": {
+          "defaultValue": {},
+          "type": "SecureObject"
+        }
+      },
+      "triggers": {
+        "When_import_is_requested": {
+          "metadata": {
+            "operationMetadataId": "e0000000-0000-4000-8000-000000000001"
+          },
+          "type": "OpenApiConnectionWebhook",
+          "inputs": {
+            "host": {
+              "connectionName": "alex_payplus_dataverse",
+              "operationId": "SubscribeWebhookTrigger",
+              "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+            },
+            "parameters": {
+              "subscriptionRequest/message": 4,
+              "subscriptionRequest/entityname": "alex_payplusconfiguration",
+              "subscriptionRequest/scope": 4,
+              "subscriptionRequest/filteringattributes": "alex_terminals_import_enabled"
+            },
+            "authentication": "@parameters('$authentication')"
+          },
+          "conditions": [
+            {
+              "expression": "@equals(triggerOutputs()?['body/alex_terminals_import_enabled'], true)"
+            }
+          ]
+        }
+      },
+      "actions": {
+        "Init_configId": {
+          "runAfter": {},
+          "metadata": {
+            "operationMetadataId": "4ef4351e-fb37-4278-afa8-704d7b181ea3"
+          },
+          "type": "InitializeVariable",
+          "inputs": {
+            "variables": [
+              {
+                "name": "Var_configId",
+                "type": "string",
+                "value": "@{triggerOutputs()?['body/alex_payplusconfigurationid']}"
+              }
+            ]
+          }
+        },
+        "Init_env": {
+          "runAfter": {
+            "Init_configId": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "7f4f167d-c3df-4566-a80e-80137cab1bbf"
+          },
+          "type": "InitializeVariable",
+          "inputs": {
+            "variables": [
+              {
+                "name": "Var_env",
+                "type": "integer",
+                "value": 100000001
+              }
+            ]
+          }
+        },
+        "Init_spId": {
+          "runAfter": {
+            "Init_env": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "55fce008-d47a-463f-a833-71978b54f428"
+          },
+          "type": "InitializeVariable",
+          "inputs": {
+            "variables": [
+              {
+                "name": "Var_spId",
+                "type": "string",
+                "value": ""
+              }
+            ]
+          }
+        },
+        "Init_terminals": {
+          "runAfter": {
+            "Init_spId": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "104a713c-7f09-40e0-a36b-3c8017d7faf4"
+          },
+          "type": "InitializeVariable",
+          "inputs": {
+            "variables": [
+              {
+                "name": "Var_terminals",
+                "type": "array",
+                "value": []
+              }
+            ]
+          }
+        },
+        "Init_pages": {
+          "runAfter": {
+            "Init_terminals": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "138dad35-2c6b-4b4b-a68a-a40ebc4d21a8"
+          },
+          "type": "InitializeVariable",
+          "inputs": {
+            "variables": [
+              {
+                "name": "Var_pages",
+                "type": "array",
+                "value": []
+              }
+            ]
+          }
+        },
+        "Init_terminalRecId": {
+          "runAfter": {
+            "Init_pages": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "6882a688-7b90-4d4a-9e1e-66f010bd5792"
+          },
+          "type": "InitializeVariable",
+          "inputs": {
+            "variables": [
+              {
+                "name": "Var_terminalRecId",
+                "type": "string",
+                "value": ""
+              }
+            ]
+          }
+        },
+        "Init_termCount": {
+          "runAfter": {
+            "Init_terminalRecId": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "949b2f44-4f4f-49f2-b87a-e91f7bd7b9bc"
+          },
+          "type": "InitializeVariable",
+          "inputs": {
+            "variables": [
+              {
+                "name": "Var_termCount",
+                "type": "integer",
+                "value": 0
+              }
+            ]
+          }
+        },
+        "Init_pageCount": {
+          "runAfter": {
+            "Init_termCount": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "26f15f7a-291b-4295-bcf6-64bb1cb88870"
+          },
+          "type": "InitializeVariable",
+          "inputs": {
+            "variables": [
+              {
+                "name": "Var_pageCount",
+                "type": "integer",
+                "value": 0
+              }
+            ]
+          }
+        },
+        "Get_config_row": {
+          "runAfter": {
+            "Init_pageCount": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "e0000000-0000-4000-8000-000000000010"
+          },
+          "type": "OpenApiConnection",
+          "inputs": {
+            "host": {
+              "connectionName": "alex_payplus_dataverse",
+              "operationId": "GetItem",
+              "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+            },
+            "parameters": {
+              "entityName": "alex_payplusconfigurations",
+              "recordId": "@variables('Var_configId')",
+              "$select": "alex_environment,alex_payplusconfigurationid"
+            },
+            "authentication": "@parameters('$authentication')"
+          }
+        },
+        "Set_env": {
+          "runAfter": {
+            "Get_config_row": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "44485120-6bcc-47c5-9b09-e78854d3e2b9"
+          },
+          "type": "SetVariable",
+          "inputs": {
+            "name": "Var_env",
+            "value": "@coalesce(body('Get_config_row')?['alex_environment'], 100000001)"
+          }
+        },
+        "Get_sync_profile": {
+          "runAfter": {
+            "Set_env": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "e0000000-0000-4000-8000-000000000011"
+          },
+          "type": "OpenApiConnection",
+          "inputs": {
+            "host": {
+              "connectionName": "alex_payplus_dataverse",
+              "operationId": "ListRecords",
+              "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+            },
+            "parameters": {
+              "entityName": "alex_payplus_syncprofiles",
+              "$filter": "alex_isactive eq true and alex_environment eq @{if(equals(variables('Var_env'),100000000),100000001,100000000)}",
+              "$select": "alex_payplus_syncprofileid",
+              "$top": 1
+            },
+            "authentication": "@parameters('$authentication')"
+          }
+        },
+        "Set_spId": {
+          "runAfter": {
+            "Get_sync_profile": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "1ffa7242-2ad1-460e-97d1-8cae7c8e02ae"
+          },
+          "type": "SetVariable",
+          "inputs": {
+            "name": "Var_spId",
+            "value": "@if(greater(length(body('Get_sync_profile')?['value']), 0), first(body('Get_sync_profile')?['value'])?['alex_payplus_syncprofileid'], '')"
+          }
+        },
+        "Do_import": {
+          "actions": {
+            "Switch_env_terminals": {
+              "runAfter": {},
+              "cases": {
+                "Case_Production": {
+                  "case": 100000000,
+                  "actions": {
+                    "GetTerminals_Prod": {
+                      "runAfter": {},
+                      "metadata": {
+                        "operationMetadataId": "e0000000-0000-4000-8000-000000000020"
+                      },
+                      "type": "OpenApiConnection",
+                      "inputs": {
+                        "host": {
+                          "connectionName": "alex_payplusprod",
+                          "operationId": "MyTerminals",
+                          "apiId": "/providers/Microsoft.PowerApps/apis/shared_alex-5fpayplus-5fb5fb64f550912d55"
+                        },
+                        "parameters": {},
+                        "authentication": "@parameters('$authentication')",
+                        "retryPolicy": {
+                          "type": "none"
+                        }
+                      }
+                    },
+                    "Set_terminals_Prod": {
+                      "runAfter": {
+                        "GetTerminals_Prod": [
+                          "Succeeded"
+                        ]
+                      },
+                      "metadata": {
+                        "operationMetadataId": "91bc4229-50e3-4438-bc3d-19e3fbb2e275"
+                      },
+                      "type": "SetVariable",
+                      "inputs": {
+                        "name": "Var_terminals",
+                        "value": "@coalesce(body('GetTerminals_Prod'), json('[]'))"
+                      }
+                    }
+                  }
+                }
+              },
+              "default": {
+                "actions": {
+                  "GetTerminals_Sandbox": {
+                    "runAfter": {},
+                    "metadata": {
+                      "operationMetadataId": "e0000000-0000-4000-8000-000000000030"
+                    },
+                    "type": "OpenApiConnection",
+                    "inputs": {
+                      "host": {
+                        "connectionName": "alex_payplussandbox",
+                        "operationId": "MyTerminals",
+                        "apiId": "/providers/Microsoft.PowerApps/apis/shared_alex-5fpayplus-20sandbox-5fb5fb64f550912d55"
+                      },
+                      "parameters": {},
+                      "authentication": "@parameters('$authentication')",
+                      "retryPolicy": {
+                        "type": "none"
+                      }
+                    }
+                  },
+                  "Set_terminals_Sandbox": {
+                    "runAfter": {
+                      "GetTerminals_Sandbox": [
+                        "Succeeded"
+                      ]
+                    },
+                    "metadata": {
+                      "operationMetadataId": "4a781bba-b8a8-4b1d-a88c-9b8a7ef67e07"
+                    },
+                    "type": "SetVariable",
+                    "inputs": {
+                      "name": "Var_terminals",
+                      "value": "@coalesce(body('GetTerminals_Sandbox'), json('[]'))"
+                    }
+                  }
+                }
+              },
+              "expression": "@variables('Var_env')",
+              "metadata": {
+                "operationMetadataId": "389ed056-1b11-4501-8c7a-18748d11c48d"
+              },
+              "type": "Switch"
+            },
+            "Apply_to_each_terminal": {
+              "foreach": "@variables('Var_terminals')",
+              "actions": {
+                "Compose_termUid": {
+                  "runAfter": {},
+                  "metadata": {
+                    "operationMetadataId": "1f00a104-986c-4ac3-8482-bd1043cdb557"
+                  },
+                  "type": "Compose",
+                  "inputs": "@items('Apply_to_each_terminal')?['uuid']"
+                },
+                "List_existing_terminal": {
+                  "runAfter": {
+                    "Compose_termUid": [
+                      "Succeeded"
+                    ]
+                  },
+                  "metadata": {
+                    "operationMetadataId": "e0000000-0000-4000-8000-000000000040"
+                  },
+                  "type": "OpenApiConnection",
+                  "inputs": {
+                    "host": {
+                      "connectionName": "alex_payplus_dataverse",
+                      "operationId": "ListRecords",
+                      "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+                    },
+                    "parameters": {
+                      "entityName": "alex_payplus_terminals",
+                      "$filter": "alex_environment eq @{variables('Var_env')} and alex_terminaluid eq '@{outputs('Compose_termUid')}'",
+                      "$select": "alex_payplus_terminalid",
+                      "$top": 1
+                    },
+                    "authentication": "@parameters('$authentication')"
+                  }
+                },
+                "If_terminal_exists": {
+                  "actions": {
+                    "Update_terminal": {
+                      "runAfter": {},
+                      "metadata": {
+                        "operationMetadataId": "e0000000-0000-4000-8000-000000000050"
+                      },
+                      "type": "OpenApiConnection",
+                      "inputs": {
+                        "host": {
+                          "connectionName": "alex_payplus_dataverse",
+                          "operationId": "UpdateRecord",
+                          "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+                        },
+                        "parameters": {
+                          "entityName": "alex_payplus_terminals",
+                          "recordId": "@first(body('List_existing_terminal')?['value'])?['alex_payplus_terminalid']",
+                          "item/alex_terminaluid": "@outputs('Compose_termUid')",
+                          "item/alex_merchantnumber": "@items('Apply_to_each_terminal')?['merchant_number']",
+                          "item/alex_terminaltypeid": "@items('Apply_to_each_terminal')?['terminal_type_id']",
+                          "item/alex_environment": "@variables('Var_env')",
+                          "item/alex_lastsyncon": "@utcNow()",
+                          "item/alex_rawjson": "@string(items('Apply_to_each_terminal'))",
+                          "item/alex_configurationid@odata.bind": "@concat('/alex_payplusconfigurations(', variables('Var_configId'), ')')",
+                          "item/alex_syncprofileid@odata.bind": "@if(empty(variables('Var_spId')), null, concat('/alex_payplus_syncprofiles(', variables('Var_spId'), ')'))"
+                        },
+                        "authentication": "@parameters('$authentication')"
+                      }
+                    },
+                    "Set_terminalRecId_existing": {
+                      "runAfter": {
+                        "Update_terminal": [
+                          "Succeeded"
+                        ]
+                      },
+                      "metadata": {
+                        "operationMetadataId": "fee41988-13cd-4cda-ad82-d10d5adfdcd7"
+                      },
+                      "type": "SetVariable",
+                      "inputs": {
+                        "name": "Var_terminalRecId",
+                        "value": "@first(body('List_existing_terminal')?['value'])?['alex_payplus_terminalid']"
+                      }
+                    }
+                  },
+                  "runAfter": {
+                    "List_existing_terminal": [
+                      "Succeeded"
+                    ]
+                  },
+                  "else": {
+                    "actions": {
+                      "Create_terminal": {
+                        "runAfter": {},
+                        "metadata": {
+                          "operationMetadataId": "e0000000-0000-4000-8000-000000000051"
+                        },
+                        "type": "OpenApiConnection",
+                        "inputs": {
+                          "host": {
+                            "connectionName": "alex_payplus_dataverse",
+                            "operationId": "CreateRecord",
+                            "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+                          },
+                          "parameters": {
+                            "entityName": "alex_payplus_terminals",
+                            "item/alex_name": "@coalesce(items('Apply_to_each_terminal')?['name_terminal'], outputs('Compose_termUid'))",
+                            "item/alex_terminaluid": "@outputs('Compose_termUid')",
+                            "item/alex_merchantnumber": "@items('Apply_to_each_terminal')?['merchant_number']",
+                            "item/alex_terminaltypeid": "@items('Apply_to_each_terminal')?['terminal_type_id']",
+                            "item/alex_environment": "@variables('Var_env')",
+                            "item/alex_isactive": true,
+                            "item/alex_isdefault": false,
+                            "item/alex_lastsyncon": "@utcNow()",
+                            "item/alex_rawjson": "@string(items('Apply_to_each_terminal'))",
+                            "item/alex_description": "Synced from PayPlus MyTerminals action.",
+                            "item/alex_configurationid@odata.bind": "@concat('/alex_payplusconfigurations(', variables('Var_configId'), ')')",
+                            "item/alex_syncprofileid@odata.bind": "@if(empty(variables('Var_spId')), null, concat('/alex_payplus_syncprofiles(', variables('Var_spId'), ')'))"
+                          },
+                          "authentication": "@parameters('$authentication')"
+                        }
+                      },
+                      "Set_terminalRecId_new": {
+                        "runAfter": {
+                          "Create_terminal": [
+                            "Succeeded"
+                          ]
+                        },
+                        "metadata": {
+                          "operationMetadataId": "77b54d1b-f8d6-47ed-914b-e43d1bae2274"
+                        },
+                        "type": "SetVariable",
+                        "inputs": {
+                          "name": "Var_terminalRecId",
+                          "value": "@body('Create_terminal')?['alex_payplus_terminalid']"
+                        }
+                      }
+                    }
+                  },
+                  "expression": {
+                    "greater": [
+                      "@length(body('List_existing_terminal')?['value'])",
+                      0
+                    ]
+                  },
+                  "metadata": {
+                    "operationMetadataId": "6be88a1a-963f-43c6-b170-675032a0dce7"
+                  },
+                  "type": "If"
+                },
+                "Increment_termCount": {
+                  "runAfter": {
+                    "If_terminal_exists": [
+                      "Succeeded"
+                    ]
+                  },
+                  "metadata": {
+                    "operationMetadataId": "20a64c9e-0ab0-45c2-8add-7ceb3e8d0b23"
+                  },
+                  "type": "IncrementVariable",
+                  "inputs": {
+                    "name": "Var_termCount",
+                    "value": 1
+                  }
+                },
+                "Reset_pages": {
+                  "runAfter": {
+                    "Increment_termCount": [
+                      "Succeeded"
+                    ]
+                  },
+                  "metadata": {
+                    "operationMetadataId": "82eded47-2a74-4716-88ee-cb36a7d44e0b"
+                  },
+                  "type": "SetVariable",
+                  "inputs": {
+                    "name": "Var_pages",
+                    "value": []
+                  }
+                },
+                "Switch_env_pages": {
+                  "runAfter": {
+                    "Reset_pages": [
+                      "Succeeded"
+                    ]
+                  },
+                  "cases": {
+                    "Case_Production_pages": {
+                      "case": 100000000,
+                      "actions": {
+                        "ListPages_Prod": {
+                          "runAfter": {},
+                          "metadata": {
+                            "operationMetadataId": "e0000000-0000-4000-8000-000000000060"
+                          },
+                          "type": "OpenApiConnection",
+                          "inputs": {
+                            "host": {
+                              "connectionName": "alex_payplusprod",
+                              "operationId": "ListPaymentPages",
+                              "apiId": "/providers/Microsoft.PowerApps/apis/shared_alex-5fpayplus-5fb5fb64f550912d55"
+                            },
+                            "parameters": {
+                              "terminal_uid": "@outputs('Compose_termUid')"
+                            },
+                            "authentication": "@parameters('$authentication')",
+                            "retryPolicy": {
+                              "type": "none"
+                            }
+                          }
+                        },
+                        "Set_pages_Prod": {
+                          "runAfter": {
+                            "ListPages_Prod": [
+                              "Succeeded"
+                            ]
+                          },
+                          "metadata": {
+                            "operationMetadataId": "c39060d2-d1a5-4838-9db3-6943a9633f25"
+                          },
+                          "type": "SetVariable",
+                          "inputs": {
+                            "name": "Var_pages",
+                            "value": "@coalesce(body('ListPages_Prod')?['data'], json('[]'))"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "default": {
+                    "actions": {
+                      "ListPages_Sandbox": {
+                        "runAfter": {},
+                        "metadata": {
+                          "operationMetadataId": "e0000000-0000-4000-8000-000000000061"
+                        },
+                        "type": "OpenApiConnection",
+                        "inputs": {
+                          "host": {
+                            "connectionName": "alex_payplussandbox",
+                            "operationId": "ListPaymentPages",
+                            "apiId": "/providers/Microsoft.PowerApps/apis/shared_alex-5fpayplus-20sandbox-5fb5fb64f550912d55"
+                          },
+                          "parameters": {
+                            "terminal_uid": "@outputs('Compose_termUid')"
+                          },
+                          "authentication": "@parameters('$authentication')",
+                          "retryPolicy": {
+                            "type": "none"
+                          }
+                        }
+                      },
+                      "Set_pages_Sandbox": {
+                        "runAfter": {
+                          "ListPages_Sandbox": [
+                            "Succeeded"
+                          ]
+                        },
+                        "metadata": {
+                          "operationMetadataId": "2d0e5e90-a13d-42a3-a877-a9fc50b9b355"
+                        },
+                        "type": "SetVariable",
+                        "inputs": {
+                          "name": "Var_pages",
+                          "value": "@coalesce(body('ListPages_Sandbox')?['data'], json('[]'))"
+                        }
+                      }
+                    }
+                  },
+                  "expression": "@variables('Var_env')",
+                  "metadata": {
+                    "operationMetadataId": "d057cc03-2f34-4aed-ada5-cdc42f20918f"
+                  },
+                  "type": "Switch"
+                },
+                "Apply_to_each_page": {
+                  "foreach": "@variables('Var_pages')",
+                  "actions": {
+                    "Compose_pageUid": {
+                      "runAfter": {},
+                      "metadata": {
+                        "operationMetadataId": "1013a59b-bb24-4737-b51e-705bf83ff067"
+                      },
+                      "type": "Compose",
+                      "inputs": "@items('Apply_to_each_page')?['uid']"
+                    },
+                    "List_existing_page": {
+                      "runAfter": {
+                        "Compose_pageUid": [
+                          "Succeeded"
+                        ]
+                      },
+                      "metadata": {
+                        "operationMetadataId": "e0000000-0000-4000-8000-000000000070"
+                      },
+                      "type": "OpenApiConnection",
+                      "inputs": {
+                        "host": {
+                          "connectionName": "alex_payplus_dataverse",
+                          "operationId": "ListRecords",
+                          "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+                        },
+                        "parameters": {
+                          "entityName": "alex_payplus_paymentpages",
+                          "$filter": "alex_environment eq @{variables('Var_env')} and alex_paymentpageuid eq '@{outputs('Compose_pageUid')}'",
+                          "$select": "alex_payplus_paymentpageid",
+                          "$top": 1
+                        },
+                        "authentication": "@parameters('$authentication')"
+                      }
+                    },
+                    "If_page_exists": {
+                      "actions": {
+                        "Update_page": {
+                          "runAfter": {},
+                          "metadata": {
+                            "operationMetadataId": "e0000000-0000-4000-8000-000000000080"
+                          },
+                          "type": "OpenApiConnection",
+                          "inputs": {
+                            "host": {
+                              "connectionName": "alex_payplus_dataverse",
+                              "operationId": "UpdateRecord",
+                              "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+                            },
+                            "parameters": {
+                              "entityName": "alex_payplus_paymentpages",
+                              "recordId": "@first(body('List_existing_page')?['value'])?['alex_payplus_paymentpageid']",
+                              "item/alex_paymentpageuid": "@outputs('Compose_pageUid')",
+                              "item/alex_cashieruid": "@items('Apply_to_each_page')?['cashier_uid']",
+                              "item/alex_cashiername": "@items('Apply_to_each_page')?['cashier_name']",
+                              "item/alex_chargemethod": "@items('Apply_to_each_page')?['charge_method']",
+                              "item/alex_defaultcurrency": "@items('Apply_to_each_page')?['default_currency_code']",
+                              "item/alex_language": "@items('Apply_to_each_page')?['language']",
+                              "item/alex_valid": "@if(or(equals(items('Apply_to_each_page')?['valid'],true),equals(items('Apply_to_each_page')?['valid'],1),equals(items('Apply_to_each_page')?['valid'],'1')),true,false)",
+                              "item/alex_environment": "@variables('Var_env')",
+                              "item/alex_lastsyncon": "@utcNow()",
+                              "item/alex_rawjson": "@string(items('Apply_to_each_page'))",
+                              "item/alex_terminalid@odata.bind": "@concat('/alex_payplus_terminals(', variables('Var_terminalRecId'), ')')",
+                              "item/alex_configurationid@odata.bind": "@concat('/alex_payplusconfigurations(', variables('Var_configId'), ')')",
+                              "item/alex_syncprofileid@odata.bind": "@if(empty(variables('Var_spId')), null, concat('/alex_payplus_syncprofiles(', variables('Var_spId'), ')'))"
+                            },
+                            "authentication": "@parameters('$authentication')"
+                          }
+                        }
+                      },
+                      "runAfter": {
+                        "List_existing_page": [
+                          "Succeeded"
+                        ]
+                      },
+                      "else": {
+                        "actions": {
+                          "Create_page": {
+                            "runAfter": {},
+                            "metadata": {
+                              "operationMetadataId": "e0000000-0000-4000-8000-000000000081"
+                            },
+                            "type": "OpenApiConnection",
+                            "inputs": {
+                              "host": {
+                                "connectionName": "alex_payplus_dataverse",
+                                "operationId": "CreateRecord",
+                                "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+                              },
+                              "parameters": {
+                                "entityName": "alex_payplus_paymentpages",
+                                "item/alex_name": "@coalesce(items('Apply_to_each_page')?['name'], outputs('Compose_pageUid'))",
+                                "item/alex_paymentpageuid": "@outputs('Compose_pageUid')",
+                                "item/alex_cashieruid": "@items('Apply_to_each_page')?['cashier_uid']",
+                                "item/alex_cashiername": "@items('Apply_to_each_page')?['cashier_name']",
+                                "item/alex_chargemethod": "@items('Apply_to_each_page')?['charge_method']",
+                                "item/alex_defaultcurrency": "@items('Apply_to_each_page')?['default_currency_code']",
+                                "item/alex_language": "@items('Apply_to_each_page')?['language']",
+                                "item/alex_valid": "@if(or(equals(items('Apply_to_each_page')?['valid'],true),equals(items('Apply_to_each_page')?['valid'],1),equals(items('Apply_to_each_page')?['valid'],'1')),true,false)",
+                                "item/alex_environment": "@variables('Var_env')",
+                                "item/alex_isactive": true,
+                                "item/alex_isdefault": false,
+                                "item/alex_lastsyncon": "@utcNow()",
+                                "item/alex_rawjson": "@string(items('Apply_to_each_page'))",
+                                "item/alex_description": "Synced from PayPlus ListPaymentPages action.",
+                                "item/alex_terminalid@odata.bind": "@concat('/alex_payplus_terminals(', variables('Var_terminalRecId'), ')')",
+                                "item/alex_configurationid@odata.bind": "@concat('/alex_payplusconfigurations(', variables('Var_configId'), ')')",
+                                "item/alex_syncprofileid@odata.bind": "@if(empty(variables('Var_spId')), null, concat('/alex_payplus_syncprofiles(', variables('Var_spId'), ')'))"
+                              },
+                              "authentication": "@parameters('$authentication')"
+                            }
+                          }
+                        }
+                      },
+                      "expression": {
+                        "greater": [
+                          "@length(body('List_existing_page')?['value'])",
+                          0
+                        ]
+                      },
+                      "metadata": {
+                        "operationMetadataId": "c1bd51b1-fef3-47f7-b0e8-24fa1c5b8a40"
+                      },
+                      "type": "If"
+                    },
+                    "Increment_pageCount": {
+                      "runAfter": {
+                        "If_page_exists": [
+                          "Succeeded"
+                        ]
+                      },
+                      "metadata": {
+                        "operationMetadataId": "192c74be-bfb0-4865-b885-417dc79921ec"
+                      },
+                      "type": "IncrementVariable",
+                      "inputs": {
+                        "name": "Var_pageCount",
+                        "value": 1
+                      }
+                    }
+                  },
+                  "runAfter": {
+                    "Switch_env_pages": [
+                      "Succeeded"
+                    ]
+                  },
+                  "metadata": {
+                    "operationMetadataId": "0b15d84c-1d57-4f77-9c1c-4bacaadb333f"
+                  },
+                  "type": "Foreach",
+                  "runtimeConfiguration": {
+                    "concurrency": {
+                      "repetitions": 1
+                    }
+                  }
+                }
+              },
+              "runAfter": {
+                "Switch_env_terminals": [
+                  "Succeeded"
+                ]
+              },
+              "metadata": {
+                "operationMetadataId": "e36d52e4-7699-4ad5-81e8-bf3929c08c76"
+              },
+              "type": "Foreach",
+              "runtimeConfiguration": {
+                "concurrency": {
+                  "repetitions": 1
+                }
+              }
+            }
+          },
+          "runAfter": {
+            "Set_spId": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "3f9164c0-50ac-4053-9d9d-2532ffadadae"
+          },
+          "type": "Scope"
+        },
+        "Update_config_success": {
+          "runAfter": {
+            "Do_import": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "e0000000-0000-4000-8000-000000000090"
+          },
+          "type": "OpenApiConnection",
+          "inputs": {
+            "host": {
+              "connectionName": "alex_payplus_dataverse",
+              "operationId": "UpdateRecord",
+              "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+            },
+            "parameters": {
+              "entityName": "alex_payplusconfigurations",
+              "recordId": "@variables('Var_configId')",
+              "item/alex_terminals_import_status": 100000002,
+              "item/alex_terminals_import_on": "@utcNow()",
+              "item/alex_terminals_import_message": "@concat('Imported ', string(variables('Var_termCount')), ' terminal(s) and ', string(variables('Var_pageCount')), ' payment page(s) at ', utcNow(), '.')"
+            },
+            "authentication": "@parameters('$authentication')"
+          }
+        },
+        "Update_config_fail": {
+          "runAfter": {
+            "Do_import": [
+              "Failed",
+              "TimedOut",
+              "Skipped"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "e0000000-0000-4000-8000-000000000091"
+          },
+          "type": "OpenApiConnection",
+          "inputs": {
+            "host": {
+              "connectionName": "alex_payplus_dataverse",
+              "operationId": "UpdateRecord",
+              "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+            },
+            "parameters": {
+              "entityName": "alex_payplusconfigurations",
+              "recordId": "@variables('Var_configId')",
+              "item/alex_terminals_import_status": 100000003,
+              "item/alex_terminals_import_on": "@utcNow()",
+              "item/alex_terminals_import_message": "@concat('Import failed at ', utcNow(), '. See flow run history for details.')"
+            },
+            "authentication": "@parameters('$authentication')"
+          }
+        }
+      }
+    },
+    "templateName": ""
+  },
+  "schemaVersion": "1.0.0.0"
+}

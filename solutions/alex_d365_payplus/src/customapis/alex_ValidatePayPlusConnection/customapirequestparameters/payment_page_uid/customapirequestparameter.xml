@@ -1,0 +1,9 @@
+<customapirequestparameter uniquename="payment_page_uid">
+  <displayname default="payment_page_uid">
+    <label description="payment_page_uid" languagecode="1033" />
+  </displayname>
+  <iscustomizable>1</iscustomizable>
+  <isoptional>1</isoptional>
+  <name>payment_page_uid</name>
+  <type>10</type>
+</customapirequestparameter>

@@ -1,0 +1,160 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<RibbonDiffXml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <CustomActions>
+    <CustomAction Id="alex.account.form.AddCreditCard.CustomAction" Location="Mscrm.Form.account.MainTab.Save.Controls._children" Sequence="71">
+      <CommandUIDefinition>
+        <FlyoutAnchor Id="alex.account.CreditCards.Flyout" Command="alex.account.CreditCards.FlyoutCommand" Sequence="71" TemplateAlias="o1" ModernImage="$webresource:alex_payplus_card_icon.svg" LabelText="$LocLabels:alex.account.CreditCards.Label" ToolTipTitle="$LocLabels:alex.account.CreditCards.Label">
+          <Menu Id="alex.account.CreditCards.Menu">
+            <MenuSection Id="alex.account.CreditCards.MenuSection" Sequence="10" DisplayMode="Menu16">
+              <Controls Id="alex.account.CreditCards.Controls">
+                <Button Id="alex.account.form.AddCreditCard.Button" Command="alex.account.form.AddCreditCard.Command" Sequence="10" TemplateAlias="o1" ModernImage="$webresource:alex_payplus_card_icon.svg" LabelText="$LocLabels:alex.account.ManualCard.Label" ToolTipTitle="$LocLabels:alex.account.ManualCard.Label" />
+                <FlyoutAnchor Id="alex.account.SelfService.Flyout" Command="alex.account.SelfService.FlyoutCommand" Sequence="20" TemplateAlias="o1" ModernImage="$webresource:alex_payplus_selfservice_icon.svg" LabelText="$LocLabels:alex.account.SelfService.Label" ToolTipTitle="$LocLabels:alex.account.SelfService.Label">
+                  <Menu Id="alex.account.SelfService.Menu">
+                    <MenuSection Id="alex.account.SelfService.MenuSection" Sequence="10" DisplayMode="Menu16">
+                      <Controls Id="alex.account.SelfService.Controls">
+                        <Button Id="alex.account.SelfService.Email.Button" Command="alex.account.SelfService.Email.Command" Sequence="10" TemplateAlias="o1" ModernImage="$webresource:alex_payplus_email_icon.svg" LabelText="$LocLabels:alex.account.Email.Label" ToolTipTitle="$LocLabels:alex.account.Email.Label" />
+                        <Button Id="alex.account.SelfService.Sms.Button" Command="alex.account.SelfService.Sms.Command" Sequence="20" TemplateAlias="o1" ModernImage="$webresource:alex_payplus_sms_icon.svg" LabelText="$LocLabels:alex.account.Sms.Label" ToolTipTitle="$LocLabels:alex.account.Sms.Label" />
+                        <Button Id="alex.account.SelfService.Whatsapp.Button" Command="alex.account.SelfService.Whatsapp.Command" Sequence="30" TemplateAlias="o1" ModernImage="$webresource:alex_payplus_whatsapp_icon.svg" LabelText="$LocLabels:alex.account.Whatsapp.Label" ToolTipTitle="$LocLabels:alex.account.Whatsapp.Label" />
+                      </Controls>
+                    </MenuSection>
+                  </Menu>
+                </FlyoutAnchor>
+              </Controls>
+            </MenuSection>
+          </Menu>
+        </FlyoutAnchor>
+      </CommandUIDefinition>
+    </CustomAction>
+  </CustomActions>
+  <Templates>
+    <RibbonTemplates Id="Mscrm.Templates"></RibbonTemplates>
+  </Templates>
+  <CommandDefinitions>
+    <CommandDefinition Id="alex.account.CreditCards.FlyoutCommand">
+      <EnableRules>
+        <EnableRule Id="Mscrm.FormStateNotNew" />
+      </EnableRules>
+      <DisplayRules />
+      <Actions />
+    </CommandDefinition>
+    <CommandDefinition Id="alex.account.form.AddCreditCard.Command">
+      <EnableRules>
+        <EnableRule Id="Mscrm.FormStateNotNew" />
+      </EnableRules>
+      <DisplayRules />
+      <Actions>
+        <JavaScriptFunction FunctionName="PayPlus.openCardPane" Library="$webresource:alex_payplus_opencardpane.js">
+          <CrmParameter Value="PrimaryControl" />
+        </JavaScriptFunction>
+      </Actions>
+    </CommandDefinition>
+    <CommandDefinition Id="alex.account.SelfService.Email.Command">
+      <EnableRules>
+        <EnableRule Id="Mscrm.FormStateNotNew" />
+      </EnableRules>
+      <DisplayRules>
+        <DisplayRule Id="alex.account.SelfService.Email.DisplayRule" />
+      </DisplayRules>
+      <Actions>
+        <JavaScriptFunction FunctionName="PayPlus.sendSelfService" Library="$webresource:alex_payplus_opencardpane.js">
+          <CrmParameter Value="PrimaryControl" />
+          <StringParameter Value="email" />
+        </JavaScriptFunction>
+      </Actions>
+    </CommandDefinition>
+    <CommandDefinition Id="alex.account.SelfService.FlyoutCommand">
+      <EnableRules>
+        <EnableRule Id="Mscrm.FormStateNotNew" />
+      </EnableRules>
+      <DisplayRules />
+      <Actions />
+    </CommandDefinition>
+    <CommandDefinition Id="alex.account.SelfService.Sms.Command">
+      <EnableRules>
+        <EnableRule Id="Mscrm.FormStateNotNew" />
+      </EnableRules>
+      <DisplayRules>
+        <DisplayRule Id="alex.account.SelfService.Sms.DisplayRule" />
+      </DisplayRules>
+      <Actions>
+        <JavaScriptFunction FunctionName="PayPlus.sendSelfService" Library="$webresource:alex_payplus_opencardpane.js">
+          <CrmParameter Value="PrimaryControl" />
+          <StringParameter Value="sms" />
+        </JavaScriptFunction>
+      </Actions>
+    </CommandDefinition>
+    <CommandDefinition Id="alex.account.SelfService.Whatsapp.Command">
+      <EnableRules>
+        <EnableRule Id="Mscrm.FormStateNotNew" />
+      </EnableRules>
+      <DisplayRules>
+        <DisplayRule Id="alex.account.SelfService.Whatsapp.DisplayRule" />
+      </DisplayRules>
+      <Actions>
+        <JavaScriptFunction FunctionName="PayPlus.sendSelfService" Library="$webresource:alex_payplus_opencardpane.js">
+          <CrmParameter Value="PrimaryControl" />
+          <StringParameter Value="whatsapp" />
+        </JavaScriptFunction>
+      </Actions>
+    </CommandDefinition>
+  </CommandDefinitions>
+  <RuleDefinitions>
+    <TabDisplayRules />
+    <DisplayRules>
+      <DisplayRule Id="alex.account.SelfService.Email.DisplayRule">
+        <CustomRule FunctionName="PayPlus.canEmail" Library="$webresource:alex_payplus_opencardpane.js" Default="false">
+          <CrmParameter Value="PrimaryControl" />
+        </CustomRule>
+      </DisplayRule>
+      <DisplayRule Id="alex.account.SelfService.Sms.DisplayRule">
+        <CustomRule FunctionName="PayPlus.canSms" Library="$webresource:alex_payplus_opencardpane.js" Default="false">
+          <CrmParameter Value="PrimaryControl" />
+        </CustomRule>
+      </DisplayRule>
+      <DisplayRule Id="alex.account.SelfService.Whatsapp.DisplayRule">
+        <CustomRule FunctionName="PayPlus.canWhatsapp" Library="$webresource:alex_payplus_opencardpane.js" Default="false">
+          <CrmParameter Value="PrimaryControl" />
+        </CustomRule>
+      </DisplayRule>
+    </DisplayRules>
+    <EnableRules />
+  </RuleDefinitions>
+  <LocLabels>
+    <LocLabel Id="alex.account.CreditCards.Label">
+      <Titles>
+        <Title languagecode="1033" description="Credit Cards" />
+        <Title languagecode="1037" description="כרטיסי אשראי" />
+      </Titles>
+    </LocLabel>
+    <LocLabel Id="alex.account.Email.Label">
+      <Titles>
+        <Title languagecode="1033" description="Email" />
+        <Title languagecode="1037" description="דואר אלקטרוני" />
+      </Titles>
+    </LocLabel>
+    <LocLabel Id="alex.account.ManualCard.Label">
+      <Titles>
+        <Title languagecode="1033" description="Manual card update" />
+        <Title languagecode="1037" description="עדכון כרטיס ידני" />
+      </Titles>
+    </LocLabel>
+    <LocLabel Id="alex.account.SelfService.Label">
+      <Titles>
+        <Title languagecode="1033" description="Self-service" />
+        <Title languagecode="1037" description="שירות עצמי" />
+      </Titles>
+    </LocLabel>
+    <LocLabel Id="alex.account.Sms.Label">
+      <Titles>
+        <Title languagecode="1033" description="SMS" />
+        <Title languagecode="1037" description="מסרון" />
+      </Titles>
+    </LocLabel>
+    <LocLabel Id="alex.account.Whatsapp.Label">
+      <Titles>
+        <Title languagecode="1033" description="WhatsApp" />
+        <Title languagecode="1037" description="WhatsApp" />
+      </Titles>
+    </LocLabel>
+  </LocLabels>
+</RibbonDiffXml>

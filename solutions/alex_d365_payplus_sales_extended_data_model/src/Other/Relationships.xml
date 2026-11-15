@@ -1,0 +1,8 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<EntityRelationships xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <EntityRelationship Name="alex_invoice_alex_payplusdocument" />
+  <EntityRelationship Name="alex_invoice_alex_payplusreceiptallocation" />
+  <EntityRelationship Name="alex_invoicedetail_alex_payplusreceiptallocation" />
+  <EntityRelationship Name="alex_quote_alex_payplusdocument" />
+  <EntityRelationship Name="alex_salesorder_alex_payplusdocument" />
+</EntityRelationships>

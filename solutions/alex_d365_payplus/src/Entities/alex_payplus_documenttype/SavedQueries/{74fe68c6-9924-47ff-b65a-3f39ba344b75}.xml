@@ -1,0 +1,45 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<savedqueries xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <savedquery>
+    <IsCustomizable>1</IsCustomizable>
+    <CanBeDeleted>0</CanBeDeleted>
+    <isquickfindquery>0</isquickfindquery>
+    <isprivate>0</isprivate>
+    <isdefault>1</isdefault>
+    <savedqueryid>{74fe68c6-9924-47ff-b65a-3f39ba344b75}</savedqueryid>
+    <layoutxml>
+      <grid name="alex_payplus_documenttypes" jump="alex_name" select="1" icon="1" preview="1">
+        <row name="alex_payplus_documenttype" id="alex_payplus_documenttypeid">
+          <cell name="alex_name" width="300" />
+          <cell name="alex_titlehe" width="111" />
+          <cell name="alex_declarable" width="100" />
+          <cell name="alex_hidden" width="100" />
+          <cell name="alex_caninitiate" width="100" />
+          <cell name="createdon" width="125" />
+        </row>
+      </grid>
+    </layoutxml>
+    <querytype>2</querytype>
+    <fetchxml>
+      <fetch version="1.0" mapping="logical">
+        <entity name="alex_payplus_documenttype">
+          <attribute name="alex_payplus_documenttypeid" />
+          <attribute name="alex_name" />
+          <attribute name="createdon" />
+          <filter type="and">
+            <condition attribute="statecode" operator="eq" value="0" />
+          </filter>
+          <order attribute="createdon" descending="true" />
+          <attribute name="alex_declarable" />
+          <attribute name="alex_hidden" />
+          <attribute name="alex_caninitiate" />
+          <attribute name="alex_titlehe" />
+        </entity>
+      </fetch>
+    </fetchxml>
+    <IntroducedVersion>1.0.0.0</IntroducedVersion>
+    <LocalizedNames>
+      <LocalizedName description="PayPlus Document Type Associated View" languagecode="1033" />
+    </LocalizedNames>
+  </savedquery>
+</savedqueries>

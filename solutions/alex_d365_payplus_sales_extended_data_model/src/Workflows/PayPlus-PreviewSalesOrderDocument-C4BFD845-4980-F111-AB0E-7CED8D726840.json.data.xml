@@ -1,0 +1,32 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Workflow WorkflowId="{c4bfd845-4980-f111-ab0e-7ced8d726840}" Name="PayPlus - Preview Sales Order Document" Description="Creates a PayPlus sales order preview/payment request document from a pending alex_payplusdocument row and updates that row for the preview PCF." xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <JsonFileName>/Workflows/PayPlus-PreviewSalesOrderDocument-C4BFD845-4980-F111-AB0E-7CED8D726840.json</JsonFileName>
+  <Type>1</Type>
+  <Subprocess>0</Subprocess>
+  <Category>5</Category>
+  <Mode>0</Mode>
+  <Scope>4</Scope>
+  <OnDemand>0</OnDemand>
+  <TriggerOnCreate>0</TriggerOnCreate>
+  <TriggerOnDelete>0</TriggerOnDelete>
+  <AsyncAutodelete>0</AsyncAutodelete>
+  <SyncWorkflowLogOnFailure>0</SyncWorkflowLogOnFailure>
+  <StateCode>1</StateCode>
+  <StatusCode>2</StatusCode>
+  <RunAs>1</RunAs>
+  <IsTransacted>1</IsTransacted>
+  <IntroducedVersion>1.0</IntroducedVersion>
+  <IsCustomizable>1</IsCustomizable>
+  <BusinessProcessType>0</BusinessProcessType>
+  <IsCustomProcessingStepAllowedForOtherPublishers>1</IsCustomProcessingStepAllowedForOtherPublishers>
+  <ModernFlowType>0</ModernFlowType>
+  <PrimaryEntity>none</PrimaryEntity>
+  <LocalizedNames>
+    <LocalizedName languagecode="1033" description="PayPlus - Preview Sales Order Document" />
+    <LocalizedName languagecode="1037" description="PayPlus - Preview Sales Order Document" />
+  </LocalizedNames>
+  <Descriptions>
+    <Description languagecode="1033" description="Creates a PayPlus sales order preview/payment request document from a pending alex_payplusdocument row and updates that row for the preview PCF." />
+    <Description languagecode="1037" description="Creates a PayPlus sales order preview/payment request document from a pending alex_payplusdocument row and updates that row for the preview PCF." />
+  </Descriptions>
+</Workflow>

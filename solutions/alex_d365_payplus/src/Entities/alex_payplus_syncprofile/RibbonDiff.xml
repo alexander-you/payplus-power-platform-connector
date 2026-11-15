@@ -1,0 +1,39 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<RibbonDiffXml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <CustomActions>
+    <CustomAction Id="alex.alex_payplus_syncprofile.form.SeedTransformRules.CustomAction" Location="Mscrm.Form.alex_payplus_syncprofile.MainTab.Save.Controls._children" Sequence="72">
+      <CommandUIDefinition>
+        <Button Id="alex.alex_payplus_syncprofile.form.SeedTransformRules.Button" Command="alex.alex_payplus_syncprofile.SeedTransformRules.Command" Sequence="72" TemplateAlias="o1" ModernImage="$webresource:alex_payplus_add_icon.svg" LabelText="$LocLabels:alex.alex_payplus_syncprofile.SeedTransformRules.Label" ToolTipTitle="$LocLabels:alex.alex_payplus_syncprofile.SeedTransformRules.Label" />
+      </CommandUIDefinition>
+    </CustomAction>
+  </CustomActions>
+  <Templates>
+    <RibbonTemplates Id="Mscrm.Templates"></RibbonTemplates>
+  </Templates>
+  <CommandDefinitions>
+    <CommandDefinition Id="alex.alex_payplus_syncprofile.SeedTransformRules.Command">
+      <EnableRules>
+        <EnableRule Id="Mscrm.FormStateNotNew" />
+      </EnableRules>
+      <DisplayRules />
+      <Actions>
+        <JavaScriptFunction FunctionName="PayPlus.seedTransformRules" Library="$webresource:alex_payplus_seed_transform_rules.js">
+          <CrmParameter Value="PrimaryControl" />
+        </JavaScriptFunction>
+      </Actions>
+    </CommandDefinition>
+  </CommandDefinitions>
+  <RuleDefinitions>
+    <TabDisplayRules />
+    <DisplayRules />
+    <EnableRules />
+  </RuleDefinitions>
+  <LocLabels>
+    <LocLabel Id="alex.alex_payplus_syncprofile.SeedTransformRules.Label">
+      <Titles>
+        <Title languagecode="1033" description="Create Transform Rules" />
+        <Title languagecode="1037" description="צור כללי המרה" />
+      </Titles>
+    </LocLabel>
+  </LocLabels>
+</RibbonDiffXml>

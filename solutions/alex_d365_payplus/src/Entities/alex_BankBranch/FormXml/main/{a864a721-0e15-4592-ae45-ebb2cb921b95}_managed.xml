@@ -1,0 +1,117 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<forms xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <systemform>
+    <formid>{a864a721-0e15-4592-ae45-ebb2cb921b95}</formid>
+    <IntroducedVersion>1.0.0.0</IntroducedVersion>
+    <FormPresentation>1</FormPresentation>
+    <FormActivationState>1</FormActivationState>
+    <form>
+      <tabs>
+        <tab verticallayout="true" id="{93766161-1782-4b21-bf8e-7e99f914319b}" IsUserDefined="0" name="tab_general">
+          <labels>
+            <label description="General" languagecode="1033" />
+          </labels>
+          <columns>
+            <column width="100%">
+              <sections>
+                <section name="sec_db13210b8896438a8252da9d0a0eb373" showlabel="true" showbar="true" IsUserDefined="0" id="{d8dea7ce-a5e9-40ec-ab7d-47118572785f}" columns="1" labelwidth="140" celllabelalignment="Left" celllabelposition="Left">
+                  <labels>
+                    <label description="General" languagecode="1033" />
+                  </labels>
+                  <rows>
+                    <row>
+                      <cell id="{3de3c305-652a-4afb-87fb-9d0fae2cb148}">
+                        <labels>
+                          <label description="Bank" languagecode="1033" />
+                        </labels>
+                        <control id="alex_bankid" classid="{270BD3DB-D9AF-4782-9025-509E298DEC0A}" datafieldname="alex_bankid" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{b693c18b-7361-4813-9d7a-45d69cf824a8}">
+                        <labels>
+                          <label description="Branch Code" languagecode="1033" />
+                        </labels>
+                        <control id="alex_branchcode" classid="{C6D124CA-7EDA-4a60-AEA9-7FB8D318B68F}" datafieldname="alex_branchcode" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{0863134e-69dd-47bc-876c-63282150d7e9}">
+                        <labels>
+                          <label description="Branch Name" languagecode="1033" />
+                        </labels>
+                        <control id="alex_name" classid="{4273EDBD-AC1D-40d3-9FB2-095C621B552D}" datafieldname="alex_name" />
+                      </cell>
+                    </row>
+                  </rows>
+                </section>
+                <section name="sec_e9ab5fa43cb94a30a2ea98cd892812d6" showlabel="true" showbar="true" IsUserDefined="0" id="{3bdfcc5b-0bc5-4584-987a-85bdf142ace7}" columns="1" labelwidth="140" celllabelalignment="Left" celllabelposition="Left">
+                  <labels>
+                    <label description="Address" languagecode="1033" />
+                  </labels>
+                  <rows>
+                    <row>
+                      <cell id="{0228bf2a-ef76-4d63-a62c-a888c05194f6}">
+                        <labels>
+                          <label description="Branch Address" languagecode="1033" />
+                        </labels>
+                        <control id="alex_branchaddress" classid="{4273EDBD-AC1D-40d3-9FB2-095C621B552D}" datafieldname="alex_branchaddress" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{721d2555-988e-40cb-9f07-11903ca56df7}">
+                        <labels>
+                          <label description="City" languagecode="1033" />
+                        </labels>
+                        <control id="alex_city" classid="{4273EDBD-AC1D-40d3-9FB2-095C621B552D}" datafieldname="alex_city" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{73bd567d-ef1d-479f-b43f-8cf37d367813}">
+                        <labels>
+                          <label description="Zip Code" languagecode="1033" />
+                        </labels>
+                        <control id="alex_zipcode" classid="{4273EDBD-AC1D-40d3-9FB2-095C621B552D}" datafieldname="alex_zipcode" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{8e02e1a9-dab1-40c7-9d87-ed48a3e29e45}">
+                        <labels>
+                          <label description="Telephone" languagecode="1033" />
+                        </labels>
+                        <control id="alex_telephone" classid="{4273EDBD-AC1D-40d3-9FB2-095C621B552D}" datafieldname="alex_telephone" />
+                      </cell>
+                    </row>
+                  </rows>
+                </section>
+                <section name="sec_9a4f79af36044e6d9040210e785b479d" showlabel="true" showbar="true" IsUserDefined="0" id="{3ba44531-a005-407f-8cc9-25215ccee1b8}" columns="1" labelwidth="140" celllabelalignment="Left" celllabelposition="Left">
+                  <labels>
+                    <label description="Status" languagecode="1033" />
+                  </labels>
+                  <rows>
+                    <row>
+                      <cell id="{c9419c1d-3d31-46cc-9f03-a5a36a8d5f7d}">
+                        <labels>
+                          <label description="Merged" languagecode="1033" />
+                        </labels>
+                        <control id="alex_ismerged" classid="{B0C6723A-8503-4fd7-BB28-C8A06AC933C2}" datafieldname="alex_ismerged" />
+                      </cell>
+                    </row>
+                  </rows>
+                </section>
+              </sections>
+            </column>
+          </columns>
+        </tab>
+      </tabs>
+    </form>
+    <IsCustomizable>1</IsCustomizable>
+    <CanBeDeleted>1</CanBeDeleted>
+    <LocalizedNames>
+      <LocalizedName description="Information" languagecode="1033" />
+    </LocalizedNames>
+    <Descriptions>
+      <Description description="A form for this entity." languagecode="1033" />
+    </Descriptions>
+  </systemform>
+</forms>

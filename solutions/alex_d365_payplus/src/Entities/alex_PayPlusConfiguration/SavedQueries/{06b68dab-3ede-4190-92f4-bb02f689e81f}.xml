@@ -1,0 +1,42 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<savedqueries xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <savedquery>
+    <IsCustomizable>1</IsCustomizable>
+    <CanBeDeleted>0</CanBeDeleted>
+    <isquickfindquery>0</isquickfindquery>
+    <isprivate>0</isprivate>
+    <isdefault>1</isdefault>
+    <savedqueryid>{06b68dab-3ede-4190-92f4-bb02f689e81f}</savedqueryid>
+    <layoutxml>
+      <grid name="resultset" jump="alex_name" select="1" icon="1" preview="1">
+        <row name="result" id="alex_payplusconfigurationid">
+          <cell name="alex_name" width="220" />
+          <cell name="alex_setupstatus" width="130" />
+          <cell name="alex_setupcompleted" width="130" />
+          <cell name="alex_configvalidated" width="140" />
+          <cell name="alex_keyvaultname" width="200" />
+          <cell name="alex_setupcompletedon" width="160" />
+        </row>
+      </grid>
+    </layoutxml>
+    <querytype>0</querytype>
+    <fetchxml>
+      <fetch version="1.0" mapping="logical" no-lock="false">
+        <entity name="alex_payplusconfiguration">
+          <attribute name="alex_name" />
+          <attribute name="alex_setupcompleted" />
+          <attribute name="alex_configvalidated" />
+          <attribute name="alex_payplusconfigurationid" />
+          <order attribute="alex_name" descending="false" />
+          <filter type="and">
+            <condition attribute="statecode" operator="eq" value="0" />
+          </filter>
+        </entity>
+      </fetch>
+    </fetchxml>
+    <IntroducedVersion>1.0.0.0</IntroducedVersion>
+    <LocalizedNames>
+      <LocalizedName description="Active PayPlus Configurations" languagecode="1033" />
+    </LocalizedNames>
+  </savedquery>
+</savedqueries>

@@ -1,0 +1,95 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<forms xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <systemform>
+    <formid>{0b7d93ce-6cb6-4668-8b85-3ac5b56c70bf}</formid>
+    <IntroducedVersion>1.0.0.0</IntroducedVersion>
+    <FormPresentation>1</FormPresentation>
+    <FormActivationState>1</FormActivationState>
+    <form>
+      <tabs>
+        <tab verticallayout="true" id="{9e3d526c-3229-4b5a-b14d-6f2cc1751494}" IsUserDefined="1">
+          <labels>
+            <label description="General" languagecode="1033" />
+          </labels>
+          <columns>
+            <column width="100%">
+              <sections>
+                <section showlabel="true" showbar="false" IsUserDefined="1" id="{01c4b43a-d047-4562-888c-a065190408dc}">
+                  <labels>
+                    <label description="General" languagecode="1033" />
+                  </labels>
+                  <rows>
+                    <row>
+                      <cell id="{7eac4049-3512-432a-8914-dc6202c031ff}" showlabel="true">
+                        <labels>
+                          <label description="Name" languagecode="1033" />
+                        </labels>
+                        <control id="alex_name" classid="{4273EDBD-AC1D-40d3-9FB2-095C621B552D}" datafieldname="alex_name" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{f1049fe9-494e-4021-bd3e-38a698b84657}" showlabel="true">
+                        <labels>
+                          <label description="Rule Kind" languagecode="1033" />
+                        </labels>
+                        <control id="alex_rulekind" classid="{3EF39988-22BB-4f0b-BBBE-64B5A3748AEE}" datafieldname="alex_rulekind" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{a632fe1d-ed05-486f-b482-ca2eedc53fe9}" showlabel="true">
+                        <labels>
+                          <label description="Expression" languagecode="1033" />
+                        </labels>
+                        <control id="alex_expression" classid="{E0DECE4B-6FC8-4a8f-A065-082708572369}" datafieldname="alex_expression" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{93ad5da8-bb1e-44c9-a785-6d3a114a0227}" showlabel="true">
+                        <labels>
+                          <label description="Parameters JSON" languagecode="1033" />
+                        </labels>
+                        <control id="alex_parametersjson" classid="{E0DECE4B-6FC8-4a8f-A065-082708572369}" datafieldname="alex_parametersjson" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{5be13cd9-d272-4409-bcdd-697cc489871d}" showlabel="true">
+                        <labels>
+                          <label description="Output Type" languagecode="1033" />
+                        </labels>
+                        <control id="alex_outputtype" classid="{3EF39988-22BB-4f0b-BBBE-64B5A3748AEE}" datafieldname="alex_outputtype" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{9692b31a-ba6a-4085-be04-2c6d60d2fd2e}" showlabel="true">
+                        <labels>
+                          <label description="Is Active" languagecode="1033" />
+                        </labels>
+                        <control id="alex_isactive" classid="{67FAC785-CD58-4f9f-ABB3-4B7DDC6ED5ED}" datafieldname="alex_isactive" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{7964fab6-f1a6-4640-9ce9-8302980d2bc5}" showlabel="true">
+                        <labels>
+                          <label description="Description" languagecode="1033" />
+                        </labels>
+                        <control id="alex_description" classid="{E0DECE4B-6FC8-4a8f-A065-082708572369}" datafieldname="alex_description" />
+                      </cell>
+                    </row>
+                  </rows>
+                </section>
+              </sections>
+            </column>
+          </columns>
+        </tab>
+      </tabs>
+    </form>
+    <IsCustomizable>1</IsCustomizable>
+    <CanBeDeleted>1</CanBeDeleted>
+    <LocalizedNames>
+      <LocalizedName description="Information" languagecode="1033" />
+    </LocalizedNames>
+    <Descriptions>
+      <Description description="PayPlus Transform Rule main form." languagecode="1033" />
+    </Descriptions>
+  </systemform>
+</forms>

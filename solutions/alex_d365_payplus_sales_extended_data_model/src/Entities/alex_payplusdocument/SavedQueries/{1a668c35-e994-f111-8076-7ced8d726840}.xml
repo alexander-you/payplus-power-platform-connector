@@ -1,0 +1,69 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<savedqueries xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <savedquery>
+    <IsCustomizable>1</IsCustomizable>
+    <CanBeDeleted>1</CanBeDeleted>
+    <isquickfindquery>0</isquickfindquery>
+    <isprivate>0</isprivate>
+    <isdefault>0</isdefault>
+    <savedqueryid>{1a668c35-e994-f111-8076-7ced8d726840}</savedqueryid>
+    <layoutxml>
+      <grid name="resultset" jump="alex_name" select="1" icon="1" preview="1">
+        <row name="result" id="alex_payplusdocumentid">
+          <cell name="alex_name" width="220" />
+          <cell name="alex_documenttypecode" width="130" />
+          <cell name="alex_documentnumber" width="120" />
+          <cell name="alex_documentstatus" width="120" />
+          <cell name="alex_customername" width="180" />
+          <cell name="alex_totalamount" width="120" />
+          <cell name="alex_currencycode" width="80" />
+          <cell name="alex_environment" width="110" />
+          <cell name="alex_configurationid" width="180" />
+          <cell name="alex_lastsyncstatus" width="140" />
+          <cell name="alex_lastrefreshedon" width="160" />
+          <cell name="alex_sourceentitylogicalname" width="160" />
+          <cell name="alex_sourcedisplayname" width="180" />
+          <cell name="alex_quoteid" width="180" />
+          <cell name="alex_moreinfo" width="220" />
+          <cell name="alex_salesorderid" width="180" />
+        </row>
+      </grid>
+    </layoutxml>
+    <querytype>0</querytype>
+    <fetchxml>
+      <fetch version="1.0" mapping="logical">
+        <entity name="alex_payplusdocument">
+          <attribute name="alex_name" />
+          <attribute name="alex_documenttypecode" />
+          <attribute name="alex_documentnumber" />
+          <attribute name="alex_documentstatus" />
+          <attribute name="alex_customername" />
+          <attribute name="alex_totalamount" />
+          <attribute name="alex_currencycode" />
+          <attribute name="alex_environment" />
+          <attribute name="alex_configurationid" />
+          <attribute name="alex_lastsyncstatus" />
+          <attribute name="alex_lastrefreshedon" />
+          <attribute name="alex_sourceentitylogicalname" />
+          <attribute name="alex_sourcedisplayname" />
+          <attribute name="alex_quoteid" />
+          <attribute name="alex_moreinfo" />
+          <attribute name="alex_salesorderid" />
+          <order attribute="modifiedon" descending="true" />
+          <filter type="and">
+            <condition attribute="statecode" operator="eq" value="0" />
+          </filter>
+        </entity>
+      </fetch>
+    </fetchxml>
+    <IntroducedVersion>1.0</IntroducedVersion>
+    <LocalizedNames>
+      <LocalizedName description="מסמכי PayPlus לפי מקור – מכירות" languagecode="1033" />
+      <LocalizedName description="מסמכי PayPlus לפי מקור – מכירות" languagecode="1037" />
+    </LocalizedNames>
+    <Descriptions>
+      <Description description="PayPlus documents view including Sales links (quote/order). Ships in the Sales extension." languagecode="1033" />
+      <Description description="PayPlus documents view including Sales links (quote/order). Ships in the Sales extension." languagecode="1037" />
+    </Descriptions>
+  </savedquery>
+</savedqueries>

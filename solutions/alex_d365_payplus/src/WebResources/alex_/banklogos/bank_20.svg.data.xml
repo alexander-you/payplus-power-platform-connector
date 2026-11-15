@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<WebResource xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <WebResourceId>{edb16096-7286-f111-ab0f-7ced8d726840}</WebResourceId>
+  <Name>alex_/banklogos/bank_20.svg</Name>
+  <DisplayName>Bank logo 20 - Mizrahi Tefahot Bank</DisplayName>
+  <WebResourceType>11</WebResourceType>
+  <IntroducedVersion>1.0.0.0</IntroducedVersion>
+  <IsEnabledForMobileClient>0</IsEnabledForMobileClient>
+  <IsAvailableForMobileOffline>0</IsAvailableForMobileOffline>
+  <IsCustomizable>1</IsCustomizable>
+  <CanBeDeleted>1</CanBeDeleted>
+  <IsHidden>0</IsHidden>
+  <FileName>/WebResources/alex_banklogosbank_20svgEDB16096-7286-F111-AB0F-7CED8D726840</FileName>
+</WebResource>

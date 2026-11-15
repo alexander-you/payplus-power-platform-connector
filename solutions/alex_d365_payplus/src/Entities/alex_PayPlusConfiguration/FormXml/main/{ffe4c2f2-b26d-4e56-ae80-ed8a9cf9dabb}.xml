@@ -1,0 +1,916 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<forms xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <systemform>
+    <formid>{ffe4c2f2-b26d-4e56-ae80-ed8a9cf9dabb}</formid>
+    <IntroducedVersion>1.0.0.0</IntroducedVersion>
+    <FormPresentation>1</FormPresentation>
+    <FormActivationState>1</FormActivationState>
+    <form headerdensity="HighWithControls">
+      <tabs>
+        <tab verticallayout="true" id="{0a2e6527-6098-41bd-a173-93f85672ca4b}" IsUserDefined="1" name="tab_general">
+          <labels>
+            <label description="General" languagecode="1033" />
+          </labels>
+          <columns>
+            <column width="100%">
+              <sections>
+                <section name="sec_e8857bb3" showlabel="true" showbar="false" columns="1" id="{857dab3c-fcd1-4db8-97ca-6226f5fa0eca}">
+                  <labels>
+                    <label description="Setup and Status" languagecode="1033" />
+                  </labels>
+                  <rows>
+                    <row>
+                      <cell id="{3ecdc037-cb2c-465b-bf5e-c2402f761353}">
+                        <labels>
+                          <label description="Name" languagecode="1033" />
+                        </labels>
+                        <control id="alex_name" classid="{4273EDBD-AC1D-40d3-9FB2-095C621B552D}" datafieldname="alex_name" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{89c57297-8633-4547-8c6a-ee3dd31959df}">
+                        <labels>
+                          <label description="Setup Completed" languagecode="1033" />
+                        </labels>
+                        <control id="alex_setupcompleted" classid="{67FAC785-CD58-4f9f-ABB3-4B7DDC6ED5ED}" datafieldname="alex_setupcompleted" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{982744eb-9735-4bbe-823c-a2f19d5b964a}">
+                        <labels>
+                          <label description="Configuration Validated" languagecode="1033" />
+                        </labels>
+                        <control id="alex_configvalidated" classid="{67FAC785-CD58-4f9f-ABB3-4B7DDC6ED5ED}" datafieldname="alex_configvalidated" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{bf4b0c0a-9bc0-464f-ae9c-f562ae85063c}">
+                        <labels>
+                          <label description="Last Validated On" languagecode="1033" />
+                        </labels>
+                        <control id="alex_lastvalidatedon" classid="{5B773807-9FB2-42db-97C3-7A91EFF8ADFF}" datafieldname="alex_lastvalidatedon" />
+                      </cell>
+                    </row>
+                  </rows>
+                </section>
+                <section name="sec_4d715444" showlabel="true" showbar="false" columns="1" id="{b87e222b-0d3c-455d-a352-0f2188d709d1}">
+                  <labels>
+                    <label description="Azure Settings" languagecode="1033" />
+                  </labels>
+                  <rows />
+                </section>
+                <section name="sec_062df58d" showlabel="true" showbar="false" columns="1" id="{46b87405-5756-48b2-a759-2fe1b2ecbede}">
+                  <labels>
+                    <label description="PayPlus" languagecode="1033" />
+                  </labels>
+                  <rows>
+                    <row>
+                      <cell id="{55ee1be2-6fec-475a-aaa9-33104a5b2092}">
+                        <labels>
+                          <label description="Payment Page UID" languagecode="1033" />
+                        </labels>
+                        <control id="alex_paymentpageuidref" classid="{4273EDBD-AC1D-40d3-9FB2-095C621B552D}" datafieldname="alex_paymentpageuidref" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{a9878dfc-1672-4350-bee7-8480af9c68d7}">
+                        <labels>
+                          <label description="Terminal UID" languagecode="1033" />
+                        </labels>
+                        <control id="alex_terminaluidref" classid="{4273EDBD-AC1D-40d3-9FB2-095C621B552D}" datafieldname="alex_terminaluidref" />
+                      </cell>
+                    </row>
+                  </rows>
+                </section>
+              </sections>
+            </column>
+          </columns>
+        </tab>
+        <tab name="tab_vat" verticallayout="true" id="{7c477704-f267-40eb-b2e9-c85694b5285a}" IsUserDefined="0">
+          <labels>
+            <label description="מע&quot;מ" languagecode="1033" />
+          </labels>
+          <columns>
+            <column width="100%">
+              <sections>
+                <section name="sec_vat" showlabel="true" showbar="false" columns="1" id="{fb5ab8f9-e053-402c-b947-f6d477c0ff7e}">
+                  <labels>
+                    <label description="הגדרות מע&quot;מ" languagecode="1033" />
+                  </labels>
+                  <rows>
+                    <row>
+                      <cell id="{684329a2-60ad-4895-9202-6c8f4fe0b30f}">
+                        <labels>
+                          <label description="Document VAT Mode" languagecode="1033" />
+                        </labels>
+                        <control id="alex_document_vat_mode" classid="{3EF39988-22BB-4f0b-BBBE-64B5A3748AEE}" datafieldname="alex_document_vat_mode" />
+                      </cell>
+                    </row>
+                  </rows>
+                </section>
+              </sections>
+            </column>
+          </columns>
+        </tab>
+        <tab name="tab_billing_policy" verticallayout="true" id="{A701B94C-C459-4514-A449-A989EE324258}" IsUserDefined="1">
+          <labels>
+            <label description="Billing Policy" languagecode="1033" />
+          </labels>
+          <columns>
+            <column width="100%">
+              <sections>
+                <section name="sec_billing_policy" showlabel="true" showbar="false" IsUserDefined="1" id="{47880F09-B50D-439D-8EAB-CFD421F5EDE1}">
+                  <labels>
+                    <label description="Billing Policy" languagecode="1033" />
+                  </labels>
+                  <rows>
+                    <row>
+                      <cell id="{E61A988F-C571-4B84-869A-1196CA31D07F}" showlabel="true">
+                        <labels>
+                          <label description="Default billing flow" languagecode="1033" />
+                        </labels>
+                        <control id="alex_billing_default_flow" classid="{3EF39988-22BB-4f0b-BBBE-64B5A3748AEE}" datafieldname="alex_billing_default_flow" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{76718BA7-46D5-410F-ADDF-6893F44BDCD0}" showlabel="true">
+                        <labels>
+                          <label description="Allow user override" languagecode="1033" />
+                        </labels>
+                        <control id="alex_billing_allow_user_override" classid="{67FAC785-CD58-4f9f-ABB3-4B7DDC6ED5ED}" datafieldname="alex_billing_allow_user_override" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{BD487E85-133F-4113-9D95-8815F0E73123}" showlabel="true">
+                        <labels>
+                          <label description="Require receipt to close invoice" languagecode="1033" />
+                        </labels>
+                        <control id="alex_billing_require_receipt_to_close_invoice" classid="{67FAC785-CD58-4f9f-ABB3-4B7DDC6ED5ED}" datafieldname="alex_billing_require_receipt_to_close_invoice" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{3A518D04-3280-4AF5-8309-7D2B34C4339A}" showlabel="true">
+                        <labels>
+                          <label description="Auto receipt after payment" languagecode="1033" />
+                        </labels>
+                        <control id="alex_billing_auto_receipt_after_payment" classid="{67FAC785-CD58-4f9f-ABB3-4B7DDC6ED5ED}" datafieldname="alex_billing_auto_receipt_after_payment" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{9C547284-3A2E-4307-B2A2-0208BC706D34}" showlabel="true">
+                        <labels>
+                          <label description="Allow partial receipts" languagecode="1033" />
+                        </labels>
+                        <control id="alex_billing_allow_partial_receipts" classid="{67FAC785-CD58-4f9f-ABB3-4B7DDC6ED5ED}" datafieldname="alex_billing_allow_partial_receipts" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{0E8DE280-5307-49CA-B4BF-91C2132D068F}" showlabel="true">
+                        <labels>
+                          <label description="Require payment lines for receipt" languagecode="1033" />
+                        </labels>
+                        <control id="alex_billing_require_payment_lines_for_receipt" classid="{67FAC785-CD58-4f9f-ABB3-4B7DDC6ED5ED}" datafieldname="alex_billing_require_payment_lines_for_receipt" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{D4B7DB5D-CA4F-4844-A86A-A42A92F5DD45}" showlabel="true">
+                        <labels>
+                          <label description="Cancellation policy" languagecode="1033" />
+                        </labels>
+                        <control id="alex_billing_cancellation_policy" classid="{3EF39988-22BB-4f0b-BBBE-64B5A3748AEE}" datafieldname="alex_billing_cancellation_policy" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{BDE98FFA-D283-4BC4-B7D4-FBC30205BA64}" showlabel="true">
+                        <labels>
+                          <label description="Payment page link policy" languagecode="1033" />
+                        </labels>
+                        <control id="alex_billing_payment_page_policy" classid="{3EF39988-22BB-4f0b-BBBE-64B5A3748AEE}" datafieldname="alex_billing_payment_page_policy" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{13471BE3-3973-4E00-A462-AFFD3F9B3D38}" showlabel="true">
+                        <labels>
+                          <label description="Saved token charge policy" languagecode="1033" />
+                        </labels>
+                        <control id="alex_billing_saved_token_policy" classid="{3EF39988-22BB-4f0b-BBBE-64B5A3748AEE}" datafieldname="alex_billing_saved_token_policy" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{61E28F79-71E3-4ED9-AC4B-41E4C714BD9E}" showlabel="true">
+                        <labels>
+                          <label description="Require confirmation for token charge" languagecode="1033" />
+                        </labels>
+                        <control id="alex_billing_token_charge_requires_confirm" classid="{67FAC785-CD58-4f9f-ABB3-4B7DDC6ED5ED}" datafieldname="alex_billing_token_charge_requires_confirm" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{01A44D1F-C70F-4473-9FAD-EAA68754154E}" showlabel="true">
+                        <labels>
+                          <label description="Missing token fallback" languagecode="1033" />
+                        </labels>
+                        <control id="alex_billing_token_missing_fallback" classid="{3EF39988-22BB-4f0b-BBBE-64B5A3748AEE}" datafieldname="alex_billing_token_missing_fallback" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{8187925B-AF0F-4659-93F6-E1B4BDEC2C79}" showlabel="true">
+                        <labels>
+                          <label description="Create token from payment page" languagecode="1033" />
+                        </labels>
+                        <control id="alex_billing_payment_page_create_token" classid="{67FAC785-CD58-4f9f-ABB3-4B7DDC6ED5ED}" datafieldname="alex_billing_payment_page_create_token" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{8D3EAB44-DAFD-4BEC-95E6-32B2E0C7CA40}" showlabel="true">
+                        <labels>
+                          <label description="Create payment page with billing document" languagecode="1033" />
+                        </labels>
+                        <control id="alex_billing_create_payment_page_with_document" classid="{67FAC785-CD58-4f9f-ABB3-4B7DDC6ED5ED}" datafieldname="alex_billing_create_payment_page_with_document" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{975203A8-C690-452F-AACE-48C898898D61}" showlabel="true">
+                        <labels>
+                          <label description="Tax invoice bulk creation" languagecode="1033" />
+                        </labels>
+                        <control id="alex_billing_doc_taxinvoice_bulkcreate" classid="{67FAC785-CD58-4f9f-ABB3-4B7DDC6ED5ED}" datafieldname="alex_billing_doc_taxinvoice_bulkcreate" />
+                      </cell>
+                    </row>
+                    <row></row>
+                    <row>
+                      <cell id="{D09CEE27-CC6A-4456-9AD5-4D875A5E4CD6}" showlabel="true">
+                        <labels>
+                          <label description="Proforma invoice bulk creation" languagecode="1033" />
+                        </labels>
+                        <control id="alex_billing_doc_paymentdemand_bulkcreate" classid="{67FAC785-CD58-4f9f-ABB3-4B7DDC6ED5ED}" datafieldname="alex_billing_doc_paymentdemand_bulkcreate" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{071FD203-E709-478C-A65A-DA657D0C307E}" showlabel="true">
+                        <labels>
+                          <label description="Payment request bulk creation" languagecode="1033" />
+                        </labels>
+                        <control id="alex_billing_doc_paymentrequest_bulkcreate" classid="{67FAC785-CD58-4f9f-ABB3-4B7DDC6ED5ED}" datafieldname="alex_billing_doc_paymentrequest_bulkcreate" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{35A321FA-9507-4DB4-8C63-A57B7A39B5F9}" showlabel="true">
+                        <labels>
+                          <label description="Auto-close invoice when receipt amount matches" languagecode="1033" />
+                        </labels>
+                        <control id="alex_billing_auto_close_invoice_when_receipts_match" classid="{67FAC785-CD58-4f9f-ABB3-4B7DDC6ED5ED}" datafieldname="alex_billing_auto_close_invoice_when_receipts_match" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{C1F75FE2-A32D-41CC-A0C9-A725F450E052}" showlabel="true">
+                        <labels>
+                          <label description="Receipt enabled" languagecode="1033" />
+                        </labels>
+                        <control id="alex_billing_doc_receipt_enabled" classid="{67FAC785-CD58-4f9f-ABB3-4B7DDC6ED5ED}" datafieldname="alex_billing_doc_receipt_enabled" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{A2009CC2-E24E-4A1F-9FC7-8CC029897648}" showlabel="true">
+                        <labels>
+                          <label description="Receipt issue allowed" languagecode="1033" />
+                        </labels>
+                        <control id="alex_billing_doc_receipt_issue_allowed" classid="{67FAC785-CD58-4f9f-ABB3-4B7DDC6ED5ED}" datafieldname="alex_billing_doc_receipt_issue_allowed" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{DBFA9277-D820-4778-AEBF-07E76301A120}" showlabel="true">
+                        <labels>
+                          <label description="Receipt email send allowed" languagecode="1033" />
+                        </labels>
+                        <control id="alex_billing_doc_receipt_send_email_allowed" classid="{67FAC785-CD58-4f9f-ABB3-4B7DDC6ED5ED}" datafieldname="alex_billing_doc_receipt_send_email_allowed" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{03C47BDC-55DC-41B6-AE01-56A3F8D7C861}" showlabel="true">
+                        <labels>
+                          <label description="Receipt SMS send allowed" languagecode="1033" />
+                        </labels>
+                        <control id="alex_billing_doc_receipt_send_sms_allowed" classid="{67FAC785-CD58-4f9f-ABB3-4B7DDC6ED5ED}" datafieldname="alex_billing_doc_receipt_send_sms_allowed" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{EC85727D-53C2-4D6B-8894-7FFB0C8687E9}" showlabel="true">
+                        <labels>
+                          <label description="Receipt WhatsApp send allowed" languagecode="1033" />
+                        </labels>
+                        <control id="alex_billing_doc_receipt_send_whatsapp_allowed" classid="{67FAC785-CD58-4f9f-ABB3-4B7DDC6ED5ED}" datafieldname="alex_billing_doc_receipt_send_whatsapp_allowed" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{1E6A426E-F551-404C-A102-A9108408056D}" showlabel="true">
+                        <labels>
+                          <label description="Credit invoice enabled" languagecode="1033" />
+                        </labels>
+                        <control id="alex_billing_doc_credit_enabled" classid="{67FAC785-CD58-4f9f-ABB3-4B7DDC6ED5ED}" datafieldname="alex_billing_doc_credit_enabled" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{D24C51C2-027B-42F9-AC80-CAD3CAD3536F}" showlabel="true">
+                        <labels>
+                          <label description="Credit invoice issue allowed" languagecode="1033" />
+                        </labels>
+                        <control id="alex_billing_doc_credit_issue_allowed" classid="{67FAC785-CD58-4f9f-ABB3-4B7DDC6ED5ED}" datafieldname="alex_billing_doc_credit_issue_allowed" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{5A166351-7556-485F-B09A-77D55E1617BB}" showlabel="true">
+                        <labels>
+                          <label description="Credit invoice email send allowed" languagecode="1033" />
+                        </labels>
+                        <control id="alex_billing_doc_credit_send_email_allowed" classid="{67FAC785-CD58-4f9f-ABB3-4B7DDC6ED5ED}" datafieldname="alex_billing_doc_credit_send_email_allowed" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{6C2A8BC2-6DB6-4982-AED9-3515D7801853}" showlabel="true">
+                        <labels>
+                          <label description="Credit invoice SMS send allowed" languagecode="1033" />
+                        </labels>
+                        <control id="alex_billing_doc_credit_send_sms_allowed" classid="{67FAC785-CD58-4f9f-ABB3-4B7DDC6ED5ED}" datafieldname="alex_billing_doc_credit_send_sms_allowed" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{F2B27C7D-418E-415D-A706-DA202AD3BA26}" showlabel="true">
+                        <labels>
+                          <label description="Credit invoice WhatsApp send allowed" languagecode="1033" />
+                        </labels>
+                        <control id="alex_billing_doc_credit_send_whatsapp_allowed" classid="{67FAC785-CD58-4f9f-ABB3-4B7DDC6ED5ED}" datafieldname="alex_billing_doc_credit_send_whatsapp_allowed" />
+                      </cell>
+                    </row>
+                  </rows>
+                </section>
+              </sections>
+            </column>
+          </columns>
+        </tab>
+        <tab name="tab_billing_mapping" verticallayout="true" id="{0D8EDFD1-21A0-4836-9784-2359FDB543D0}" IsUserDefined="1" expanded="true" showlabel="true">
+          <labels>
+            <label description="Billing source mapping" languagecode="1033" />
+          </labels>
+          <columns>
+            <column width="100%">
+              <sections>
+                <section name="sec_billing_mapping" showlabel="false" showbar="false" IsUserDefined="1" id="{4889A36A-A226-498B-838B-68D8836C7E58}" columns="1">
+                  <labels>
+                    <label description="Billing source mapping" languagecode="1033" />
+                  </labels>
+                  <rows>
+                    <row>
+                      <cell id="{D0075789-8C9C-473D-BFF0-A966C79D7990}" showlabel="false" rowspan="20" colspan="1" auto="false">
+                        <labels>
+                          <label description="Billing source mapping" languagecode="1033" />
+                        </labels>
+                        <control id="WebResource_alex_payplus_billing_mapping" classid="{9FDF5F91-88B1-47F4-AD53-C11EFC01A01D}">
+                          <parameters>
+                            <Url>alex_payplus_billing_mapping.html</Url>
+                            <PassParameters>true</PassParameters>
+                            <ShowOnMobileClient>true</ShowOnMobileClient>
+                            <Security>false</Security>
+                            <Scrolling>auto</Scrolling>
+                            <Border>false</Border>
+                            <WebResourceId>{fcda5c24-35cd-f111-a05c-e4fb1ef6b819}</WebResourceId>
+                          </parameters>
+                        </control>
+                      </cell>
+                    </row>
+                  </rows>
+                </section>
+              </sections>
+            </column>
+          </columns>
+        </tab>
+        <tab name="tab_selfservice" verticallayout="true" id="{a12b2220-1fa4-4230-8657-f86d796627a1}" IsUserDefined="0">
+          <labels>
+            <label description="Self-service" languagecode="1033" />
+          </labels>
+          <columns>
+            <column width="100%">
+              <sections>
+                <section name="sec_ss_contact" showlabel="true" showbar="false" columns="1" id="{97fdf0ca-e449-4700-aa2f-d952ce60757d}">
+                  <labels>
+                    <label description="Self-service – Contact" languagecode="1033" />
+                  </labels>
+                  <rows>
+                    <row>
+                      <cell id="{0004838d-ec01-439f-9a38-5f0a84cab6bf}">
+                        <labels>
+                          <label description="Self-service SMS – Contact" languagecode="1033" />
+                        </labels>
+                        <control id="alex_selfservice_sms_contact" classid="{67FAC785-CD58-4f9f-ABB3-4B7DDC6ED5ED}" datafieldname="alex_selfservice_sms_contact" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{d3810ca5-d777-4bad-859d-784466fe23c7}">
+                        <labels>
+                          <label description="Link validity (days)" languagecode="1033" />
+                        </labels>
+                        <control id="alex_selfservice_sms_contact_expiry" classid="{C6D124CA-7EDA-4a60-AA9D-7B2C7B71E100}" datafieldname="alex_selfservice_sms_contact_expiry" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{f9ed4c9b-00f3-4d86-8b76-b56b0f02dbbb}">
+                        <labels>
+                          <label description="Self-service Email – Contact" languagecode="1033" />
+                        </labels>
+                        <control id="alex_selfservice_email_contact" classid="{67FAC785-CD58-4f9f-ABB3-4B7DDC6ED5ED}" datafieldname="alex_selfservice_email_contact" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{bcf4bc3b-813e-4d88-b8f5-3604acac28d5}">
+                        <labels>
+                          <label description="Link validity (days)" languagecode="1033" />
+                        </labels>
+                        <control id="alex_selfservice_email_contact_expiry" classid="{C6D124CA-7EDA-4a60-AA9D-7B2C7B71E100}" datafieldname="alex_selfservice_email_contact_expiry" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{27feadce-233b-4152-98b4-4d3c264cfcc2}">
+                        <labels>
+                          <label description="שירות עצמי WhatsAppאיש קשר" languagecode="1033" />
+                        </labels>
+                        <control id="alex_selfservice_whatsapp_contact" classid="{67FAC785-CD58-4f9f-ABB3-4B7DDC6ED5ED}" datafieldname="alex_selfservice_whatsapp_contact" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{0f1fee1d-6b64-43d9-abfe-cf2554dd8ce7}">
+                        <labels>
+                          <label description="Link validity (days)" languagecode="1033" />
+                        </labels>
+                        <control id="alex_selfservice_whatsapp_contact_expiry" classid="{C6D124CA-7EDA-4a60-AA9D-7B2C7B71E100}" datafieldname="alex_selfservice_whatsapp_contact_expiry" />
+                      </cell>
+                    </row>
+                  </rows>
+                </section>
+                <section name="sec_ss_account" showlabel="true" showbar="false" columns="1" id="{dccf275a-f520-476c-b681-ce69652e39d2}">
+                  <labels>
+                    <label description="Self-service – Customer file" languagecode="1033" />
+                  </labels>
+                  <rows>
+                    <row>
+                      <cell id="{fb9e1c3f-062d-4c79-a82b-03698fcb2010}">
+                        <labels>
+                          <label description="Self-service SMS – Customer file" languagecode="1033" />
+                        </labels>
+                        <control id="alex_selfservice_sms_account" classid="{67FAC785-CD58-4f9f-ABB3-4B7DDC6ED5ED}" datafieldname="alex_selfservice_sms_account" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{42d95e4b-79a6-4578-bab6-c0ae47b77e69}">
+                        <labels>
+                          <label description="Link validity (days)" languagecode="1033" />
+                        </labels>
+                        <control id="alex_selfservice_sms_account_expiry" classid="{C6D124CA-7EDA-4a60-AA9D-7B2C7B71E100}" datafieldname="alex_selfservice_sms_account_expiry" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{05cd702f-129c-4b73-b1f1-5989d4b1de72}">
+                        <labels>
+                          <label description="Self-service Email – Customer file" languagecode="1033" />
+                        </labels>
+                        <control id="alex_selfservice_email_account" classid="{67FAC785-CD58-4f9f-ABB3-4B7DDC6ED5ED}" datafieldname="alex_selfservice_email_account" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{1ea4c64f-9786-453c-a79d-a83dee2c5ec8}">
+                        <labels>
+                          <label description="Link validity (days)" languagecode="1033" />
+                        </labels>
+                        <control id="alex_selfservice_email_account_expiry" classid="{C6D124CA-7EDA-4a60-AA9D-7B2C7B71E100}" datafieldname="alex_selfservice_email_account_expiry" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{09cf4e64-c152-476e-931a-6239fbf49c63}">
+                        <labels>
+                          <label description="Self-service WhatsApp – Customer file" languagecode="1033" />
+                        </labels>
+                        <control id="alex_selfservice_whatsapp_account" classid="{67FAC785-CD58-4f9f-ABB3-4B7DDC6ED5ED}" datafieldname="alex_selfservice_whatsapp_account" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{b6da3475-8e13-4761-815d-61adf85ebd23}">
+                        <labels>
+                          <label description="Link validity (days)" languagecode="1033" />
+                        </labels>
+                        <control id="alex_selfservice_whatsapp_account_expiry" classid="{C6D124CA-7EDA-4a60-AA9D-7B2C7B71E100}" datafieldname="alex_selfservice_whatsapp_account_expiry" />
+                      </cell>
+                    </row>
+                  </rows>
+                </section>
+              </sections>
+            </column>
+          </columns>
+        </tab>
+        <tab name="tab_documents" verticallayout="true" id="{55df2142-209c-4ace-b744-a203769e64d1}" IsUserDefined="0">
+          <labels>
+            <label description="הצעות מחיר" languagecode="1033" />
+          </labels>
+          <columns>
+            <column width="100%">
+              <sections>
+                <section name="sec_doc_quote" showlabel="true" showbar="false" columns="1" id="{fb3035d0-36e6-4aa7-84dd-180c901d070e}">
+                  <labels>
+                    <label description="הצעת מחיר" languagecode="1033" />
+                  </labels>
+                  <rows>
+                    <row>
+                      <cell id="{cc9508f9-8aff-4c67-9796-8a29422623b6}">
+                        <labels>
+                          <label description="Quote - allow issuing" languagecode="1033" />
+                        </labels>
+                        <control id="alex_doc_quote_enabled" classid="{67FAC785-CD58-4f9f-ABB3-4B7DDC6ED5ED}" datafieldname="alex_doc_quote_enabled" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{d79bcd84-84a9-4c1a-9d5d-73da9bf4052c}">
+                        <labels>
+                          <label description="Quote - allow draft preview" languagecode="1033" />
+                        </labels>
+                        <control id="alex_doc_quote_draftpreview" classid="{67FAC785-CD58-4f9f-ABB3-4B7DDC6ED5ED}" datafieldname="alex_doc_quote_draftpreview" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{e1e56759-9c5c-4d6c-9294-b5c9157b129d}">
+                        <labels>
+                          <label description="Allow bulk creation" languagecode="1033" />
+                        </labels>
+                        <control id="alex_doc_quote_bulkcreate" classid="{67FAC785-CD58-4f9f-ABB3-4B7DDC6ED5ED}" datafieldname="alex_doc_quote_bulkcreate" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{BCFC294F-ED16-49E2-A49B-DA384E4E5BB1}">
+                        <labels>
+                          <label description="Quote: send email on issue" languagecode="1033" />
+                        </labels>
+                        <control id="alex_doc_quote_issue_send_email" classid="{67FAC785-CD58-4f9f-ABB3-4B7DDC6ED5ED}" datafieldname="alex_doc_quote_issue_send_email" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{424961E9-BCC1-49B4-A090-2B7BAEC1AE43}">
+                        <labels>
+                          <label description="Quote: send SMS on issue" languagecode="1033" />
+                        </labels>
+                        <control id="alex_doc_quote_issue_send_sms" classid="{67FAC785-CD58-4f9f-ABB3-4B7DDC6ED5ED}" datafieldname="alex_doc_quote_issue_send_sms" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{63BFF326-BBFA-40B1-BF03-658DE07EC52C}">
+                        <labels>
+                          <label description="Quote: allow email resend" languagecode="1033" />
+                        </labels>
+                        <control id="alex_doc_quote_resend_email_allowed" classid="{67FAC785-CD58-4f9f-ABB3-4B7DDC6ED5ED}" datafieldname="alex_doc_quote_resend_email_allowed" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{ED4A3CA9-104A-49AF-8FF9-BB1C9131A4D2}">
+                        <labels>
+                          <label description="Quote: allow SMS resend" languagecode="1033" />
+                        </labels>
+                        <control id="alex_doc_quote_resend_sms_allowed" classid="{67FAC785-CD58-4f9f-ABB3-4B7DDC6ED5ED}" datafieldname="alex_doc_quote_resend_sms_allowed" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{01EA98BD-0D27-4FAE-9F91-1DEFD7FAE931}">
+                        <labels>
+                          <label description="Quote: allow WhatsApp resend" languagecode="1033" />
+                        </labels>
+                        <control id="alex_doc_quote_resend_whatsapp_allowed" classid="{67FAC785-CD58-4f9f-ABB3-4B7DDC6ED5ED}" datafieldname="alex_doc_quote_resend_whatsapp_allowed" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{2DBBC4C9-937B-41C8-B030-9A387474932C}">
+                        <labels>
+                          <label description="Quote: resend default link" languagecode="1033" />
+                        </labels>
+                        <control id="alex_doc_quote_resend_default_linktype" classid="{3EF39988-22BB-4f0b-BBBE-64B5A3748AEE}" datafieldname="alex_doc_quote_resend_default_linktype" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{3A8B5E1C-5BD7-45F9-8F65-5CCEF650B2E1}">
+                        <labels>
+                          <label description="Quote: allow original resend" languagecode="1033" />
+                        </labels>
+                        <control id="alex_doc_quote_resend_original_allowed" classid="{67FAC785-CD58-4f9f-ABB3-4B7DDC6ED5ED}" datafieldname="alex_doc_quote_resend_original_allowed" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{4AFDB25B-6E97-4146-940A-C3A4BB5333D9}">
+                        <labels>
+                          <label description="Quote: allow copy resend" languagecode="1033" />
+                        </labels>
+                        <control id="alex_doc_quote_resend_copy_allowed" classid="{67FAC785-CD58-4f9f-ABB3-4B7DDC6ED5ED}" datafieldname="alex_doc_quote_resend_copy_allowed" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{6de3088f-8979-47a8-8cbb-af64e37433d8}">
+                        <labels>
+                          <label description="Quote - auto-send when active" languagecode="1033" />
+                        </labels>
+                        <control id="alex_doc_quote_autosend" classid="{67FAC785-CD58-4f9f-ABB3-4B7DDC6ED5ED}" datafieldname="alex_doc_quote_autosend" />
+                      </cell>
+                    </row>
+                  </rows>
+                </section>
+                <section name="sec_doc_import" showlabel="true" showbar="false" columns="1" id="{a1b2c3d4-1111-4aaa-9bbb-000000000001}">
+                  <labels>
+                    <label description="ייבוא סוגי מסמכים" languagecode="1033" />
+                  </labels>
+                  <rows>
+                    <row>
+                      <cell id="{a1b2c3d4-1111-4aaa-9bbb-000000000002}">
+                        <labels>
+                          <label description="Import document types" languagecode="1033" />
+                        </labels>
+                        <control id="alex_doc_import_enabled" classid="{67FAC785-CD58-4f9f-ABB3-4B7DDC6ED5ED}" datafieldname="alex_doc_import_enabled" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{a1b2c3d4-1111-4aaa-9bbb-000000000003}">
+                        <labels>
+                          <label description="Document import status" languagecode="1033" />
+                        </labels>
+                        <control id="alex_doc_import_status" classid="{3EF39988-22BB-4f0b-BBBE-64B5A3748AEE}" datafieldname="alex_doc_import_status" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{a1b2c3d4-1111-4aaa-9bbb-000000000004}">
+                        <labels>
+                          <label description="Documents imported on" languagecode="1033" />
+                        </labels>
+                        <control id="alex_doc_import_on" classid="{5B773807-9FB2-42db-97C3-7A91EFF8ADFF}" datafieldname="alex_doc_import_on" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{a1b2c3d4-1111-4aaa-9bbb-000000000005}">
+                        <labels>
+                          <label description="Document import message" languagecode="1033" />
+                        </labels>
+                        <control id="alex_doc_import_message" classid="{4273EDBD-AC1D-40d3-9FB2-095C621B552D}" datafieldname="alex_doc_import_message" />
+                      </cell>
+                    </row>
+                  </rows>
+                </section>
+              </sections>
+            </column>
+          </columns>
+        </tab>
+        <tab name="tab_documents_salesorder" verticallayout="true" id="{d4558592-f3c0-4068-b9e7-79558d788f60}" IsUserDefined="0">
+          <labels>
+            <label description="הזמנות" languagecode="1033" />
+          </labels>
+          <columns>
+            <column width="100%">
+              <sections>
+                <section name="sec_tab_documents_salesorder" showlabel="true" showbar="false" columns="1" id="{b5132047-0680-4b8c-93d3-f66660140725}">
+                  <labels>
+                    <label description="הזמנה" languagecode="1033" />
+                  </labels>
+                  <rows>
+                    <row>
+                      <cell id="{064c4ca7-a79e-4a58-aad9-70aeaed90c2d}">
+                        <labels>
+                          <label description="Allow document issuing" languagecode="1033" />
+                        </labels>
+                        <control id="alex_doc_salesorder_enabled" classid="{67FAC785-CD58-4f9f-ABB3-4B7DDC6ED5ED}" datafieldname="alex_doc_salesorder_enabled" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{1367783c-7773-4e02-8c2d-be3e0b652af3}">
+                        <labels>
+                          <label description="Allow draft preview" languagecode="1033" />
+                        </labels>
+                        <control id="alex_doc_salesorder_draftpreview" classid="{67FAC785-CD58-4f9f-ABB3-4B7DDC6ED5ED}" datafieldname="alex_doc_salesorder_draftpreview" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{cfad8003-a58e-48af-9101-28ce9718f39b}">
+                        <labels>
+                          <label description="Allow bulk creation" languagecode="1033" />
+                        </labels>
+                        <control id="alex_doc_salesorder_bulkcreate" classid="{67FAC785-CD58-4f9f-ABB3-4B7DDC6ED5ED}" datafieldname="alex_doc_salesorder_bulkcreate" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{A68CD150-DA82-4D40-9DE3-29F104236E35}">
+                        <labels>
+                          <label description="Sales order: send email on issue" languagecode="1033" />
+                        </labels>
+                        <control id="alex_doc_salesorder_issue_send_email" classid="{67FAC785-CD58-4f9f-ABB3-4B7DDC6ED5ED}" datafieldname="alex_doc_salesorder_issue_send_email" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{1F92F95C-3785-4716-B8F8-B832480989D3}">
+                        <labels>
+                          <label description="Sales order: send SMS on issue" languagecode="1033" />
+                        </labels>
+                        <control id="alex_doc_salesorder_issue_send_sms" classid="{67FAC785-CD58-4f9f-ABB3-4B7DDC6ED5ED}" datafieldname="alex_doc_salesorder_issue_send_sms" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{16E856BD-6BA6-434E-9C1A-48818C047B8E}">
+                        <labels>
+                          <label description="Sales order: allow email resend" languagecode="1033" />
+                        </labels>
+                        <control id="alex_doc_salesorder_resend_email_allowed" classid="{67FAC785-CD58-4f9f-ABB3-4B7DDC6ED5ED}" datafieldname="alex_doc_salesorder_resend_email_allowed" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{3A7FBF38-7F9C-42E9-8803-F03618F9E40C}">
+                        <labels>
+                          <label description="Sales order: allow SMS resend" languagecode="1033" />
+                        </labels>
+                        <control id="alex_doc_salesorder_resend_sms_allowed" classid="{67FAC785-CD58-4f9f-ABB3-4B7DDC6ED5ED}" datafieldname="alex_doc_salesorder_resend_sms_allowed" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{894DB1CA-33C1-4DCF-B866-4781FDFE1D2A}">
+                        <labels>
+                          <label description="Sales order: allow WhatsApp resend" languagecode="1033" />
+                        </labels>
+                        <control id="alex_doc_salesorder_resend_whatsapp_allowed" classid="{67FAC785-CD58-4f9f-ABB3-4B7DDC6ED5ED}" datafieldname="alex_doc_salesorder_resend_whatsapp_allowed" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{B7454DC6-486C-4B38-B33C-7518BA4D81A3}">
+                        <labels>
+                          <label description="Sales order: resend default link" languagecode="1033" />
+                        </labels>
+                        <control id="alex_doc_salesorder_resend_default_linktype" classid="{3EF39988-22BB-4f0b-BBBE-64B5A3748AEE}" datafieldname="alex_doc_salesorder_resend_default_linktype" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{FCC45BE2-8491-4BCD-84F2-074C83C050D4}">
+                        <labels>
+                          <label description="Sales order: allow original resend" languagecode="1033" />
+                        </labels>
+                        <control id="alex_doc_salesorder_resend_original_allowed" classid="{67FAC785-CD58-4f9f-ABB3-4B7DDC6ED5ED}" datafieldname="alex_doc_salesorder_resend_original_allowed" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{F7077385-A2ED-41E3-A61F-92AD806563A7}">
+                        <labels>
+                          <label description="Sales order: allow copy resend" languagecode="1033" />
+                        </labels>
+                        <control id="alex_doc_salesorder_resend_copy_allowed" classid="{67FAC785-CD58-4f9f-ABB3-4B7DDC6ED5ED}" datafieldname="alex_doc_salesorder_resend_copy_allowed" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{26a847ab-eb20-4284-b98b-0a059679ce33}">
+                        <labels>
+                          <label description="Auto-send when active" languagecode="1033" />
+                        </labels>
+                        <control id="alex_doc_salesorder_autosend" classid="{67FAC785-CD58-4f9f-ABB3-4B7DDC6ED5ED}" datafieldname="alex_doc_salesorder_autosend" />
+                      </cell>
+                    </row>
+                  </rows>
+                </section>
+              </sections>
+            </column>
+          </columns>
+        </tab>
+        <tab name="payplus_terminal" id="85f564b7-b859-4b72-b3ae-2c314866ecd0" IsUserDefined="0" locklevel="0" showlabel="true">
+          <labels>
+            <label description="מסופים" languagecode="1033" />
+          </labels>
+          <columns>
+            <column width="100%">
+              <sections>
+                <section name="tab_4_section_1" id="12e89129-aa7f-4988-8bba-3c80e3e789a9" IsUserDefined="0" locklevel="0" showlabel="false" showbar="false" layout="varwidth" celllabelalignment="Left" celllabelposition="Left" columns="1" labelwidth="115" visible="true">
+                  <labels>
+                    <label description="New Section" languagecode="1033" />
+                  </labels>
+                  <rows>
+                    <row />
+                    <row>
+                      <cell locklevel="0" id="{e21aeb4f-bb74-4169-8ee1-9c34b681dcd1}" rowspan="4" colspan="1" auto="false" showlabel="false">
+                        <labels>
+                          <label description="מסופי PayPlus" languagecode="1033" />
+                        </labels>
+                        <control indicationOfSubgrid="true" id="Subgrid_new_1" classid="{E7A81278-8635-4D9E-8D4D-59480B391C5B}">
+                          <parameters>
+                            <RecordsPerPage>4</RecordsPerPage>
+                            <AutoExpand>Fixed</AutoExpand>
+                            <EnableQuickFind>false</EnableQuickFind>
+                            <EnableViewPicker>false</EnableViewPicker>
+                            <EnableChartPicker>true</EnableChartPicker>
+                            <ChartGridMode>All</ChartGridMode>
+                            <RelationshipName>alex_payplusconfiguration_alex_payplus_terminal</RelationshipName>
+                            <TargetEntityType>alex_payplus_terminal</TargetEntityType>
+                            <ViewId>{0FDA6656-BC7E-F111-AB0E-7CED8D726840}</ViewId>
+                            <ViewIds>{0FDA6656-BC7E-F111-AB0E-7CED8D726840}</ViewIds>
+                          </parameters>
+                        </control>
+                      </cell>
+                    </row>
+                    <row />
+                    <row />
+                    <row />
+                  </rows>
+                </section>
+              </sections>
+            </column>
+          </columns>
+        </tab>
+        <tab name="tab_5" id="47b2fe0f-1c90-4253-8cd3-fd808c8902b9" IsUserDefined="0" locklevel="0" showlabel="true">
+          <labels>
+            <label description="סוגי מסמכים" languagecode="1033" />
+          </labels>
+          <columns>
+            <column width="100%">
+              <sections>
+                <section name="tab_5_section_1" id="a20aee29-90a0-4dca-a6c1-42ec550eb9bd" IsUserDefined="0" locklevel="0" showlabel="false" showbar="false" layout="varwidth" celllabelalignment="Left" celllabelposition="Left" columns="1" labelwidth="115">
+                  <labels>
+                    <label description="סוגי מסמכים" languagecode="1033" />
+                  </labels>
+                  <rows>
+                    <row />
+                    <row>
+                      <cell locklevel="0" id="{75cf12c2-69be-4dfd-a081-cee822b9c32b}" rowspan="4" colspan="1" auto="false" showlabel="false">
+                        <labels>
+                          <label description="PayPlus Document Types" languagecode="1033" />
+                        </labels>
+                        <control indicationOfSubgrid="true" id="Subgrid_new_2" classid="{E7A81278-8635-4D9E-8D4D-59480B391C5B}">
+                          <parameters>
+                            <RecordsPerPage>4</RecordsPerPage>
+                            <AutoExpand>Fixed</AutoExpand>
+                            <EnableQuickFind>false</EnableQuickFind>
+                            <EnableViewPicker>false</EnableViewPicker>
+                            <EnableChartPicker>true</EnableChartPicker>
+                            <ChartGridMode>All</ChartGridMode>
+                            <RelationshipName>alex_payplusconfiguration_alex_payplus_documenttype</RelationshipName>
+                            <TargetEntityType>alex_payplus_documenttype</TargetEntityType>
+                            <ViewId>{57CAEAE3-3269-4806-B42A-0D33A372EE9E}</ViewId>
+                            <ViewIds>{57CAEAE3-3269-4806-B42A-0D33A372EE9E}</ViewIds>
+                          </parameters>
+                        </control>
+                      </cell>
+                    </row>
+                    <row />
+                    <row />
+                    <row />
+                  </rows>
+                </section>
+              </sections>
+            </column>
+          </columns>
+        </tab>
+      </tabs>
+      <header id="{f09710f6-161c-4b30-bc2b-d6f784758c12}" celllabelposition="Top" columns="111" labelwidth="115" celllabelalignment="Left">
+        <rows>
+          <row>
+            <cell id="{ce01fccc-cb46-4735-b7be-cb8311065a45}" showlabel="false">
+              <labels>
+                <label description="" languagecode="1033" />
+              </labels>
+            </cell>
+            <cell id="{cb53d4f1-2e86-4f35-a959-39c2759d7f73}" showlabel="false">
+              <labels>
+                <label description="" languagecode="1033" />
+              </labels>
+            </cell>
+            <cell id="{dd9c0a41-1fbc-40d9-81ba-702e072d8f4a}" showlabel="false">
+              <labels>
+                <label description="" languagecode="1033" />
+              </labels>
+            </cell>
+          </row>
+        </rows>
+      </header>
+      <footer id="{bb42b233-1a3f-4b97-b917-fa2847f45c39}" celllabelposition="Top" columns="111" labelwidth="115" celllabelalignment="Left">
+        <rows>
+          <row>
+            <cell id="{e8b6162e-036c-425d-874b-a1bcc8621104}" showlabel="false">
+              <labels>
+                <label description="" languagecode="1033" />
+              </labels>
+            </cell>
+            <cell id="{ed6cc6d5-e4e8-48c0-96e7-0d329da18504}" showlabel="false">
+              <labels>
+                <label description="" languagecode="1033" />
+              </labels>
+            </cell>
+            <cell id="{10580a2f-8a6d-4b7f-962d-7b3c32743cf9}" showlabel="false">
+              <labels>
+                <label description="" languagecode="1033" />
+              </labels>
+            </cell>
+          </row>
+        </rows>
+      </footer>
+      <DisplayConditions Order="0" FallbackForm="true">
+        <Everyone />
+      </DisplayConditions>
+    </form>
+    <IsCustomizable>1</IsCustomizable>
+    <CanBeDeleted>1</CanBeDeleted>
+    <LocalizedNames>
+      <LocalizedName description="Information" languagecode="1033" />
+    </LocalizedNames>
+    <Descriptions>
+      <Description description="A form for this entity." languagecode="1033" />
+    </Descriptions>
+  </systemform>
+</forms>

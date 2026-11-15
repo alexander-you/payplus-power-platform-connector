@@ -1,0 +1,11 @@
+<dvtablesearch dvtablesearchid="641b1552-d97a-f111-ab0e-002248a0e942">
+  <appmoduleuniquename>alex_PayPlusConfiguration</appmoduleuniquename>
+  <iscustomizable>1</iscustomizable>
+  <m365appmoduleid>
+    <uniquename>alex_PayPlusConfiguration</uniquename>
+  </m365appmoduleid>
+  <name>M365_Primary_model_alex_PayPlusConfiguration</name>
+  <searchtype>0</searchtype>
+  <statecode>1</statecode>
+  <statuscode>2</statuscode>
+</dvtablesearch>

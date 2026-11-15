@@ -1,0 +1,159 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<forms xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <systemform>
+    <formid>{3adaf2ac-aec1-48ae-9eb5-39eac7dc7b5a}</formid>
+    <IntroducedVersion>1.0.0.0</IntroducedVersion>
+    <FormPresentation>1</FormPresentation>
+    <FormActivationState>1</FormActivationState>
+    <form>
+      <tabs>
+        <tab verticallayout="true" id="{23af1a50-611b-4e26-9569-8ba92323d804}" IsUserDefined="1">
+          <labels>
+            <label description="General" languagecode="1033" />
+          </labels>
+          <columns>
+            <column width="100%">
+              <sections>
+                <section showlabel="true" showbar="false" IsUserDefined="1" id="{931fa7f9-c95b-47af-b3a5-f487c571a831}">
+                  <labels>
+                    <label description="General" languagecode="1033" />
+                  </labels>
+                  <rows>
+                    <row>
+                      <cell id="{3a644801-68e5-4186-b849-b8b2bf4e0627}" showlabel="true">
+                        <labels>
+                          <label description="Name" languagecode="1033" />
+                        </labels>
+                        <control id="alex_name" classid="{4273EDBD-AC1D-40d3-9FB2-095C621B552D}" datafieldname="alex_name" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{7b09fa5f-86b0-4ade-826b-d062382b05ce}" showlabel="true">
+                        <labels>
+                          <label description="Entity Mapping" languagecode="1033" />
+                        </labels>
+                        <control id="alex_entitymappingid" classid="{270BD3DB-D9AF-4782-9025-509E298DEC0A}" datafieldname="alex_entitymappingid" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{05600fcd-abf2-4d87-a381-9a81f3c0f9d1}" showlabel="true">
+                        <labels>
+                          <label description="Target Field Logical Name" languagecode="1033" />
+                        </labels>
+                        <control id="alex_targetfieldlogicalname" classid="{4273EDBD-AC1D-40d3-9FB2-095C621B552D}" datafieldname="alex_targetfieldlogicalname" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{a53e0467-b3c8-4313-8fe6-93e10b4a2b08}" showlabel="true">
+                        <labels>
+                          <label description="Target Field Display Name" languagecode="1033" />
+                        </labels>
+                        <control id="alex_targetfielddisplayname" classid="{4273EDBD-AC1D-40d3-9FB2-095C621B552D}" datafieldname="alex_targetfielddisplayname" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{3382ab9a-f4bf-4fe9-866e-c4efbf59b2e6}" showlabel="true">
+                        <labels>
+                          <label description="Source Field Logical Name" languagecode="1033" />
+                        </labels>
+                        <control id="alex_sourcefieldlogicalname" classid="{4273EDBD-AC1D-40d3-9FB2-095C621B552D}" datafieldname="alex_sourcefieldlogicalname" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{06f3169a-e975-4112-b74a-b0e091ed51dd}" showlabel="true">
+                        <labels>
+                          <label description="Source Field Display Name" languagecode="1033" />
+                        </labels>
+                        <control id="alex_sourcefielddisplayname" classid="{4273EDBD-AC1D-40d3-9FB2-095C621B552D}" datafieldname="alex_sourcefielddisplayname" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{710618c1-804a-40bf-8c85-ab471964406a}" showlabel="true">
+                        <labels>
+                          <label description="Source Type" languagecode="1033" />
+                        </labels>
+                        <control id="alex_sourcetype" classid="{3EF39988-22BB-4f0b-BBBE-64B5A3748AEE}" datafieldname="alex_sourcetype" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{99a61690-7978-4433-a5bc-4f9c631cfc9d}" showlabel="true">
+                        <labels>
+                          <label description="Required For Payload" languagecode="1033" />
+                        </labels>
+                        <control id="alex_requiredforpayload" classid="{67FAC785-CD58-4f9f-ABB3-4B7DDC6ED5ED}" datafieldname="alex_requiredforpayload" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{5cf5f386-f72c-4e8b-a5a7-f11312214f20}" showlabel="true">
+                        <labels>
+                          <label description="PayPlus Data Type" languagecode="1033" />
+                        </labels>
+                        <control id="alex_payplusdatatype" classid="{3EF39988-22BB-4f0b-BBBE-64B5A3748AEE}" datafieldname="alex_payplusdatatype" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{7d6a7aec-3422-4dbe-8b65-6db5a8d120a3}" showlabel="true">
+                        <labels>
+                          <label description="Dataverse Data Type" languagecode="1033" />
+                        </labels>
+                        <control id="alex_dataversetype" classid="{3EF39988-22BB-4f0b-BBBE-64B5A3748AEE}" datafieldname="alex_dataversetype" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{ba244504-f43e-4501-b95f-6bd1f0609990}" showlabel="true">
+                        <labels>
+                          <label description="Default Value" languagecode="1033" />
+                        </labels>
+                        <control id="alex_defaultvalue" classid="{4273EDBD-AC1D-40d3-9FB2-095C621B552D}" datafieldname="alex_defaultvalue" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{b6f042db-40f5-400c-920f-2c2a260501bb}" showlabel="true">
+                        <labels>
+                          <label description="Null Handling" languagecode="1033" />
+                        </labels>
+                        <control id="alex_nullhandling" classid="{3EF39988-22BB-4f0b-BBBE-64B5A3748AEE}" datafieldname="alex_nullhandling" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{ed71c523-60a4-46e7-be40-5d9f1ac4381f}" showlabel="true">
+                        <labels>
+                          <label description="Transform Rule" languagecode="1033" />
+                        </labels>
+                        <control id="alex_transformruleid" classid="{270BD3DB-D9AF-4782-9025-509E298DEC0A}" datafieldname="alex_transformruleid" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{fa0194d6-6a56-49a2-bb0b-787259ddaf08}" showlabel="true">
+                        <labels>
+                          <label description="Sort Order" languagecode="1033" />
+                        </labels>
+                        <control id="alex_sortorder" classid="{C6D124CA-7EDA-4A60-AEA9-7FB8D318B68F}" datafieldname="alex_sortorder" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{d5cb5d8e-fff5-4ffd-be3d-5d7eb886b3e2}" showlabel="true">
+                        <labels>
+                          <label description="Is Active" languagecode="1033" />
+                        </labels>
+                        <control id="alex_isactive" classid="{67FAC785-CD58-4f9f-ABB3-4B7DDC6ED5ED}" datafieldname="alex_isactive" />
+                      </cell>
+                    </row>
+                  </rows>
+                </section>
+              </sections>
+            </column>
+          </columns>
+        </tab>
+      </tabs>
+    </form>
+    <IsCustomizable>1</IsCustomizable>
+    <CanBeDeleted>1</CanBeDeleted>
+    <LocalizedNames>
+      <LocalizedName description="Information" languagecode="1033" />
+    </LocalizedNames>
+    <Descriptions>
+      <Description description="PayPlus Field Mapping main form." languagecode="1033" />
+    </Descriptions>
+  </systemform>
+</forms>

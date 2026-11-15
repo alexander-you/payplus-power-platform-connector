@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <data name="PayPlus_DocumentPreview_Display" xml:space="preserve"><value>תצוגה מקדימה למסמך PayPlus</value></data>
+  <data name="PayPlus_DocumentPreview_Desc" xml:space="preserve"><value>מציג תצוגה מקדימה של מסמך PayPlus מתוך רשומת מסמך PayPlus.</value></data>
+  <data name="PayPlus_DocumentPreview_Host_Display" xml:space="preserve"><value>מארח תצוגה מקדימה</value></data>
+  <data name="PayPlus_DocumentPreview_Host_Desc" xml:space="preserve"><value>שדה מארח להצבת פקד תצוגת מסמך PayPlus בטופס.</value></data>
+  <data name="PayPlus_DocumentPreview_DocumentId_Display" xml:space="preserve"><value>מזהה מסמך</value></data>
+  <data name="PayPlus_DocumentPreview_DocumentId_Desc" xml:space="preserve"><value>מזהה אופציונלי של רשומת מסמך PayPlus עבור Custom Page. יש לקשר אל Param(&quot;recordId&quot;) כאשר משתמשים בדיאלוג Custom Page.</value></data>
+</root>

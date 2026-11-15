@@ -1,0 +1,13 @@
+<catalog uniquename="alex_payplus_hf">
+  <description default="PayPlus hosted-fields session messages">
+    <label description="PayPlus hosted-fields session messages" languagecode="1033" />
+  </description>
+  <displayname default="Hosted Fields">
+    <label description="Hosted Fields" languagecode="1033" />
+  </displayname>
+  <iscustomizable>1</iscustomizable>
+  <name>Hosted Fields</name>
+  <parentcatalogid>
+    <uniquename>alex_payplus</uniquename>
+  </parentcatalogid>
+</catalog>

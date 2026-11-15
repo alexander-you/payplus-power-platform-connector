@@ -1,0 +1,162 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<forms xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <systemform>
+    <formid>{915f390c-323a-4433-bec5-afd16f78c5cd}</formid>
+    <IntroducedVersion>1.0.0.0</IntroducedVersion>
+    <FormPresentation>1</FormPresentation>
+    <FormActivationState>1</FormActivationState>
+    <form>
+      <tabs>
+        <tab verticallayout="true" id="{0e433199-7506-4fac-904b-e015c960a1e7}" IsUserDefined="1">
+          <labels>
+            <label description="General" languagecode="1033" />
+          </labels>
+          <columns>
+            <column width="33%">
+              <sections>
+                <section showlabel="false" showbar="false" IsUserDefined="0" id="{b39b6a52-a380-480f-9fbd-eacfd5105dbc}">
+                  <labels>
+                    <label description="General" languagecode="1033" />
+                  </labels>
+                  <rows>
+                    <row>
+                      <cell id="{95698528-e180-4297-aae6-b12785c2c2b2}">
+                        <labels>
+                          <label description="Name" languagecode="1033" />
+                        </labels>
+                        <control id="alex_name" classid="{4273EDBD-AC1D-40d3-9FB2-095C621B552D}" datafieldname="alex_name" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{da46f8c2-72ad-4493-b280-aaad3a4d6f48}">
+                        <labels>
+                          <label description="Owner" languagecode="1033" />
+                        </labels>
+                        <control id="ownerid" classid="{270BD3DB-D9AF-4782-9025-509E298DEC0A}" datafieldname="ownerid" />
+                      </cell>
+                    </row>
+                  </rows>
+                </section>
+                <section showlabel="true" showbar="false" IsUserDefined="1" id="{54696375-F3CC-4072-B651-E289A3A51408}">
+                  <labels>
+                    <label description="Sales Context" languagecode="1033" />
+                  </labels>
+                  <rows>
+                    <row>
+                      <cell id="{7B442848-0829-4344-929E-FFE86B6C4900}" showlabel="true">
+                        <labels>
+                          <label description="More Info" languagecode="1033" />
+                        </labels>
+                        <control id="alex_moreinfo" classid="{E0DECE4B-6FC8-4a8f-A065-082708572369}" datafieldname="alex_moreinfo" />
+                      </cell>
+                    </row>
+                  </rows>
+                </section>
+                <section name="sec_billing_context" showlabel="true" showbar="false" IsUserDefined="1" id="{1A772281-7E79-4EDF-8C59-0B5AD1231E37}">
+                  <labels>
+                    <label description="Billing Context" languagecode="1033" />
+                  </labels>
+                  <rows>
+                    <row>
+                      <cell id="{6F2AB1DC-8F36-4BEA-BFE1-DE88AFF1EE9D}" showlabel="true">
+                        <labels>
+                          <label description="Billing Case" languagecode="1033" />
+                        </labels>
+                        <control id="alex_billingcaseid" classid="{270BD3DB-D9AF-4782-9025-509E298DEC0A}" datafieldname="alex_billingcaseid" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{202159B2-04A7-4883-AA14-0CBE30487E1F}" showlabel="true">
+                        <labels>
+                          <label description="Billing document role" languagecode="1033" />
+                        </labels>
+                        <control id="alex_documentrole" classid="{3EF39988-22BB-4f0b-BBBE-64B5A3748AEE}" datafieldname="alex_documentrole" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{AF05150E-2E0A-4E2F-8169-B2A3D8ED979A}" showlabel="true">
+                        <labels>
+                          <label description="Parent PayPlus Document" languagecode="1033" />
+                        </labels>
+                        <control id="alex_parentdocumentid" classid="{270BD3DB-D9AF-4782-9025-509E298DEC0A}" datafieldname="alex_parentdocumentid" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{5B7A869C-E5C5-47DF-8C86-2877BAAA309A}" showlabel="true">
+                        <labels>
+                          <label description="Reverses PayPlus Document" languagecode="1033" />
+                        </labels>
+                        <control id="alex_reversesdocumentid" classid="{270BD3DB-D9AF-4782-9025-509E298DEC0A}" datafieldname="alex_reversesdocumentid" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{B9223A4C-9AFA-45AE-AD9E-D6571B319913}" showlabel="true">
+                        <labels>
+                          <label description="Related Invoice Document" languagecode="1033" />
+                        </labels>
+                        <control id="alex_relatedinvoicedocumentid" classid="{270BD3DB-D9AF-4782-9025-509E298DEC0A}" datafieldname="alex_relatedinvoicedocumentid" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{12B17A1F-ECE5-40E0-949B-D40AB995FD43}" showlabel="true">
+                        <labels>
+                          <label description="Balance impact" languagecode="1033" />
+                        </labels>
+                        <control id="alex_balanceimpact" classid="{C3EFE0C3-0EC6-42be-8349-CBD9079DFD8E}" datafieldname="alex_balanceimpact" />
+                      </cell>
+                    </row>
+                  </rows>
+                </section>
+              </sections>
+            </column>
+            <column width="66%">
+              <sections>
+                <section showlabel="false" showbar="false" id="{6adb90dd-751f-42d6-97f1-3be1b222e042}" IsUserDefined="0" height="auto">
+                  <labels>
+                    <label description="Notes" languagecode="1033" />
+                  </labels>
+                  <rows>
+                    <row>
+                      <cell showlabel="false" rowspan="15" auto="false" id="{e67340f3-d0a2-4fed-953f-7d03249fc947}">
+                        <labels>
+                          <label description="Note Text" languagecode="1033" />
+                        </labels>
+                        <control id="notescontrol" classid="{06375649-c143-495e-a496-c962e5b4488e}">
+                          <parameters>
+                            <DefaultTabId>NotesTab</DefaultTabId>
+                          </parameters>
+                        </control>
+                      </cell>
+                    </row>
+                    <row />
+                    <row />
+                    <row />
+                    <row />
+                    <row />
+                    <row />
+                    <row />
+                    <row />
+                    <row />
+                    <row />
+                    <row />
+                    <row />
+                    <row />
+                    <row height="auto" />
+                  </rows>
+                </section>
+              </sections>
+            </column>
+          </columns>
+        </tab>
+      </tabs>
+    </form>
+    <IsCustomizable>1</IsCustomizable>
+    <CanBeDeleted>1</CanBeDeleted>
+    <LocalizedNames>
+      <LocalizedName description="Information" languagecode="1033" />
+    </LocalizedNames>
+    <Descriptions>
+      <Description description="A form for this entity." languagecode="1033" />
+    </Descriptions>
+  </systemform>
+</forms>

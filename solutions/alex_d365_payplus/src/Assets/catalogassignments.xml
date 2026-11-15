@@ -1,0 +1,5 @@
+<catalogassignments>
+  <catalogassignment catalogid.uniquename="alex_payplus_hf" object.uniquename="alex_CreateHfSession" objectidtype="customapi">
+    <iscustomizable>1</iscustomizable>
+  </catalogassignment>
+</catalogassignments>

@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Connector xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <connectorid>79337094-f90a-4117-8d95-7fcef4ee4f84</connectorid>
+  <description>אינטגרציית PayPlus עבור Dynamics 365 — יצירת קישורי תשלום, חיוב, טוקניזציה, זיכויים והפקת מסמכי מס. סביבת בדיקות (Staging / Sandbox).
+
+PayPlus integration for Dynamics 365 — payment links, charging, tokenization, refunds and tax documents. Staging (sandbox) environment.</description>
+  <displayname>PayPlus SandBox</displayname>
+  <iconbrandcolor>#007ee5</iconbrandcolor>
+  <name>alex_5Fpayplus-20sandbox</name>
+  <connectortype>1</connectortype>
+  <openapidefinition>/Connector/alex_5Fpayplus-20sandbox_openapidefinition.json</openapidefinition>
+  <connectionparameters>/Connector/alex_5Fpayplus-20sandbox_connectionparameters.json</connectionparameters>
+  <policytemplateinstances>/Connector/alex_5Fpayplus-20sandbox_policytemplateinstances.json</policytemplateinstances>
+  <iconblob>/Connector/alex_5Fpayplus-20sandbox_iconblob.Png</iconblob>
+</Connector>

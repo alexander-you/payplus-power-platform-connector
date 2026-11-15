@@ -1,0 +1,49 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<savedqueries xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <savedquery>
+    <IsCustomizable>1</IsCustomizable>
+    <CanBeDeleted>0</CanBeDeleted>
+    <isquickfindquery>0</isquickfindquery>
+    <isprivate>0</isprivate>
+    <isdefault>1</isdefault>
+    <savedqueryid>{e330f73f-b47d-4ff4-af36-801b43146cf0}</savedqueryid>
+    <layoutxml>
+      <grid name="alex_payplus_entitymappings" jump="alex_name" select="1" icon="1" preview="1">
+        <row name="alex_payplus_entitymapping" id="alex_payplus_entitymappingid">
+          <cell name="alex_name" width="300" />
+          <cell name="alex_targetobject" width="100" />
+          <cell name="alex_sourcetabledisplayname" width="163" />
+          <cell name="alex_isactive" width="100" />
+          <cell name="alex_allowcreate" width="100" />
+          <cell name="alex_allowupdate" width="100" />
+          <cell name="alex_coalesceupdates" width="108" />
+          <cell name="modifiedon" width="100" />
+        </row>
+      </grid>
+    </layoutxml>
+    <querytype>2</querytype>
+    <fetchxml>
+      <fetch version="1.0" mapping="logical">
+        <entity name="alex_payplus_entitymapping">
+          <attribute name="alex_payplus_entitymappingid" />
+          <attribute name="alex_name" />
+          <filter type="and">
+            <condition attribute="statecode" operator="eq" value="0" />
+          </filter>
+          <attribute name="modifiedon" />
+          <order attribute="modifiedon" descending="true" />
+          <attribute name="alex_targetobject" />
+          <attribute name="alex_isactive" />
+          <attribute name="alex_allowcreate" />
+          <attribute name="alex_allowupdate" />
+          <attribute name="alex_coalesceupdates" />
+          <attribute name="alex_sourcetabledisplayname" />
+        </entity>
+      </fetch>
+    </fetchxml>
+    <IntroducedVersion>1.0.0.0</IntroducedVersion>
+    <LocalizedNames>
+      <LocalizedName description="PayPlus Entity Mapping Associated View" languagecode="1033" />
+    </LocalizedNames>
+  </savedquery>
+</savedqueries>

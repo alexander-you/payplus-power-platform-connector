@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Workflow WorkflowId="{b4d61528-c782-f111-ab0f-7ced8d726840}" Name="PayPlus - Import Banks &amp; Branches" Description="Imports Israeli banks and branches from data.gov.il (resource 2202bada-4baf-45f5-aa61-8c5bad9646d3) into alex_bank / alex_bankbranch, linking each branch to its bank. Triggered by alex_bank_import_enabled on the config row; upsert by bank code / branch code; writes back import status." xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <JsonFileName>/Workflows/PayPlus-ImportBanksBranches-B4D61528-C782-F111-AB0F-7CED8D726840.json</JsonFileName>
+  <Type>1</Type>
+  <Subprocess>0</Subprocess>
+  <Category>5</Category>
+  <Mode>0</Mode>
+  <Scope>4</Scope>
+  <OnDemand>0</OnDemand>
+  <TriggerOnCreate>0</TriggerOnCreate>
+  <TriggerOnDelete>0</TriggerOnDelete>
+  <AsyncAutodelete>0</AsyncAutodelete>
+  <SyncWorkflowLogOnFailure>0</SyncWorkflowLogOnFailure>
+  <StateCode>0</StateCode>
+  <StatusCode>1</StatusCode>
+  <RunAs>1</RunAs>
+  <IsTransacted>1</IsTransacted>
+  <IntroducedVersion>1.0</IntroducedVersion>
+  <IsCustomizable>1</IsCustomizable>
+  <IsCustomProcessingStepAllowedForOtherPublishers>1</IsCustomProcessingStepAllowedForOtherPublishers>
+  <ModernFlowType>0</ModernFlowType>
+  <PrimaryEntity>none</PrimaryEntity>
+  <LocalizedNames>
+    <LocalizedName languagecode="1033" description="PayPlus - Import Banks &amp; Branches" />
+  </LocalizedNames>
+  <Descriptions>
+    <Description languagecode="1033" description="Imports Israeli banks and branches from data.gov.il (resource 2202bada-4baf-45f5-aa61-8c5bad9646d3) into alex_bank / alex_bankbranch, linking each branch to its bank. Triggered by alex_bank_import_enabled on the config row; upsert by bank code / branch code; writes back import status." />
+  </Descriptions>
+</Workflow>

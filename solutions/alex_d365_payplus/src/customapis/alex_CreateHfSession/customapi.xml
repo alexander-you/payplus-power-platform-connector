@@ -1,0 +1,15 @@
+<customapi uniquename="alex_CreateHfSession">
+  <allowedcustomprocessingsteptype>1</allowedcustomprocessingsteptype>
+  <bindingtype>0</bindingtype>
+  <description default="POC: generate a PayPlus hosted-fields session (generateLink) and store hosted_fields_uuid/page_request_uid on the HF session row.">
+    <label description="POC: generate a PayPlus hosted-fields session (generateLink) and store hosted_fields_uuid/page_request_uid on the HF session row." languagecode="1033" />
+  </description>
+  <displayname default="Create HF Session (POC)">
+    <label description="Create HF Session (POC)" languagecode="1033" />
+  </displayname>
+  <iscustomizable>1</iscustomizable>
+  <isfunction>0</isfunction>
+  <isprivate>0</isprivate>
+  <name>alex_CreateHfSession</name>
+  <workflowsdkstepenabled>0</workflowsdkstepenabled>
+</customapi>

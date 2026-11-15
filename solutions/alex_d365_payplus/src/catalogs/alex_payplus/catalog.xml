@@ -1,0 +1,10 @@
+<catalog uniquename="alex_payplus">
+  <description default="PayPlus integration business events">
+    <label description="PayPlus integration business events" languagecode="1033" />
+  </description>
+  <displayname default="PayPlus">
+    <label description="PayPlus" languagecode="1033" />
+  </displayname>
+  <iscustomizable>1</iscustomizable>
+  <name>PayPlus</name>
+</catalog>

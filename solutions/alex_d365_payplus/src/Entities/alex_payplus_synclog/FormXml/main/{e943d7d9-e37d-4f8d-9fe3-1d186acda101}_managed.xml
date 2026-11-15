@@ -1,0 +1,159 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<forms xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <systemform>
+    <formid>{e943d7d9-e37d-4f8d-9fe3-1d186acda101}</formid>
+    <IntroducedVersion>1.0.0.0</IntroducedVersion>
+    <FormPresentation>1</FormPresentation>
+    <FormActivationState>1</FormActivationState>
+    <form>
+      <tabs>
+        <tab verticallayout="true" id="{1bd99e15-729d-40ff-b52a-7e4c113213c7}" IsUserDefined="1">
+          <labels>
+            <label description="General" languagecode="1033" />
+          </labels>
+          <columns>
+            <column width="100%">
+              <sections>
+                <section showlabel="true" showbar="false" IsUserDefined="1" id="{dad638c4-f20b-4633-a675-53d5254d6572}">
+                  <labels>
+                    <label description="General" languagecode="1033" />
+                  </labels>
+                  <rows>
+                    <row>
+                      <cell id="{250cb3cf-9776-4170-8c19-29765ef02555}" showlabel="true">
+                        <labels>
+                          <label description="שם" languagecode="1033" />
+                        </labels>
+                        <control id="alex_name" classid="{4273EDBD-AC1D-40d3-9FB2-095C621B552D}" datafieldname="alex_name" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{77a797e1-85c4-4615-809f-a38dbc212211}" showlabel="true">
+                        <labels>
+                          <label description="Sync Profile" languagecode="1033" />
+                        </labels>
+                        <control id="alex_syncprofileid" classid="{270BD3DB-D9AF-4782-9025-509E298DEC0A}" datafieldname="alex_syncprofileid" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{bdbc1df2-f337-42c1-97de-8a72765a7c27}" showlabel="true">
+                        <labels>
+                          <label description="Outbox Job" languagecode="1033" />
+                        </labels>
+                        <control id="alex_outboxid" classid="{270BD3DB-D9AF-4782-9025-509E298DEC0A}" datafieldname="alex_outboxid" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{270e6196-fc5b-4562-b802-bfdb06d2473b}" showlabel="true">
+                        <labels>
+                          <label description="Sync State" languagecode="1033" />
+                        </labels>
+                        <control id="alex_syncstateid" classid="{270BD3DB-D9AF-4782-9025-509E298DEC0A}" datafieldname="alex_syncstateid" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{1f1c27eb-497e-4055-b1cd-01439ed34c2f}" showlabel="true">
+                        <labels>
+                          <label description="Entity Mapping" languagecode="1033" />
+                        </labels>
+                        <control id="alex_entitymappingid" classid="{270BD3DB-D9AF-4782-9025-509E298DEC0A}" datafieldname="alex_entitymappingid" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{aea9ad53-d680-44c6-b19b-7c6b0850c964}" showlabel="true">
+                        <labels>
+                          <label description="Event Type" languagecode="1033" />
+                        </labels>
+                        <control id="alex_eventtype" classid="{3EF39988-22BB-4f0b-BBBE-64B5A3748AEE}" datafieldname="alex_eventtype" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{b7433980-18b7-445b-987c-0f8f1d7e6b3f}" showlabel="true">
+                        <labels>
+                          <label description="Status" languagecode="1033" />
+                        </labels>
+                        <control id="alex_status" classid="{3EF39988-22BB-4f0b-BBBE-64B5A3748AEE}" datafieldname="alex_status" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{bee6cc4f-e0a3-47e9-b85e-a270fd56eac9}" showlabel="true">
+                        <labels>
+                          <label description="Message" languagecode="1033" />
+                        </labels>
+                        <control id="alex_message" classid="{E0DECE4B-6FC8-4a8f-A065-082708572369}" datafieldname="alex_message" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{5f343b55-59cc-4f7b-b776-d6f9ba17eea2}" showlabel="true">
+                        <labels>
+                          <label description="HTTP Status Code" languagecode="1033" />
+                        </labels>
+                        <control id="alex_httpstatuscode" classid="{C6D124CA-7EDA-4A60-AEA9-7FB8D318B68F}" datafieldname="alex_httpstatuscode" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{7996d8ba-5a05-496d-8bc3-4b640fd9bc63}" showlabel="true">
+                        <labels>
+                          <label description="PayPlus Result Code" languagecode="1033" />
+                        </labels>
+                        <control id="alex_payplusresultcode" classid="{4273EDBD-AC1D-40d3-9FB2-095C621B552D}" datafieldname="alex_payplusresultcode" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{d11511d5-bf03-4b27-87b6-5553f3f86fe4}" showlabel="true">
+                        <labels>
+                          <label description="Attempt Number" languagecode="1033" />
+                        </labels>
+                        <control id="alex_attemptnumber" classid="{C6D124CA-7EDA-4A60-AEA9-7FB8D318B68F}" datafieldname="alex_attemptnumber" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{140d52ef-06b8-4ef2-8b11-0a3af389bc4d}" showlabel="true">
+                        <labels>
+                          <label description="Duration Milliseconds" languagecode="1033" />
+                        </labels>
+                        <control id="alex_durationms" classid="{C6D124CA-7EDA-4A60-AEA9-7FB8D318B68F}" datafieldname="alex_durationms" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{0edba832-d49f-43b2-b03a-c9e38abbfcdf}" showlabel="true">
+                        <labels>
+                          <label description="Occurred On" languagecode="1033" />
+                        </labels>
+                        <control id="alex_occurredon" classid="{5B773807-9FB2-42db-97C3-7A91EFF8ADFF}" datafieldname="alex_occurredon" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{3e8b105e-a5c0-448d-a596-59ac712ac708}" showlabel="true">
+                        <labels>
+                          <label description="Request Payload" languagecode="1033" />
+                        </labels>
+                        <control id="alex_requestpayload" classid="{E0DECE4B-6FC8-4a8f-A065-082708572369}" datafieldname="alex_requestpayload" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{87978405-ab27-4917-baa2-e72ac32b06b6}" showlabel="true">
+                        <labels>
+                          <label description="Response Payload" languagecode="1033" />
+                        </labels>
+                        <control id="alex_responsepayload" classid="{E0DECE4B-6FC8-4a8f-A065-082708572369}" datafieldname="alex_responsepayload" />
+                      </cell>
+                    </row>
+                  </rows>
+                </section>
+              </sections>
+            </column>
+          </columns>
+        </tab>
+      </tabs>
+    </form>
+    <IsCustomizable>1</IsCustomizable>
+    <CanBeDeleted>1</CanBeDeleted>
+    <LocalizedNames>
+      <LocalizedName description="Information" languagecode="1033" />
+    </LocalizedNames>
+    <Descriptions>
+      <Description description="PayPlus Sync Log main form." languagecode="1033" />
+    </Descriptions>
+  </systemform>
+</forms>

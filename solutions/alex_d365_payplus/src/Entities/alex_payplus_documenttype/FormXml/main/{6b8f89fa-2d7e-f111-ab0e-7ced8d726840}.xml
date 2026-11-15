@@ -1,0 +1,202 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<forms xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <systemform>
+    <formid>{6b8f89fa-2d7e-f111-ab0e-7ced8d726840}</formid>
+    <IntroducedVersion>1.0.0.0</IntroducedVersion>
+    <FormPresentation>0</FormPresentation>
+    <FormActivationState>1</FormActivationState>
+    <form>
+      <tabs>
+        <tab verticallayout="true" id="{d0e08583-d1b1-4cfb-9f02-ac595d52dd8f}" IsUserDefined="1">
+          <labels>
+            <label description="Information" languagecode="1033" />
+          </labels>
+          <columns>
+            <column width="100%">
+              <sections>
+                <section showlabel="true" showbar="false" IsUserDefined="1" id="{0247f2a3-dae9-4751-ae99-0ce76b2d718d}">
+                  <labels>
+                    <label description="General" languagecode="1033" />
+                  </labels>
+                  <rows>
+                    <row>
+                      <cell id="{e751aefa-8a79-4715-9bec-d24043f32fbe}" showlabel="true">
+                        <labels>
+                          <label description="Name" languagecode="1033" />
+                        </labels>
+                        <control id="alex_name" classid="{4273EDBD-AC1D-40d3-9FB2-095C621B552D}" datafieldname="alex_name" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{12f2ca93-614c-48e5-b2e6-4d6d5fb5d28d}" showlabel="true">
+                        <labels>
+                          <label description="Code" languagecode="1033" />
+                        </labels>
+                        <control id="alex_code" classid="{4273EDBD-AC1D-40d3-9FB2-095C621B552D}" datafieldname="alex_code" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{cbbe24c9-b995-4422-96b4-6f0354318666}" showlabel="true">
+                        <labels>
+                          <label description="Hebrew Title" languagecode="1033" />
+                        </labels>
+                        <control id="alex_titlehe" classid="{4273EDBD-AC1D-40d3-9FB2-095C621B552D}" datafieldname="alex_titlehe" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{89dd8276-2a49-4ad2-bbed-5d66e7510c5f}" showlabel="true">
+                        <labels>
+                          <label description="English Title" languagecode="1033" />
+                        </labels>
+                        <control id="alex_titleen" classid="{4273EDBD-AC1D-40d3-9FB2-095C621B552D}" datafieldname="alex_titleen" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{1471ccb7-e877-42f5-aa66-d9f27cd68c9f}" showlabel="true">
+                        <labels>
+                          <label description="PayPlus Title" languagecode="1033" />
+                        </labels>
+                        <control id="alex_payplustitle" classid="{4273EDBD-AC1D-40d3-9FB2-095C621B552D}" datafieldname="alex_payplustitle" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{48bbb5fb-33ef-4490-b092-e2bd3dff227a}" showlabel="true">
+                        <labels>
+                          <label description="Type Code" languagecode="1033" />
+                        </labels>
+                        <control id="alex_typecode" classid="{C6D124CA-7EDA-4A60-AEA9-7FB8D318B68F}" datafieldname="alex_typecode" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{1bd47ed2-d357-44f4-acc8-509a2b88a771}" showlabel="true">
+                        <labels>
+                          <label description="Environment" languagecode="1033" />
+                        </labels>
+                        <control id="alex_environment" classid="{3EF39988-22BB-4f0b-BBBE-64B5A3748AEE}" datafieldname="alex_environment" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{83672c9e-1247-43e0-b0a3-0a149b572c84}" showlabel="true">
+                        <labels>
+                          <label description="Configuration" languagecode="1033" />
+                        </labels>
+                        <control id="alex_configurationid" classid="{270BD3DB-D9AF-4782-9025-509E298DEC0A}" datafieldname="alex_configurationid" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{6f7c0b15-5d5d-4f9e-a1d8-4fddc98beae6}" showlabel="true">
+                        <labels>
+                          <label description="Sync Profile" languagecode="1033" />
+                        </labels>
+                        <control id="alex_syncprofileid" classid="{270BD3DB-D9AF-4782-9025-509E298DEC0A}" datafieldname="alex_syncprofileid" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{f3295702-6adc-4043-858b-86e96ab296a9}" showlabel="true">
+                        <labels>
+                          <label description="Category" languagecode="1033" />
+                        </labels>
+                        <control id="alex_category" classid="{3EF39988-22BB-4f0b-BBBE-64B5A3748AEE}" datafieldname="alex_category" />
+                      </cell>
+                    </row>
+                  </rows>
+                </section>
+                <section showlabel="true" showbar="false" IsUserDefined="1" id="{509dad62-74e6-4d72-8859-9308a321ec2c}">
+                  <labels>
+                    <label description="Capabilities" languagecode="1033" />
+                  </labels>
+                  <rows>
+                    <row>
+                      <cell id="{c98f27ef-f681-485f-926a-6f88e7381fb5}" showlabel="true">
+                        <labels>
+                          <label description="Can Initiate" languagecode="1033" />
+                        </labels>
+                        <control id="alex_caninitiate" classid="{67FAC785-CD58-4f9f-ABB3-4B7DDC6ED5ED}" datafieldname="alex_caninitiate" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{71cf216b-9e16-4011-bc3b-23abcb5c31df}" showlabel="true">
+                        <labels>
+                          <label description="Declarable" languagecode="1033" />
+                        </labels>
+                        <control id="alex_declarable" classid="{67FAC785-CD58-4f9f-ABB3-4B7DDC6ED5ED}" datafieldname="alex_declarable" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{e127d1e4-c791-4f99-8b9f-1621920a1972}" showlabel="true">
+                        <labels>
+                          <label description="Hidden" languagecode="1033" />
+                        </labels>
+                        <control id="alex_hidden" classid="{67FAC785-CD58-4f9f-ABB3-4B7DDC6ED5ED}" datafieldname="alex_hidden" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{92cf2a10-c907-4faf-b514-402b1f66f002}" showlabel="true">
+                        <labels>
+                          <label description="Is Active" languagecode="1033" />
+                        </labels>
+                        <control id="alex_isactive" classid="{67FAC785-CD58-4f9f-ABB3-4B7DDC6ED5ED}" datafieldname="alex_isactive" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{684f2d9d-bf90-4f6b-a4dc-faeb52347be0}" showlabel="true">
+                        <labels>
+                          <label description="Source" languagecode="1033" />
+                        </labels>
+                        <control id="alex_source" classid="{3EF39988-22BB-4f0b-BBBE-64B5A3748AEE}" datafieldname="alex_source" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{1c7988f2-8d60-48a1-a6f1-3f49d795b0e0}" showlabel="true">
+                        <labels>
+                          <label description="Sort Order" languagecode="1033" />
+                        </labels>
+                        <control id="alex_sortorder" classid="{C6D124CA-7EDA-4A60-AEA9-7FB8D318B68F}" datafieldname="alex_sortorder" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{81177c45-39c9-4fe1-ba46-386dc74eff75}" showlabel="true">
+                        <labels>
+                          <label description="Last Refreshed On" languagecode="1033" />
+                        </labels>
+                        <control id="alex_lastrefreshedon" classid="{5B773807-9FB2-42db-97C3-7A91EFF8ADFF}" datafieldname="alex_lastrefreshedon" />
+                      </cell>
+                    </row>
+                  </rows>
+                </section>
+                <section showlabel="true" showbar="false" IsUserDefined="1" id="{b6796513-6783-4bb4-8ab1-018d1e9cad20}">
+                  <labels>
+                    <label description="Diagnostics" languagecode="1033" />
+                  </labels>
+                  <rows>
+                    <row>
+                      <cell id="{a6e4650b-a941-4f49-9602-c3d547b6e621}" showlabel="true">
+                        <labels>
+                          <label description="Description" languagecode="1033" />
+                        </labels>
+                        <control id="alex_description" classid="{E0DECE4B-6FC8-4a8f-A065-082708572369}" datafieldname="alex_description" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{1d00610d-9fc9-401c-8497-14c10ed5d17f}" showlabel="true">
+                        <labels>
+                          <label description="Raw JSON" languagecode="1033" />
+                        </labels>
+                        <control id="alex_rawjson" classid="{E0DECE4B-6FC8-4a8f-A065-082708572369}" datafieldname="alex_rawjson" />
+                      </cell>
+                    </row>
+                  </rows>
+                </section>
+              </sections>
+            </column>
+          </columns>
+        </tab>
+      </tabs>
+    </form>
+    <IsCustomizable>1</IsCustomizable>
+    <CanBeDeleted>1</CanBeDeleted>
+    <LocalizedNames>
+      <LocalizedName description="מידע" languagecode="1033" />
+    </LocalizedNames>
+  </systemform>
+</forms>

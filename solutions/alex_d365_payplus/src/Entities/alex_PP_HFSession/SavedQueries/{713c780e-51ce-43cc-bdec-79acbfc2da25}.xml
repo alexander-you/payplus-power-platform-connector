@@ -1,0 +1,37 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<savedqueries xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <savedquery>
+    <IsCustomizable>1</IsCustomizable>
+    <CanBeDeleted>0</CanBeDeleted>
+    <isquickfindquery>0</isquickfindquery>
+    <isprivate>0</isprivate>
+    <isdefault>0</isdefault>
+    <savedqueryid>{713c780e-51ce-43cc-bdec-79acbfc2da25}</savedqueryid>
+    <layoutxml>
+      <grid name="resultset" jump="alex_name" select="1" icon="1" preview="1">
+        <row name="result" id="alex_pp_hfsessionid">
+          <cell name="alex_name" width="300" />
+          <cell name="createdon" width="125" />
+        </row>
+      </grid>
+    </layoutxml>
+    <querytype>0</querytype>
+    <fetchxml>
+      <fetch version="1.0" mapping="logical">
+        <entity name="alex_pp_hfsession">
+          <attribute name="alex_pp_hfsessionid" />
+          <attribute name="alex_name" />
+          <attribute name="createdon" />
+          <order attribute="alex_name" descending="false" />
+          <filter type="and">
+            <condition attribute="statecode" operator="eq" value="1" />
+          </filter>
+        </entity>
+      </fetch>
+    </fetchxml>
+    <IntroducedVersion>1.0.0.0</IntroducedVersion>
+    <LocalizedNames>
+      <LocalizedName description="Inactive PayPlus HF Sessions (POC)" languagecode="1033" />
+    </LocalizedNames>
+  </savedquery>
+</savedqueries>

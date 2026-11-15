@@ -1,0 +1,9 @@
+<customapirequestparameter uniquename="terminal_uid">
+  <displayname default="מסוף | Terminal UID">
+    <label description="מסוף | Terminal UID" languagecode="1033" />
+  </displayname>
+  <iscustomizable>1</iscustomizable>
+  <isoptional>1</isoptional>
+  <name>terminal_uid</name>
+  <type>10</type>
+</customapirequestparameter>

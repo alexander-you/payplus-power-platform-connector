@@ -1,0 +1,726 @@
+{
+  "properties": {
+    "connectionReferences": {
+      "alex_payplus_dataverse": {
+        "runtimeSource": "embedded",
+        "connection": {
+          "connectionReferenceLogicalName": "alex_payplus_dataverse"
+        },
+        "api": {
+          "name": "shared_commondataserviceforapps"
+        }
+      },
+      "shared_alex-5fpayplus-5f5849d39a0feaf28d-1": {
+        "runtimeSource": "embedded",
+        "connection": {
+          "connectionReferenceLogicalName": "alex_payplusprod"
+        },
+        "api": {
+          "name": "shared_alex-5fpayplus-5f5849d39a0feaf28d",
+          "logicalName": "alex_5Fpayplus"
+        }
+      },
+      "shared_alex-5fpayplus-20sandbox-5f5849d39a0feaf28d-1": {
+        "runtimeSource": "embedded",
+        "connection": {
+          "connectionReferenceLogicalName": "alex_payplussandbox"
+        },
+        "api": {
+          "name": "shared_alex-5fpayplus-20sandbox-5f5849d39a0feaf28d",
+          "logicalName": "alex_5Fpayplus-20sandbox"
+        }
+      }
+    },
+    "definition": {
+      "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+      "contentVersion": "1.0.0.0",
+      "parameters": {
+        "$connections": {
+          "defaultValue": {},
+          "type": "Object"
+        },
+        "$authentication": {
+          "defaultValue": {},
+          "type": "SecureObject"
+        }
+      },
+      "triggers": {
+        "Every_5_minutes": {
+          "recurrence": {
+            "frequency": "Minute",
+            "interval": 5
+          },
+          "type": "Recurrence"
+        }
+      },
+      "actions": {
+        "Get_config_row": {
+          "runAfter": {},
+          "type": "OpenApiConnection",
+          "inputs": {
+            "host": {
+              "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps",
+              "operationId": "ListRecords",
+              "connectionName": "alex_payplus_dataverse"
+            },
+            "parameters": {
+              "$top": 1,
+              "entityName": "alex_payplusconfigurations",
+              "$select": "alex_payplusconfigurationid,alex_environment,alex_billing_auto_receipt_after_payment,alex_billing_auto_close_invoice_when_receipts_match"
+            },
+            "authentication": "@parameters('$authentication')"
+          }
+        },
+        "List_waiting_invoice_documents": {
+          "runAfter": {
+            "Get_config_row": [
+              "Succeeded"
+            ]
+          },
+          "type": "OpenApiConnection",
+          "inputs": {
+            "host": {
+              "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps",
+              "operationId": "ListRecords",
+              "connectionName": "alex_payplus_dataverse"
+            },
+            "parameters": {
+              "$top": 25,
+              "$filter": "alex_sourceentitylogicalname eq 'invoice' and (alex_documenttypecode eq 'inv_tax' or alex_documenttypecode eq 'inv_pay_request' or alex_documenttypecode eq 'inv_proforma') and alex_lastoperation eq 'Generate' and alex_lastsyncstatus eq 100000001 and alex_businessstatus eq 100000003 and alex_paymentpagelink ne null and alex_paymentrequestuid ne null and alex_uniqueidentifier ne null and alex_payplusdocumentuuid ne null",
+              "entityName": "alex_payplusdocuments",
+              "$select": "alex_payplusdocumentid,alex_name,alex_uniqueidentifier,alex_payplusdocumentuuid,alex_documentnumber,alex_paymentrequestuid,alex_paymentpagelink,alex_paymentpageuid,alex_totalamount,alex_balanceamount,alex_currencycode,alex_customername,alex_customeremail,alex_customerphone,alex_customervatnumber,alex_paypluscustomeruid,_alex_billingcaseid_value,_alex_invoiceid_value,_alex_contactid_value,_alex_accountid_value"
+            },
+            "authentication": "@parameters('$authentication')"
+          }
+        },
+        "For_each_invoice_document": {
+          "foreach": "@outputs('List_waiting_invoice_documents')?['body/value']",
+          "actions": {
+            "Condition_auto_receipt_enabled": {
+              "actions": {
+                "Get_current_billing_case": {
+                  "runAfter": {},
+                  "type": "OpenApiConnection",
+                  "inputs": {
+                    "host": {
+                      "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps",
+                      "operationId": "GetItem",
+                      "connectionName": "alex_payplus_dataverse"
+                    },
+                    "parameters": {
+                      "recordId": "@items('For_each_invoice_document')?['_alex_billingcaseid_value']",
+                      "entityName": "alex_payplusbillingcases",
+                      "$select": "alex_status,alex_paidamount,alex_openbalance"
+                    },
+                    "authentication": "@parameters('$authentication')"
+                  }
+                },
+                "Switch_view_transactions": {
+                  "runAfter": {
+                    "Get_current_billing_case": [
+                      "Succeeded"
+                    ]
+                  },
+                  "cases": {
+                    "Production": {
+                      "case": 100000000,
+                      "actions": {
+                        "View_transactions_Production": {
+                          "runAfter": {},
+                          "type": "OpenApiConnection",
+                          "inputs": {
+                            "host": {
+                              "apiId": "/providers/Microsoft.PowerApps/apis/shared_alex-5fpayplus-5f5849d39a0feaf28d",
+                              "operationId": "ViewTransactions",
+                              "connectionName": "shared_alex-5fpayplus-5f5849d39a0feaf28d-1"
+                            },
+                            "parameters": {
+                              "body/more_info": "@items('For_each_invoice_document')?['alex_uniqueidentifier']"
+                            },
+                            "retryPolicy": {
+                              "type": "none"
+                            },
+                            "authentication": "@parameters('$authentication')"
+                          }
+                        }
+                      }
+                    },
+                    "Sandbox": {
+                      "case": 100000001,
+                      "actions": {
+                        "View_transactions_Sandbox": {
+                          "runAfter": {},
+                          "type": "OpenApiConnection",
+                          "inputs": {
+                            "host": {
+                              "apiId": "/providers/Microsoft.PowerApps/apis/shared_alex-5fpayplus-20sandbox-5f5849d39a0feaf28d",
+                              "operationId": "ViewTransactions",
+                              "connectionName": "shared_alex-5fpayplus-20sandbox-5f5849d39a0feaf28d-1"
+                            },
+                            "parameters": {
+                              "body/more_info": "@items('For_each_invoice_document')?['alex_uniqueidentifier']"
+                            },
+                            "retryPolicy": {
+                              "type": "none"
+                            },
+                            "authentication": "@parameters('$authentication')"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "default": {
+                    "actions": {}
+                  },
+                  "expression": "@if(or(equals(body('Get_current_billing_case')?['alex_status'], 100000005), equals(body('Get_current_billing_case')?['alex_status'], 100000007)), -1, first(outputs('Get_config_row')?['body/value'])?['alex_environment'])",
+                  "type": "Switch"
+                },
+                "Compose_transaction_result": {
+                  "runAfter": {
+                    "Switch_view_transactions": [
+                      "Succeeded"
+                    ]
+                  },
+                  "type": "Compose",
+                  "inputs": "@coalesce(body('View_transactions_Production'), body('View_transactions_Sandbox'))"
+                },
+                "Condition_transaction_found": {
+                  "actions": {
+                    "Compose_first_transaction": {
+                      "runAfter": {},
+                      "type": "Compose",
+                      "inputs": "@first(outputs('Compose_transaction_result')?['data'])"
+                    },
+                    "Compose_transaction_uid": {
+                      "runAfter": {
+                        "Compose_first_transaction": [
+                          "Succeeded"
+                        ]
+                      },
+                      "type": "Compose",
+                      "inputs": "@coalesce(outputs('Compose_first_transaction')?['transaction_uid'], outputs('Compose_first_transaction')?['transaction_uuid'], outputs('Compose_first_transaction')?['uid'], outputs('Compose_first_transaction')?['uuid'], outputs('Compose_first_transaction')?['transaction']?['uid'], outputs('Compose_first_transaction')?['transaction']?['uuid'], outputs('Compose_first_transaction')?['transaction']?['transaction_uid'], outputs('Compose_first_transaction')?['transaction']?['transaction_uuid'], outputs('Compose_first_transaction')?['data']?['transaction_uid'], outputs('Compose_first_transaction')?['data']?['transaction_uuid'], '')"
+                    },
+                    "Compose_paid_amount": {
+                      "runAfter": {
+                        "Compose_transaction_uid": [
+                          "Succeeded"
+                        ]
+                      },
+                      "type": "Compose",
+                      "inputs": "@coalesce(outputs('Compose_first_transaction')?['amount'], outputs('Compose_first_transaction')?['transaction']?['amount'], outputs('Compose_first_transaction')?['data']?['amount'], items('For_each_invoice_document')?['alex_balanceamount'], items('For_each_invoice_document')?['alex_totalamount'], 0)"
+                    },
+                    "Compose_total_paid_after_receipt": {
+                      "runAfter": {
+                        "Compose_paid_amount": [
+                          "Succeeded"
+                        ]
+                      },
+                      "type": "Compose",
+                      "inputs": "@add(float(coalesce(items('For_each_invoice_document')?['alex_paidamount'], 0)), float(outputs('Compose_paid_amount')))"
+                    },
+                    "Compose_receipt_closes_invoice": {
+                      "runAfter": {
+                        "Compose_total_paid_after_receipt": [
+                          "Succeeded"
+                        ]
+                      },
+                      "type": "Compose",
+                      "inputs": "@and(equals(first(outputs('Get_config_row')?['body/value'])?['alex_billing_auto_close_invoice_when_receipts_match'], true), greaterOrEquals(float(outputs('Compose_total_paid_after_receipt')), float(coalesce(items('For_each_invoice_document')?['alex_totalamount'], 0))))"
+                    },
+                    "Select_receipt_items": {
+                      "runAfter": {
+                        "Compose_receipt_closes_invoice": [
+                          "Succeeded"
+                        ]
+                      },
+                      "type": "Select",
+                      "inputs": {
+                        "from": "@if(equals(outputs('Compose_receipt_closes_invoice'), true), coalesce(outputs('Compose_first_transaction')?['data']?['items'], json('[]')), json('[]'))",
+                        "select": {
+                          "name": "@coalesce(item()?['name'], 'Payment item')",
+                          "quantity": "@coalesce(item()?['quantity'], 1)",
+                          "price": "@coalesce(item()?['quantity_price'], item()?['price'], item()?['amount_pay'], 0)",
+                          "discount_type": "amount",
+                          "discount_value": "@coalesce(item()?['discount_amount'], item()?['discount_value'], 0)"
+                        }
+                      }
+                    },
+                    "Condition_transaction_ready": {
+                      "actions": {
+                        "Switch_create_receipt": {
+                          "runAfter": {},
+                          "cases": {
+                            "Production": {
+                              "case": 100000000,
+                              "actions": {
+                                "Create_receipt_Production": {
+                                  "runAfter": {},
+                                  "type": "OpenApiConnection",
+                                  "inputs": {
+                                    "host": {
+                                      "apiId": "/providers/Microsoft.PowerApps/apis/shared_alex-5fpayplus-5f5849d39a0feaf28d",
+                                      "operationId": "CreateDocument",
+                                      "connectionName": "shared_alex-5fpayplus-5f5849d39a0feaf28d-1"
+                                    },
+                                    "parameters": {
+                                      "body/unique_identifier": "@concat(items('For_each_invoice_document')?['alex_uniqueidentifier'], '-receipt')",
+                                      "body/language": "he",
+                                      "body/customer/phone": "@items('For_each_invoice_document')?['alex_customerphone']",
+                                      "body/prevent_email": true,
+                                      "body/customer/vat_number": "@items('For_each_invoice_document')?['alex_customervatnumber']",
+                                      "body/close_doc": "@if(equals(outputs('Compose_receipt_closes_invoice'), true), items('For_each_invoice_document')?['alex_payplusdocumentuuid'], null)",
+                                      "body/customer/name": "@coalesce(items('For_each_invoice_document')?['alex_customername'], 'Customer')",
+                                      "body/transaction_uuid": "@outputs('Compose_transaction_uid')",
+                                      "docType": "inv_receipt",
+                                      "body/totalAmount": "@coalesce(items('For_each_invoice_document')?['alex_balanceamount'], items('For_each_invoice_document')?['alex_totalamount'], 0)",
+                                      "body/more_info": "@items('For_each_invoice_document')?['alex_uniqueidentifier']",
+                                      "body/doc_date": "@formatDateTime(utcNow(),'yyyy-MM-dd')",
+                                      "body/items": "@if(equals(outputs('Compose_receipt_closes_invoice'), true), body('Select_receipt_items'), null)",
+                                      "body/payments": [
+                                        {
+                                          "payment_type": "credit-card",
+                                          "amount": "@outputs('Compose_paid_amount')",
+                                          "date": "@formatDateTime(utcNow(),'yyyy-MM-dd')",
+                                          "currency": "@coalesce(items('For_each_invoice_document')?['alex_currencycode'], 'ILS')",
+                                          "transaction_uid": "@outputs('Compose_transaction_uid')",
+                                          "four_digits": "@coalesce(outputs('Compose_first_transaction')?['card_information']?['four_digits'], outputs('Compose_first_transaction')?['data']?['card_information']?['four_digits'], '')",
+                                          "card_type": "@coalesce(outputs('Compose_first_transaction')?['card_information']?['brand_name'], outputs('Compose_first_transaction')?['data']?['card_information']?['brand_name'], outputs('Compose_first_transaction')?['brand_name'], '')"
+                                        }
+                                      ],
+                                      "body/customer/email": "@items('For_each_invoice_document')?['alex_customeremail']",
+                                      "body/currency_code": "@coalesce(items('For_each_invoice_document')?['alex_currencycode'], 'ILS')"
+                                    },
+                                    "retryPolicy": {
+                                      "type": "none"
+                                    },
+                                    "authentication": "@parameters('$authentication')"
+                                  }
+                                }
+                              }
+                            },
+                            "Sandbox": {
+                              "case": 100000001,
+                              "actions": {
+                                "Create_receipt_Sandbox": {
+                                  "runAfter": {},
+                                  "type": "OpenApiConnection",
+                                  "inputs": {
+                                    "host": {
+                                      "apiId": "/providers/Microsoft.PowerApps/apis/shared_alex-5fpayplus-20sandbox-5f5849d39a0feaf28d",
+                                      "operationId": "CreateDocument",
+                                      "connectionName": "shared_alex-5fpayplus-20sandbox-5f5849d39a0feaf28d-1"
+                                    },
+                                    "parameters": {
+                                      "body/unique_identifier": "@concat(items('For_each_invoice_document')?['alex_uniqueidentifier'], '-receipt')",
+                                      "body/language": "he",
+                                      "body/customer/phone": "@items('For_each_invoice_document')?['alex_customerphone']",
+                                      "body/prevent_email": true,
+                                      "body/customer/vat_number": "@items('For_each_invoice_document')?['alex_customervatnumber']",
+                                      "body/close_doc": "@if(equals(outputs('Compose_receipt_closes_invoice'), true), items('For_each_invoice_document')?['alex_payplusdocumentuuid'], null)",
+                                      "body/customer/name": "@coalesce(items('For_each_invoice_document')?['alex_customername'], 'Customer')",
+                                      "body/transaction_uuid": "@outputs('Compose_transaction_uid')",
+                                      "docType": "inv_receipt",
+                                      "body/totalAmount": "@coalesce(items('For_each_invoice_document')?['alex_balanceamount'], items('For_each_invoice_document')?['alex_totalamount'], 0)",
+                                      "body/more_info": "@items('For_each_invoice_document')?['alex_uniqueidentifier']",
+                                      "body/doc_date": "@formatDateTime(utcNow(),'yyyy-MM-dd')",
+                                      "body/items": "@if(equals(outputs('Compose_receipt_closes_invoice'), true), body('Select_receipt_items'), null)",
+                                      "body/payments": [
+                                        {
+                                          "payment_type": "credit-card",
+                                          "amount": "@outputs('Compose_paid_amount')",
+                                          "date": "@formatDateTime(utcNow(),'yyyy-MM-dd')",
+                                          "currency": "@coalesce(items('For_each_invoice_document')?['alex_currencycode'], 'ILS')",
+                                          "transaction_uid": "@outputs('Compose_transaction_uid')",
+                                          "four_digits": "@coalesce(outputs('Compose_first_transaction')?['card_information']?['four_digits'], outputs('Compose_first_transaction')?['data']?['card_information']?['four_digits'], '')",
+                                          "card_type": "@coalesce(outputs('Compose_first_transaction')?['card_information']?['brand_name'], outputs('Compose_first_transaction')?['data']?['card_information']?['brand_name'], outputs('Compose_first_transaction')?['brand_name'], '')"
+                                        }
+                                      ],
+                                      "body/customer/email": "@items('For_each_invoice_document')?['alex_customeremail']",
+                                      "body/currency_code": "@coalesce(items('For_each_invoice_document')?['alex_currencycode'], 'ILS')"
+                                    },
+                                    "retryPolicy": {
+                                      "type": "none"
+                                    },
+                                    "authentication": "@parameters('$authentication')"
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "default": {
+                            "actions": {}
+                          },
+                          "expression": "@first(outputs('Get_config_row')?['body/value'])?['alex_environment']",
+                          "type": "Switch"
+                        },
+                        "Compose_receipt_result": {
+                          "runAfter": {
+                            "Switch_create_receipt": [
+                              "Succeeded"
+                            ]
+                          },
+                          "type": "Compose",
+                          "inputs": "@coalesce(body('Create_receipt_Production'), body('Create_receipt_Sandbox'))"
+                        },
+                        "Compose_receipt_data": {
+                          "runAfter": {
+                            "Compose_receipt_result": [
+                              "Succeeded"
+                            ]
+                          },
+                          "type": "Compose",
+                          "inputs": "@coalesce(outputs('Compose_receipt_result')?['data'], outputs('Compose_receipt_result')?['details'], json('{}'))"
+                        },
+                        "Compose_receipt_status": {
+                          "runAfter": {
+                            "Compose_receipt_data": [
+                              "Succeeded"
+                            ]
+                          },
+                          "type": "Compose",
+                          "inputs": "@toLower(coalesce(outputs('Compose_receipt_result')?['results']?['status'], outputs('Compose_receipt_result')?['status'], outputs('Compose_receipt_data')?['status'], ''))"
+                        },
+                        "Condition_receipt_success": {
+                          "actions": {
+                            "List_receipt_document_type": {
+                              "runAfter": {},
+                              "type": "OpenApiConnection",
+                              "inputs": {
+                                "host": {
+                                  "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps",
+                                  "operationId": "ListRecords",
+                                  "connectionName": "alex_payplus_dataverse"
+                                },
+                                "parameters": {
+                                  "$top": 1,
+                                  "$filter": "alex_environment eq @{first(outputs('Get_config_row')?['body/value'])?['alex_environment']} and alex_code eq 'inv_receipt'",
+                                  "entityName": "alex_payplus_documenttypes",
+                                  "$select": "alex_payplus_documenttypeid,alex_code,alex_environment"
+                                },
+                                "authentication": "@parameters('$authentication')"
+                              }
+                            },
+                            "Create_receipt_payplus_document": {
+                              "runAfter": {
+                                "List_receipt_document_type": [
+                                  "Succeeded"
+                                ]
+                              },
+                              "type": "OpenApiConnection",
+                              "inputs": {
+                                "host": {
+                                  "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps",
+                                  "operationId": "CreateRecord",
+                                  "connectionName": "alex_payplus_dataverse"
+                                },
+                                "parameters": {
+                                  "item/alex_invoiceid@odata.bind": "@if(empty(items('For_each_invoice_document')?['_alex_invoiceid_value']), null, concat('/invoices(', items('For_each_invoice_document')?['_alex_invoiceid_value'], ')'))",
+                                  "item/alex_documenttypecode": "inv_receipt",
+                                  "item/alex_relatedinvoicedocumentid@odata.bind": "@concat('/alex_payplusdocuments(', items('For_each_invoice_document')?['alex_payplusdocumentid'], ')')",
+                                  "item/alex_paymentpagelink": "@items('For_each_invoice_document')?['alex_paymentpagelink']",
+                                  "item/alex_totalamount": "@outputs('Compose_paid_amount')",
+                                  "item/alex_transactionuid": "@outputs('Compose_transaction_uid')",
+                                  "item/alex_billingcaseid@odata.bind": "@if(empty(items('For_each_invoice_document')?['_alex_billingcaseid_value']), null, concat('/alex_payplusbillingcases(', items('For_each_invoice_document')?['_alex_billingcaseid_value'], ')'))",
+                                  "item/alex_businessstatus": 100000003,
+                                  "item/alex_paidamount": "@outputs('Compose_paid_amount')",
+                                  "item/alex_lastoperation": "Generate",
+                                  "item/alex_lastsyncstatus": 100000001,
+                                  "item/alex_documentnumber": "@if(empty(coalesce(outputs('Compose_receipt_data')?['number'], outputs('Compose_receipt_data')?['document_number'], '')), null, coalesce(outputs('Compose_receipt_data')?['number'], outputs('Compose_receipt_data')?['document_number']))",
+                                  "entityName": "alex_payplusdocuments",
+                                  "item/alex_lastoperationon": "@utcNow()",
+                                  "item/alex_documentrole": 100000002,
+                                  "item/alex_paymentpageuid": "@items('For_each_invoice_document')?['alex_paymentpageuid']",
+                                  "item/alex_name": "@concat('PayPlus Receipt ', coalesce(outputs('Compose_receipt_data')?['number'], outputs('Compose_receipt_data')?['document_number'], outputs('Compose_transaction_uid')))",
+                                  "item/alex_accountid@odata.bind": "@if(empty(items('For_each_invoice_document')?['_alex_accountid_value']), null, concat('/accounts(', items('For_each_invoice_document')?['_alex_accountid_value'], ')'))",
+                                  "item/alex_rawresponse": "@string(outputs('Compose_receipt_result'))",
+                                  "item/alex_paymentsjson": "@string(createArray(outputs('Compose_first_transaction')))",
+                                  "item/alex_customername": "@items('For_each_invoice_document')?['alex_customername']",
+                                  "item/alex_contactid@odata.bind": "@if(empty(items('For_each_invoice_document')?['_alex_contactid_value']), null, concat('/contacts(', items('For_each_invoice_document')?['_alex_contactid_value'], ')'))",
+                                  "item/alex_customeremail": "@items('For_each_invoice_document')?['alex_customeremail']",
+                                  "item/alex_documentdate": "@formatDateTime(utcNow(),'yyyy-MM-dd')",
+                                  "item/alex_lastrefreshedon": "@utcNow()",
+                                  "item/alex_balanceamount": 0,
+                                  "item/alex_environment": "@first(outputs('Get_config_row')?['body/value'])?['alex_environment']",
+                                  "item/alex_payplusdocumentuuid": "@if(empty(coalesce(outputs('Compose_receipt_data')?['uuid'], outputs('Compose_receipt_data')?['document_uuid'], outputs('Compose_receipt_data')?['document_uid'], outputs('Compose_receipt_data')?['docUID'], outputs('Compose_receipt_data')?['doc_uid'], '')), null, coalesce(outputs('Compose_receipt_data')?['uuid'], outputs('Compose_receipt_data')?['document_uuid'], outputs('Compose_receipt_data')?['document_uid'], outputs('Compose_receipt_data')?['docUID'], outputs('Compose_receipt_data')?['doc_uid']))",
+                                  "item/alex_rawdocumentjson": "@string(outputs('Compose_receipt_data'))",
+                                  "item/alex_customerphone": "@items('For_each_invoice_document')?['alex_customerphone']",
+                                  "item/alex_uniqueidentifier": "@concat(items('For_each_invoice_document')?['alex_uniqueidentifier'], '-receipt')",
+                                  "item/alex_origin": 100000000,
+                                  "item/alex_paymentrequestuid": "@items('For_each_invoice_document')?['alex_paymentrequestuid']",
+                                  "item/alex_currencycode": "@coalesce(items('For_each_invoice_document')?['alex_currencycode'], 'ILS')",
+                                  "item/alex_customervatnumber": "@items('For_each_invoice_document')?['alex_customervatnumber']",
+                                  "item/alex_payplusresultstatus": "@outputs('Compose_receipt_status')",
+                                  "item/alex_issuedon": "@utcNow()",
+                                  "item/alex_configurationid@odata.bind": "@concat('/alex_payplusconfigurations(', first(outputs('Get_config_row')?['body/value'])?['alex_payplusconfigurationid'], ')')",
+                                  "item/alex_parentdocumentid@odata.bind": "@concat('/alex_payplusdocuments(', items('For_each_invoice_document')?['alex_payplusdocumentid'], ')')",
+                                  "item/alex_documenttypeid@odata.bind": "@if(empty(first(body('List_receipt_document_type')?['value'])?['alex_payplus_documenttypeid']), null, concat('/alex_payplus_documenttypes(', first(body('List_receipt_document_type')?['value'])?['alex_payplus_documenttypeid'], ')'))",
+                                  "item/alex_rawrequest": "@string(outputs('Compose_first_transaction'))",
+                                  "item/alex_moreinfo": "@items('For_each_invoice_document')?['alex_uniqueidentifier']"
+                                },
+                                "authentication": "@parameters('$authentication')"
+                              }
+                            },
+                            "Create_payment_line": {
+                              "runAfter": {
+                                "Create_receipt_payplus_document": [
+                                  "Succeeded"
+                                ]
+                              },
+                              "type": "OpenApiConnection",
+                              "inputs": {
+                                "host": {
+                                  "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps",
+                                  "operationId": "CreateRecord",
+                                  "connectionName": "alex_payplus_dataverse"
+                                },
+                                "parameters": {
+                                  "item/alex_paymentdate": "@utcNow()",
+                                  "item/alex_status": 100000002,
+                                  "item/alex_sequence": 1,
+                                  "entityName": "alex_paypluspaymentlines",
+                                  "item/alex_paymentmethod": 100000004,
+                                  "item/alex_cardlast4": "@coalesce(outputs('Compose_first_transaction')?['card_information']?['four_digits'], outputs('Compose_first_transaction')?['data']?['card_information']?['four_digits'], '')",
+                                  "item/alex_externaltransactionid": "@outputs('Compose_transaction_uid')",
+                                  "item/alex_reference": "@items('For_each_invoice_document')?['alex_paymentrequestuid']",
+                                  "item/alex_name": "@concat('PayPlus transaction ', outputs('Compose_transaction_uid'))",
+                                  "item/alex_rawpaymentjson": "@string(outputs('Compose_first_transaction'))",
+                                  "item/alex_cardbrand": "@coalesce(outputs('Compose_first_transaction')?['card_information']?['brand_name'], outputs('Compose_first_transaction')?['data']?['card_information']?['brand_name'], outputs('Compose_first_transaction')?['brand_name'], '')",
+                                  "item/alex_receiptdocumentid@odata.bind": "@concat('/alex_payplusdocuments(', body('Create_receipt_payplus_document')?['alex_payplusdocumentid'], ')')",
+                                  "item/alex_currencycode": "@coalesce(items('For_each_invoice_document')?['alex_currencycode'], 'ILS')",
+                                  "item/alex_billingcaseid@odata.bind": "@if(empty(items('For_each_invoice_document')?['_alex_billingcaseid_value']), null, concat('/alex_payplusbillingcases(', items('For_each_invoice_document')?['_alex_billingcaseid_value'], ')'))",
+                                  "item/alex_amount": "@outputs('Compose_paid_amount')",
+                                  "item/alex_chargemode": 100000003
+                                },
+                                "authentication": "@parameters('$authentication')"
+                              }
+                            },
+                            "Create_receipt_allocation": {
+                              "runAfter": {
+                                "Create_payment_line": [
+                                  "Succeeded"
+                                ]
+                              },
+                              "type": "OpenApiConnection",
+                              "inputs": {
+                                "host": {
+                                  "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps",
+                                  "operationId": "CreateRecord",
+                                  "connectionName": "alex_payplus_dataverse"
+                                },
+                                "parameters": {
+                                  "item/alex_currencycode": "@coalesce(items('For_each_invoice_document')?['alex_currencycode'], 'ILS')",
+                                  "item/alex_paymentlineid@odata.bind": "@concat('/alex_paypluspaymentlines(', body('Create_payment_line')?['alex_paypluspaymentlineid'], ')')",
+                                  "entityName": "alex_payplusreceiptallocations",
+                                  "item/alex_invoicedocumentid@odata.bind": "@concat('/alex_payplusdocuments(', items('For_each_invoice_document')?['alex_payplusdocumentid'], ')')",
+                                  "item/alex_receiptdocumentid@odata.bind": "@concat('/alex_payplusdocuments(', body('Create_receipt_payplus_document')?['alex_payplusdocumentid'], ')')",
+                                  "item/alex_name": "@concat('Allocation ', outputs('Compose_transaction_uid'))",
+                                  "item/alex_allocatedamount": "@outputs('Compose_paid_amount')",
+                                  "item/alex_status": 100000001,
+                                  "item/alex_billingcaseid@odata.bind": "@if(empty(items('For_each_invoice_document')?['_alex_billingcaseid_value']), null, concat('/alex_payplusbillingcases(', items('For_each_invoice_document')?['_alex_billingcaseid_value'], ')'))",
+                                  "item/alex_allocatedon": "@utcNow()"
+                                },
+                                "authentication": "@parameters('$authentication')"
+                              }
+                            },
+                            "Update_invoice_document_closed": {
+                              "runAfter": {
+                                "Create_receipt_allocation": [
+                                  "Succeeded"
+                                ]
+                              },
+                              "type": "OpenApiConnection",
+                              "inputs": {
+                                "host": {
+                                  "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps",
+                                  "operationId": "UpdateRecord",
+                                  "connectionName": "alex_payplus_dataverse"
+                                },
+                                "parameters": {
+                                  "item/alex_businessstatus": "@if(equals(outputs('Compose_receipt_closes_invoice'), true), 100000008, 100000003)",
+                                  "item/alex_balanceamount": "@if(greaterOrEquals(float(outputs('Compose_total_paid_after_receipt')), float(coalesce(items('For_each_invoice_document')?['alex_totalamount'], 0))), 0, sub(float(coalesce(items('For_each_invoice_document')?['alex_totalamount'], 0)), float(outputs('Compose_total_paid_after_receipt'))))",
+                                  "item/alex_lastrefreshedon": "@utcNow()",
+                                  "recordId": "@items('For_each_invoice_document')?['alex_payplusdocumentid']",
+                                  "item/alex_transactionuid": "@outputs('Compose_transaction_uid')",
+                                  "item/alex_paidamount": "@outputs('Compose_total_paid_after_receipt')",
+                                  "entityName": "alex_payplusdocuments"
+                                },
+                                "authentication": "@parameters('$authentication')"
+                              }
+                            },
+                            "Update_billing_case_closed": {
+                              "runAfter": {
+                                "Update_invoice_document_closed": [
+                                  "Succeeded"
+                                ]
+                              },
+                              "type": "OpenApiConnection",
+                              "inputs": {
+                                "host": {
+                                  "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps",
+                                  "operationId": "UpdateRecord",
+                                  "connectionName": "alex_payplus_dataverse"
+                                },
+                                "parameters": {
+                                  "item/alex_openbalance": "@if(greaterOrEquals(float(outputs('Compose_total_paid_after_receipt')), float(coalesce(items('For_each_invoice_document')?['alex_totalamount'], 0))), 0, sub(float(coalesce(items('For_each_invoice_document')?['alex_totalamount'], 0)), float(outputs('Compose_total_paid_after_receipt'))))",
+                                  "item/alex_status": "@if(equals(outputs('Compose_receipt_closes_invoice'), true), 100000005, 100000004)",
+                                  "recordId": "@items('For_each_invoice_document')?['_alex_billingcaseid_value']",
+                                  "item/alex_closedon": "@if(equals(outputs('Compose_receipt_closes_invoice'), true), utcNow(), null)",
+                                  "item/alex_paidamount": "@outputs('Compose_total_paid_after_receipt')",
+                                  "entityName": "alex_payplusbillingcases"
+                                },
+                                "authentication": "@parameters('$authentication')"
+                              }
+                            },
+                            "Condition_close_dynamics_invoice": {
+                              "actions": {
+                                "Update_dynamics_invoice_paid": {
+                                  "runAfter": {},
+                                  "type": "OpenApiConnection",
+                                  "inputs": {
+                                    "host": {
+                                      "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps",
+                                      "operationId": "UpdateRecord",
+                                      "connectionName": "alex_payplus_dataverse"
+                                    },
+                                    "parameters": {
+                                      "recordId": "@items('For_each_invoice_document')?['_alex_invoiceid_value']",
+                                      "item/statecode": 2,
+                                      "entityName": "invoices",
+                                      "item/statuscode": 100001
+                                    },
+                                    "authentication": "@parameters('$authentication')"
+                                  }
+                                }
+                              },
+                              "runAfter": {
+                                "Update_billing_case_closed": [
+                                  "Succeeded"
+                                ]
+                              },
+                              "else": {
+                                "actions": {}
+                              },
+                              "expression": {
+                                "equals": [
+                                  "@outputs('Compose_receipt_closes_invoice')",
+                                  true
+                                ]
+                              },
+                              "type": "If"
+                            }
+                          },
+                          "runAfter": {
+                            "Compose_receipt_status": [
+                              "Succeeded"
+                            ]
+                          },
+                          "else": {
+                            "actions": {
+                              "Update_invoice_document_receipt_failed": {
+                                "runAfter": {},
+                                "type": "OpenApiConnection",
+                                "inputs": {
+                                  "host": {
+                                    "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps",
+                                    "operationId": "UpdateRecord",
+                                    "connectionName": "alex_payplus_dataverse"
+                                  },
+                                  "parameters": {
+                                    "recordId": "@items('For_each_invoice_document')?['alex_payplusdocumentid']",
+                                    "item/alex_lastsyncstatus": 100000003,
+                                    "entityName": "alex_payplusdocuments",
+                                    "item/alex_lasterror": "@coalesce(outputs('Compose_receipt_result')?['results']?['description'], outputs('Compose_receipt_result')?['description'], outputs('Compose_receipt_result')?['error'], outputs('Compose_receipt_result')?['message'], 'Receipt creation failed')"
+                                  },
+                                  "authentication": "@parameters('$authentication')"
+                                }
+                              }
+                            }
+                          },
+                          "expression": {
+                            "equals": [
+                              "@outputs('Compose_receipt_status')",
+                              "success"
+                            ]
+                          },
+                          "type": "If"
+                        }
+                      },
+                      "runAfter": {
+                        "Select_receipt_items": [
+                          "Succeeded"
+                        ]
+                      },
+                      "else": {
+                        "actions": {}
+                      },
+                      "expression": {
+                        "not": {
+                          "equals": [
+                            "@empty(outputs('Compose_transaction_uid'))",
+                            true
+                          ]
+                        }
+                      },
+                      "type": "If"
+                    }
+                  },
+                  "runAfter": {
+                    "Compose_transaction_result": [
+                      "Succeeded"
+                    ]
+                  },
+                  "else": {
+                    "actions": {}
+                  },
+                  "expression": {
+                    "and": [
+                      {
+                        "equals": [
+                          "@toLower(coalesce(outputs('Compose_transaction_result')?['results']?['status'], ''))",
+                          "success"
+                        ]
+                      },
+                      {
+                        "not": {
+                          "equals": [
+                            "@empty(outputs('Compose_transaction_result')?['data'])",
+                            true
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  "type": "If"
+                }
+              },
+              "runAfter": {},
+              "else": {
+                "actions": {}
+              },
+              "expression": {
+                "equals": [
+                  "@first(outputs('Get_config_row')?['body/value'])?['alex_billing_auto_receipt_after_payment']",
+                  true
+                ]
+              },
+              "type": "If"
+            }
+          },
+          "runAfter": {
+            "List_waiting_invoice_documents": [
+              "Succeeded"
+            ]
+          },
+          "type": "Foreach",
+          "runtimeConfiguration": {
+            "concurrency": {
+              "repetitions": 1
+            }
+          }
+        }
+      }
+    },
+    "templateName": null
+  },
+  "schemaVersion": "1.0.0.0"
+}

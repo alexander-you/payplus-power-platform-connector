@@ -1,0 +1,48 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<savedqueries xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <savedquery>
+    <IsCustomizable>1</IsCustomizable>
+    <CanBeDeleted>1</CanBeDeleted>
+    <isquickfindquery>0</isquickfindquery>
+    <isprivate>0</isprivate>
+    <isdefault>1</isdefault>
+    <savedqueryid>{758031d8-587c-f111-ab0e-7ced8d726840}</savedqueryid>
+    <layoutxml>
+      <grid name="resultset" jump="alex_name" select="1" icon="1" preview="1">
+        <row name="result" id="alex_payplus_filterruleid">
+          <cell name="alex_name" width="160" />
+          <cell name="alex_sourcefieldlogicalname" width="160" />
+          <cell name="alex_operator" width="160" />
+          <cell name="alex_comparevalue" width="160" />
+          <cell name="alex_logicalgroup" width="160" />
+          <cell name="alex_isactive" width="160" />
+        </row>
+      </grid>
+    </layoutxml>
+    <querytype>0</querytype>
+    <fetchxml>
+      <fetch version="1.0" mapping="logical">
+        <entity name="alex_payplus_filterrule">
+          <attribute name="alex_name" />
+          <attribute name="alex_sourcefieldlogicalname" />
+          <attribute name="alex_operator" />
+          <attribute name="alex_comparevalue" />
+          <attribute name="alex_logicalgroup" />
+          <attribute name="alex_isactive" />
+          <order attribute="alex_name" descending="false" />
+          <filter type="and">
+            <condition attribute="statecode" operator="eq" value="0" />
+          </filter>
+          <attribute name="alex_payplus_filterruleid" />
+        </entity>
+      </fetch>
+    </fetchxml>
+    <IntroducedVersion>1.0.0.0</IntroducedVersion>
+    <LocalizedNames>
+      <LocalizedName description="Active Filter Rules" languagecode="1033" />
+    </LocalizedNames>
+    <Descriptions>
+      <Description description="Active Filter Rules." languagecode="1033" />
+    </Descriptions>
+  </savedquery>
+</savedqueries>

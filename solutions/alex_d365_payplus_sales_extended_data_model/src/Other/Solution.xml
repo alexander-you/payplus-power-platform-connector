@@ -1,0 +1,1266 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ImportExportXml version="9.2.26093.160" SolutionPackageVersion="9.2" languagecode="1033" generatedBy="CrmLive" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" OrganizationVersion="9.2.26093.160" OrganizationSchemaType="Full" CRMServerServiceabilityVersion="9.2.26093.00160">
+  <SolutionManifest>
+    <UniqueName>alex_d365_payplus_sales_extended_data_model</UniqueName>
+    <LocalizedNames>
+      <LocalizedName description="PayPlus extended data model" languagecode="1033" />
+      <LocalizedName description="PayPlus extended data model" languagecode="1037" />
+    </LocalizedNames>
+    <Descriptions>
+      <Description description="Sales-specific extension for PayPlus. Depends on the base solution alex_d365_payplus. Add Dynamics 365 Sales integrations (quote/order/invoice-dependent flows) here." languagecode="1033" />
+      <Description description="Sales-specific extension for PayPlus. Depends on the base solution alex_d365_payplus. Add Dynamics 365 Sales integrations (quote/order/invoice-dependent flows) here." languagecode="1037" />
+    </Descriptions>
+    <Version>1.1.1.0</Version>
+    <Managed>2</Managed>
+    <Publisher>
+      <UniqueName>AlexanderYurpolsky</UniqueName>
+      <LocalizedNames>
+        <LocalizedName description="AlexanderYurpolsky" languagecode="1033" />
+        <LocalizedName description="AlexanderYurpolsky" languagecode="1037" />
+      </LocalizedNames>
+      <Descriptions>
+        <Description description="Publisher for Dataverse Explorer solution components." languagecode="1033" />
+        <Description description="מפרסם רכיבי פתרון Dataverse Explorer." languagecode="1037" />
+      </Descriptions>
+      <EMailAddress xsi:nil="true"></EMailAddress>
+      <SupportingWebsiteUrl xsi:nil="true"></SupportingWebsiteUrl>
+      <CustomizationPrefix>alex</CustomizationPrefix>
+      <CustomizationOptionValuePrefix>62621</CustomizationOptionValuePrefix>
+      <Addresses>
+        <Address>
+          <AddressNumber>1</AddressNumber>
+          <AddressTypeCode>1</AddressTypeCode>
+          <City xsi:nil="true"></City>
+          <County xsi:nil="true"></County>
+          <Country xsi:nil="true"></Country>
+          <Fax xsi:nil="true"></Fax>
+          <FreightTermsCode xsi:nil="true"></FreightTermsCode>
+          <ImportSequenceNumber xsi:nil="true"></ImportSequenceNumber>
+          <Latitude xsi:nil="true"></Latitude>
+          <Line1 xsi:nil="true"></Line1>
+          <Line2 xsi:nil="true"></Line2>
+          <Line3 xsi:nil="true"></Line3>
+          <Longitude xsi:nil="true"></Longitude>
+          <Name xsi:nil="true"></Name>
+          <PostalCode xsi:nil="true"></PostalCode>
+          <PostOfficeBox xsi:nil="true"></PostOfficeBox>
+          <PrimaryContactName xsi:nil="true"></PrimaryContactName>
+          <ShippingMethodCode>1</ShippingMethodCode>
+          <StateOrProvince xsi:nil="true"></StateOrProvince>
+          <Telephone1 xsi:nil="true"></Telephone1>
+          <Telephone2 xsi:nil="true"></Telephone2>
+          <Telephone3 xsi:nil="true"></Telephone3>
+          <TimeZoneRuleVersionNumber xsi:nil="true"></TimeZoneRuleVersionNumber>
+          <UPSZone xsi:nil="true"></UPSZone>
+          <UTCOffset xsi:nil="true"></UTCOffset>
+          <UTCConversionTimeZoneCode xsi:nil="true"></UTCConversionTimeZoneCode>
+        </Address>
+        <Address>
+          <AddressNumber>2</AddressNumber>
+          <AddressTypeCode>1</AddressTypeCode>
+          <City xsi:nil="true"></City>
+          <County xsi:nil="true"></County>
+          <Country xsi:nil="true"></Country>
+          <Fax xsi:nil="true"></Fax>
+          <FreightTermsCode xsi:nil="true"></FreightTermsCode>
+          <ImportSequenceNumber xsi:nil="true"></ImportSequenceNumber>
+          <Latitude xsi:nil="true"></Latitude>
+          <Line1 xsi:nil="true"></Line1>
+          <Line2 xsi:nil="true"></Line2>
+          <Line3 xsi:nil="true"></Line3>
+          <Longitude xsi:nil="true"></Longitude>
+          <Name xsi:nil="true"></Name>
+          <PostalCode xsi:nil="true"></PostalCode>
+          <PostOfficeBox xsi:nil="true"></PostOfficeBox>
+          <PrimaryContactName xsi:nil="true"></PrimaryContactName>
+          <ShippingMethodCode>1</ShippingMethodCode>
+          <StateOrProvince xsi:nil="true"></StateOrProvince>
+          <Telephone1 xsi:nil="true"></Telephone1>
+          <Telephone2 xsi:nil="true"></Telephone2>
+          <Telephone3 xsi:nil="true"></Telephone3>
+          <TimeZoneRuleVersionNumber xsi:nil="true"></TimeZoneRuleVersionNumber>
+          <UPSZone xsi:nil="true"></UPSZone>
+          <UTCOffset xsi:nil="true"></UTCOffset>
+          <UTCConversionTimeZoneCode xsi:nil="true"></UTCConversionTimeZoneCode>
+        </Address>
+      </Addresses>
+    </Publisher>
+    <RootComponents>
+      <RootComponent type="1" schemaName="alex_payplusdocument" behavior="1" />
+      <RootComponent type="1" schemaName="alex_payplusreceiptallocation" behavior="1" />
+      <RootComponent type="1" schemaName="invoice" behavior="1" />
+      <RootComponent type="1" schemaName="invoicedetail" behavior="1" />
+      <RootComponent type="1" schemaName="quote" behavior="1" />
+      <RootComponent type="1" schemaName="salesorder" behavior="1" />
+      <RootComponent type="29" id="{12ac3e22-1881-f111-ab0e-7ced8d726840}" behavior="0" />
+      <RootComponent type="29" id="{1e4c034f-ce94-f111-8076-7ced8d726840}" behavior="0" />
+      <RootComponent type="29" id="{686feb06-7c80-f111-ab0e-7ced8d726840}" behavior="0" />
+      <RootComponent type="29" id="{b8f7ecd6-517f-f111-ab0e-7ced8d726840}" behavior="0" />
+      <RootComponent type="29" id="{c4bfd845-4980-f111-ab0e-7ced8d726840}" behavior="0" />
+      <RootComponent type="300" schemaName="alex_payplusdocumentpreview_b4f29" behavior="0" />
+      <RootComponent type="300" schemaName="alex_paypluspaymentworkbench_49c56" behavior="0" />
+      <RootComponent type="61" schemaName="alex_payplus_document_icon.svg" behavior="0" />
+      <RootComponent type="61" schemaName="alex_payplus_email_icon.svg" behavior="0" />
+      <RootComponent type="61" schemaName="alex_payplus_preview_icon.svg" behavior="0" />
+      <RootComponent type="61" schemaName="alex_payplus_quote_commands.js" behavior="0" />
+      <RootComponent type="61" schemaName="alex_payplus_quote_icon.svg" behavior="0" />
+      <RootComponent type="61" schemaName="alex_payplus_send_icon.svg" behavior="0" />
+      <RootComponent type="61" schemaName="alex_payplus_sms_icon.svg" behavior="0" />
+      <RootComponent type="61" schemaName="alex_payplus_whatsapp_icon.svg" behavior="0" />
+    </RootComponents>
+    <MissingDependencies>
+      <MissingDependency>
+        <Required type="1" schemaName="alex_creditcard" displayName="כרטיס אשראי" solution="Active" />
+        <Dependent type="29" displayName="PayPlus - Process Workbench Payment (Sales)" id="{1e4c034f-ce94-f111-8076-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="1" schemaName="alex_payplus_documenttype" displayName="PayPlus Document Type" solution="Active" />
+        <Dependent type="29" displayName="PayPlus - Poll Invoice Payments" id="{12ac3e22-1881-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="1" schemaName="alex_payplus_documenttype" displayName="PayPlus Document Type" solution="Active" />
+        <Dependent type="29" displayName="PayPlus - Process Workbench Payment (Sales)" id="{1e4c034f-ce94-f111-8076-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="1" schemaName="alex_payplus_documenttype" displayName="PayPlus Document Type" solution="Active" />
+        <Dependent type="29" displayName="PayPlus - Preview Invoice Document" id="{686feb06-7c80-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="1" schemaName="alex_payplus_documenttype" displayName="PayPlus Document Type" solution="Active" />
+        <Dependent type="29" displayName="PayPlus - Preview Quote Document" id="{b8f7ecd6-517f-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="1" schemaName="alex_payplus_documenttype" displayName="PayPlus Document Type" solution="Active" />
+        <Dependent type="29" displayName="PayPlus - Preview Sales Order Document" id="{c4bfd845-4980-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="1" schemaName="alex_payplus_entitymapping" displayName="מיפוי ישות PayPlus" solution="Active" />
+        <Dependent type="29" displayName="PayPlus - Preview Invoice Document" id="{686feb06-7c80-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="1" schemaName="alex_payplus_entitymapping" displayName="מיפוי ישות PayPlus" solution="Active" />
+        <Dependent type="29" displayName="PayPlus - Preview Quote Document" id="{b8f7ecd6-517f-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="1" schemaName="alex_payplus_entitymapping" displayName="מיפוי ישות PayPlus" solution="Active" />
+        <Dependent type="29" displayName="PayPlus - Preview Sales Order Document" id="{c4bfd845-4980-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="1" schemaName="alex_payplus_fieldmapping" displayName="מיפוי שדה PayPlus" solution="Active" />
+        <Dependent type="29" displayName="PayPlus - Preview Invoice Document" id="{686feb06-7c80-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="1" schemaName="alex_payplus_fieldmapping" displayName="מיפוי שדה PayPlus" solution="Active" />
+        <Dependent type="29" displayName="PayPlus - Preview Quote Document" id="{b8f7ecd6-517f-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="1" schemaName="alex_payplus_fieldmapping" displayName="מיפוי שדה PayPlus" solution="Active" />
+        <Dependent type="29" displayName="PayPlus - Preview Sales Order Document" id="{c4bfd845-4980-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="1" schemaName="alex_payplus_paymentpage" displayName="עמוד תשלום PayPlus" solution="Active" />
+        <Dependent type="29" displayName="PayPlus - Process Workbench Payment (Sales)" id="{1e4c034f-ce94-f111-8076-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="1" schemaName="alex_payplusbillingcase" displayName="תיק גבייה PayPlus" solution="Active" />
+        <Dependent type="29" displayName="PayPlus - Poll Invoice Payments" id="{12ac3e22-1881-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="1" schemaName="alex_payplusbillingcase" displayName="תיק גבייה PayPlus" solution="Active" />
+        <Dependent type="29" displayName="PayPlus - Process Workbench Payment (Sales)" id="{1e4c034f-ce94-f111-8076-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="1" schemaName="alex_payplusconfiguration" displayName="PayPlus Configuration" solution="Active" />
+        <Dependent type="29" displayName="PayPlus - Poll Invoice Payments" id="{12ac3e22-1881-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="1" schemaName="alex_payplusconfiguration" displayName="PayPlus Configuration" solution="Active" />
+        <Dependent type="29" displayName="PayPlus - Process Workbench Payment (Sales)" id="{1e4c034f-ce94-f111-8076-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="1" schemaName="alex_payplusconfiguration" displayName="PayPlus Configuration" solution="Active" />
+        <Dependent type="29" displayName="PayPlus - Preview Invoice Document" id="{686feb06-7c80-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="1" schemaName="alex_payplusconfiguration" displayName="PayPlus Configuration" solution="Active" />
+        <Dependent type="29" displayName="PayPlus - Preview Quote Document" id="{b8f7ecd6-517f-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="1" schemaName="alex_payplusconfiguration" displayName="PayPlus Configuration" solution="Active" />
+        <Dependent type="29" displayName="PayPlus - Preview Sales Order Document" id="{c4bfd845-4980-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="1" schemaName="alex_payplusdocument" displayName="PayPlus Document" solution="Active" />
+        <Dependent type="1" schemaName="alex_payplusdocument" displayName="PayPlus Document" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="1" schemaName="alex_paypluspaymentline" displayName="שורת תשלום PayPlus" solution="Active" />
+        <Dependent type="29" displayName="PayPlus - Poll Invoice Payments" id="{12ac3e22-1881-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="1" schemaName="alex_paypluspaymentline" displayName="שורת תשלום PayPlus" solution="Active" />
+        <Dependent type="29" displayName="PayPlus - Process Workbench Payment (Sales)" id="{1e4c034f-ce94-f111-8076-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="1" schemaName="alex_payplusreceiptallocation" displayName="שיוך קבלה PayPlus" solution="Active" />
+        <Dependent type="1" schemaName="alex_payplusreceiptallocation" displayName="שיוך קבלה PayPlus" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="1" schemaName="environmentvariabledefinition" displayName="Environment Variable Definition" solution="EnvironmentVariables (1.0.2406.4)">
+          <package appName="EnvironmentVariables" version="1.0.2406.4">EnvironmentVariablesSolutionAnchor (1.0.2406.4)</package>
+        </Required>
+        <Dependent type="29" displayName="PayPlus - Process Workbench Payment (Sales)" id="{1e4c034f-ce94-f111-8076-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="1" schemaName="invoice" displayName="Invoice" solution="msdynce_Sales (9.0.4.0076)">
+          <package appName="msdynce_Sales" version="9.0.26092.10005">msdynce_SalesAnchor (9.0.26092.10005)</package>
+        </Required>
+        <Dependent type="1" schemaName="invoice" displayName="Invoice" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="1" schemaName="invoicedetail" displayName="Invoice Product" solution="msdynce_Sales (9.0.4.0076)">
+          <package appName="msdynce_Sales" version="9.0.26092.10005">msdynce_SalesAnchor (9.0.26092.10005)</package>
+        </Required>
+        <Dependent type="1" schemaName="invoicedetail" displayName="Invoice Product" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="1" schemaName="invoicedetail" displayName="Invoice Product" solution="msdynce_Sales (9.0.4.0076)">
+          <package appName="msdynce_Sales" version="9.0.26092.10005">msdynce_SalesAnchor (9.0.26092.10005)</package>
+        </Required>
+        <Dependent type="29" displayName="PayPlus - Preview Invoice Document" id="{686feb06-7c80-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="1" schemaName="quote" displayName="Quote" solution="msdynce_Sales (9.0.4.0076)">
+          <package appName="msdynce_Sales" version="9.0.26092.10005">msdynce_SalesAnchor (9.0.26092.10005)</package>
+        </Required>
+        <Dependent type="1" schemaName="quote" displayName="Quote" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="1" schemaName="quote" displayName="Quote" solution="msdynce_Sales (9.0.4.0076)">
+          <package appName="msdynce_Sales" version="9.0.26092.10005">msdynce_SalesAnchor (9.0.26092.10005)</package>
+        </Required>
+        <Dependent type="29" displayName="PayPlus - Preview Quote Document" id="{b8f7ecd6-517f-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="1" schemaName="quotedetail" displayName="Quote Line" solution="msdynce_Sales (9.0.4.0076)">
+          <package appName="msdynce_Sales" version="9.0.26092.10005">msdynce_SalesAnchor (9.0.26092.10005)</package>
+        </Required>
+        <Dependent type="29" displayName="PayPlus - Preview Quote Document" id="{b8f7ecd6-517f-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="1" schemaName="salesorder" displayName="Order" solution="msdynce_Sales (9.0.4.0076)">
+          <package appName="msdynce_Sales" version="9.0.26092.10005">msdynce_SalesAnchor (9.0.26092.10005)</package>
+        </Required>
+        <Dependent type="1" schemaName="salesorder" displayName="Order" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="1" schemaName="salesorderdetail" displayName="Order Line" solution="msdynce_Sales (9.0.4.0076)">
+          <package appName="msdynce_Sales" version="9.0.26092.10005">msdynce_SalesAnchor (9.0.26092.10005)</package>
+        </Required>
+        <Dependent type="29" displayName="PayPlus - Preview Sales Order Document" id="{c4bfd845-4980-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="10" schemaName="alex_account_alex_payplusdocument" displayName="alex_account_alex_payplusdocument" parentSchemaName="account" parentDisplayName="Account" solution="Active" />
+        <Dependent type="60" displayName="מידע" parentDisplayName="PayPlus Document" id="{51dc888c-ec7e-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="10" schemaName="alex_contact_alex_payplusdocument" displayName="alex_contact_alex_payplusdocument" parentSchemaName="contact" parentDisplayName="Contact" solution="Active" />
+        <Dependent type="60" displayName="מידע" parentDisplayName="PayPlus Document" id="{51dc888c-ec7e-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="10" schemaName="alex_creditcard_alex_payplusdocument" displayName="alex_creditcard_alex_payplusdocument" parentSchemaName="alex_creditcard" parentDisplayName="כרטיס אשראי" solution="Active" />
+        <Dependent type="60" displayName="מידע" parentDisplayName="PayPlus Document" id="{51dc888c-ec7e-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="10" schemaName="alex_invoice_payplusdocument_alex_payplusdocument" displayName="alex_invoice_payplusdocument_alex_payplusdocument" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="60" displayName="מידע" parentDisplayName="PayPlus Document" id="{51dc888c-ec7e-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="10" schemaName="alex_invoice_payplusdocument_alex_payplusdocument" displayName="alex_invoice_payplusdocument_alex_payplusdocument" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="60" displayName="Information" parentDisplayName="PayPlus Document" id="{915f390c-323a-4433-bec5-afd16f78c5cd}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="10" schemaName="alex_invoice_payplusdocument_alex_payplusdocument" displayName="alex_invoice_payplusdocument_alex_payplusdocument" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="60" displayName="PayPlus Document (Sales)" parentDisplayName="PayPlus Document" id="{b171459c-e994-f111-8076-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="10" schemaName="alex_invoice_payplusdocument_alex_payplusreceiptallocation" displayName="alex_invoice_payplusdocument_alex_payplusreceiptallocation" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="60" displayName="מידע" parentDisplayName="שיוך קבלה PayPlus" id="{6787d54d-5680-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="10" schemaName="alex_parent_payplusdocument_alex_payplusdocument" displayName="alex_parent_payplusdocument_alex_payplusdocument" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="60" displayName="מידע" parentDisplayName="PayPlus Document" id="{51dc888c-ec7e-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="10" schemaName="alex_parent_payplusdocument_alex_payplusdocument" displayName="alex_parent_payplusdocument_alex_payplusdocument" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="60" displayName="Information" parentDisplayName="PayPlus Document" id="{915f390c-323a-4433-bec5-afd16f78c5cd}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="10" schemaName="alex_parent_payplusdocument_alex_payplusdocument" displayName="alex_parent_payplusdocument_alex_payplusdocument" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="60" displayName="PayPlus Document (Sales)" parentDisplayName="PayPlus Document" id="{b171459c-e994-f111-8076-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="10" schemaName="alex_payplus_documenttype_alex_payplusdocument" displayName="alex_payplus_documenttype_alex_payplusdocument" parentSchemaName="alex_payplus_documenttype" parentDisplayName="PayPlus Document Type" solution="Active" />
+        <Dependent type="60" displayName="מידע" parentDisplayName="PayPlus Document" id="{51dc888c-ec7e-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="10" schemaName="alex_payplusbillingcase_alex_payplusdocument" displayName="alex_payplusbillingcase_alex_payplusdocument" parentSchemaName="alex_payplusbillingcase" parentDisplayName="תיק גבייה PayPlus" solution="Active" />
+        <Dependent type="60" displayName="מידע" parentDisplayName="PayPlus Document" id="{51dc888c-ec7e-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="10" schemaName="alex_payplusbillingcase_alex_payplusdocument" displayName="alex_payplusbillingcase_alex_payplusdocument" parentSchemaName="alex_payplusbillingcase" parentDisplayName="תיק גבייה PayPlus" solution="Active" />
+        <Dependent type="60" displayName="Information" parentDisplayName="PayPlus Document" id="{915f390c-323a-4433-bec5-afd16f78c5cd}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="10" schemaName="alex_payplusbillingcase_alex_payplusdocument" displayName="alex_payplusbillingcase_alex_payplusdocument" parentSchemaName="alex_payplusbillingcase" parentDisplayName="תיק גבייה PayPlus" solution="Active" />
+        <Dependent type="60" displayName="PayPlus Document (Sales)" parentDisplayName="PayPlus Document" id="{b171459c-e994-f111-8076-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="10" schemaName="alex_payplusbillingcase_alex_payplusreceiptallocation" displayName="alex_payplusbillingcase_alex_payplusreceiptallocation" parentSchemaName="alex_payplusbillingcase" parentDisplayName="תיק גבייה PayPlus" solution="Active" />
+        <Dependent type="60" displayName="מידע" parentDisplayName="שיוך קבלה PayPlus" id="{6787d54d-5680-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="10" schemaName="alex_payplusconfiguration_alex_payplusdocument" displayName="alex_payplusconfiguration_alex_payplusdocument" parentSchemaName="alex_payplusconfiguration" parentDisplayName="PayPlus Configuration" solution="Active" />
+        <Dependent type="60" displayName="מידע" parentDisplayName="PayPlus Document" id="{51dc888c-ec7e-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="10" schemaName="alex_paypluspaymentline_alex_payplusreceiptallocation" displayName="alex_paypluspaymentline_alex_payplusreceiptallocation" parentSchemaName="alex_paypluspaymentline" parentDisplayName="שורת תשלום PayPlus" solution="Active" />
+        <Dependent type="60" displayName="מידע" parentDisplayName="שיוך קבלה PayPlus" id="{6787d54d-5680-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="10" schemaName="alex_paypluspaymentpage_alex_payplusdocument" displayName="alex_paypluspaymentpage_alex_payplusdocument" parentSchemaName="alex_payplus_paymentpage" parentDisplayName="עמוד תשלום PayPlus" solution="Active" />
+        <Dependent type="60" displayName="מידע" parentDisplayName="PayPlus Document" id="{51dc888c-ec7e-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="10" schemaName="alex_payplusterminal_alex_payplusdocument" displayName="alex_payplusterminal_alex_payplusdocument" parentSchemaName="alex_payplus_terminal" parentDisplayName="מסוף PayPlus" solution="Active" />
+        <Dependent type="60" displayName="מידע" parentDisplayName="PayPlus Document" id="{51dc888c-ec7e-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="10" schemaName="alex_receipt_payplusdocument_alex_payplusreceiptallocation" displayName="alex_receipt_payplusdocument_alex_payplusreceiptallocation" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="60" displayName="מידע" parentDisplayName="שיוך קבלה PayPlus" id="{6787d54d-5680-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="10" schemaName="alex_reversed_payplusdocument_alex_payplusdocument" displayName="alex_reversed_payplusdocument_alex_payplusdocument" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="60" displayName="מידע" parentDisplayName="PayPlus Document" id="{51dc888c-ec7e-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="10" schemaName="alex_reversed_payplusdocument_alex_payplusdocument" displayName="alex_reversed_payplusdocument_alex_payplusdocument" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="60" displayName="Information" parentDisplayName="PayPlus Document" id="{915f390c-323a-4433-bec5-afd16f78c5cd}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="10" schemaName="alex_reversed_payplusdocument_alex_payplusdocument" displayName="alex_reversed_payplusdocument_alex_payplusdocument" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="60" displayName="PayPlus Document (Sales)" parentDisplayName="PayPlus Document" id="{b171459c-e994-f111-8076-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="alex_accountid" displayName="Account" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="60" displayName="מידע" parentDisplayName="PayPlus Document" id="{51dc888c-ec7e-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="alex_allocatedamount" displayName="Allocated amount" parentSchemaName="alex_payplusreceiptallocation" parentDisplayName="שיוך קבלה PayPlus" solution="Active" />
+        <Dependent type="26" schemaName="שיוכי קבלות פעילים" displayName="שיוכי קבלות פעילים" parentSchemaName="alex_payplusreceiptallocation" parentDisplayName="שיוך קבלה PayPlus" id="{9787d54d-5680-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="alex_allocatedamount" displayName="Allocated amount" parentSchemaName="alex_payplusreceiptallocation" parentDisplayName="שיוך קבלה PayPlus" solution="Active" />
+        <Dependent type="60" displayName="מידע" parentDisplayName="שיוך קבלה PayPlus" id="{6787d54d-5680-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="alex_allocatedon" displayName="Allocated on" parentSchemaName="alex_payplusreceiptallocation" parentDisplayName="שיוך קבלה PayPlus" solution="Active" />
+        <Dependent type="60" displayName="מידע" parentDisplayName="שיוך קבלה PayPlus" id="{6787d54d-5680-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="alex_balanceamount" displayName="Balance Amount" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="60" displayName="מידע" parentDisplayName="PayPlus Document" id="{51dc888c-ec7e-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="alex_balanceimpact" displayName="Balance impact" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="60" displayName="מידע" parentDisplayName="PayPlus Document" id="{51dc888c-ec7e-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="alex_balanceimpact" displayName="Balance impact" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="60" displayName="Information" parentDisplayName="PayPlus Document" id="{915f390c-323a-4433-bec5-afd16f78c5cd}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="alex_balanceimpact" displayName="Balance impact" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="60" displayName="PayPlus Document (Sales)" parentDisplayName="PayPlus Document" id="{b171459c-e994-f111-8076-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="alex_billingcaseid" displayName="Billing Case" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="60" displayName="מידע" parentDisplayName="PayPlus Document" id="{51dc888c-ec7e-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="alex_billingcaseid" displayName="Billing Case" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="60" displayName="Information" parentDisplayName="PayPlus Document" id="{915f390c-323a-4433-bec5-afd16f78c5cd}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="alex_billingcaseid" displayName="Billing Case" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="60" displayName="PayPlus Document (Sales)" parentDisplayName="PayPlus Document" id="{b171459c-e994-f111-8076-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="alex_billingcaseid" displayName="Billing Case" parentSchemaName="alex_payplusreceiptallocation" parentDisplayName="שיוך קבלה PayPlus" solution="Active" />
+        <Dependent type="26" schemaName="שיוכי קבלות פעילים" displayName="שיוכי קבלות פעילים" parentSchemaName="alex_payplusreceiptallocation" parentDisplayName="שיוך קבלה PayPlus" id="{9787d54d-5680-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="alex_billingcaseid" displayName="Billing Case" parentSchemaName="alex_payplusreceiptallocation" parentDisplayName="שיוך קבלה PayPlus" solution="Active" />
+        <Dependent type="60" displayName="מידע" parentDisplayName="שיוך קבלה PayPlus" id="{6787d54d-5680-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="alex_businessstatus" displayName="Business Status" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="60" displayName="מידע" parentDisplayName="PayPlus Document" id="{51dc888c-ec7e-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="alex_configurationid" displayName="Configuration" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="26" schemaName="מסמכי PayPlus לפי מקור – מכירות" displayName="מסמכי PayPlus לפי מקור – מכירות" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" id="{1a668c35-e994-f111-8076-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="alex_configurationid" displayName="Configuration" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="26" schemaName="מסמכי PayPlus פעילים" displayName="מסמכי PayPlus פעילים" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" id="{20dd888c-ec7e-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="alex_configurationid" displayName="Configuration" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="26" schemaName="מסמכי PayPlus לפי מקור" displayName="מסמכי PayPlus לפי מקור" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" id="{26dd888c-ec7e-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="alex_configurationid" displayName="Configuration" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="26" schemaName="מסמכי PayPlus פעילים – מכירות" displayName="מסמכי PayPlus פעילים – מכירות" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" id="{3b3d862e-e994-f111-8076-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="alex_configurationid" displayName="Configuration" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="60" displayName="מידע" parentDisplayName="PayPlus Document" id="{51dc888c-ec7e-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="alex_contactid" displayName="Contact" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="60" displayName="מידע" parentDisplayName="PayPlus Document" id="{51dc888c-ec7e-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="alex_copypdfurl" displayName="Copy PDF URL" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="60" displayName="מידע" parentDisplayName="PayPlus Document" id="{51dc888c-ec7e-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="alex_creditcardid" displayName="Saved Card" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="60" displayName="מידע" parentDisplayName="PayPlus Document" id="{51dc888c-ec7e-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="alex_creditcardid" displayName="Saved Card" parentSchemaName="alex_paypluspaymentline" parentDisplayName="שורת תשלום PayPlus" solution="Active" />
+        <Dependent type="29" displayName="PayPlus - Process Workbench Payment (Sales)" id="{1e4c034f-ce94-f111-8076-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="alex_currencycode" displayName="Currency Code" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="26" schemaName="מסמכי PayPlus לפי מקור – מכירות" displayName="מסמכי PayPlus לפי מקור – מכירות" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" id="{1a668c35-e994-f111-8076-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="alex_currencycode" displayName="Currency Code" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="26" schemaName="מסמכי PayPlus פעילים" displayName="מסמכי PayPlus פעילים" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" id="{20dd888c-ec7e-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="alex_currencycode" displayName="Currency Code" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="26" schemaName="מסמכי PayPlus לפי מקור" displayName="מסמכי PayPlus לפי מקור" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" id="{26dd888c-ec7e-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="alex_currencycode" displayName="Currency Code" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="26" schemaName="מסמכי PayPlus פעילים – מכירות" displayName="מסמכי PayPlus פעילים – מכירות" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" id="{3b3d862e-e994-f111-8076-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="alex_currencycode" displayName="Currency Code" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="60" displayName="מידע" parentDisplayName="PayPlus Document" id="{51dc888c-ec7e-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="alex_customeremail" displayName="Customer Email" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="60" displayName="מידע" parentDisplayName="PayPlus Document" id="{51dc888c-ec7e-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="alex_customername" displayName="Customer Name" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="26" schemaName="מסמכי PayPlus לפי מקור – מכירות" displayName="מסמכי PayPlus לפי מקור – מכירות" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" id="{1a668c35-e994-f111-8076-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="alex_customername" displayName="Customer Name" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="26" schemaName="מסמכי PayPlus פעילים" displayName="מסמכי PayPlus פעילים" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" id="{20dd888c-ec7e-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="alex_customername" displayName="Customer Name" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="26" schemaName="מסמכי PayPlus לפי מקור" displayName="מסמכי PayPlus לפי מקור" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" id="{26dd888c-ec7e-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="alex_customername" displayName="Customer Name" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="26" schemaName="מסמכי PayPlus פעילים – מכירות" displayName="מסמכי PayPlus פעילים – מכירות" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" id="{3b3d862e-e994-f111-8076-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="alex_customername" displayName="Customer Name" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="60" displayName="מידע" parentDisplayName="PayPlus Document" id="{51dc888c-ec7e-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="alex_customerphone" displayName="Customer Phone" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="60" displayName="מידע" parentDisplayName="PayPlus Document" id="{51dc888c-ec7e-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="alex_customervatnumber" displayName="Customer VAT Number" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="60" displayName="מידע" parentDisplayName="PayPlus Document" id="{51dc888c-ec7e-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="alex_documentdate" displayName="Document Date" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="60" displayName="מידע" parentDisplayName="PayPlus Document" id="{51dc888c-ec7e-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="alex_documentnumber" displayName="Document Number" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="26" schemaName="מסמכי PayPlus לפי מקור – מכירות" displayName="מסמכי PayPlus לפי מקור – מכירות" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" id="{1a668c35-e994-f111-8076-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="alex_documentnumber" displayName="Document Number" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="26" schemaName="מסמכי PayPlus פעילים" displayName="מסמכי PayPlus פעילים" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" id="{20dd888c-ec7e-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="alex_documentnumber" displayName="Document Number" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="26" schemaName="מסמכי PayPlus לפי מקור" displayName="מסמכי PayPlus לפי מקור" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" id="{26dd888c-ec7e-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="alex_documentnumber" displayName="Document Number" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="26" schemaName="מסמכי PayPlus פעילים – מכירות" displayName="מסמכי PayPlus פעילים – מכירות" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" id="{3b3d862e-e994-f111-8076-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="alex_documentnumber" displayName="Document Number" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="60" displayName="מידע" parentDisplayName="PayPlus Document" id="{51dc888c-ec7e-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="alex_documentrole" displayName="Billing document role" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="60" displayName="מידע" parentDisplayName="PayPlus Document" id="{51dc888c-ec7e-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="alex_documentrole" displayName="Billing document role" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="60" displayName="Information" parentDisplayName="PayPlus Document" id="{915f390c-323a-4433-bec5-afd16f78c5cd}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="alex_documentrole" displayName="Billing document role" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="60" displayName="PayPlus Document (Sales)" parentDisplayName="PayPlus Document" id="{b171459c-e994-f111-8076-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="alex_documentstatus" displayName="Document Status" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="26" schemaName="מסמכי PayPlus לפי מקור – מכירות" displayName="מסמכי PayPlus לפי מקור – מכירות" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" id="{1a668c35-e994-f111-8076-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="alex_documentstatus" displayName="Document Status" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="26" schemaName="מסמכי PayPlus פעילים" displayName="מסמכי PayPlus פעילים" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" id="{20dd888c-ec7e-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="alex_documentstatus" displayName="Document Status" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="26" schemaName="מסמכי PayPlus לפי מקור" displayName="מסמכי PayPlus לפי מקור" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" id="{26dd888c-ec7e-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="alex_documentstatus" displayName="Document Status" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="26" schemaName="מסמכי PayPlus פעילים – מכירות" displayName="מסמכי PayPlus פעילים – מכירות" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" id="{3b3d862e-e994-f111-8076-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="alex_documentstatus" displayName="Document Status" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="60" displayName="מידע" parentDisplayName="PayPlus Document" id="{51dc888c-ec7e-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="alex_documenttypecode" displayName="Document Type Code" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="26" schemaName="מסמכי PayPlus לפי מקור – מכירות" displayName="מסמכי PayPlus לפי מקור – מכירות" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" id="{1a668c35-e994-f111-8076-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="alex_documenttypecode" displayName="Document Type Code" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="26" schemaName="מסמכי PayPlus פעילים" displayName="מסמכי PayPlus פעילים" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" id="{20dd888c-ec7e-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="alex_documenttypecode" displayName="Document Type Code" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="26" schemaName="מסמכי PayPlus לפי מקור" displayName="מסמכי PayPlus לפי מקור" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" id="{26dd888c-ec7e-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="alex_documenttypecode" displayName="Document Type Code" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="26" schemaName="מסמכי PayPlus פעילים – מכירות" displayName="מסמכי PayPlus פעילים – מכירות" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" id="{3b3d862e-e994-f111-8076-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="alex_documenttypecode" displayName="Document Type Code" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="60" displayName="מידע" parentDisplayName="PayPlus Document" id="{51dc888c-ec7e-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="alex_documenttypeid" displayName="Document Type" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="60" displayName="מידע" parentDisplayName="PayPlus Document" id="{51dc888c-ec7e-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="alex_documenturl" displayName="Document URL" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="60" displayName="מידע" parentDisplayName="PayPlus Document" id="{51dc888c-ec7e-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="alex_environment" displayName="Environment" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="26" schemaName="מסמכי PayPlus לפי מקור – מכירות" displayName="מסמכי PayPlus לפי מקור – מכירות" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" id="{1a668c35-e994-f111-8076-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="alex_environment" displayName="Environment" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="26" schemaName="מסמכי PayPlus פעילים" displayName="מסמכי PayPlus פעילים" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" id="{20dd888c-ec7e-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="alex_environment" displayName="Environment" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="26" schemaName="מסמכי PayPlus לפי מקור" displayName="מסמכי PayPlus לפי מקור" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" id="{26dd888c-ec7e-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="alex_environment" displayName="Environment" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="26" schemaName="מסמכי PayPlus פעילים – מכירות" displayName="מסמכי PayPlus פעילים – מכירות" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" id="{3b3d862e-e994-f111-8076-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="alex_environment" displayName="Environment" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="60" displayName="מידע" parentDisplayName="PayPlus Document" id="{51dc888c-ec7e-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="alex_externaltransactionid" displayName="External transaction ID" parentSchemaName="alex_paypluspaymentline" parentDisplayName="שורת תשלום PayPlus" solution="Active" />
+        <Dependent type="29" displayName="PayPlus - Process Workbench Payment (Sales)" id="{1e4c034f-ce94-f111-8076-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="alex_invoicedocumentid" displayName="Invoice Document" parentSchemaName="alex_payplusreceiptallocation" parentDisplayName="שיוך קבלה PayPlus" solution="Active" />
+        <Dependent type="26" schemaName="שיוכי קבלות פעילים" displayName="שיוכי קבלות פעילים" parentSchemaName="alex_payplusreceiptallocation" parentDisplayName="שיוך קבלה PayPlus" id="{9787d54d-5680-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="alex_invoicedocumentid" displayName="Invoice Document" parentSchemaName="alex_payplusreceiptallocation" parentDisplayName="שיוך קבלה PayPlus" solution="Active" />
+        <Dependent type="60" displayName="מידע" parentDisplayName="שיוך קבלה PayPlus" id="{6787d54d-5680-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="alex_issuedon" displayName="Issued On" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="60" displayName="מידע" parentDisplayName="PayPlus Document" id="{51dc888c-ec7e-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="alex_itemsjson" displayName="Items JSON" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="60" displayName="מידע" parentDisplayName="PayPlus Document" id="{51dc888c-ec7e-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="alex_lasterror" displayName="Last Error" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="60" displayName="מידע" parentDisplayName="PayPlus Document" id="{51dc888c-ec7e-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="alex_lastoperation" displayName="Last Operation" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="29" displayName="PayPlus - Preview Invoice Document" id="{686feb06-7c80-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="alex_lastoperation" displayName="Last Operation" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="29" displayName="PayPlus - Preview Quote Document" id="{b8f7ecd6-517f-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="alex_lastoperation" displayName="Last Operation" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="29" displayName="PayPlus - Preview Sales Order Document" id="{c4bfd845-4980-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="alex_lastoperation" displayName="Last Operation" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="60" displayName="מידע" parentDisplayName="PayPlus Document" id="{51dc888c-ec7e-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="alex_lastoperationon" displayName="Last Operation On" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="60" displayName="מידע" parentDisplayName="PayPlus Document" id="{51dc888c-ec7e-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="alex_lastrefreshedon" displayName="Last Refreshed On" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="26" schemaName="מסמכי PayPlus לפי מקור – מכירות" displayName="מסמכי PayPlus לפי מקור – מכירות" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" id="{1a668c35-e994-f111-8076-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="alex_lastrefreshedon" displayName="Last Refreshed On" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="26" schemaName="מסמכי PayPlus פעילים" displayName="מסמכי PayPlus פעילים" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" id="{20dd888c-ec7e-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="alex_lastrefreshedon" displayName="Last Refreshed On" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="26" schemaName="מסמכי PayPlus לפי מקור" displayName="מסמכי PayPlus לפי מקור" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" id="{26dd888c-ec7e-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="alex_lastrefreshedon" displayName="Last Refreshed On" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="26" schemaName="מסמכי PayPlus פעילים – מכירות" displayName="מסמכי PayPlus פעילים – מכירות" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" id="{3b3d862e-e994-f111-8076-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="alex_lastrefreshedon" displayName="Last Refreshed On" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="60" displayName="מידע" parentDisplayName="PayPlus Document" id="{51dc888c-ec7e-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="alex_lastsyncstatus" displayName="Last Sync Status" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="26" schemaName="מסמכי PayPlus לפי מקור – מכירות" displayName="מסמכי PayPlus לפי מקור – מכירות" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" id="{1a668c35-e994-f111-8076-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="alex_lastsyncstatus" displayName="Last Sync Status" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="26" schemaName="מסמכי PayPlus פעילים" displayName="מסמכי PayPlus פעילים" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" id="{20dd888c-ec7e-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="alex_lastsyncstatus" displayName="Last Sync Status" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="26" schemaName="מסמכי PayPlus לפי מקור" displayName="מסמכי PayPlus לפי מקור" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" id="{26dd888c-ec7e-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="alex_lastsyncstatus" displayName="Last Sync Status" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="26" schemaName="מסמכי PayPlus פעילים – מכירות" displayName="מסמכי PayPlus פעילים – מכירות" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" id="{3b3d862e-e994-f111-8076-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="alex_lastsyncstatus" displayName="Last Sync Status" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="29" displayName="PayPlus - Preview Invoice Document" id="{686feb06-7c80-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="alex_lastsyncstatus" displayName="Last Sync Status" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="29" displayName="PayPlus - Preview Quote Document" id="{b8f7ecd6-517f-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="alex_lastsyncstatus" displayName="Last Sync Status" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="29" displayName="PayPlus - Preview Sales Order Document" id="{c4bfd845-4980-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="alex_lastsyncstatus" displayName="Last Sync Status" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="60" displayName="מידע" parentDisplayName="PayPlus Document" id="{51dc888c-ec7e-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="alex_moreinfo" displayName="More Info" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="26" schemaName="מסמכי PayPlus לפי מקור – מכירות" displayName="מסמכי PayPlus לפי מקור – מכירות" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" id="{1a668c35-e994-f111-8076-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="alex_moreinfo" displayName="More Info" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="26" schemaName="מסמכי PayPlus פעילים" displayName="מסמכי PayPlus פעילים" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" id="{20dd888c-ec7e-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="alex_moreinfo" displayName="More Info" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="26" schemaName="מסמכי PayPlus לפי מקור" displayName="מסמכי PayPlus לפי מקור" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" id="{26dd888c-ec7e-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="alex_moreinfo" displayName="More Info" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="26" schemaName="מסמכי PayPlus פעילים – מכירות" displayName="מסמכי PayPlus פעילים – מכירות" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" id="{3b3d862e-e994-f111-8076-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="alex_moreinfo" displayName="More Info" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="26" schemaName="Active PayPlus Documents (Sales)" displayName="Active PayPlus Documents (Sales)" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" id="{d9ef2f26-e994-f111-8076-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="alex_moreinfo" displayName="More Info" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="26" schemaName="Active PayPlus Documents" displayName="Active PayPlus Documents" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" id="{f1b43a4e-be92-4269-95dc-4f4bdc5f2c18}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="alex_moreinfo" displayName="More Info" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="60" displayName="Information" parentDisplayName="PayPlus Document" id="{915f390c-323a-4433-bec5-afd16f78c5cd}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="alex_moreinfo" displayName="More Info" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="60" displayName="PayPlus Document (Sales)" parentDisplayName="PayPlus Document" id="{b171459c-e994-f111-8076-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="alex_name" displayName="Name" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="26" schemaName="מסמכי PayPlus לפי מקור – מכירות" displayName="מסמכי PayPlus לפי מקור – מכירות" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" id="{1a668c35-e994-f111-8076-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="alex_name" displayName="Name" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="26" schemaName="מסמכי PayPlus פעילים" displayName="מסמכי PayPlus פעילים" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" id="{20dd888c-ec7e-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="alex_name" displayName="Name" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="26" schemaName="מסמכי PayPlus לפי מקור" displayName="מסמכי PayPlus לפי מקור" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" id="{26dd888c-ec7e-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="alex_name" displayName="Name" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="26" schemaName="מסמכי PayPlus פעילים – מכירות" displayName="מסמכי PayPlus פעילים – מכירות" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" id="{3b3d862e-e994-f111-8076-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="alex_name" displayName="Name" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="26" schemaName="Active PayPlus Documents (Sales)" displayName="Active PayPlus Documents (Sales)" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" id="{d9ef2f26-e994-f111-8076-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="alex_name" displayName="Name" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="26" schemaName="Active PayPlus Documents" displayName="Active PayPlus Documents" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" id="{f1b43a4e-be92-4269-95dc-4f4bdc5f2c18}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="alex_name" displayName="Name" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="60" displayName="מידע" parentDisplayName="PayPlus Document" id="{51dc888c-ec7e-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="alex_name" displayName="Name" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="60" displayName="Information" parentDisplayName="PayPlus Document" id="{915f390c-323a-4433-bec5-afd16f78c5cd}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="alex_name" displayName="Name" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="60" displayName="PayPlus Document (Sales)" parentDisplayName="PayPlus Document" id="{b171459c-e994-f111-8076-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="alex_name" displayName="Name" parentSchemaName="alex_payplusreceiptallocation" parentDisplayName="שיוך קבלה PayPlus" solution="Active" />
+        <Dependent type="26" schemaName="Active PayPlus Receipt Allocations" displayName="Active PayPlus Receipt Allocations" parentSchemaName="alex_payplusreceiptallocation" parentDisplayName="שיוך קבלה PayPlus" id="{20b30605-be93-4142-b367-f6409e82cfa7}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="alex_name" displayName="Name" parentSchemaName="alex_payplusreceiptallocation" parentDisplayName="שיוך קבלה PayPlus" solution="Active" />
+        <Dependent type="26" schemaName="שיוכי קבלות פעילים" displayName="שיוכי קבלות פעילים" parentSchemaName="alex_payplusreceiptallocation" parentDisplayName="שיוך קבלה PayPlus" id="{9787d54d-5680-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="alex_name" displayName="Name" parentSchemaName="alex_payplusreceiptallocation" parentDisplayName="שיוך קבלה PayPlus" solution="Active" />
+        <Dependent type="26" schemaName="Inactive PayPlus Receipt Allocations" displayName="Inactive PayPlus Receipt Allocations" parentSchemaName="alex_payplusreceiptallocation" parentDisplayName="שיוך קבלה PayPlus" id="{a655080b-0dd5-4e6f-ba48-ec57fd9ee974}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="alex_name" displayName="Name" parentSchemaName="alex_payplusreceiptallocation" parentDisplayName="שיוך קבלה PayPlus" solution="Active" />
+        <Dependent type="60" displayName="מידע" parentDisplayName="שיוך קבלה PayPlus" id="{6787d54d-5680-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="alex_name" displayName="Name" parentSchemaName="alex_payplusreceiptallocation" parentDisplayName="שיוך קבלה PayPlus" solution="Active" />
+        <Dependent type="60" displayName="Information" parentDisplayName="שיוך קבלה PayPlus" id="{ad5237a1-fb3c-4c8e-a328-5aa25b94a7ce}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="alex_origin" displayName="Origin" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="60" displayName="מידע" parentDisplayName="PayPlus Document" id="{51dc888c-ec7e-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="alex_paidamount" displayName="Paid Amount" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="60" displayName="מידע" parentDisplayName="PayPlus Document" id="{51dc888c-ec7e-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="alex_parentdocumentid" displayName="Parent PayPlus Document" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="60" displayName="מידע" parentDisplayName="PayPlus Document" id="{51dc888c-ec7e-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="alex_parentdocumentid" displayName="Parent PayPlus Document" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="60" displayName="Information" parentDisplayName="PayPlus Document" id="{915f390c-323a-4433-bec5-afd16f78c5cd}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="alex_parentdocumentid" displayName="Parent PayPlus Document" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="60" displayName="PayPlus Document (Sales)" parentDisplayName="PayPlus Document" id="{b171459c-e994-f111-8076-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="alex_paymentlineid" displayName="Payment Line" parentSchemaName="alex_payplusreceiptallocation" parentDisplayName="שיוך קבלה PayPlus" solution="Active" />
+        <Dependent type="26" schemaName="שיוכי קבלות פעילים" displayName="שיוכי קבלות פעילים" parentSchemaName="alex_payplusreceiptallocation" parentDisplayName="שיוך קבלה PayPlus" id="{9787d54d-5680-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="alex_paymentlineid" displayName="Payment Line" parentSchemaName="alex_payplusreceiptallocation" parentDisplayName="שיוך קבלה PayPlus" solution="Active" />
+        <Dependent type="60" displayName="מידע" parentDisplayName="שיוך קבלה PayPlus" id="{6787d54d-5680-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="alex_paymentpageid" displayName="Payment Page" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="60" displayName="מידע" parentDisplayName="PayPlus Document" id="{51dc888c-ec7e-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="alex_paymentpagelink" displayName="Payment Page Link" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="60" displayName="מידע" parentDisplayName="PayPlus Document" id="{51dc888c-ec7e-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="alex_paymentrequestuid" displayName="Payment Request UID" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="60" displayName="מידע" parentDisplayName="PayPlus Document" id="{51dc888c-ec7e-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="alex_paymentsjson" displayName="Payments JSON" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="60" displayName="מידע" parentDisplayName="PayPlus Document" id="{51dc888c-ec7e-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="alex_paypluscustomeruid" displayName="PayPlus Customer UID" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="60" displayName="מידע" parentDisplayName="PayPlus Document" id="{51dc888c-ec7e-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="alex_payplusdocumentid" displayName="PayPlus Document" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="26" schemaName="Active PayPlus Documents (Sales)" displayName="Active PayPlus Documents (Sales)" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" id="{d9ef2f26-e994-f111-8076-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="alex_payplusdocumentid" displayName="PayPlus Document" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="26" schemaName="Active PayPlus Documents" displayName="Active PayPlus Documents" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" id="{f1b43a4e-be92-4269-95dc-4f4bdc5f2c18}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="alex_payplusdocumentuuid" displayName="PayPlus Document UUID" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="60" displayName="מידע" parentDisplayName="PayPlus Document" id="{51dc888c-ec7e-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="alex_payplusreceiptallocationid" displayName="PayPlus Receipt Allocation" parentSchemaName="alex_payplusreceiptallocation" parentDisplayName="שיוך קבלה PayPlus" solution="Active" />
+        <Dependent type="26" schemaName="Active PayPlus Receipt Allocations" displayName="Active PayPlus Receipt Allocations" parentSchemaName="alex_payplusreceiptallocation" parentDisplayName="שיוך קבלה PayPlus" id="{20b30605-be93-4142-b367-f6409e82cfa7}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="alex_payplusreceiptallocationid" displayName="PayPlus Receipt Allocation" parentSchemaName="alex_payplusreceiptallocation" parentDisplayName="שיוך קבלה PayPlus" solution="Active" />
+        <Dependent type="26" schemaName="Inactive PayPlus Receipt Allocations" displayName="Inactive PayPlus Receipt Allocations" parentSchemaName="alex_payplusreceiptallocation" parentDisplayName="שיוך קבלה PayPlus" id="{a655080b-0dd5-4e6f-ba48-ec57fd9ee974}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="alex_pdfurl" displayName="Original PDF URL" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="60" displayName="מידע" parentDisplayName="PayPlus Document" id="{51dc888c-ec7e-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="alex_rawdocumentjson" displayName="Raw Document JSON" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="60" displayName="מידע" parentDisplayName="PayPlus Document" id="{51dc888c-ec7e-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="alex_rawrequest" displayName="Raw Request JSON" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="60" displayName="מידע" parentDisplayName="PayPlus Document" id="{51dc888c-ec7e-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="alex_rawresponse" displayName="Raw Response JSON" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="60" displayName="מידע" parentDisplayName="PayPlus Document" id="{51dc888c-ec7e-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="alex_receiptdocumentid" displayName="Receipt Document" parentSchemaName="alex_payplusreceiptallocation" parentDisplayName="שיוך קבלה PayPlus" solution="Active" />
+        <Dependent type="26" schemaName="שיוכי קבלות פעילים" displayName="שיוכי קבלות פעילים" parentSchemaName="alex_payplusreceiptallocation" parentDisplayName="שיוך קבלה PayPlus" id="{9787d54d-5680-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="alex_receiptdocumentid" displayName="Receipt Document" parentSchemaName="alex_payplusreceiptallocation" parentDisplayName="שיוך קבלה PayPlus" solution="Active" />
+        <Dependent type="60" displayName="מידע" parentDisplayName="שיוך קבלה PayPlus" id="{6787d54d-5680-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="alex_reference" displayName="Reference" parentSchemaName="alex_paypluspaymentline" parentDisplayName="שורת תשלום PayPlus" solution="Active" />
+        <Dependent type="29" displayName="PayPlus - Process Workbench Payment (Sales)" id="{1e4c034f-ce94-f111-8076-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="alex_relatedinvoicedocumentid" displayName="Related Invoice Document" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="60" displayName="מידע" parentDisplayName="PayPlus Document" id="{51dc888c-ec7e-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="alex_relatedinvoicedocumentid" displayName="Related Invoice Document" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="60" displayName="Information" parentDisplayName="PayPlus Document" id="{915f390c-323a-4433-bec5-afd16f78c5cd}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="alex_relatedinvoicedocumentid" displayName="Related Invoice Document" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="60" displayName="PayPlus Document (Sales)" parentDisplayName="PayPlus Document" id="{b171459c-e994-f111-8076-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="alex_requestedaction" displayName="Requested Action" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="60" displayName="מידע" parentDisplayName="PayPlus Document" id="{51dc888c-ec7e-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="alex_requestedactionmessage" displayName="Requested Action Message" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="60" displayName="מידע" parentDisplayName="PayPlus Document" id="{51dc888c-ec7e-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="alex_requestedactionon" displayName="Requested Action On" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="60" displayName="מידע" parentDisplayName="PayPlus Document" id="{51dc888c-ec7e-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="alex_requestedactionstatus" displayName="Requested Action Status" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="60" displayName="מידע" parentDisplayName="PayPlus Document" id="{51dc888c-ec7e-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="alex_requestedchannel" displayName="Requested Channel" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="60" displayName="מידע" parentDisplayName="PayPlus Document" id="{51dc888c-ec7e-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="alex_requestedlinktype" displayName="Requested Link Type" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="60" displayName="מידע" parentDisplayName="PayPlus Document" id="{51dc888c-ec7e-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="alex_reversesdocumentid" displayName="Reverses PayPlus Document" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="60" displayName="מידע" parentDisplayName="PayPlus Document" id="{51dc888c-ec7e-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="alex_reversesdocumentid" displayName="Reverses PayPlus Document" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="60" displayName="Information" parentDisplayName="PayPlus Document" id="{915f390c-323a-4433-bec5-afd16f78c5cd}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="alex_reversesdocumentid" displayName="Reverses PayPlus Document" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="60" displayName="PayPlus Document (Sales)" parentDisplayName="PayPlus Document" id="{b171459c-e994-f111-8076-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="alex_series" displayName="Series" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="60" displayName="מידע" parentDisplayName="PayPlus Document" id="{51dc888c-ec7e-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="alex_sourcedetailcount" displayName="Source Detail Count" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="60" displayName="מידע" parentDisplayName="PayPlus Document" id="{51dc888c-ec7e-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="alex_sourcedetailmodifiedon" displayName="Source Detail Modified On" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="60" displayName="מידע" parentDisplayName="PayPlus Document" id="{51dc888c-ec7e-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="alex_sourcedetailversionnumber" displayName="Source Detail Version Number" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="60" displayName="מידע" parentDisplayName="PayPlus Document" id="{51dc888c-ec7e-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="alex_sourcedisplayname" displayName="Source Display Name" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="26" schemaName="מסמכי PayPlus לפי מקור – מכירות" displayName="מסמכי PayPlus לפי מקור – מכירות" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" id="{1a668c35-e994-f111-8076-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="alex_sourcedisplayname" displayName="Source Display Name" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="26" schemaName="מסמכי PayPlus לפי מקור" displayName="מסמכי PayPlus לפי מקור" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" id="{26dd888c-ec7e-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="alex_sourcedisplayname" displayName="Source Display Name" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="60" displayName="מידע" parentDisplayName="PayPlus Document" id="{51dc888c-ec7e-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="alex_sourceentityid" displayName="Source Row ID" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="60" displayName="מידע" parentDisplayName="PayPlus Document" id="{51dc888c-ec7e-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="alex_sourceentitylogicalname" displayName="Source Table Logical Name" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="26" schemaName="מסמכי PayPlus לפי מקור – מכירות" displayName="מסמכי PayPlus לפי מקור – מכירות" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" id="{1a668c35-e994-f111-8076-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="alex_sourceentitylogicalname" displayName="Source Table Logical Name" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="26" schemaName="מסמכי PayPlus לפי מקור" displayName="מסמכי PayPlus לפי מקור" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" id="{26dd888c-ec7e-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="alex_sourceentitylogicalname" displayName="Source Table Logical Name" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="60" displayName="מידע" parentDisplayName="PayPlus Document" id="{51dc888c-ec7e-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="alex_sourcefingerprint" displayName="Source Fingerprint" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="60" displayName="מידע" parentDisplayName="PayPlus Document" id="{51dc888c-ec7e-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="alex_sourcemodifiedon" displayName="Source Modified On" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="60" displayName="מידע" parentDisplayName="PayPlus Document" id="{51dc888c-ec7e-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="alex_sourceurl" displayName="Source URL" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="60" displayName="מידע" parentDisplayName="PayPlus Document" id="{51dc888c-ec7e-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="alex_sourceversionnumber" displayName="Source Version Number" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="60" displayName="מידע" parentDisplayName="PayPlus Document" id="{51dc888c-ec7e-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="alex_status" displayName="Payment status" parentSchemaName="alex_paypluspaymentline" parentDisplayName="שורת תשלום PayPlus" solution="Active" />
+        <Dependent type="29" displayName="PayPlus - Process Workbench Payment (Sales)" id="{1e4c034f-ce94-f111-8076-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="alex_status" displayName="Allocation status" parentSchemaName="alex_payplusreceiptallocation" parentDisplayName="שיוך קבלה PayPlus" solution="Active" />
+        <Dependent type="26" schemaName="שיוכי קבלות פעילים" displayName="שיוכי קבלות פעילים" parentSchemaName="alex_payplusreceiptallocation" parentDisplayName="שיוך קבלה PayPlus" id="{9787d54d-5680-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="alex_status" displayName="Allocation status" parentSchemaName="alex_payplusreceiptallocation" parentDisplayName="שיוך קבלה PayPlus" solution="Active" />
+        <Dependent type="60" displayName="מידע" parentDisplayName="שיוך קבלה PayPlus" id="{6787d54d-5680-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="alex_terminalid" displayName="Terminal" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="60" displayName="מידע" parentDisplayName="PayPlus Document" id="{51dc888c-ec7e-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="alex_totalamount" displayName="Total Amount" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="26" schemaName="מסמכי PayPlus לפי מקור – מכירות" displayName="מסמכי PayPlus לפי מקור – מכירות" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" id="{1a668c35-e994-f111-8076-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="alex_totalamount" displayName="Total Amount" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="26" schemaName="מסמכי PayPlus פעילים" displayName="מסמכי PayPlus פעילים" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" id="{20dd888c-ec7e-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="alex_totalamount" displayName="Total Amount" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="26" schemaName="מסמכי PayPlus לפי מקור" displayName="מסמכי PayPlus לפי מקור" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" id="{26dd888c-ec7e-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="alex_totalamount" displayName="Total Amount" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="26" schemaName="מסמכי PayPlus פעילים – מכירות" displayName="מסמכי PayPlus פעילים – מכירות" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" id="{3b3d862e-e994-f111-8076-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="alex_totalamount" displayName="Total Amount" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="60" displayName="מידע" parentDisplayName="PayPlus Document" id="{51dc888c-ec7e-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="alex_transactionuid" displayName="Transaction UID" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="60" displayName="מידע" parentDisplayName="PayPlus Document" id="{51dc888c-ec7e-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="alex_uniqueidentifier" displayName="Unique Identifier" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="60" displayName="מידע" parentDisplayName="PayPlus Document" id="{51dc888c-ec7e-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="alex_vatamount" displayName="VAT Amount" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="60" displayName="מידע" parentDisplayName="PayPlus Document" id="{51dc888c-ec7e-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="createdon" displayName="Created On" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="26" schemaName="Active PayPlus Documents (Sales)" displayName="Active PayPlus Documents (Sales)" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" id="{d9ef2f26-e994-f111-8076-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="createdon" displayName="Created On" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="26" schemaName="Active PayPlus Documents" displayName="Active PayPlus Documents" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" id="{f1b43a4e-be92-4269-95dc-4f4bdc5f2c18}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="createdon" displayName="Created On" parentSchemaName="alex_payplusreceiptallocation" parentDisplayName="שיוך קבלה PayPlus" solution="Active" />
+        <Dependent type="26" schemaName="Active PayPlus Receipt Allocations" displayName="Active PayPlus Receipt Allocations" parentSchemaName="alex_payplusreceiptallocation" parentDisplayName="שיוך קבלה PayPlus" id="{20b30605-be93-4142-b367-f6409e82cfa7}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="createdon" displayName="Created On" parentSchemaName="alex_payplusreceiptallocation" parentDisplayName="שיוך קבלה PayPlus" solution="Active" />
+        <Dependent type="26" schemaName="שיוכי קבלות פעילים" displayName="שיוכי קבלות פעילים" parentSchemaName="alex_payplusreceiptallocation" parentDisplayName="שיוך קבלה PayPlus" id="{9787d54d-5680-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="createdon" displayName="Created On" parentSchemaName="alex_payplusreceiptallocation" parentDisplayName="שיוך קבלה PayPlus" solution="Active" />
+        <Dependent type="26" schemaName="Inactive PayPlus Receipt Allocations" displayName="Inactive PayPlus Receipt Allocations" parentSchemaName="alex_payplusreceiptallocation" parentDisplayName="שיוך קבלה PayPlus" id="{a655080b-0dd5-4e6f-ba48-ec57fd9ee974}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="invoicedetailname" displayName="Name" parentSchemaName="invoicedetail" parentDisplayName="Invoice Product" solution="msdynce_SalesPatch (9.0.1904.3002)">
+          <package appName="msdynce_Sales" version="9.0.26092.10005">msdynce_SalesAnchor (9.0.26092.10005)</package>
+        </Required>
+        <Dependent type="10" schemaName="alex_invoicedetail_alex_payplusreceiptallocation" displayName="alex_invoicedetail_alex_payplusreceiptallocation" parentSchemaName="invoicedetail" parentDisplayName="Invoice Product" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="modifiedon" displayName="Modified On" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="26" schemaName="מסמכי PayPlus לפי מקור – מכירות" displayName="מסמכי PayPlus לפי מקור – מכירות" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" id="{1a668c35-e994-f111-8076-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="modifiedon" displayName="Modified On" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="26" schemaName="מסמכי PayPlus פעילים" displayName="מסמכי PayPlus פעילים" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" id="{20dd888c-ec7e-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="modifiedon" displayName="Modified On" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="26" schemaName="מסמכי PayPlus לפי מקור" displayName="מסמכי PayPlus לפי מקור" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" id="{26dd888c-ec7e-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="modifiedon" displayName="Modified On" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="26" schemaName="מסמכי PayPlus פעילים – מכירות" displayName="מסמכי PayPlus פעילים – מכירות" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" id="{3b3d862e-e994-f111-8076-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="name" displayName="Name" parentSchemaName="invoice" parentDisplayName="Invoice" solution="msdynce_Sales (9.0.4.0076)">
+          <package appName="msdynce_Sales" version="9.0.26092.10005">msdynce_SalesAnchor (9.0.26092.10005)</package>
+        </Required>
+        <Dependent type="10" schemaName="alex_invoice_alex_payplusdocument" displayName="alex_invoice_alex_payplusdocument" parentSchemaName="invoice" parentDisplayName="Invoice" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="name" displayName="Name" parentSchemaName="invoice" parentDisplayName="Invoice" solution="msdynce_Sales (9.0.4.0076)">
+          <package appName="msdynce_Sales" version="9.0.26092.10005">msdynce_SalesAnchor (9.0.26092.10005)</package>
+        </Required>
+        <Dependent type="10" schemaName="alex_invoice_alex_payplusreceiptallocation" displayName="alex_invoice_alex_payplusreceiptallocation" parentSchemaName="invoice" parentDisplayName="Invoice" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="name" displayName="Name" parentSchemaName="quote" parentDisplayName="Quote" solution="msdynce_Sales (9.0.4.0076)">
+          <package appName="msdynce_Sales" version="9.0.26092.10005">msdynce_SalesAnchor (9.0.26092.10005)</package>
+        </Required>
+        <Dependent type="10" schemaName="alex_quote_alex_payplusdocument" displayName="alex_quote_alex_payplusdocument" parentSchemaName="quote" parentDisplayName="Quote" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="name" displayName="Name" parentSchemaName="salesorder" parentDisplayName="Order" solution="msdynce_Sales (9.0.4.0076)">
+          <package appName="msdynce_Sales" version="9.0.26092.10005">msdynce_SalesAnchor (9.0.26092.10005)</package>
+        </Required>
+        <Dependent type="10" schemaName="alex_salesorder_alex_payplusdocument" displayName="alex_salesorder_alex_payplusdocument" parentSchemaName="salesorder" parentDisplayName="Order" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="ownerid" displayName="Owner" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="60" displayName="Information" parentDisplayName="PayPlus Document" id="{915f390c-323a-4433-bec5-afd16f78c5cd}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="ownerid" displayName="Owner" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="60" displayName="PayPlus Document (Sales)" parentDisplayName="PayPlus Document" id="{b171459c-e994-f111-8076-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="ownerid" displayName="Owner" parentSchemaName="alex_payplusreceiptallocation" parentDisplayName="שיוך קבלה PayPlus" solution="Active" />
+        <Dependent type="60" displayName="Information" parentDisplayName="שיוך קבלה PayPlus" id="{ad5237a1-fb3c-4c8e-a328-5aa25b94a7ce}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="statecode" displayName="Status" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="26" schemaName="מסמכי PayPlus לפי מקור – מכירות" displayName="מסמכי PayPlus לפי מקור – מכירות" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" id="{1a668c35-e994-f111-8076-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="statecode" displayName="Status" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="26" schemaName="מסמכי PayPlus פעילים" displayName="מסמכי PayPlus פעילים" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" id="{20dd888c-ec7e-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="statecode" displayName="Status" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="26" schemaName="מסמכי PayPlus לפי מקור" displayName="מסמכי PayPlus לפי מקור" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" id="{26dd888c-ec7e-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="statecode" displayName="Status" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="26" schemaName="מסמכי PayPlus פעילים – מכירות" displayName="מסמכי PayPlus פעילים – מכירות" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" id="{3b3d862e-e994-f111-8076-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="statecode" displayName="Status" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="26" schemaName="Active PayPlus Documents (Sales)" displayName="Active PayPlus Documents (Sales)" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" id="{d9ef2f26-e994-f111-8076-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="statecode" displayName="Status" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" solution="Active" />
+        <Dependent type="26" schemaName="Active PayPlus Documents" displayName="Active PayPlus Documents" parentSchemaName="alex_payplusdocument" parentDisplayName="PayPlus Document" id="{f1b43a4e-be92-4269-95dc-4f4bdc5f2c18}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="statecode" displayName="Status" parentSchemaName="alex_payplusreceiptallocation" parentDisplayName="שיוך קבלה PayPlus" solution="Active" />
+        <Dependent type="26" schemaName="Active PayPlus Receipt Allocations" displayName="Active PayPlus Receipt Allocations" parentSchemaName="alex_payplusreceiptallocation" parentDisplayName="שיוך קבלה PayPlus" id="{20b30605-be93-4142-b367-f6409e82cfa7}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="statecode" displayName="Status" parentSchemaName="alex_payplusreceiptallocation" parentDisplayName="שיוך קבלה PayPlus" solution="Active" />
+        <Dependent type="26" schemaName="Inactive PayPlus Receipt Allocations" displayName="Inactive PayPlus Receipt Allocations" parentSchemaName="alex_payplusreceiptallocation" parentDisplayName="שיוך קבלה PayPlus" id="{a655080b-0dd5-4e6f-ba48-ec57fd9ee974}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="372" schemaName="alex_5Fpayplus" displayName="PayPlus" solution="Active" id="{66e6832f-9776-4285-a07b-84b069d02015}" />
+        <Dependent type="29" displayName="PayPlus - Poll Invoice Payments" id="{12ac3e22-1881-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="372" schemaName="alex_5Fpayplus" displayName="PayPlus" solution="Active" id="{66e6832f-9776-4285-a07b-84b069d02015}" />
+        <Dependent type="29" displayName="PayPlus - Process Workbench Payment (Sales)" id="{1e4c034f-ce94-f111-8076-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="372" schemaName="alex_5Fpayplus" displayName="PayPlus" solution="Active" id="{66e6832f-9776-4285-a07b-84b069d02015}" />
+        <Dependent type="29" displayName="PayPlus - Preview Invoice Document" id="{686feb06-7c80-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="372" schemaName="alex_5Fpayplus" displayName="PayPlus" solution="Active" id="{66e6832f-9776-4285-a07b-84b069d02015}" />
+        <Dependent type="29" displayName="PayPlus - Preview Quote Document" id="{b8f7ecd6-517f-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="372" schemaName="alex_5Fpayplus" displayName="PayPlus" solution="Active" id="{66e6832f-9776-4285-a07b-84b069d02015}" />
+        <Dependent type="29" displayName="PayPlus - Preview Sales Order Document" id="{c4bfd845-4980-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="372" schemaName="alex_5Fpayplus-20sandbox" displayName="PayPlus SandBox" solution="Active" id="{79337094-f90a-4117-8d95-7fcef4ee4f84}" />
+        <Dependent type="29" displayName="PayPlus - Poll Invoice Payments" id="{12ac3e22-1881-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="372" schemaName="alex_5Fpayplus-20sandbox" displayName="PayPlus SandBox" solution="Active" id="{79337094-f90a-4117-8d95-7fcef4ee4f84}" />
+        <Dependent type="29" displayName="PayPlus - Process Workbench Payment (Sales)" id="{1e4c034f-ce94-f111-8076-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="372" schemaName="alex_5Fpayplus-20sandbox" displayName="PayPlus SandBox" solution="Active" id="{79337094-f90a-4117-8d95-7fcef4ee4f84}" />
+        <Dependent type="29" displayName="PayPlus - Preview Invoice Document" id="{686feb06-7c80-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="372" schemaName="alex_5Fpayplus-20sandbox" displayName="PayPlus SandBox" solution="Active" id="{79337094-f90a-4117-8d95-7fcef4ee4f84}" />
+        <Dependent type="29" displayName="PayPlus - Preview Quote Document" id="{b8f7ecd6-517f-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="372" schemaName="alex_5Fpayplus-20sandbox" displayName="PayPlus SandBox" solution="Active" id="{79337094-f90a-4117-8d95-7fcef4ee4f84}" />
+        <Dependent type="29" displayName="PayPlus - Preview Sales Order Document" id="{c4bfd845-4980-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="61" schemaName="alex_invoice_bill" displayName="alex_invoice_bill" solution="Active" />
+        <Dependent type="1" schemaName="alex_payplusdocument" displayName="PayPlus Document" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="61" schemaName="alex_receipt" displayName="alex_receipt" solution="Active" />
+        <Dependent type="1" schemaName="alex_payplusreceiptallocation" displayName="שיוך קבלה PayPlus" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="66" schemaName="alex_PayPlus.DocumentPreview" displayName="alex_PayPlus.DocumentPreview" solution="alex_payplus_document_preview_pcf_temp (1.0.0.3)" />
+        <Dependent type="300" schemaName="alex_payplusdocumentpreview_b4f29" displayName="PayPlus Document Preview" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="66" schemaName="alex_PayPlus.PaymentWizard" displayName="alex_PayPlus.PaymentWizard" solution="alex_payplus_document_preview_pcf_temp (1.0.0.3)" />
+        <Dependent type="300" schemaName="alex_paypluspaymentworkbench_49c56" displayName="PayPlus Payment Workbench" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="connectionreference" displayName="alex_payplus_dataverse" solution="Active" id.connectionreferencelogicalname="alex_payplus_dataverse" />
+        <Dependent type="29" displayName="PayPlus - Poll Invoice Payments" id="{12ac3e22-1881-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="connectionreference" displayName="alex_payplus_dataverse" solution="Active" id.connectionreferencelogicalname="alex_payplus_dataverse" />
+        <Dependent type="29" displayName="PayPlus - Process Workbench Payment (Sales)" id="{1e4c034f-ce94-f111-8076-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="connectionreference" displayName="alex_payplus_dataverse" solution="Active" id.connectionreferencelogicalname="alex_payplus_dataverse" />
+        <Dependent type="29" displayName="PayPlus - Preview Invoice Document" id="{686feb06-7c80-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="connectionreference" displayName="alex_payplus_dataverse" solution="Active" id.connectionreferencelogicalname="alex_payplus_dataverse" />
+        <Dependent type="29" displayName="PayPlus - Preview Quote Document" id="{b8f7ecd6-517f-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="connectionreference" displayName="alex_payplus_dataverse" solution="Active" id.connectionreferencelogicalname="alex_payplus_dataverse" />
+        <Dependent type="29" displayName="PayPlus - Preview Sales Order Document" id="{c4bfd845-4980-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="connectionreference" displayName="alex_payplusprod" solution="Active" id.connectionreferencelogicalname="alex_payplusprod" />
+        <Dependent type="29" displayName="PayPlus - Poll Invoice Payments" id="{12ac3e22-1881-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="connectionreference" displayName="alex_payplusprod" solution="Active" id.connectionreferencelogicalname="alex_payplusprod" />
+        <Dependent type="29" displayName="PayPlus - Process Workbench Payment (Sales)" id="{1e4c034f-ce94-f111-8076-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="connectionreference" displayName="alex_payplusprod" solution="Active" id.connectionreferencelogicalname="alex_payplusprod" />
+        <Dependent type="29" displayName="PayPlus - Preview Invoice Document" id="{686feb06-7c80-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="connectionreference" displayName="alex_payplusprod" solution="Active" id.connectionreferencelogicalname="alex_payplusprod" />
+        <Dependent type="29" displayName="PayPlus - Preview Quote Document" id="{b8f7ecd6-517f-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="connectionreference" displayName="alex_payplusprod" solution="Active" id.connectionreferencelogicalname="alex_payplusprod" />
+        <Dependent type="29" displayName="PayPlus - Preview Sales Order Document" id="{c4bfd845-4980-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="connectionreference" displayName="alex_payplussandbox" solution="Active" id.connectionreferencelogicalname="alex_payplussandbox" />
+        <Dependent type="29" displayName="PayPlus - Poll Invoice Payments" id="{12ac3e22-1881-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="connectionreference" displayName="alex_payplussandbox" solution="Active" id.connectionreferencelogicalname="alex_payplussandbox" />
+        <Dependent type="29" displayName="PayPlus - Process Workbench Payment (Sales)" id="{1e4c034f-ce94-f111-8076-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="connectionreference" displayName="alex_payplussandbox" solution="Active" id.connectionreferencelogicalname="alex_payplussandbox" />
+        <Dependent type="29" displayName="PayPlus - Preview Invoice Document" id="{686feb06-7c80-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="connectionreference" displayName="alex_payplussandbox" solution="Active" id.connectionreferencelogicalname="alex_payplussandbox" />
+        <Dependent type="29" displayName="PayPlus - Preview Quote Document" id="{b8f7ecd6-517f-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="connectionreference" displayName="alex_payplussandbox" solution="Active" id.connectionreferencelogicalname="alex_payplussandbox" />
+        <Dependent type="29" displayName="PayPlus - Preview Sales Order Document" id="{c4bfd845-4980-f111-ab0e-7ced8d726840}" />
+      </MissingDependency>
+    </MissingDependencies>
+  </SolutionManifest>
+</ImportExportXml>

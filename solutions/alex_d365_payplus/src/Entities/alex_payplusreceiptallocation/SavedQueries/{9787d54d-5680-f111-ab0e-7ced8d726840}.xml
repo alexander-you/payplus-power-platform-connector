@@ -1,0 +1,42 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<savedqueries xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <savedquery>
+    <IsCustomizable>1</IsCustomizable>
+    <CanBeDeleted>1</CanBeDeleted>
+    <isquickfindquery>0</isquickfindquery>
+    <isprivate>0</isprivate>
+    <isdefault>0</isdefault>
+    <savedqueryid>{9787d54d-5680-f111-ab0e-7ced8d726840}</savedqueryid>
+    <layoutxml>
+      <grid name="resultset" jump="alex_name" select="1" icon="1" preview="1">
+        <row name="result" id="alex_payplusreceiptallocationid">
+          <cell name="alex_billingcaseid" width="180" />
+          <cell name="alex_paymentlineid" width="180" />
+          <cell name="alex_invoicedocumentid" width="180" />
+          <cell name="alex_receiptdocumentid" width="180" />
+          <cell name="alex_allocatedamount" width="120" />
+          <cell name="alex_status" width="120" />
+        </row>
+      </grid>
+    </layoutxml>
+    <querytype>0</querytype>
+    <fetchxml>
+      <fetch>
+        <entity name="alex_payplusreceiptallocation">
+          <attribute name="alex_name" />
+          <attribute name="alex_billingcaseid" />
+          <attribute name="alex_paymentlineid" />
+          <attribute name="alex_invoicedocumentid" />
+          <attribute name="alex_receiptdocumentid" />
+          <attribute name="alex_allocatedamount" />
+          <attribute name="alex_status" />
+          <order attribute="createdon" descending="true" />
+        </entity>
+      </fetch>
+    </fetchxml>
+    <IntroducedVersion>1.0.0.0</IntroducedVersion>
+    <LocalizedNames>
+      <LocalizedName description="שיוכי קבלות פעילים" languagecode="1033" />
+    </LocalizedNames>
+  </savedquery>
+</savedqueries>

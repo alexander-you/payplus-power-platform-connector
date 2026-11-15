@@ -1,0 +1,45 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<savedqueries xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <savedquery>
+    <IsCustomizable>1</IsCustomizable>
+    <CanBeDeleted>0</CanBeDeleted>
+    <isquickfindquery>0</isquickfindquery>
+    <isprivate>0</isprivate>
+    <isdefault>1</isdefault>
+    <savedqueryid>{4376a75f-2a03-4dba-9098-af9496ae9332}</savedqueryid>
+    <layoutxml>
+      <grid name="alex_payplus_syncoutboxes" jump="alex_name" select="1" icon="1" preview="1">
+        <row name="alex_payplus_syncoutbox" id="alex_payplus_syncoutboxid">
+          <cell name="alex_name" width="300" />
+          <cell name="alex_operation" width="100" />
+          <cell name="alex_status" width="100" />
+          <cell name="alex_sourcemodifiedon" width="126" />
+          <cell name="alex_processedon" width="103" />
+          <cell name="createdon" width="125" />
+        </row>
+      </grid>
+    </layoutxml>
+    <querytype>2</querytype>
+    <fetchxml>
+      <fetch version="1.0" mapping="logical">
+        <entity name="alex_payplus_syncoutbox">
+          <attribute name="alex_payplus_syncoutboxid" />
+          <attribute name="alex_name" />
+          <attribute name="createdon" />
+          <filter type="and">
+            <condition attribute="statecode" operator="eq" value="0" />
+          </filter>
+          <order attribute="createdon" descending="true" />
+          <attribute name="alex_operation" />
+          <attribute name="alex_status" />
+          <attribute name="alex_sourcemodifiedon" />
+          <attribute name="alex_processedon" />
+        </entity>
+      </fetch>
+    </fetchxml>
+    <IntroducedVersion>1.0.0.0</IntroducedVersion>
+    <LocalizedNames>
+      <LocalizedName description="PayPlus Sync Outbox Associated View" languagecode="1033" />
+    </LocalizedNames>
+  </savedquery>
+</savedqueries>

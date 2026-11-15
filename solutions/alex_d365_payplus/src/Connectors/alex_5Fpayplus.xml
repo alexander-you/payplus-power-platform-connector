@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Connector xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <connectorid>66e6832f-9776-4285-a07b-84b069d02015</connectorid>
+  <description>אינטגרציית PayPlus עבור Dynamics 365 — יצירת קישורי תשלום, חיוב, טוקניזציה, זיכויים והפקת מסמכי מס. סביבת ייצור (Production).
+
+PayPlus integration for Dynamics 365 — payment links, charging, tokenization, refunds and tax documents. Production environment.</description>
+  <displayname>PayPlus</displayname>
+  <iconbrandcolor>#007ee5</iconbrandcolor>
+  <name>alex_5Fpayplus</name>
+  <connectortype>1</connectortype>
+  <openapidefinition>/Connector/alex_5Fpayplus_openapidefinition.json</openapidefinition>
+  <connectionparameters>/Connector/alex_5Fpayplus_connectionparameters.json</connectionparameters>
+  <policytemplateinstances>/Connector/alex_5Fpayplus_policytemplateinstances.json</policytemplateinstances>
+  <iconblob>/Connector/alex_5Fpayplus_iconblob.Jpeg</iconblob>
+</Connector>

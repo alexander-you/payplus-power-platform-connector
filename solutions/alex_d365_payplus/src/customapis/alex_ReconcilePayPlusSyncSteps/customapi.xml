@@ -1,0 +1,18 @@
+<customapi uniquename="alex_ReconcilePayPlusSyncSteps">
+  <allowedcustomprocessingsteptype>0</allowedcustomprocessingsteptype>
+  <bindingtype>0</bindingtype>
+  <description default="Creates or updates plugin steps for active PayPlus entity mappings.">
+    <label description="Creates or updates plugin steps for active PayPlus entity mappings." languagecode="1033" />
+  </description>
+  <displayname default="Reconcile PayPlus Sync Steps">
+    <label description="Reconcile PayPlus Sync Steps" languagecode="1033" />
+  </displayname>
+  <iscustomizable>1</iscustomizable>
+  <isfunction>0</isfunction>
+  <isprivate>0</isprivate>
+  <name>Reconcile PayPlus Sync Steps</name>
+  <plugintypeid>
+    <plugintypeexportkey>0d8c2b31-527d-f111-ab0e-7ced8d726840</plugintypeexportkey>
+  </plugintypeid>
+  <workflowsdkstepenabled>0</workflowsdkstepenabled>
+</customapi>

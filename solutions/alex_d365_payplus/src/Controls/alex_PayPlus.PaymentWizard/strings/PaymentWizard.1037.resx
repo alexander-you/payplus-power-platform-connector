@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <data name="PayPlus_PaymentWizard_Display" xml:space="preserve"><value>אשף תשלום PayPlus</value></data>
+  <data name="PayPlus_PaymentWizard_Desc" xml:space="preserve"><value>אשף מודרך לגביית תשלום והפקת המסמך החשבונאי ב-PayPlus.</value></data>
+  <data name="PayPlus_PaymentWizard_Host_Display" xml:space="preserve"><value>ערך מארח</value></data>
+  <data name="PayPlus_PaymentWizard_Host_Desc" xml:space="preserve"><value>שדה מארח עבור פקד אשף התשלום.</value></data>
+  <data name="PayPlus_PaymentWizard_SourceEntity_Display" xml:space="preserve"><value>ישות מקור</value></data>
+  <data name="PayPlus_PaymentWizard_SourceEntity_Desc" xml:space="preserve"><value>שם לוגי של ישות המקור (אופציונלי).</value></data>
+  <data name="PayPlus_PaymentWizard_SourceId_Display" xml:space="preserve"><value>מזהה מקור</value></data>
+  <data name="PayPlus_PaymentWizard_SourceId_Desc" xml:space="preserve"><value>מזהה רשומת המקור (אופציונלי).</value></data>
+</root>

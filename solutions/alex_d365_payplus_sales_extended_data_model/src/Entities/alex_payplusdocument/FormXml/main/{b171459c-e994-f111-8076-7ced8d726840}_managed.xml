@@ -1,0 +1,193 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<forms xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <systemform>
+    <formid>{b171459c-e994-f111-8076-7ced8d726840}</formid>
+    <IntroducedVersion>1.0</IntroducedVersion>
+    <FormPresentation>0</FormPresentation>
+    <FormActivationState>1</FormActivationState>
+    <form>
+      <tabs>
+        <tab verticallayout="true" id="{4b3e16c8-d16f-4d46-80ed-1f94823e2fd1}" IsUserDefined="1">
+          <labels>
+            <label description="כללי" languagecode="1033" />
+            <label description="כללי" languagecode="1037" />
+          </labels>
+          <columns>
+            <column width="33%">
+              <sections>
+                <section showlabel="false" showbar="false" IsUserDefined="0" id="{9e599746-9115-4a0c-b29a-e57183596d80}">
+                  <labels>
+                    <label description="כללי" languagecode="1033" />
+                    <label description="כללי" languagecode="1037" />
+                  </labels>
+                  <rows>
+                    <row>
+                      <cell id="{77a297a1-b99e-4ad5-8209-a04e9d258209}">
+                        <labels>
+                          <label description="שם" languagecode="1037" />
+                        </labels>
+                        <control id="alex_name" classid="{4273EDBD-AC1D-40d3-9FB2-095C621B552D}" datafieldname="alex_name" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{e00333ce-41dc-473e-915e-3ad9ba9e2406}">
+                        <labels>
+                          <label description="בעלים" languagecode="1037" />
+                        </labels>
+                        <control id="ownerid" classid="{270BD3DB-D9AF-4782-9025-509E298DEC0A}" datafieldname="ownerid" />
+                      </cell>
+                    </row>
+                  </rows>
+                </section>
+                <section showlabel="true" showbar="false" IsUserDefined="1" id="{2d9a83d7-5d1a-4084-92ef-4ff6340014a9}">
+                  <labels>
+                    <label description="הקשר מכירה" languagecode="1033" />
+                    <label description="הקשר מכירה" languagecode="1037" />
+                  </labels>
+                  <rows>
+                    <row>
+                      <cell id="{8919a1a8-ff3e-43c2-bdfb-1e55bcefac48}" showlabel="true">
+                        <labels>
+                          <label description="הצעת מחיר" languagecode="1037" />
+                        </labels>
+                        <control id="alex_quoteid" classid="{270BD3DB-D9AF-4782-9025-509E298DEC0A}" datafieldname="alex_quoteid" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{ed606bf8-9dc4-406d-8b7c-31f52563738f}" showlabel="true">
+                        <labels>
+                          <label description="מידע נוסף" languagecode="1037" />
+                        </labels>
+                        <control id="alex_moreinfo" classid="{E0DECE4B-6FC8-4a8f-A065-082708572369}" datafieldname="alex_moreinfo" />
+                      </cell>
+                    </row>
+                  </rows>
+                </section>
+                <section showlabel="true" showbar="false" IsUserDefined="1" id="{a31c38f5-0828-43b6-9493-903d1f00c0c3}">
+                  <labels>
+                    <label description="הקשר מכירה" languagecode="1033" />
+                    <label description="הקשר מכירה" languagecode="1037" />
+                  </labels>
+                  <rows>
+                    <row>
+                      <cell id="{d186f631-60ac-4773-813f-0fd34186d4aa}" showlabel="true">
+                        <labels>
+                          <label description="הזמנה" languagecode="1037" />
+                        </labels>
+                        <control id="alex_salesorderid" classid="{270BD3DB-D9AF-4782-9025-509E298DEC0A}" datafieldname="alex_salesorderid" />
+                      </cell>
+                    </row>
+                  </rows>
+                </section>
+                <section name="sec_billing_context" showlabel="true" showbar="false" IsUserDefined="1" id="{b5e32ef7-4c92-4d54-b13a-feb492ccc629}">
+                  <labels>
+                    <label description="הקשר גבייה" languagecode="1033" />
+                    <label description="הקשר גבייה" languagecode="1037" />
+                  </labels>
+                  <rows>
+                    <row>
+                      <cell id="{91c05dfd-3306-4bff-86b8-d77931015525}" showlabel="true">
+                        <labels>
+                          <label description="תיק גבייה" languagecode="1037" />
+                        </labels>
+                        <control id="alex_billingcaseid" classid="{270BD3DB-D9AF-4782-9025-509E298DEC0A}" datafieldname="alex_billingcaseid" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{a199e60e-c6c4-4895-b81c-f14fa19bc636}" showlabel="true">
+                        <labels>
+                          <label description="תפקיד מסמך בגבייה" languagecode="1037" />
+                        </labels>
+                        <control id="alex_documentrole" classid="{3EF39988-22BB-4f0b-BBBE-64B5A3748AEE}" datafieldname="alex_documentrole" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{203dc418-36f3-473b-aac2-cd8aacf6eb89}" showlabel="true">
+                        <labels>
+                          <label description="מסמך PayPlus אב" languagecode="1037" />
+                        </labels>
+                        <control id="alex_parentdocumentid" classid="{270BD3DB-D9AF-4782-9025-509E298DEC0A}" datafieldname="alex_parentdocumentid" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{734f94d9-867d-4151-b8d9-0b721e569d95}" showlabel="true">
+                        <labels>
+                          <label description="מבטל מסמך PayPlus" languagecode="1037" />
+                        </labels>
+                        <control id="alex_reversesdocumentid" classid="{270BD3DB-D9AF-4782-9025-509E298DEC0A}" datafieldname="alex_reversesdocumentid" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{74ddbff0-2b14-4ba7-82a1-ebdf4b330037}" showlabel="true">
+                        <labels>
+                          <label description="חשבונית קשורה" languagecode="1037" />
+                        </labels>
+                        <control id="alex_relatedinvoicedocumentid" classid="{270BD3DB-D9AF-4782-9025-509E298DEC0A}" datafieldname="alex_relatedinvoicedocumentid" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{805b7f6d-1588-4632-b668-d0efb20d6a0c}" showlabel="true">
+                        <labels>
+                          <label description="השפעה על יתרה" languagecode="1037" />
+                        </labels>
+                        <control id="alex_balanceimpact" classid="{C3EFE0C3-0EC6-42be-8349-CBD9079DFD8E}" datafieldname="alex_balanceimpact" />
+                      </cell>
+                    </row>
+                  </rows>
+                </section>
+              </sections>
+            </column>
+            <column width="66%">
+              <sections>
+                <section showlabel="false" showbar="false" id="{ff61cccc-79a1-4450-befe-ac2e2218b24f}" IsUserDefined="0" height="auto">
+                  <labels>
+                    <label description="הערות" languagecode="1033" />
+                    <label description="הערות" languagecode="1037" />
+                  </labels>
+                  <rows>
+                    <row>
+                      <cell showlabel="false" rowspan="15" auto="false" id="{4d7feace-382a-4f8b-8031-43cf2358b9bb}">
+                        <labels>
+                          <label description="טקסט הערה" languagecode="1037" />
+                        </labels>
+                        <control id="notescontrol" classid="{06375649-c143-495e-a496-c962e5b4488e}">
+                          <parameters>
+                            <DefaultTabId>NotesTab</DefaultTabId>
+                          </parameters>
+                        </control>
+                      </cell>
+                    </row>
+                    <row />
+                    <row />
+                    <row />
+                    <row />
+                    <row />
+                    <row />
+                    <row />
+                    <row />
+                    <row />
+                    <row />
+                    <row />
+                    <row />
+                    <row />
+                    <row height="auto" />
+                  </rows>
+                </section>
+              </sections>
+            </column>
+          </columns>
+        </tab>
+      </tabs>
+    </form>
+    <IsCustomizable>1</IsCustomizable>
+    <CanBeDeleted>1</CanBeDeleted>
+    <LocalizedNames>
+      <LocalizedName description="PayPlus Document (Sales)" languagecode="1033" />
+      <LocalizedName description="PayPlus Document (Sales)" languagecode="1037" />
+    </LocalizedNames>
+    <Descriptions>
+      <Description description="PayPlus document form including Sales links (quote/order). Ships in the Sales extension." languagecode="1033" />
+      <Description description="PayPlus document form including Sales links (quote/order). Ships in the Sales extension." languagecode="1037" />
+    </Descriptions>
+  </systemform>
+</forms>

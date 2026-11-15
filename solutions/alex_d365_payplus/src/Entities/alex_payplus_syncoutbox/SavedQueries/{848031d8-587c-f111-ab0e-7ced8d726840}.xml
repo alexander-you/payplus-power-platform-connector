@@ -1,0 +1,58 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<savedqueries xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <savedquery>
+    <IsCustomizable>1</IsCustomizable>
+    <CanBeDeleted>1</CanBeDeleted>
+    <isquickfindquery>0</isquickfindquery>
+    <isprivate>0</isprivate>
+    <isdefault>0</isdefault>
+    <savedqueryid>{848031d8-587c-f111-ab0e-7ced8d726840}</savedqueryid>
+    <layoutxml>
+      <grid name="resultset" jump="alex_name" select="1" icon="1" preview="1">
+        <row name="result" id="alex_payplus_syncoutboxid">
+          <cell name="alex_name" width="160" />
+          <cell name="alex_sourcetablelogicalname" width="160" />
+          <cell name="alex_sourcerowid" width="160" />
+          <cell name="alex_targetobject" width="160" />
+          <cell name="alex_operation" width="160" />
+          <cell name="alex_status" width="160" />
+          <cell name="alex_attemptcount" width="160" />
+          <cell name="alex_nextretryon" width="160" />
+          <cell name="alex_correlationkey" width="160" />
+        </row>
+      </grid>
+    </layoutxml>
+    <querytype>0</querytype>
+    <fetchxml>
+      <fetch version="1.0" mapping="logical">
+        <entity name="alex_payplus_syncoutbox">
+          <attribute name="alex_name" />
+          <attribute name="alex_sourcetablelogicalname" />
+          <attribute name="alex_sourcerowid" />
+          <attribute name="alex_targetobject" />
+          <attribute name="alex_operation" />
+          <attribute name="alex_status" />
+          <attribute name="alex_attemptcount" />
+          <attribute name="alex_nextretryon" />
+          <attribute name="alex_correlationkey" />
+          <order attribute="createdon" descending="false" />
+          <filter type="and">
+            <condition attribute="alex_status" operator="in">
+              <value>100000000</value>
+              <value>100000001</value>
+              <value>100000003</value>
+              <value>100000004</value>
+            </condition>
+          </filter>
+        </entity>
+      </fetch>
+    </fetchxml>
+    <IntroducedVersion>1.0.0.0</IntroducedVersion>
+    <LocalizedNames>
+      <LocalizedName description="Open Sync Jobs" languagecode="1033" />
+    </LocalizedNames>
+    <Descriptions>
+      <Description description="Open Sync Jobs." languagecode="1033" />
+    </Descriptions>
+  </savedquery>
+</savedqueries>

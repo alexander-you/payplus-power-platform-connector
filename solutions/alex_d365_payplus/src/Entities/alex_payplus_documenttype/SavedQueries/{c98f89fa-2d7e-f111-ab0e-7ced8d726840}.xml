@@ -1,0 +1,57 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<savedqueries xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <savedquery>
+    <IsCustomizable>1</IsCustomizable>
+    <CanBeDeleted>1</CanBeDeleted>
+    <isquickfindquery>0</isquickfindquery>
+    <isprivate>0</isprivate>
+    <isdefault>0</isdefault>
+    <savedqueryid>{c98f89fa-2d7e-f111-ab0e-7ced8d726840}</savedqueryid>
+    <layoutxml>
+      <grid name="resultset" jump="alex_name" select="1" icon="1" preview="1">
+        <row name="result" id="alex_payplus_documenttypeid">
+          <cell name="alex_titlehe" width="180" />
+          <cell name="alex_titleen" width="180" />
+          <cell name="alex_code" width="150" />
+          <cell name="alex_typecode" width="100" />
+          <cell name="alex_category" width="150" />
+          <cell name="alex_environment" width="120" />
+          <cell name="alex_configurationid" width="180" />
+          <cell name="alex_caninitiate" width="110" />
+          <cell name="alex_declarable" width="110" />
+          <cell name="alex_hidden" width="100" />
+          <cell name="alex_isactive" width="100" />
+        </row>
+      </grid>
+    </layoutxml>
+    <querytype>0</querytype>
+    <fetchxml>
+      <fetch version="1.0" mapping="logical">
+        <entity name="alex_payplus_documenttype">
+          <attribute name="alex_titlehe" />
+          <attribute name="alex_titleen" />
+          <attribute name="alex_code" />
+          <attribute name="alex_typecode" />
+          <attribute name="alex_category" />
+          <attribute name="alex_environment" />
+          <attribute name="alex_configurationid" />
+          <attribute name="alex_caninitiate" />
+          <attribute name="alex_declarable" />
+          <attribute name="alex_hidden" />
+          <attribute name="alex_isactive" />
+          <order attribute="alex_sortorder" descending="false" />
+          <order attribute="alex_titlehe" descending="false" />
+          <filter type="and">
+            <condition attribute="statecode" operator="eq" value="0" />
+            <condition attribute="alex_isactive" operator="eq" value="1" />
+            <condition attribute="alex_hidden" operator="eq" value="0" />
+          </filter>
+        </entity>
+      </fetch>
+    </fetchxml>
+    <IntroducedVersion>1.0.0.0</IntroducedVersion>
+    <LocalizedNames>
+      <LocalizedName description="סוגי מסמכים פעילים" languagecode="1033" />
+    </LocalizedNames>
+  </savedquery>
+</savedqueries>

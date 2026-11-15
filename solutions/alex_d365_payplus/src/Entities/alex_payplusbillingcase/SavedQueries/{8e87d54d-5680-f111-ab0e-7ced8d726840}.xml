@@ -1,0 +1,42 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<savedqueries xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <savedquery>
+    <IsCustomizable>1</IsCustomizable>
+    <CanBeDeleted>1</CanBeDeleted>
+    <isquickfindquery>0</isquickfindquery>
+    <isprivate>0</isprivate>
+    <isdefault>0</isdefault>
+    <savedqueryid>{8e87d54d-5680-f111-ab0e-7ced8d726840}</savedqueryid>
+    <layoutxml>
+      <grid name="resultset" jump="alex_name" select="1" icon="1" preview="1">
+        <row name="result" id="alex_payplusbillingcaseid">
+          <cell name="alex_status" width="140" />
+          <cell name="alex_sourcedisplayname" width="180" />
+          <cell name="alex_customername" width="220" />
+          <cell name="alex_totalamount" width="120" />
+          <cell name="alex_paidamount" width="120" />
+          <cell name="alex_openbalance" width="120" />
+        </row>
+      </grid>
+    </layoutxml>
+    <querytype>0</querytype>
+    <fetchxml>
+      <fetch>
+        <entity name="alex_payplusbillingcase">
+          <attribute name="alex_name" />
+          <attribute name="alex_status" />
+          <attribute name="alex_sourcedisplayname" />
+          <attribute name="alex_customername" />
+          <attribute name="alex_totalamount" />
+          <attribute name="alex_paidamount" />
+          <attribute name="alex_openbalance" />
+          <order attribute="modifiedon" descending="true" />
+        </entity>
+      </fetch>
+    </fetchxml>
+    <IntroducedVersion>1.0.0.0</IntroducedVersion>
+    <LocalizedNames>
+      <LocalizedName description="תיקי גבייה פעילים" languagecode="1033" />
+    </LocalizedNames>
+  </savedquery>
+</savedqueries>

@@ -1,0 +1,38 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<AppModuleSiteMap xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <SiteMapUniqueName>alex_PayPlusConfiguration</SiteMapUniqueName>
+  <EnableCollapsibleGroups>False</EnableCollapsibleGroups>
+  <ShowHome>True</ShowHome>
+  <ShowPinned>True</ShowPinned>
+  <ShowRecents>True</ShowRecents>
+  <SiteMap IntroducedVersion="7.0.0.0">
+    <Area Id="area_3c56c522" ResourceId="SitemapDesigner.NewTitle" DescriptionResourceId="SitemapDesigner.NewTitle" ShowGroups="true" IntroducedVersion="7.0.0.0">
+      <Titles>
+        <Title LCID="1033" Title="Area1" />
+      </Titles>
+      <Group Id="group_22cfd3bf" ResourceId="SitemapDesigner.NewGroup" DescriptionResourceId="SitemapDesigner.NewGroup" IntroducedVersion="7.0.0.0" IsProfile="false" ToolTipResourseId="SitemapDesigner.Unknown">
+        <Titles>
+          <Title LCID="1033" Title="Configuration" />
+        </Titles>
+        <SubArea Id="subarea_18f3c720" ResourceId="SitemapDesigner.NewSubArea" VectorIcon="/WebResources/alex_payplus_logo_vector_white_bg" Icon="/WebResources/alex_payplus_logo_vector_white_bg" Url="$webresource:alex_payplus_setup.html" Client="All,Outlook,OutlookLaptopClient,OutlookWorkstationClient,Web" AvailableOffline="true" PassParams="false" Sku="All,OnPremise,Live,SPLA">
+          <Titles>
+            <Title LCID="1033" Title="PayPlus Setup Wizard" />
+          </Titles>
+        </SubArea>
+        <SubArea Id="subarea_35b4e4c0" Icon="/_imgs/imagestrips/transparent_spacer.gif" Entity="alex_payplusconfiguration" Client="All,Outlook,OutlookLaptopClient,OutlookWorkstationClient,Web" AvailableOffline="true" PassParams="false" Sku="All,OnPremise,Live,SPLA" />
+      </Group>
+      <Group Id="group_f4f0fe5b" ResourceId="SitemapDesigner.NewGroup" DescriptionResourceId="SitemapDesigner.NewGroup" IntroducedVersion="7.0.0.0" IsProfile="false" ToolTipResourseId="SitemapDesigner.Unknown">
+        <Titles>
+          <Title LCID="1033" Title="PayPlus Sync" />
+        </Titles>
+        <SubArea Id="subarea_702c025a" Icon="/_imgs/imagestrips/transparent_spacer.gif" Entity="alex_payplus_syncprofile" Client="All,Outlook,OutlookLaptopClient,OutlookWorkstationClient,Web" AvailableOffline="true" PassParams="false" Sku="All,OnPremise,Live,SPLA" />
+        <SubArea Id="subarea_25a054d6" Icon="/_imgs/imagestrips/transparent_spacer.gif" Entity="alex_payplus_transformrule" Client="All,Outlook,OutlookLaptopClient,OutlookWorkstationClient,Web" AvailableOffline="true" PassParams="false" Sku="All,OnPremise,Live,SPLA" />
+        <SubArea Id="subarea_89ec70bc" Icon="/_imgs/imagestrips/transparent_spacer.gif" Entity="alex_payplus_filterrule" Client="All,Outlook,OutlookLaptopClient,OutlookWorkstationClient,Web" AvailableOffline="true" PassParams="false" Sku="All,OnPremise,Live,SPLA" />
+        <SubArea Id="subarea_87a6482e" Icon="/_imgs/imagestrips/transparent_spacer.gif" Entity="alex_payplus_synclog" Client="All,Outlook,OutlookLaptopClient,OutlookWorkstationClient,Web" AvailableOffline="true" PassParams="false" Sku="All,OnPremise,Live,SPLA" />
+      </Group>
+    </Area>
+  </SiteMap>
+  <LocalizedNames>
+    <LocalizedName description="PayPlus Configuration" languagecode="1033" />
+  </LocalizedNames>
+</AppModuleSiteMap>

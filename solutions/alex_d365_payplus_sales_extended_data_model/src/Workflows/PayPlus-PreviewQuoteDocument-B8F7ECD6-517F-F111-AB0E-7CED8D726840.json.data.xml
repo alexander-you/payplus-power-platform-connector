@@ -1,0 +1,32 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Workflow WorkflowId="{b8f7ecd6-517f-f111-ab0e-7ced8d726840}" Name="PayPlus - Preview Quote Document" Description="Creates a PayPlus quote preview document from a pending alex_payplusdocument row and updates that row for the preview PCF." xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <JsonFileName>/Workflows/PayPlus-PreviewQuoteDocument-B8F7ECD6-517F-F111-AB0E-7CED8D726840.json</JsonFileName>
+  <Type>1</Type>
+  <Subprocess>0</Subprocess>
+  <Category>5</Category>
+  <Mode>0</Mode>
+  <Scope>4</Scope>
+  <OnDemand>0</OnDemand>
+  <TriggerOnCreate>0</TriggerOnCreate>
+  <TriggerOnDelete>0</TriggerOnDelete>
+  <AsyncAutodelete>0</AsyncAutodelete>
+  <SyncWorkflowLogOnFailure>0</SyncWorkflowLogOnFailure>
+  <StateCode>1</StateCode>
+  <StatusCode>2</StatusCode>
+  <RunAs>1</RunAs>
+  <IsTransacted>1</IsTransacted>
+  <IntroducedVersion>1.0</IntroducedVersion>
+  <IsCustomizable>1</IsCustomizable>
+  <BusinessProcessType>0</BusinessProcessType>
+  <IsCustomProcessingStepAllowedForOtherPublishers>1</IsCustomProcessingStepAllowedForOtherPublishers>
+  <ModernFlowType>0</ModernFlowType>
+  <PrimaryEntity>none</PrimaryEntity>
+  <LocalizedNames>
+    <LocalizedName languagecode="1033" description="PayPlus - Preview Quote Document" />
+    <LocalizedName languagecode="1037" description="PayPlus - Preview Quote Document" />
+  </LocalizedNames>
+  <Descriptions>
+    <Description languagecode="1033" description="Creates a PayPlus quote preview document from a pending alex_payplusdocument row and updates that row for the preview PCF." />
+    <Description languagecode="1037" description="Creates a PayPlus quote preview document from a pending alex_payplusdocument row and updates that row for the preview PCF." />
+  </Descriptions>
+</Workflow>

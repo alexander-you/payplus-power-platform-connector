@@ -1,0 +1,11 @@
+<customapiresponseproperty uniquename="UpdatedCount">
+  <description default="Number of plugin steps updated.">
+    <label description="Number of plugin steps updated." languagecode="1033" />
+  </description>
+  <displayname default="UpdatedCount">
+    <label description="UpdatedCount" languagecode="1033" />
+  </displayname>
+  <iscustomizable>1</iscustomizable>
+  <name>UpdatedCount</name>
+  <type>7</type>
+</customapiresponseproperty>

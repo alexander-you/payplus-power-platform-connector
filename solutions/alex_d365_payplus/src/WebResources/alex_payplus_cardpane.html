@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>כרטיס אשראי חדש</title>
+<script src="https://cdn.jsdelivr.net/npm/payplus-hosted-fields@1.3.0/dist/payplus-hosted-fields.min.js"></script>
+<style>
+  :root{
+    --brand:#2563eb; --brand-d:#1d4ed8; --ok:#16a34a; --err:#dc2626;
+    --bg:#f1f5f9; --card:#ffffff; --line:#e2e8f0; --ink:#0f172a; --muted:#64748b;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;height:100%;}
+  body{font-family:"Segoe UI",Arial,sans-serif;background:var(--bg);color:var(--ink);font-size:14px;}
+  .wrap{max-width:440px;margin:0 auto;padding:14px;}
+  .head{display:flex;align-items:center;gap:10px;margin:2px 0 10px;}
+  .head .ico{width:38px;height:38px;border-radius:10px;background:linear-gradient(135deg,var(--brand),#7c3aed);
+    display:flex;align-items:center;justify-content:center;color:#fff;font-size:20px;flex:0 0 auto;}
+  .head h1{font-size:16px;margin:0;line-height:1.2;}
+  .head .sub{font-size:12px;color:var(--muted);}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin-top:12px;
+    box-shadow:0 1px 3px rgba(15,23,42,.06);}
+  label{display:block;font-size:12.5px;font-weight:600;margin:12px 0 5px;color:#334155;}
+  label:first-child{margin-top:0;}
+  input,select{width:100%;height:42px;border:1px solid var(--line);border-radius:10px;
+    padding:9px 11px;font-size:14px;background:#fff;transition:border-color .15s,box-shadow .15s;}
+  input:focus,select:focus{outline:none;border-color:var(--brand);box-shadow:0 0 0 3px rgba(37,99,235,.15);}
+  .field{display:block;width:100%;height:44px;border:1px solid var(--line);border-radius:10px;
+    background:#fff;padding:0 8px;overflow:hidden;}
+  .field iframe{width:100% !important;height:42px !important;border:0 !important;display:block;background:transparent;}
+  .row{display:flex;gap:10px;}
+  .row>div{flex:1;}
+  .btn{width:100%;margin-top:18px;padding:13px;border:0;border-radius:10px;background:var(--brand);
+    color:#fff;font-size:15px;font-weight:600;cursor:pointer;transition:background .15s;}
+  .btn:hover:not(:disabled){background:var(--brand-d);}
+  .btn:disabled{opacity:.45;cursor:default;}
+  .hint{display:flex;align-items:center;gap:7px;font-size:11.5px;color:var(--muted);margin-top:12px;}
+  .hint svg{flex:0 0 auto;}
+  .state{display:flex;align-items:center;gap:10px;font-size:13px;}
+  .spin{width:18px;height:18px;border:2.5px solid #cbd5e1;border-top-color:var(--brand);border-radius:50%;
+    animation:sp .7s linear infinite;flex:0 0 auto;}
+  @keyframes sp{to{transform:rotate(360deg);}}
+  .hidden{display:none;}
+  .ok-wrap{text-align:center;padding:10px 4px;}
+  .ok-badge{width:64px;height:64px;border-radius:50%;background:#dcfce7;color:var(--ok);
+    display:flex;align-items:center;justify-content:center;margin:6px auto 12px;font-size:34px;}
+  .ok-wrap h2{margin:0 0 4px;font-size:17px;}
+  .ok-wrap p{margin:0;color:var(--muted);font-size:13px;}
+  .pill{display:inline-flex;align-items:center;gap:8px;background:#f8fafc;border:1px solid var(--line);
+    border-radius:10px;padding:8px 12px;margin-top:14px;font-size:14px;font-family:Consolas,monospace;}
+  .err{color:var(--err);font-size:13px;margin-top:10px;white-space:pre-wrap;}
+  .linkbtn{background:none;border:0;color:var(--brand);font-size:13px;cursor:pointer;text-decoration:underline;margin-top:10px;}
+  .req{color:var(--err);font-weight:400;font-size:11px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="head">
+    <div class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/><line x1="6" y1="15" x2="10" y2="15"/></svg></div>
+    <div>
+      <h1>הוספת כרטיס אשראי</h1>
+      <div class="sub" id="custLine">&nbsp;</div>
+    </div>
+  </div>
+
+  <!-- Loading / session state -->
+  <div class="card" id="loadCard">
+    <div class="state">
+      <div class="spin" id="spin"></div>
+      <div id="loadMsg">טוען טופס מאובטח…</div>
+    </div>
+    <div class="err hidden" id="loadErr"></div>
+    <button class="linkbtn hidden" id="retryBtn">נסה שוב</button>
+  </div>
+
+  <!-- Payment form -->
+  <div class="card hidden" id="payCard">
+    <label>מספר כרטיס</label>
+    <span id="cc-wrapper"><span id="cc" class="field" data-hosted-fields-identifier="cc"></span></span>
+
+    <div class="row">
+      <div>
+        <label>תוקף</label>
+        <span id="expiry-wrapper"><span id="expiry" class="field"></span></span>
+        <div class="row" id="splitExp">
+          <div><span id="expirym-wrapper"><span id="expirym" class="field"></span></span></div>
+          <div><span id="expiryy-wrapper"><span id="expiryy" class="field"></span></span></div>
+        </div>
+      </div>
+      <div>
+        <label>CVV</label>
+        <span id="cvv-wrapper"><span id="cvv" class="field" data-hosted-fields-identifier="main-form"></span></span>
+      </div>
+    </div>
+
+    <label>שם בעל הכרטיס <span class="req">חובה</span></label>
+    <input id="card-holder-name" type="text" autocomplete="off" placeholder="ישראל ישראלי" />
+
+    <div class="row">
+      <div style="flex:0 0 118px" class="card-holder-phone-prefix-wrapper">
+        <label>קידומת</label>
+        <select id="card-holder-phone-prefix" class="card-holder-phone-prefix">
+          <option value="972" selected>972 (IL)</option>
+        </select>
+      </div>
+      <div class="card-holder-phone-wrapper">
+        <label>טלפון בעל הכרטיס <span class="req">חובה</span></label>
+        <input id="card-holder-phone" class="card-holder-phone" type="tel" autocomplete="off" placeholder="0501234567" />
+      </div>
+    </div>
+
+    <button class="btn" id="submitBtn" disabled>שמור כרטיס</button>
+    <span id="recaptcha"></span>
+
+    <div class="hint">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2">
+        <rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
+      הפרטים מוקלדים בתוך שרתי PayPlus. ל-D365 נשמר טוקן בלבד — לעולם לא מספר הכרטיס.
+    </div>
+    <div class="err hidden" id="payErr"></div>
+  </div>
+
+  <!-- Success -->
+  <div class="card hidden" id="okCard">
+    <div class="ok-wrap">
+      <div class="ok-badge">&#10003;</div>
+      <h2>הכרטיס נשמר בהצלחה</h2>
+      <p>נוצרה רשומת כרטיס אשראי מאובטחת ללקוח.</p>
+      <div class="pill" id="okPill"></div>
+      <br/>
+      <button class="btn" id="closeBtn" style="margin-top:16px;">סגור</button>
+      <button class="linkbtn" id="anotherBtn">הוסף כרטיס נוסף</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  var API = "/api/data/v9.2";
+  var PAYPLUS_ORIGIN = "https://restapidev.payplus.co.il";
+  var POLL_MS = 1500, POLL_MAX = 40;
+
+  function $(id){ return document.getElementById(id); }
+  function show(id){ $(id).classList.remove("hidden"); }
+  function hide(id){ $(id).classList.add("hidden"); }
+  function newGuid(){
+    return ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g,function(c){
+      return (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c/4).toString(16);
+    });
+  }
+  function api(method, path, body){
+    var opts = { method:method, credentials:"include", cache:"no-store",
+      headers:{ "Accept":"application/json","OData-MaxVersion":"4.0","OData-Version":"4.0",
+        "Cache-Control":"no-cache","If-None-Match":"null" } };
+    if (body !== undefined){
+      opts.headers["Content-Type"]="application/json";
+      opts.headers["Prefer"]="return=representation";
+      opts.body = JSON.stringify(body);
+    }
+    return fetch(API + path, opts).then(function(r){
+      if(!r.ok){ return r.text().then(function(t){ throw new Error(method+" "+path+" -> "+r.status+" "+t); }); }
+      var loc = r.headers.get("OData-EntityId");
+      if(r.status===204 && !loc) return { _status:204 };
+      return r.text().then(function(t){ var j=t?JSON.parse(t):{}; if(loc) j._entityId=loc; return j; });
+    });
+  }
+  function idFromEntityId(s){ var m=/\(([0-9a-fA-F-]+)\)/.exec(s||""); return m?m[1]:null; }
+
+  // ---- customer context from the side-pane query string ----
+  function ctxFromQuery(){
+    var outer = new URLSearchParams(window.location.search).get("data") || window.location.search.replace(/^\?/, "");
+    var p = new URLSearchParams(outer);
+    return { entityname:(p.get("entityname")||"").toLowerCase(), id:p.get("id")||"", name:p.get("name")||"" };
+  }
+  var ctx = ctxFromQuery();
+  $("custLine").textContent = ctx.name ? ("עבור: " + ctx.name) : (ctx.entityname==="account" ? "עבור חשבון" : "עבור איש קשר");
+
+  // pre-fill the cardholder name from the customer (query value, else fetch it)
+  (function prefillName(){
+    var el = $("card-holder-name");
+    if (!el) return;
+    if (ctx.name){ el.value = ctx.name; $("custLine").textContent = "עבור: " + ctx.name; return; }
+    if (!ctx.id) return;
+    var path = ctx.entityname==="account"
+      ? "/accounts(" + ctx.id + ")?$select=name"
+      : "/contacts(" + ctx.id + ")?$select=fullname";
+    api("GET", path).then(function(r){
+      var nm = r.fullname || r.name || "";
+      if (nm){ if(!el.value) el.value = nm; $("custLine").textContent = "עבור: " + nm; }
+    }).catch(function(){});
+  })();
+
+  // ---- brand_name/id -> alex_brand choice value ----
+  // Canonical names per PayPlus BrandsList (GET /BrandsList): pl, mastercard, visa,
+  // maestro, isracard, dinners (note the double-n spelling), amex, JCB, discover.
+  function mapBrand(name, id){
+    var n = (name||"").toString().toLowerCase();
+    if (n.indexOf("visa")>=0) return 1;
+    if (n.indexOf("master")>=0 || n==="mc") return 2;
+    if (n.indexOf("isracard")>=0 || n==="ic") return 3;
+    if (n.indexOf("american")>=0 || n.indexOf("amex")>=0) return 4;
+    if (n.indexOf("diner")>=0 || n.indexOf("dinner")>=0) return 5; // PayPlus spells it "dinners"
+    if (n.indexOf("jcb")>=0) return 6;
+    if (n.indexOf("union")>=0) return 7;
+    if (n.indexOf("maestro")>=0) return 8;
+    if (n.indexOf("discover")>=0) return 11;
+    return 0; // unknown / not reported (incl PayPlus placeholder "pl")
+  }
+  function brandLabel(v){
+    return ({1:"Visa",2:"Mastercard",3:"Isracard",4:"American Express",5:"Diners",
+             6:"JCB",7:"UnionPay",8:"Maestro",11:"Discover"})[v] || "כרטיס אשראי";
+  }
+
+  // ---- session ----
+  function createSession(){
+    var requestId = newGuid();
+    var origin = window.location.origin;
+    hide("loadErr"); hide("retryBtn"); show("spin");
+    $("loadMsg").textContent = "יוצר סשן מאובטח…";
+    var rowId;
+    var sessionBody = { alex_name:requestId, alex_requestid:requestId, alex_status:"Pending" };
+    if (ctx.entityname === "contact" && ctx.id) sessionBody["alex_Contact@odata.bind"] = "/contacts(" + ctx.id + ")";
+    if (ctx.entityname === "account" && ctx.id) sessionBody["alex_Account@odata.bind"] = "/accounts(" + ctx.id + ")";
+    return api("POST","/alex_pp_hfsessions", sessionBody).then(function(row){
+      rowId = (row && row.alex_pp_hfsessionid) || idFromEntityId(row._entityId);
+      return api("POST","/alex_CreateHfSession",{ request_id:requestId, amount:"1", origin:origin });
+    }).then(function(){
+      $("loadMsg").textContent = "טוען שדות כרטיס…";
+      return poll(rowId, 0);
+    }).then(function(sess){ initHostedFields(sess); });
+  }
+  function poll(rowId, n){
+    if (n >= POLL_MAX) throw new Error("תם הזמן בהמתנה לסשן");
+    return api("GET","/alex_pp_hfsessions("+rowId+")?$select=alex_status,alex_hostedfieldsuid,alex_pagerequestuid,alex_message")
+      .then(function(row){
+        var st = row.alex_status || "";
+        if (st==="Ready" && row.alex_hostedfieldsuid && row.alex_pagerequestuid)
+          return { rowId:rowId, hosted_fields_uuid:row.alex_hostedfieldsuid, page_request_uid:row.alex_pagerequestuid };
+        if (st==="Error") throw new Error(row.alex_message || "שגיאת סשן");
+        return new Promise(function(res){ setTimeout(res, POLL_MS); }).then(function(){ return poll(rowId, n+1); });
+      });
+  }
+
+  // ---- hosted fields ----
+  var hf=null, currentRowId=null;
+  function initHostedFields(sess){
+    currentRowId = sess.rowId;
+    hf = new PayPlusHostedFieldsDom();
+    hf.SetMainFields({
+      cc:      { elmSelector:"#cc",      wrapperElmSelector:"#cc-wrapper" },
+      expiry:  { elmSelector:"#expiry",  wrapperElmSelector:"#expiry-wrapper" },
+      expirym: { elmSelector:"#expirym", wrapperElmSelector:"#expirym-wrapper" },
+      expiryy: { elmSelector:"#expiryy", wrapperElmSelector:"#expiryy-wrapper" },
+      cvv:     { elmSelector:"#cvv",     wrapperElmSelector:"#cvv-wrapper" }
+    })
+    .AddField("card_holder_name",         "#card-holder-name",         "#card-holder-name")
+    .AddField("card_holder_phone",        ".card-holder-phone",        ".card-holder-phone-wrapper")
+    .AddField("card_holder_phone_prefix", ".card-holder-phone-prefix", ".card-holder-phone-prefix-wrapper")
+    .SetRecaptcha("#recaptcha");
+
+    hf.CreatePaymentPage({
+      hosted_fields_uuid: sess.hosted_fields_uuid,
+      page_request_uid: sess.page_request_uid,
+      origin: PAYPLUS_ORIGIN
+    }).then(function(){ return hf.InitPaymentPage; })
+      .then(function(){
+        hide("loadCard"); show("payCard");
+        $("submitBtn").disabled = false;
+        syncNonHosted();
+        setTimeout(tidyExpiry, 200);
+        setTimeout(tidyExpiry, 800);
+      })
+      .catch(function(err){ failLoad(err); });
+
+    hf.Upon("pp_submitProcess", function(e){ $("submitBtn").disabled = !!e.detail; });
+    hf.Upon("pp_pageExpired", function(){ $("submitBtn").disabled = true; showPayErr("פג תוקף הטופס — רענן וטען מחדש."); });
+    hf.Upon("pp_noAttemptedRemaining", function(){ $("submitBtn").disabled = true; showPayErr("לא נותרו ניסיונות."); });
+    hf.Upon("pp_responseFromServer", function(e){ handleServerResponse(e.detail); });
+  }
+
+  function handleServerResponse(detail){
+    var d = detail || {};
+    var data = d.data || {};
+    var status = (d.results && d.results.status) || d.status;
+    var token = data.token_uid || data.token ||
+                (data.transaction && (data.transaction.token_uid || data.transaction.token)) || d.token || null;
+    var ci = data.card_information || (data.transaction && data.transaction.card_information) || data;
+    if (!token){
+      if (status && String(status).toLowerCase() !== "success")
+        showPayErr("העסקה נדחתה: " + (d.message || (d.results && d.results.description) || status));
+      return;
+    }
+    // build values
+    var last4 = (ci.four_digits || ci.last_four_digits || "").toString().substring(0,4);
+    var brandVal = mapBrand(ci.brand_name, ci.brand_id); // 1..8 known, 0 unknown
+    var holder = ($("card-holder-name").value || "").trim();
+    var custUid = data.customer_uid || (data.customer && data.customer.customer_uid) || "";
+    var expM = (ci.expiry_month || data.expiry_month || "").toString().substring(0,2);
+    var expY = (ci.expiry_year  || data.expiry_year  || "").toString().substring(0,2);
+    var display = brandLabel(brandVal) + " •••• " + (last4 || "????");
+
+    $("submitBtn").disabled = true;
+
+    var card = {
+      alex_name: display,
+      alex_token: String(token).substring(0,200),
+      alex_last4: last4,
+      alex_cardholdername: holder.substring(0,100),
+      alex_isactive: true,
+      alex_isdefault: false,
+      alex_channel: 100000000
+    };
+    if (brandVal) card.alex_brand = brandVal; // only set when the brand is actually known
+    if (custUid) card.alex_paypluscustomeruid = String(custUid).substring(0,50);
+    if (expM) card.alex_expirymonth = expM;
+    if (expY) card.alex_expiryyear = expY;
+    if (ctx.entityname === "contact" && ctx.id) card["alex_Contact@odata.bind"] = "/contacts(" + ctx.id + ")";
+    if (ctx.entityname === "account" && ctx.id) card["alex_Account@odata.bind"] = "/accounts(" + ctx.id + ")";
+
+    // 1) create the credit card record, 2) mark the session tokenized
+    api("POST","/alex_creditcards", card).then(function(){
+      return api("PATCH","/alex_pp_hfsessions(" + currentRowId + ")", {
+        alex_status:"Tokenized", alex_message:"Card record created"
+      }).catch(function(){ /* non-blocking */ });
+    }).then(function(){
+      $("okPill").textContent = display;
+      hide("payCard"); show("okCard");
+    }).catch(function(err){
+      showPayErr("שמירת הכרטיס נכשלה: " + err.message);
+      $("submitBtn").disabled = false;
+    });
+  }
+
+  function syncNonHosted(){
+    ["card-holder-name","card-holder-phone","card-holder-phone-prefix"].forEach(function(id){
+      var el=$(id); if(!el) return;
+      el.dispatchEvent(new Event("input",{bubbles:true}));
+      el.dispatchEvent(new Event("change",{bubbles:true}));
+      el.dispatchEvent(new Event("keyup",{bubbles:true}));
+    });
+  }
+  // show only the expiry layout the page actually rendered (single vs split) and drop the empty box
+  function tidyExpiry(){
+    var singleHas = !!document.querySelector("#expiry iframe");
+    var splitHas  = !!(document.querySelector("#expirym iframe") || document.querySelector("#expiryy iframe"));
+    if (splitHas){ hide("expiry-wrapper"); $("splitExp").classList.remove("hidden"); }
+    else if (singleHas){ $("splitExp").classList.add("hidden"); show("expiry-wrapper"); }
+  }
+  function showPayErr(m){ var e=$("payErr"); e.textContent=m; e.classList.remove("hidden"); }
+  function failLoad(err){
+    hide("spin");
+    var e=$("loadErr"); e.textContent = "טעינה נכשלה: " + (err && err.message ? err.message : err);
+    e.classList.remove("hidden");
+    show("retryBtn");
+    $("loadMsg").textContent = "";
+  }
+  function closePane(){
+    try{ var p = window.parent.Xrm.App.sidePanes.getPane("payplus_card_pane"); if(p) p.close(); }
+    catch(e){ /* ignore */ }
+  }
+
+  // ---- wire up ----
+  $("submitBtn").addEventListener("click", function(){
+    if(!hf) return;
+    hide("payErr"); syncNonHosted(); hf.SubmitPayment();
+  });
+  $("retryBtn").addEventListener("click", function(){
+    createSession().catch(failLoad);
+  });
+  $("closeBtn").addEventListener("click", closePane);
+  $("anotherBtn").addEventListener("click", function(){ window.location.reload(); });
+
+  if (typeof PayPlusHostedFieldsDom === "undefined"){
+    failLoad(new Error("הפלאגין לא נטען (CSP/CDN)."));
+  } else {
+    createSession().catch(failLoad);
+  }
+})();
+</script>
+</body>
+</html>

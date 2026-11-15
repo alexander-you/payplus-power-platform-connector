@@ -1,0 +1,106 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<forms xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <systemform>
+    <formid>{6787d54d-5680-f111-ab0e-7ced8d726840}</formid>
+    <IntroducedVersion>1.0.0.0</IntroducedVersion>
+    <FormPresentation>0</FormPresentation>
+    <FormActivationState>1</FormActivationState>
+    <form>
+      <tabs>
+        <tab name="tab_information" verticallayout="true" id="{FA35615C-761B-4AD3-A32E-40F88F72AB00}" IsUserDefined="1">
+          <labels>
+            <label description="Information" languagecode="1033" />
+          </labels>
+          <columns>
+            <column width="100%">
+              <sections>
+                <section name="sec_general" showlabel="true" showbar="false" IsUserDefined="1" id="{AC11B5A3-F7A6-49BD-96B7-3E916C03FBB7}">
+                  <labels>
+                    <label description="General" languagecode="1033" />
+                  </labels>
+                  <rows>
+                    <row>
+                      <cell id="{91973A95-ABBE-49F6-AB14-E37FEAD26437}" showlabel="true">
+                        <labels>
+                          <label description="Name" languagecode="1033" />
+                        </labels>
+                        <control id="alex_name" classid="{4273EDBD-AC1D-40d3-9FB2-095C621B552D}" datafieldname="alex_name" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{7C7B2D9D-9292-4887-9544-D05865EE9FE4}" showlabel="true">
+                        <labels>
+                          <label description="Billing Case" languagecode="1033" />
+                        </labels>
+                        <control id="alex_billingcaseid" classid="{270BD3DB-D9AF-4782-9025-509E298DEC0A}" datafieldname="alex_billingcaseid" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{CD87DCC4-EAD8-4E5B-A955-6640D2F65140}" showlabel="true">
+                        <labels>
+                          <label description="Payment Line" languagecode="1033" />
+                        </labels>
+                        <control id="alex_paymentlineid" classid="{270BD3DB-D9AF-4782-9025-509E298DEC0A}" datafieldname="alex_paymentlineid" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{7DA9C283-F23B-405B-BEFF-885A174EBC8A}" showlabel="true">
+                        <labels>
+                          <label description="Invoice Document" languagecode="1033" />
+                        </labels>
+                        <control id="alex_invoicedocumentid" classid="{270BD3DB-D9AF-4782-9025-509E298DEC0A}" datafieldname="alex_invoicedocumentid" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{858C1D5C-AE8C-4F8D-998D-655889A9B889}" showlabel="true">
+                        <labels>
+                          <label description="Receipt Document" languagecode="1033" />
+                        </labels>
+                        <control id="alex_receiptdocumentid" classid="{270BD3DB-D9AF-4782-9025-509E298DEC0A}" datafieldname="alex_receiptdocumentid" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{BB2FA8F2-28DB-4C67-AA8A-CA0AFCEA2C16}" showlabel="true">
+                        <labels>
+                          <label description="Allocated amount" languagecode="1033" />
+                        </labels>
+                        <control id="alex_allocatedamount" classid="{C3EFE0C3-0EC6-42be-8349-CBD9079DFD8E}" datafieldname="alex_allocatedamount" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{34D905BC-5ACB-464B-94CB-D154A3727FEC}" showlabel="true">
+                        <labels>
+                          <label description="Allocation status" languagecode="1033" />
+                        </labels>
+                        <control id="alex_status" classid="{3EF39988-22BB-4f0b-BBBE-64B5A3748AEE}" datafieldname="alex_status" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{94712F0C-C103-4AB5-830C-280C7612D616}" showlabel="true">
+                        <labels>
+                          <label description="Allocated on" languagecode="1033" />
+                        </labels>
+                        <control id="alex_allocatedon" classid="{5B773807-9FB2-42db-97C3-7A91EFF8ADFF}" datafieldname="alex_allocatedon" />
+                      </cell>
+                    </row>
+                  </rows>
+                </section>
+                <section name="sec_sales_allocation" showlabel="true" showbar="false" IsUserDefined="1" id="{AA3371D8-FF90-473C-8005-F74D8197828F}">
+                  <labels>
+                    <label description="Sales Allocation" languagecode="1033" />
+                  </labels>
+                  <rows></rows>
+                </section>
+              </sections>
+            </column>
+          </columns>
+        </tab>
+      </tabs>
+    </form>
+    <IsCustomizable>1</IsCustomizable>
+    <CanBeDeleted>1</CanBeDeleted>
+    <LocalizedNames>
+      <LocalizedName description="מידע" languagecode="1033" />
+    </LocalizedNames>
+  </systemform>
+</forms>
