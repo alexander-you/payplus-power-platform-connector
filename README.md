@@ -8,6 +8,9 @@
 
 **Language / שפה:** [English](#english) | [עברית](#hebrew)
 
+> **Latest release / גרסה אחרונה: [v1.2.2](https://github.com/alexander-you/payplus-power-platform-connector/releases/latest)**: installable Base and Sales extension packages. See the [CHANGELOG](CHANGELOG.md).
+> Solution source / קוד המקור של הפתרון: [`solution` branch](https://github.com/alexander-you/payplus-power-platform-connector/tree/solution).
+
 <a id="english"></a>
 
 This repository contains the architecture, implementation guidance, governance documentation, connector artifacts, diagrams, and configuration examples for integrating PayPlus with Microsoft Power Platform and Dynamics 365.
@@ -95,6 +98,7 @@ A typical process is:
 ```text
 .
 ├── README.md
+├── CHANGELOG.md
 ├── connector/
 │   ├── apiDefinition.prod.json
 │   ├── apiDefinition.sandbox.json
@@ -253,6 +257,7 @@ This repository intentionally contains no real secrets, no real API keys, no rea
 ```text
 .
 ├── README.md
+├── CHANGELOG.md
 ├── connector/
 │   ├── apiDefinition.prod.json
 │   ├── apiDefinition.sandbox.json
