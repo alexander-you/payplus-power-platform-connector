@@ -44,5 +44,5 @@ pac solution pack --zipfile alex_d365_payplus_managed.zip --folder solutions/ale
 
 ## Known issues
 
-- Several flows (`PayPlus HF Session`, `Send Card Link (Email/SMS/WhatsApp)`) contain a development environment URL as the default `refURL_origin`.
-- `PayPlus - Preview Invoice Document` can run twice for one update; the second run fails with `unique-identifier-exists` and marks the document as failed even though it was created in PayPlus.
+- [#3](https://github.com/alexander-you/payplus-power-platform-connector/issues/3): several flows (`PayPlus HF Session`, `Send Card Link (Email/SMS/WhatsApp)`) contain a development environment URL as the default `refURL_origin`.
+- [#4](https://github.com/alexander-you/payplus-power-platform-connector/issues/4): `PayPlus - Preview Invoice Document` can run twice for one update; the second run fails with `unique-identifier-exists` and marks the document as failed even though it was created in PayPlus.
