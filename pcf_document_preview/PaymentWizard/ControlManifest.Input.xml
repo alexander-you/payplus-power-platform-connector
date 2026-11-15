@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <manifest>
-  <control namespace="PayPlus" constructor="PaymentWizard" version="0.1.23" display-name-key="PayPlus_PaymentWizard_Display" description-key="PayPlus_PaymentWizard_Desc" control-type="standard">
+  <control namespace="PayPlus" constructor="PaymentWizard" version="0.1.24" display-name-key="PayPlus_PaymentWizard_Display" description-key="PayPlus_PaymentWizard_Desc" control-type="standard">
     <external-service-usage enabled="true">
       <domain>payments.payplus.co.il</domain>
       <domain>paymentsdev.payplus.co.il</domain>

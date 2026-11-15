@@ -903,7 +903,7 @@ export class PaymentWizard implements ComponentFramework.StandardControl<IInputs
         if (!this.billingCase?.alex_payplusbillingcaseid) throw new Error(this.t("לא נמצא תיק גבייה.", "No billing case was found."));
         const requestId = this.newGuid();
         this.hfRequestId = requestId;
-        const body: Record<string, unknown> = { alex_name: requestId, alex_requestid: requestId, alex_status: "Pending" };
+        const body: Record<string, unknown> = { alex_name: requestId, alex_requestid: requestId, alex_status: "Pending", alex_currencycode: (this.billingCase.alex_currencycode || "ILS").toUpperCase() };
         const accountId = this.customerAccountId;
         const contactId = this.customerContactId;
         if (accountId) body["alex_Account@odata.bind"] = `/accounts(${accountId})`;
